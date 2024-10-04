@@ -1,0 +1,15 @@
+﻿global using Serilog;
+global using AutoMapper;
+global using System.Net;
+global using System.Text;
+global using POS.API.Errors;
+global using System.Text.Json;
+global using POS.API.Extensions;
+global using POS.Repository.Data;
+global using POS.Repository.Identity;
+global using Microsoft.AspNetCore.Mvc;
+global using POS.Core.Entities.Identity;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
