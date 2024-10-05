@@ -6,6 +6,10 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+
+        builder.Services.AddFlexibleCaching(redisConnectionString);
+
         builder.Services.AddControllers();
         builder.Services.AddSwaggerServices();
         builder.Services.AddApplicationServices();

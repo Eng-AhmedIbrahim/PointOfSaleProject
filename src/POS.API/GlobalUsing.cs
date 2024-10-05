@@ -16,3 +16,6 @@ global using Serilog;
 global using System.Net;
 global using System.Text.Json;
 global using System.Text;
+global using POS.Core.Services.Contract;
+global using POS.Services;
+global using StackExchange.Redis;
