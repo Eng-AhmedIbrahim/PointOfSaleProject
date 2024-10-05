@@ -50,9 +50,9 @@ public static class ApplicationServicesExtensions
             });
             Log.Information("Successfully connected to Redis.");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Log.Warning(ex, "Failed to connect to Redis. Falling back to in-memory cache.");
+            Log.Warning("Failed to connect to Redis. Falling back to in-memory cache.");
             services.AddDistributedMemoryCache();
         }
 

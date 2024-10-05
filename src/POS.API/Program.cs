@@ -7,8 +7,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-
-        builder.Services.AddFlexibleCaching(redisConnectionString);
+        var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         builder.Services.AddControllers();
         builder.Services.AddSwaggerServices();
@@ -27,15 +26,17 @@ public class Program
         builder.Host.UseSerilog();
         #endregion
 
+        builder.Services.AddFlexibleCaching(redisConnectionString);
+
         #region Database connections
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(databaseConnectionString);
         });
 
         builder.Services.AddDbContext<AppIdentityDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(databaseConnectionString);
         });
         #endregion
 
