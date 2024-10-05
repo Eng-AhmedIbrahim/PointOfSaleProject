@@ -6,3 +6,5 @@ global using POS.Core.Specifications;
 global using POS.Core.Repository.Contract;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using System.Linq.Expressions;
+global using POS.Repository.Repositories;

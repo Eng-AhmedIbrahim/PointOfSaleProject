@@ -12,11 +12,12 @@ public static class DocumentSetting
                  string fileName = $"{Guid.NewGuid()}_{file.FileName}";
                  string filePath = Path.Combine(folderPath, fileName);
 
-                 using FileStream fileStream = new FileStream(filePath, FileMode.Create);
+                 using FileStream fileStream = new(filePath, FileMode.Create);
                  file.CopyTo(fileStream);
-            
 
-        return $"Files/{folderName}/{fileName}";
+        //return $"Files/{folderName}/{fileName}";
+
+        return Path.Combine("Files", folderName, fileName);
     }
 
     public static bool DeleteFile(string filePath)
@@ -37,7 +38,7 @@ public static class DocumentSetting
         }
         catch (Exception ex)
         {
-            Log.Error(ex.ToString());
+            Log.Error(ex, ex.Message);
             return false; 
         }
     }

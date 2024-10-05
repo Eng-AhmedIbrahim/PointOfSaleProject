@@ -2,24 +2,30 @@
 
 public static class SpecificationEvaluator<T> where T : BaseEntity
 {
-    public static IQueryable<T> GetQuery(IQueryable<T> inputQuery , ISpecifications<T> spec)
+    public static IQueryable<T> GetQuery(IQueryable<T> inputQuery , ISpecifications<T> specification)
     {
         var query = inputQuery;
 
-        if(spec.Criteria != null)
-            query = query.Where(spec.Criteria);
-        
-        if(spec.OrderBy != null)
-            query = query.OrderBy(spec.OrderBy);
+        if (specification.Criteria is not null)
+            query = query.Where(specification.Criteria);
 
-        if(spec.OrderByDesc != null)
-            query = query.OrderByDescending(spec.OrderByDesc);
+        if (specification.OrderBy is not null)
+            query = query.OrderBy(specification.OrderBy);
 
-        if(spec.IsPaginationEnabled)
-            query = query.Skip(spec?.Skip??0).Take(spec?.Take??5);
+        else if (specification.OrderByDescending is not null)
+            query = query.OrderByDescending(specification.OrderByDescending);
 
-        query = spec?.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression)) ?? inputQuery;
-    
+        if (specification.IsPaginationEnabled)
+            query = query
+                .Skip(specification.Skip)
+                .Take(specification.Take);
+
+        query = specification.Includes.Aggregate(query, (currentQuery, includeQuery)
+                => currentQuery.Include(includeQuery));
+
+        query = specification.IncludeStrings.Aggregate(query, (currentQuery, includeQuery)
+                => currentQuery.Include(includeQuery));
+
         return query;
     }
 }

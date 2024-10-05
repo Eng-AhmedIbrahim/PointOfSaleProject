@@ -1,20 +1,29 @@
-using POS.API.MiddleWare;
-
 namespace POS.API;
 
 public class Program
 {
-    public static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-
         builder.Services.AddControllers();
         builder.Services.AddSwaggerServices();
-        builder.Services.AddAplicationServices();
+        builder.Services.AddApplicationServices();
 
+        #region Serilog config
+        var loggerConfiguration = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("serilog.json", optional: false, reloadOnChange: true)
+        .Build();
 
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(loggerConfiguration)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
+        #endregion
+
+        #region Database connections
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -24,31 +33,53 @@ public class Program
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+        #endregion
 
         builder.Services.AddIdentityServices(builder.Configuration);
-
-
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
+        #region Database Migrate
+        using var scope = app.Services.CreateScope();
+
+        var services = scope.ServiceProvider;
+
+        var _dbContext = services.GetRequiredService<AppDbContext>();
+
+        var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+
+        try
         {
-           app.UseSwaggerServices();
+            //await _dbContext.Database.MigrateAsync();
+            //await PosDbContextDataSeed.SeedAsync(_dbContext);
         }
+        catch (Exception ex)
+        {
+            var logger = loggerFactory.CreateLogger<Program>();
+            logger.LogError(ex, "An error occurred during migration");
+        }
+        #endregion
 
-
+        #region Configure Kestrel Middelewares
 
         app.UseMiddleware<ExeptionMiddleWare>();
+
+        if (app.Environment.IsDevelopment())
+            app.UseSwaggerServices();
+
+        app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
-        
+
         app.UseAuthentication();
         app.UseAuthorization();
 
-
         app.MapControllers();
 
-        app.Run();
+        #endregion
+
+        await app.RunAsync();
     }
 }
+

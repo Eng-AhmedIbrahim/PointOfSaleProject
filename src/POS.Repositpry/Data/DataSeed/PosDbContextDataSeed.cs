@@ -1,6 +1,6 @@
 ﻿namespace POS.Repository.Data.DataSeed
 {
-    public class PosDbContextDataSeed
+    public static class PosDbContextDataSeed
     {
         private static readonly List<string> potentialFilePaths =
         [
@@ -10,6 +10,7 @@
 
         public async static Task SeedAsync(AppDbContext _dbContext)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         private static string FindValidFilePath(List<string> paths, string fileName)
@@ -18,9 +19,7 @@
             {
                 var fullPath = Path.Combine(path, fileName);
                 if (File.Exists(fullPath))
-                {
                     return fullPath;
-                }
             }
             return string.Empty;
         }
@@ -29,11 +28,10 @@
         {
             var filePath = FindValidFilePath(potentialFilePaths, fileName);
             if (string.IsNullOrEmpty(filePath))
-                return new List<T>();
+                return [];
 
             var data = await File.ReadAllTextAsync(filePath);
-            var result = JsonSerializer.Deserialize<List<T>>(data);
-            return result ?? new List<T>();
+            return JsonSerializer.Deserialize<List<T>>(data) ?? [];
         }
     }
 }
