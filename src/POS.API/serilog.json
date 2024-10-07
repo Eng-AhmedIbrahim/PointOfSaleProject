@@ -1,10 +1,11 @@
 {
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Information",
+      "Default": "Information", // Information
       "Override": {
-        "Microsoft": "Warning",
-        "System": "Error"
+        "Microsoft": "Information", // Warning
+        "Microsoft.AspNetCore": "Warning", // Warning
+        "System": "Error" // Error
       }
     },
     "WriteTo": [

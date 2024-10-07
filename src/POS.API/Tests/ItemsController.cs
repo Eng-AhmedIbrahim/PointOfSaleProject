@@ -6,8 +6,8 @@ public class ItemsController : ControllerBase
 {
     private List<Item> _items = new List<Item>();
     private Item _item;
-    private Attribute _attribute;
-    private List<AttributeItem> _attributeItems;
+    private Attribute2 _attribute;
+    private List<AttributeItem2> _attributeItems;
 
     // Constructor initializes dummy data
     public ItemsController()
@@ -29,7 +29,7 @@ public class ItemsController : ControllerBase
     {
         for (int i = 1; i <= 10; i++)
         {
-            _items.Add(new Item { Id = i, Name = $"Item {i}" });
+            _items.Add(new Item { Id = i, Name = $"Db menu Item {i}" });
         }
     }
 
@@ -39,7 +39,7 @@ public class ItemsController : ControllerBase
         _item = new Item
         {
             Id = 15,
-            Name = "Item 15"
+            Name = "Wanted Item 15"
         };
     }
 
@@ -49,7 +49,7 @@ public class ItemsController : ControllerBase
         _attribute = new Attribute
         {
             Id = 15,
-            Name = "Attribute 15 for Item 15"
+            Name = "Attribute 15 for Wanted Item 15"
         };
     }
 
