@@ -6,25 +6,15 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.AddSerilogService();
+
         var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
         var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
         builder.Services.AddControllers();
         builder.Services.AddSwaggerServices();
         builder.Services.AddApplicationServices();
-
-        #region Serilog config
-        var loggerConfiguration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("serilog.json", optional: false, reloadOnChange: true)
-        .Build();
-
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(loggerConfiguration)
-            .CreateLogger();
-
-        builder.Host.UseSerilog();
-        #endregion
 
         builder.Services.AddFlexibleCaching(redisConnectionString);
 

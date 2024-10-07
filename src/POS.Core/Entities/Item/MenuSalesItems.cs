@@ -19,6 +19,7 @@ public class MenuSalesItems : BaseEntity
     public MainCategories MainCategoryId { get; set; }
     public string? BackColor { get; set; }
     public string? TextColor { get; set; }
+    public int? TextSize { get; set; } // px or pt
     public bool Invisible { get; set; } = false;
     public DateTime CreationDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
@@ -29,6 +30,6 @@ public class MenuSalesItems : BaseEntity
     public int CategoryId { get; set; }
     public Category? Category { get; set; }
 
-    public int? ModifierId { get; set; }
-    public Modifiers? Modifier { get; set; }
+    public int? AttributeId { get; set; }
+    public Attribute? Attribute { get; set; }  // An item can have an attribute
 }
