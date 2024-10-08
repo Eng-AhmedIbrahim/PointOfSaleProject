@@ -1,0 +1,17 @@
+﻿namespace POS.API.Dtos.CompanyDtos;
+
+public class BranchToReturnDto
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? NormalizedName { get; set; }
+    public string? Description { get; set; }
+    public string? Logo { get; set; }
+    public int LogoWidth { get; set; } = 200;
+    public int LogoHeight { get; set; } = 100;
+    public string? Address { get; set; }
+    public string? Phone1 { get; set; }
+    public string? Phone2 { get; set; }
+    public bool Active { get; set; } = true;
+    public bool Suspend { get; set; } = false;
+}

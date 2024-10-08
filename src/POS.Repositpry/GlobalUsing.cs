@@ -8,3 +8,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using System.Linq.Expressions;
 global using POS.Repository.Repositories;
+
+global using POS.Core.Entities.Company;
+    
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;

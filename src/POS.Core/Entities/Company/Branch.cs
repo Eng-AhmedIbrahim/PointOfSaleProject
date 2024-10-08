@@ -16,6 +16,6 @@ public class Branch : BaseEntity
     public DateTime CreationDate { get; set; }
     public DateTime? UpdateDate { get; set; }
 
-    public int CompanyId { get; set; }
+    public int? CompanyId { get; set; }
     public Company? Company { get; set; }
 }

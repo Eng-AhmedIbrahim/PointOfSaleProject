@@ -4,8 +4,13 @@ public static class ApplicationServicesExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped(typeof(ICompanyService), typeof(CompanyService));
+        services.AddScoped(typeof(IBranchService), typeof(BranchService));
 
         services.AddAutoMapper(typeof(MappingProfiles));
+        services.AddHttpClient();
 
         services.Configure<ApiBehaviorOptions>(options =>
         {

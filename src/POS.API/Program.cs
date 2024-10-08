@@ -44,7 +44,7 @@ public class Program
 
         try
         {
-            //await _dbContext.Database.MigrateAsync();
+            await _dbContext.Database.MigrateAsync();
             //await PosDbContextDataSeed.SeedAsync(_dbContext);
         }
         catch (Exception ex)

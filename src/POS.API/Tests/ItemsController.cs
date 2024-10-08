@@ -10,19 +10,19 @@ public class ItemsController : ControllerBase
     private List<AttributeItem2> _attributeItems;
 
     // Constructor initializes dummy data
-    public ItemsController()
-    {
-        // Initialize data
-        MakeItems();
-        MakeItem();
-        MakeAttribute();
-        MakeAttributeItems();
+    //public ItemsController()
+    //{
+    //    // Initialize data
+    //    MakeItems();
+    //    MakeItem();
+    //    MakeAttribute();
+    //    MakeAttributeItems();
 
-        // Link attribute to the item and assign attribute items to the attribute
-        _attribute.AttributeItems = _attributeItems;
-        _item.AttributeId = _attribute.Id;
-        _item.Attribute = _attribute;
-    }
+    //    // Link attribute to the item and assign attribute items to the attribute
+    //    _attribute.AttributeItems = _attributeItems;
+    //    _item.AttributeId = _attribute.Id;
+    //    _item.Attribute = _attribute;
+    //}
 
     // Method to create a list of 10 dummy items
     private void MakeItems()
@@ -44,26 +44,26 @@ public class ItemsController : ControllerBase
     }
 
     // Method to create a dummy attribute
-    private void MakeAttribute()
-    {
-        _attribute = new Attribute
-        {
-            Id = 15,
-            Name = "Attribute 15 for Wanted Item 15"
-        };
-    }
+    //private void MakeAttribute()
+    //{
+    //    _attribute = new Attribute
+    //    {
+    //        Id = 15,
+    //        Name = "Attribute 15 for Wanted Item 15"
+    //    };
+    //}
 
     // Method to create a list of dummy attribute items, each linked to an item
     private void MakeAttributeItems()
     {
-        _attributeItems = new List<AttributeItem>();
+        _attributeItems = new List<AttributeItem2>();
 
         int appearanceIndex = 1; // Start with an appearance index of 1
         int count = 0; // Counter to keep track of how many items we've processed in each group of 3
 
         foreach (var item in _items)
         {
-            _attributeItems.Add(new AttributeItem
+            _attributeItems.Add(new AttributeItem2
             {
                 Id = item.Id,
                 RelatedItemId = item.Id,
@@ -97,20 +97,20 @@ public class ItemsController : ControllerBase
     }
 
     // API to get the attribute for the specific item (Attribute 15)
-    [HttpGet("attribute")]
-    public Attribute GetAttribute()
-    {
-        return _attribute;
-    }
+    //[HttpGet("attribute")]
+    //public Attribute GetAttribute()
+    //{
+    //    return _attribute;
+    //}
 
-    // API to get the attribute items ordered by AppearanceIndex
-    [HttpGet("attributeitems")]
-    public IEnumerable<IGrouping<int, AttributeItem>> GetAttributeItems()
-    {
-        return _attributeItems
-            .OrderBy(ai => ai.AppearanceIndex)
-            .GroupBy(ai => ai.AppearanceIndex);
-    }
+    //// API to get the attribute items ordered by AppearanceIndex
+    //[HttpGet("attributeitems")]
+    //public IEnumerable<IGrouping<int, AttributeItem>> GetAttributeItems()
+    //{
+    //    return _attributeItems
+    //        .OrderBy(ai => ai.AppearanceIndex)
+    //        .GroupBy(ai => ai.AppearanceIndex);
+    //}
 
     [HttpGet("groupedattributeitems")]
     public IEnumerable<GroupedAttributeItemsDto> GetGroupedAttributeItems()

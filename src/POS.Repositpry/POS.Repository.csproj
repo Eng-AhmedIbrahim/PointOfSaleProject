@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Data\DataSeed\JsonFiles\" />
-    <Folder Include="Data\Migrations\" />
-    <Folder Include="Data\Configrations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

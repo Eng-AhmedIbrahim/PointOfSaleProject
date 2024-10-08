@@ -2,18 +2,19 @@
 
 public class ApiResponse
 {
-    private readonly int StatusCode;
-    private readonly string? Message;
+    public int StatusCode { get; set; }
+    public string? Message { get; set; }
 
     public ApiResponse(int statusCode, string? message = null)
     {
-        StatusCode = statusCode;
-        Message = message??GetMessageByStatusCode(statusCode);
+        this.StatusCode = statusCode;
+
+        this.Message = message ?? GetDefaultMessageForStatusCode(statusCode);
     }
 
-    private string? GetMessageByStatusCode(int statusCode)
+    private string? GetDefaultMessageForStatusCode(int statusCode)
     {
-        return statusCode switch
+        return statusCode switch //switch expression
         {
             400 => "A Bad Request, You have made",
             401 => "Authorized, you are not",
