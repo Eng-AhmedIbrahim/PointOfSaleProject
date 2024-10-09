@@ -1,11 +1,8 @@
-﻿using POS.Core.Entities.Item;
-
-namespace POS.Core.Entities.Categorie;
+﻿namespace POS.Core.Entities.Category;
 
 public class Category : BaseEntity
 {
-    public string? Name { get; set; } 
-    public string? NormalizedName { get; set; }
+    public string? ArabicName { get; set; } 
     public string? EnglishName { get; set; } 
     public string? NormalizedEnglishName { get; set; } 
     public string? ItemsFont { get; set; }

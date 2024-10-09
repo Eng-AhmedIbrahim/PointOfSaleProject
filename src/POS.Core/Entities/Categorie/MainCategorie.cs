@@ -1,4 +1,4 @@
-﻿namespace POS.Core.Entities.Categorie;
+﻿namespace POS.Core.Entities.Category;
 
 public enum MainCategories : byte
 {

@@ -12,3 +12,6 @@ global using POS.Repository.Repositories;
 global using POS.Core.Entities.Company;
     
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using POS.Core.Entities.Category;
+
+global using POS.Core.Entities.Item;

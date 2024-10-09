@@ -34,3 +34,11 @@ global using POS.Core.Entities.Company;
 
 
 global using System.ComponentModel.DataAnnotations;
+
+global using POS.API.Dtos.CategoryDtos;
+global using POS.Core.Entities.Category;
+
+global using POS.Core.Services.Contract.CategoryServices;
+
+global using POS.Services.CategoryService;
+

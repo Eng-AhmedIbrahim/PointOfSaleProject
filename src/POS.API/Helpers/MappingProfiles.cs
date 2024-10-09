@@ -37,6 +37,9 @@ public class MappingProfiles:Profile
             .ForMember(b => b.Logo, b =>
             b.MapFrom<ImageUrlResolver>());
 
+        CreateMap<CategoryDto, Category>()
+            .ForMember(c => c.Id, c => c.Ignore());
 
+        CreateMap<UpdatedCategoryDto, Category>();
     }
 }

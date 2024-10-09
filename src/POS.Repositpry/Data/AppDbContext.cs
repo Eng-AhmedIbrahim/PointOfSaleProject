@@ -13,4 +13,8 @@ public class AppDbContext:DbContext
 
     public DbSet<Company> Companies { get; set; }
     public DbSet<Branch> Branches { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Attributes> Attributes { get; set; }
+    public DbSet<AttributeItem> AttributeItems { get; set; }
+    public DbSet<MenuSalesItems> MenuSalesItems { get; set; }
 }

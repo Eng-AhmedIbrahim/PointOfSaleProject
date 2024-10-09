@@ -2,18 +2,19 @@
 
 public static class DocumentSetting
 {
-    public static string UploadFile(IFormFile file,string folderName)
+    public static string UploadFile(IFormFile file, string folderName)
     {
         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","Files", folderName);
         
         if(!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
-                 string fileName = $"{Guid.NewGuid()}_{file.FileName}";
-                 string filePath = Path.Combine(folderPath, fileName);
+        string fileName = file.FileName;
+        
+        string filePath = Path.Combine(folderPath, fileName);
 
-                 using FileStream fileStream = new(filePath, FileMode.Create);
-                 file.CopyTo(fileStream);
+        using FileStream fileStream = new(filePath, FileMode.Create);
+        file.CopyTo(fileStream);
 
         //return $"Files/{folderName}/{fileName}";
 

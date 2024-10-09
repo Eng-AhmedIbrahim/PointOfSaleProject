@@ -10,3 +10,7 @@ global using POS.Core.Services.Contract.CompanyService;
 
 global using Serilog;
 global using POS.Core.Repository.Contract;
+
+
+global using POS.Core.Entities.Category;
+global using POS.Core.Services.Contract.CategoryServices;

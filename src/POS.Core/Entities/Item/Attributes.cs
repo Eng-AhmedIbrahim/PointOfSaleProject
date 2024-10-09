@@ -1,8 +1,8 @@
 ﻿namespace POS.Core.Entities.Item;
 
-public class Attribute : BaseEntity
+public class Attributes : BaseEntity
 {
-    public string? Name { get; set; }
+    public string? EnglishName { get; set; }
     public string? ArabicName { get; set; }
 
     public ICollection<AttributeItem> AttributeItems { get; set; } = new HashSet<AttributeItem>();
