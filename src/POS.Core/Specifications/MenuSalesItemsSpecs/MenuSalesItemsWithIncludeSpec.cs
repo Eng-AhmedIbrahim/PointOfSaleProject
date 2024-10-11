@@ -5,24 +5,16 @@ public class MenuSalesItemsWithIncludeSpec : BaseSpecifications<MenuSalesItems>
     public MenuSalesItemsWithIncludeSpec()
     {
         AddInclude();
-        //AddThenInclude();
     }
 
-    public MenuSalesItemsWithIncludeSpec(ItemsSpecs specs)
-        : base(S => specs.ItemId == null || specs.ItemId == S.Id)
+    public MenuSalesItemsWithIncludeSpec(int id)
+        : base(s => s.Id.Equals(id))
     {
         AddInclude();
-        //AddThenInclude();
     }
     private void AddInclude()
     {
-        Includes.Add(s => s.Attribute);
+        Includes.Add(s => s.Attribute!);
+        IncludeStrings.Add($"{nameof(MenuSalesItems.Attribute)}.{nameof(Attributes.AttributeItems)}.{nameof(AttributeItem.RelatedMenuItem)}");
     }
-
-    private void AddThenInclude()
-    {
-        ThenIncludes.Add("Attribute.AttributeItems");
-    }
-
-    
 }

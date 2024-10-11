@@ -38,12 +38,7 @@ public class AttributeController : BaseApiController
     [HttpGet("{attributeId}")]
     public async Task<IActionResult?> GetAttributeById(int attributeId)
     {
-        var attributeSpecs = new AttributeSpecs()
-        {
-            attId = attributeId
-        };
-
-        var specs = new AttributeWithIncludeSpecs(attributeSpecs);
+        var specs = new AttributeWithIncludeSpecs(attributeId);
         var attribute = await _attributeService.GetAttributeByIdWithSpecAsync(specs);
 
         var attributeToReturn = _mapper.Map<Attributes, AttributeToReturnDto>(attribute);
@@ -74,11 +69,7 @@ public class AttributeController : BaseApiController
     [HttpPut]
     public async Task<IActionResult?> UpdateAttribute(UpdatedAttributeDto newAttribute)
     {
-        var attributeSpecs = new AttributeSpecs()
-        {
-            attId = newAttribute.Id
-        };
-        var specs = new AttributeWithIncludeSpecs(attributeSpecs);
+        var specs = new AttributeWithIncludeSpecs(newAttribute.Id);
         var oldAttribute = await _attributeService.GetAttributeByIdWithSpecAsync(specs);
         if (oldAttribute is null)
             return NotFound(new ApiResponse(404));

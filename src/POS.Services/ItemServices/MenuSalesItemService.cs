@@ -74,23 +74,18 @@ public class MenuSalesItemService : IMenuSalesItemService
     {
         try
         {
-            var itemSpec = new ItemsSpecs() 
-            { 
-                ItemId = itemId 
-            }; 
-
-            var itemSpecs = new MenuSalesItemsWithIncludeSpec(itemSpec);
+            var itemSpecs = new MenuSalesItemsWithIncludeSpec(itemId);
             var item = await _unitOfWork.Repository<MenuSalesItems>().GetByIdWithSpecificationAsync(itemSpecs);
 
             if (item is null)
-                return null;
+                return default;
 
             return item;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "There Are Not Item With This Id {itemId}", itemId);
-            return null;
+            return default;
         }
     }
     public async Task<MenuSalesItems?> UpdateItemAsync(MenuSalesItems oldItem, MenuSalesItems newItem)

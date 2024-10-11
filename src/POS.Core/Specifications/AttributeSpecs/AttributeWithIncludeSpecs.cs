@@ -8,14 +8,15 @@ public class AttributeWithIncludeSpecs :BaseSpecifications<Attributes>
         AddIncludes();
     }
 
-    public AttributeWithIncludeSpecs(AttributeSpecs specs) :base
-        (a => specs.attId == null || a.Id == specs.attId )
+    public AttributeWithIncludeSpecs(int id) :base
+        (a => a.Id.Equals(id))
     {
         AddIncludes();
     }
     private void AddIncludes()
     {
-        Includes.Add(a=>a.AttributeItems);
+        Includes.Add(a => a.AttributeItems);
+        IncludeStrings.Add($"{nameof(Attributes.AttributeItems)}.{nameof(AttributeItem.RelatedMenuItem)}");
     }
 
 

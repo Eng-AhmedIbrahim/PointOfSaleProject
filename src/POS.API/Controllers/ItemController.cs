@@ -77,13 +77,14 @@ public class ItemController : BaseApiController
     [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{itemId}")]
-    public async Task<IActionResult?> GetItemById(int itemId)
+    public async Task<IActionResult?> GetItemById([FromRoute] int itemId)
     {
         var item = await _itemService.GetItemByIdAsync(itemId);
+
         if (item is null)
             return NotFound(new ApiResponse(404));
 
-        var attribute = await GetAttributeForMenuSalesItem(item?.Attribute?.Id)??new();
+        var attribute = await GetAttributeForMenuSalesItem(item.Attribute?.Id)??new();
 
         var itemToReturn = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item??new());
         itemToReturn.Attributes = attribute;
