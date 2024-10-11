@@ -41,11 +41,10 @@ public class AttributeController : BaseApiController
         var specs = new AttributeWithIncludeSpecs(attributeId);
         var attribute = await _attributeService.GetAttributeByIdWithSpecAsync(specs);
 
+        if (attribute is null)
+            return NotFound(new ApiResponse(404,$"Attribute With Id {attributeId} Not Found"));
+
         var attributeToReturn = _mapper.Map<Attributes, AttributeToReturnDto>(attribute);
-
-        if (attributeToReturn is null)
-            return NotFound(new ApiResponse(404));
-
         return Ok(attributeToReturn);
     }
 
@@ -76,6 +75,9 @@ public class AttributeController : BaseApiController
 
         var  mappedNewAttribute= _mapper.Map<UpdatedAttributeDto, Attributes>(newAttribute);
         var attribute = await _attributeService.UpdateAttributeAsync(oldAttribute, mappedNewAttribute);
+        if(attribute is null)
+            return NotFound(new ApiResponse(404));
+
         var attributeToReturn = _mapper.Map<Attributes, AttributeToReturnDto>(attribute);
 
         return Ok(attributeToReturn);
@@ -103,6 +105,9 @@ public class AttributeController : BaseApiController
     public async Task<IActionResult> DeleteAttributeItem(int attributeItemId)
     {
         var attributeItem = await _attributeService.GetAttributeItemByIdAsync(attributeItemId);
+        if (attributeItem is null)
+            return NotFound(new ApiResponse(404, $"Attribute With Id {attributeItemId} Not Found"));
+
         var result = await _attributeService.DeleteAttributeItem(attributeItem);
 
         if (result is true)

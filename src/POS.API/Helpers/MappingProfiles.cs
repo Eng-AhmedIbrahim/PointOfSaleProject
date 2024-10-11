@@ -57,10 +57,8 @@ public class MappingProfiles:Profile
             .ForMember(s => s.NormalizedEnglishName, s =>
             s.MapFrom(s => s.EnglishName.ToUpper()));
 
-        CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
-            .ForMember<string>(s => s.ImageUrl,
-            s =>
-            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>());
+
+           
             
 
         CreateMap<UpdatedItemDto, MenuSalesItems>()
@@ -78,5 +76,31 @@ public class MappingProfiles:Profile
         CreateMap<UpdatedAttributeDto, Attributes>()
             .ForMember(dest => dest.AttributeItems, opt =>
                 opt.MapFrom(src => src.AttributeItems));
+
+        CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
+            .ForMember<string>(s => s.ImageUrl,
+            s =>
+            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>());
+
+        CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
+         .ForMember<string>(s => s.ImageUrl,
+            s =>
+            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
+           .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src =>
+               src.HasAttribute ? src.Attribute != null ? src.Attribute.AttributeItems.Select(ai => new MenuSalesItemAttributes
+               {
+                   AppearanceIndex = ai.AppearanceIndex,
+                   GroupItems = new List<MenuSalesItemsGroupDto>
+                   {
+                        new MenuSalesItemsGroupDto
+                        {
+                            ArabicName = ai.RelatedMenuItem.ArabicName,
+                            EnglishName = ai.RelatedMenuItem.EnglishName,
+                            Price = ai.RelatedMenuItem.Price
+                        }
+                   }
+               }).ToList() : null : null));
     }
+
+
 }

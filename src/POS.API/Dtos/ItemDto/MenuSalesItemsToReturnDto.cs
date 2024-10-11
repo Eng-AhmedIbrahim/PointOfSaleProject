@@ -14,4 +14,5 @@ public class MenuSalesItemsToReturnDto
     public int? TextSize { get; set; }
     public bool Invisible { get; set; } = false;
     public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
+    //public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
 }

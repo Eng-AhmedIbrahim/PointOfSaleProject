@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.API.Tests;
+
+namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {
@@ -52,26 +54,9 @@ public class ItemController : BaseApiController
         if (items is null)
             return NotFound(new ApiResponse(404));
 
-        var itemsToReturn = new List<MenuSalesItemsToReturnDto>();
+        var mappedItems = _mapper.Map<IReadOnlyList<MenuSalesItems>, IReadOnlyList<MenuSalesItemsToReturnDto>>(items);
 
-        foreach (var item in items)
-        {
-            var mappedItem = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
-
-            if (item.HasAttribute)
-            {
-                var attributeItems =  await GetAttributeForMenuSalesItem(item.AttributeId)??new();
-                mappedItem.Attributes = attributeItems;
-            }
-            else
-            {
-                mappedItem.Attributes = [];
-            }
-
-            itemsToReturn.Add(mappedItem);
-        }
-
-        return Ok(itemsToReturn);
+        return Ok(mappedItems);
     }
 
     [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
@@ -84,11 +69,9 @@ public class ItemController : BaseApiController
         if (item is null)
             return NotFound(new ApiResponse(404));
 
-        var attribute = await GetAttributeForMenuSalesItem(item.Attribute?.Id)??new();
+        var mappedItem = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
 
-        var itemToReturn = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item??new());
-        itemToReturn.Attributes = attribute;
-        return Ok(itemToReturn);
+        return Ok(mappedItem);
     }
 
     [ProducesResponseType(typeof(MenuSalesItemsToReturnDto), StatusCodes.Status200OK)]
@@ -153,64 +136,4 @@ public class ItemController : BaseApiController
         return Ok(itemToReturn);
     }
 
-    private async Task<List<MenuSalesItemAttributes>?> GetAttributeForMenuSalesItem(int? attributeId)
-    {
-        AttributeSpecs specs = new AttributeSpecs() { attId = attributeId };
-        AttributeWithIncludeSpecs includeSpecs = new AttributeWithIncludeSpecs(specs);
-        var attribute = await _attributeService.GetAttributeByIdWithSpecAsync(includeSpecs);
-
-        var attributeItems = attribute?.AttributeItems;
-
-        if (attributeItems == null)
-        {
-            return null;
-        }
-
-        var groupedAttributeItemsTasks = attributeItems
-            .GroupBy(ai => ai.AppearanceIndex)
-            .Select(async group =>
-            {
-                var groupItems = new List<MenuSalesItemsGroupDto>();
-
-                foreach (var ai in group)
-                {
-                    var menuItem = await GetItemAttributeById(ai.RelatedMenuItemId);
-                    groupItems.Add(new MenuSalesItemsGroupDto
-                    {
-                        ArabicName = menuItem?.ArabicName,
-                        EnglishName = menuItem?.EnglishName,
-                        Price = menuItem?.Price
-                    });
-                }
-
-                return new MenuSalesItemAttributes
-                {
-                    AppearanceIndex = group.Key,
-                    GroupItems = groupItems
-                };
-            });
-
-        var groupedAttributeItems = await Task.WhenAll(groupedAttributeItemsTasks);
-
-        return groupedAttributeItems.ToList();
-    }
-
-    private async Task<MenuSalesItemsGroupDto?> GetItemAttributeById(int id)
-    {
-        var itemAttribute = await _itemService.GetItemByIdAsync(id);
-
-        if (itemAttribute == null)
-        {
-            return null;
-        }
-
-        var menuSalesItemsGroupDto = new MenuSalesItemsGroupDto
-        {
-            ArabicName = itemAttribute.ArabicName,
-            EnglishName = itemAttribute.EnglishName,
-            Price = itemAttribute.Price
-        };
-
-        return menuSalesItemsGroupDto;
-    }
 }

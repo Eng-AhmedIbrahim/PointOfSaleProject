@@ -26,15 +26,12 @@ public class MenuSalesItems : BaseEntity
     public DateTime? UpdatedDate { get; set; }
 
     public int? BranchId { get; set; }
-    [NotMapped]
     public Branch? Branch { get; set; }
     
     public int? CategoryId { get; set; }
-    [NotMapped]
     public Category.Category? Category { get; set; }
 
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }
-    [JsonIgnore]
     public Attributes? Attribute { get; set; }  // An item can have an attribute
 }
