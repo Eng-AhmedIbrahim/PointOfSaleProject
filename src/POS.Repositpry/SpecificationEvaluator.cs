@@ -26,6 +26,11 @@ public static class SpecificationEvaluator<T> where T : BaseEntity
         query = specification.IncludeStrings.Aggregate(query, (currentQuery, includeQuery)
                 => currentQuery.Include(includeQuery));
 
+        foreach (var thenInclude in specification.ThenIncludes)
+        {
+            query = query.Include(thenInclude);
+        }
+
         return query;
     }
 }

@@ -22,6 +22,18 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 global using POS.Core.Services.Contract.CompanyService;
+global using POS.Services.ItemServices;
+global using POS.Core.Specifications.AttributeSpecs;
+global using POS.API.Dtos.AttributeDtos;
+
+
+
+
+
+
+global using POS.API.Dtos.ItemDto;
+global using POS.Core.Entities.Item;
+global using POS.Core.Services.Contract.ItemServices;
 
 
 

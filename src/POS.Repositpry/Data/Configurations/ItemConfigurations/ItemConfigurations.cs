@@ -50,7 +50,7 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
             .HasMaxLength(MaxLength) 
             .IsRequired(false);
 
-        builder.Property(e => e.ImageUrl)
+        builder.Property(e => e.ImagePath)
             .HasMaxLength(MaxLength) 
             .IsRequired(false);
 
@@ -89,5 +89,10 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
             .WithOne()
             .HasForeignKey<MenuSalesItems>(e => e.AttributeId)
             .OnDelete(DeleteBehavior.SetNull);
+
+             builder.Property(e => e.MainCategoryId)
+            .HasConversion(
+                v => v.ToString(),
+                v => (MainCategories)Enum.Parse(typeof(MainCategories), v));
     }
 }

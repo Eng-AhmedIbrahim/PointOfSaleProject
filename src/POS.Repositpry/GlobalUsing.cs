@@ -15,3 +15,6 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using POS.Core.Entities.Category;
 
 global using POS.Core.Entities.Item;
+
+
+global using System.Reflection;

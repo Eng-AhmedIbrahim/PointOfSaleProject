@@ -6,6 +6,7 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : BaseEntity
 
     public List<Expression<Func<T, object>>> Includes { get; protected set; } = [];
     public List<string> IncludeStrings { get; protected set; } = [];
+    public List<string> ThenIncludes { get; protected set; } = [];
 
     public Expression<Func<T, object>>? OrderBy { get; protected set; }
     public Expression<Func<T, object>>? OrderByDescending { get; protected set; }
@@ -32,5 +33,10 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : BaseEntity
         IsPaginationEnabled = true;
         Skip = skip;
         Take = take;
+    }
+
+    protected void AddThenInclude(string thenIncludeString)
+    {
+        ThenIncludes.Add(thenIncludeString);
     }
 }

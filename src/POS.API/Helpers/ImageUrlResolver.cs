@@ -1,6 +1,6 @@
 ﻿namespace POS.API.Helpers;
 
-public class ImageUrlResolver : IValueResolver<Branch, BranchToReturnDto, string>
+public class ImageUrlResolver<T,TEntity> : IValueResolver<T, TEntity, string>
 {
     private readonly IConfiguration _configuration;
 
@@ -9,8 +9,15 @@ public class ImageUrlResolver : IValueResolver<Branch, BranchToReturnDto, string
         _configuration = configuration;
     }
 
-    public string Resolve(Branch source, BranchToReturnDto destination, string destMember, ResolutionContext context)
+    public string Resolve(T source ,  TEntity destination, string destMember, ResolutionContext context)
     {
-        return $"{_configuration["ApiBaseUrl"]}/{source.Logo}";
+        var imagePath = source?.GetType().GetProperty("ImagePath")?.GetValue(source, null) as string;
+
+        if (imagePath != null)
+        {
+            return $"{_configuration["ApiBaseUrl"]}/{imagePath}";
+        }
+        else
+            return "";
     }
 }

@@ -12,8 +12,8 @@ using POS.Repository.Data;
 namespace POS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241009122245_CreateItemDb")]
-    partial class CreateItemDb
+    [Migration("20241010195932_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,7 +102,7 @@ namespace POS.Repository.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar");
 
-                    b.Property<string>("Logo")
+                    b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar");
@@ -234,10 +234,7 @@ namespace POS.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -304,15 +301,15 @@ namespace POS.Repository.Migrations
                     b.Property<bool>("HasAttribute")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("ImagePath")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("Invisible")
                         .HasColumnType("bit");
 
-                    b.Property<byte?>("MainCategoryId")
-                        .HasColumnType("tinyint");
+                    b.Property<string>("MainCategoryId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEnglishName")
                         .IsRequired()

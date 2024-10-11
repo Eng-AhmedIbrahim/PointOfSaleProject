@@ -9,6 +9,8 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(ICompanyService), typeof(CompanyService));
         services.AddScoped(typeof(IBranchService), typeof(BranchService));
         services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
+        services.AddScoped(typeof(IMenuSalesItemService), typeof(MenuSalesItemService));
+        services.AddScoped(typeof(IAttributeService), typeof(AttributeService));
 
         services.AddAutoMapper(typeof(MappingProfiles));
         services.AddHttpClient();

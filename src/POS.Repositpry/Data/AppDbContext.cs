@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace POS.Repository.Data;
+﻿namespace POS.Repository.Data;
 
 public class AppDbContext:DbContext
 {

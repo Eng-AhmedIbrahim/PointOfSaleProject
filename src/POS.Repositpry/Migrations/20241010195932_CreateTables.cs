@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace POS.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateItemDb : Migration
+    public partial class CreateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,14 +15,66 @@ namespace POS.Repository.Migrations
                 name: "Attributes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     EnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     ArabicName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Attributes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    NormalizedEnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    ArabicName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    MobileNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Branches",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    NormalizedName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ImagePath = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LogoWidth = table.Column<int>(type: "int", nullable: false, defaultValue: 200),
+                    LogoHeight = table.Column<int>(type: "int", nullable: false, defaultValue: 100),
+                    Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Phone1 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Phone2 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Suspend = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    CompanyId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Branches", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Branches_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -68,8 +120,8 @@ namespace POS.Repository.Migrations
                     FifthPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Tax = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    MainCategoryId = table.Column<byte>(type: "tinyint", nullable: true),
+                    ImagePath = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    MainCategoryId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BackColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     TextColor = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     TextSize = table.Column<int>(type: "int", nullable: true),
@@ -142,6 +194,11 @@ namespace POS.Repository.Migrations
                 column: "RelatedMenuItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Branches_CompanyId",
+                table: "Branches",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Categories_BranchId",
                 table: "Categories",
                 column: "BranchId");
@@ -178,6 +235,12 @@ namespace POS.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Branches");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
         }
     }
 }

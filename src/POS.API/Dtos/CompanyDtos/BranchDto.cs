@@ -5,6 +5,7 @@ public class BranchDto
     public BranchDto()
     {
         CreationDate = DateTime.Now;
+        CreationDate.ToString("yyyy-MM-dd hh:mm:ss.fff tt zzz");
     }
     public string? Name { get; set; }
     public string? Description { get; set; }

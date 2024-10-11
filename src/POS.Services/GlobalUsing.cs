@@ -14,3 +14,11 @@ global using POS.Core.Repository.Contract;
 
 global using POS.Core.Entities.Category;
 global using POS.Core.Services.Contract.CategoryServices;
+
+
+global using POS.Core.Entities.Item;
+global using POS.Core.Services.Contract.ItemServices;
+
+global using POS.Core.Specifications;
+
+global using POS.Core.Specifications.MenuSalesItemsSpecs;

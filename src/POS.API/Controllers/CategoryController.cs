@@ -11,7 +11,7 @@ public class CategoryController : BaseApiController
         _mapper = mapper;
     }
 
-    [ProducesResponseType(typeof(Category), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CategoryToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> CreateCategoryAsync([FromQuery]CategoryDto categoryDto)
@@ -25,13 +25,16 @@ public class CategoryController : BaseApiController
             return BadRequest(new ApiResponse(400));
 
         var category = await _categoryService.CreateCategoryAsync(mappedCategory);
+
         if (category is null)
             return BadRequest(new ApiResponse(400));
+ 
+        var categoryToReturn = _mapper.Map<Category, CategoryToReturnDto>(category);
 
-        return Ok(category);
+        return Ok(categoryToReturn);
     }
 
-    [ProducesResponseType(typeof(IReadOnlyList<Category>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<CategoryToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("GetAllCategories")]
     public async Task<IActionResult?> GetAllCategories()
@@ -39,21 +42,27 @@ public class CategoryController : BaseApiController
         var categories = await _categoryService.GetCategoriesAsync();
         if (categories is null)
             return NotFound(new ApiResponse(404));
-        return Ok(categories);
+
+        var categoriesToReturn = _mapper.Map<IReadOnlyList<Category>, IReadOnlyList<CategoryToReturnDto>>(categories);
+
+        return Ok(categoriesToReturn);
     }
 
-    [ProducesResponseType(typeof(IReadOnlyList<Category>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<CategoryToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{categoryId}")]
-    public async Task<IActionResult?> GetAllCategoryById(int categoryId)
+    public async Task<IActionResult?> GetCategoryById(int categoryId)
     {
         var category = await _categoryService.GetCategoryByIdAsync(categoryId);
         if (category is null)
             return NotFound(new ApiResponse(404));
-        return Ok(category);
+
+
+        var categoryToReturn = _mapper.Map<Category, CategoryToReturnDto>(category);
+        return Ok(categoryToReturn);
     }
 
-    [ProducesResponseType(typeof(IReadOnlyList<Category>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CategoryToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
     public async Task<IActionResult?> UpdateCategory(UpdatedCategoryDto newCategory)
@@ -66,7 +75,9 @@ public class CategoryController : BaseApiController
 
         var category = await _categoryService.UpdateCategory(oldCategory, mappedNewCategory);
 
-        return Ok(category);
+        var categoryToReturn = _mapper.Map<Category, CategoryToReturnDto>(category);
+
+        return Ok(categoryToReturn);
     }
 
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]

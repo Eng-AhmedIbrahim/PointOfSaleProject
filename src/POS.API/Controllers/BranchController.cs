@@ -1,6 +1,4 @@
-﻿using POS.Core.Entities.Company;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class BranchController : BaseApiController
 {
@@ -28,7 +26,7 @@ public class BranchController : BaseApiController
         }
 
         var mappedBranch = _mapper.Map<BranchDto, Branch>(branchDto);
-        mappedBranch.Logo = logoPath;
+        mappedBranch.ImagePath = logoPath;
 
         var branch = await _branchService.CrateBranchAsync(mappedBranch);
 
@@ -40,7 +38,7 @@ public class BranchController : BaseApiController
         return Ok(branchToReturn);
     }
 
-    [ProducesResponseType(typeof(IReadOnlyList<Branch>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<BranchToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("GetAllBranches")]
     public async Task<IActionResult> GetAllBranches()
@@ -79,7 +77,7 @@ public class BranchController : BaseApiController
      
         if(updatedLogo)
         {
-            DocumentSetting.DeleteFile(storedBranch?.Logo??string.Empty);
+            DocumentSetting.DeleteFile(storedBranch?.ImagePath??string.Empty);
             DocumentSetting.UploadFile(branch.Logo, "Imgs");
         }
 
@@ -98,7 +96,7 @@ public class BranchController : BaseApiController
     }
 
 
-    [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BranchToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpDelete]
     public async Task<IActionResult> DeleteCompany(int branchId)

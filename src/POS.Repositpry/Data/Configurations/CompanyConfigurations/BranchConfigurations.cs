@@ -19,7 +19,7 @@ public class BranchConfigurations : IEntityTypeConfiguration<Branch>
             .IsRequired();
 
 
-        builder.Property(c => c.Logo)
+        builder.Property(c => c.ImagePath)
         .HasColumnType("nvarchar")
         .HasMaxLength(MaxLength)
         .IsRequired();

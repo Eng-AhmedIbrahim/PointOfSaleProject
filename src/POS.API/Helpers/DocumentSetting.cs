@@ -16,9 +16,9 @@ public static class DocumentSetting
         using FileStream fileStream = new(filePath, FileMode.Create);
         file.CopyTo(fileStream);
 
-        //return $"Files/{folderName}/{fileName}";
+        return $"Files/{folderName}/{fileName}";
 
-        return Path.Combine("Files", folderName, fileName);
+        //return Path.Combine("Files", folderName, fileName);
     }
 
     public static bool DeleteFile(string filePath)

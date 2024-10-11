@@ -81,8 +81,8 @@ public class BranchService : IBranchService
                 oldBranch.Description = newBranch.Description;
             if (!string.IsNullOrEmpty(newBranch.Address))
                 oldBranch.Address = newBranch.Address;
-            if (!string.IsNullOrEmpty(newBranch.Logo))
-                oldBranch.Logo = newBranch.Logo;
+            if (!string.IsNullOrEmpty(newBranch.ImagePath))
+                oldBranch.ImagePath = newBranch.ImagePath;
 
             if (newBranch.LogoWidth != oldBranch.LogoWidth && newBranch.LogoWidth != 0)
                 oldBranch.LogoWidth = newBranch.LogoWidth;

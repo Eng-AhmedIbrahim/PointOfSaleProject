@@ -6,3 +6,5 @@ global using POS.Core.Entities.Category;
 global using Microsoft.AspNetCore.Identity;
 
 global using POS.Core.Entities.Item;
+
+global using POS.Core.Specifications.AttributeSpecs;

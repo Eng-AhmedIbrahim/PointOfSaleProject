@@ -8,5 +8,12 @@ public class CategoryDto
     public string? EnglishName { get; set; }
     public string? ItemsFont { get; set; }
     public bool Invisible { get; set; } = false;
-    public bool HasAttribute { get; set; } = false;
+
+    public DateTime CreationDate { get; set; }
+
+    public CategoryDto()
+    {
+        CreationDate = DateTime.Now;
+        CreationDate.ToString("yyyy-MM-dd hh:mm:ss.fff tt zzz");
+    }
 }
