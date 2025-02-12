@@ -1,25 +1,26 @@
 ﻿@page "/pos"
 @layout PosScreenLayout
-@* @inject HttpClient _httpClient *@
+@inject IHttpClientFactory _clientFactory
+
 <div class="grid-container">
     <div class="grid-item">
         <label >Categories</label>
-        @* <div class="categories"> *@
-        @*     @if (categories != null) *@
-        @*     { *@
-        @*         @foreach (var category in categories) *@
-        @*         { *@
-        @*             <div class="category-item"> *@
-        @*                 <span>@category.Name</span> *@
-        @*                 <button @onclick="() => SelectCategory(category)">Select</button> *@
-        @*             </div> *@
-        @*         } *@
-        @*     } *@
-        @*     else *@
-        @*     { *@
-        @*         <p>Loading categories...</p> *@
-        @*     } *@
-        @* </div> *@
+        <div class="categories">
+            @if (categories != null)
+            {
+                @foreach (var category in categories)
+                {
+                    <div class="category-item">
+                        <span>@category.ArabicName</span>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Loading categories...</p>
+            }
+        </div>
+
     </div>
     <div class="grid-item">
         <label>Sales Items</label>

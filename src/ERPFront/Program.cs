@@ -12,7 +12,15 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 builder.Services.AddBlazorBootstrap();
 
+builder.Services.AddHttpClient(ConstantStrings.ApiUrlName, client =>
+{
+     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseApiUrl")!);
+});
+//builder.Services.AddLogging();
+
+
 builder.Services.AddAuthenticationCore();
+//builder.Services.AddHttpClient
 
 var app = builder.Build();
 
