@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\BlazorBase\BlazorBase.csproj" />
     <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
   </ItemGroup>
 

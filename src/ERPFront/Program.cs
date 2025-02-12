@@ -1,10 +1,16 @@
 using ERPFront.Components;
+using MudBlazor.Services;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
+builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddAuthenticationCore();
 
@@ -20,6 +26,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStatusCodePagesWithRedirects("/404");
 
 app.UseStaticFiles();
 app.UseAntiforgery();
