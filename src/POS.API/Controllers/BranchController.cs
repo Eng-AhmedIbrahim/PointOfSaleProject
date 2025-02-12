@@ -56,7 +56,7 @@ public class BranchController : BaseApiController
     [ProducesResponseType(typeof(BranchToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{branchId}")]
-    public async Task<IActionResult> GetCompanyById(int branchId)
+    public async Task<IActionResult> GetBranchById(int branchId)
     {
         var branch = await _branchService.GetBranchByIdAsync(branchId);
 
@@ -71,7 +71,7 @@ public class BranchController : BaseApiController
     [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult> UpdateCompany([FromQuery] UpdatedBranchDto branch,bool updatedLogo)
+    public async Task<IActionResult> UpdateBranch([FromQuery] UpdatedBranchDto branch,bool updatedLogo)
     {
         var storedBranch = await _branchService.GetBranchByIdAsync(branch.BranchId) ?? new();
      

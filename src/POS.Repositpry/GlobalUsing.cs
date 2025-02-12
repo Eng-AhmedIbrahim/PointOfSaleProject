@@ -18,3 +18,8 @@ global using POS.Core.Entities.Item;
 
 
 global using System.Reflection;
+
+
+global using POS.Core.Entities.Discount;
+global using POS.Core.Entities.OrderEntity;
+global using POS.Core.Entities.Shift;

@@ -31,6 +31,15 @@ public class Program
         #endregion
 
         builder.Services.AddIdentityServices(builder.Configuration);
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("MyPolicy", options =>
+            {
+                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
+        });
+
         var app = builder.Build();
 
         #region Database Migrate
@@ -58,13 +67,13 @@ public class Program
 
         app.UseMiddleware<ExeptionMiddleWare>();
 
-        if (app.Environment.IsDevelopment())
+        //if (app.Environment.IsDevelopment())
             app.UseSwaggerServices();
 
         app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
         app.UseHttpsRedirection();
-
+        app.UseCors("MyPolicy");
         app.UseStaticFiles();
 
         app.UseAuthentication();

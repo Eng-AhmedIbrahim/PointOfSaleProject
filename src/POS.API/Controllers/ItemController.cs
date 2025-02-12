@@ -1,6 +1,4 @@
-﻿using POS.API.Tests;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {
@@ -56,7 +54,22 @@ public class ItemController : BaseApiController
 
         var mappedItems = _mapper.Map<IReadOnlyList<MenuSalesItems>, IReadOnlyList<MenuSalesItemsToReturnDto>>(items);
 
-        return Ok(mappedItems);
+        var aggregatedItems = mappedItems.Select(mappedItem =>
+        {
+            var aggregatedAttributes = mappedItem.Attributes
+                .GroupBy(attr => attr.AppearanceIndex)
+                .Select(group => new MenuSalesItemAttributes
+                {
+                    AppearanceIndex = group.Key,
+                    GroupItems = group.SelectMany(g => g.GroupItems).ToList()
+                })
+                .ToList();
+
+            mappedItem.Attributes = aggregatedAttributes;
+            return mappedItem;
+        }).ToList();
+
+        return Ok(aggregatedItems);
     }
 
     [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
@@ -69,7 +82,18 @@ public class ItemController : BaseApiController
         if (item is null)
             return NotFound(new ApiResponse(404));
 
+
         var mappedItem = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
+        var aggregatedAttributes = mappedItem.Attributes
+            .GroupBy(attr => attr.AppearanceIndex)
+            .Select(group => new MenuSalesItemAttributes
+            {
+                AppearanceIndex = group.Key,
+                GroupItems = group.SelectMany(g => g.GroupItems).ToList()
+            })
+            .ToList();
+
+        mappedItem.Attributes = aggregatedAttributes;
 
         return Ok(mappedItem);
     }
@@ -130,7 +154,7 @@ public class ItemController : BaseApiController
         var item = await _itemService.AddAttributeToItem(attributeId,ItemId);
 
         if (item is null)
-            return null;
+            return NotFound(new ApiResponse(404));
 
         var itemToReturn = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
         return Ok(itemToReturn);

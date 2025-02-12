@@ -180,8 +180,8 @@ public class MenuSalesItemService : IMenuSalesItemService
             var itemSpecs = new MenuSalesItemsWithIncludeSpec(itemId);
             var itemWithAttribute = await _unitOfWork.Repository<MenuSalesItems>().GetByIdWithSpecificationAsync(itemSpecs);
 
-            if(itemWithAttribute is null)
-                return null;
+            //if(itemWithAttribute is null)
+            //    return null;
 
             return itemWithAttribute;
 

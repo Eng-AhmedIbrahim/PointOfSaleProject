@@ -14,10 +14,10 @@ public class CategoryController : BaseApiController
     [ProducesResponseType(typeof(CategoryToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<IActionResult> CreateCategoryAsync([FromQuery]CategoryDto categoryDto)
+    public async Task<IActionResult> CreateCategoryAsync([FromBody]CategoryDto categoryDto)
     {
         if (categoryDto is null)
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiResponse(400,"Category ArabicName,EnglishName Is Required"));
 
         var mappedCategory = _mapper.Map<CategoryDto, Category>(categoryDto);
 
@@ -65,7 +65,7 @@ public class CategoryController : BaseApiController
     [ProducesResponseType(typeof(CategoryToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult?> UpdateCategory(UpdatedCategoryDto newCategory)
+    public async Task<IActionResult?> UpdateCategory([FromBody] UpdatedCategoryDto newCategory)
     {
         var oldCategory = await _categoryService.GetCategoryByIdAsync(newCategory.Id);
         if (oldCategory is null)
@@ -82,7 +82,7 @@ public class CategoryController : BaseApiController
 
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    [HttpDelete]
+    [HttpDelete("{categoryId}")]
     public async Task<IActionResult> DeleteCategory(int categoryId)
     {
         var category = await _categoryService.GetCategoryByIdAsync(categoryId);

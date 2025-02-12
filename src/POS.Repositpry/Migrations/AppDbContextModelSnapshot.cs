@@ -69,7 +69,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
@@ -144,7 +144,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Company", b =>
@@ -199,7 +199,7 @@ namespace POS.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
@@ -225,7 +225,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("RelatedMenuItemId");
 
-                    b.ToTable("AttributeItems");
+                    b.ToTable("AttributeItems", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
@@ -245,7 +245,7 @@ namespace POS.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attributes");
+                    b.ToTable("Attributes", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
@@ -345,7 +345,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("MenuSalesItems");
+                    b.ToTable("MenuSalesItems", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Category.Category", b =>

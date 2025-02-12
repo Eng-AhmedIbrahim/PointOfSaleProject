@@ -42,7 +42,9 @@ public class MappingProfiles:Profile
             .ForMember(c => c.NormalizedEnglishName, c =>
             c.MapFrom(c => c.EnglishName.ToUpper()));
 
-        CreateMap<UpdatedCategoryDto, Category>();
+        CreateMap<UpdatedCategoryDto, Category>()
+            .ForMember(c => c.NormalizedEnglishName, c => c.MapFrom(c => c.EnglishName.ToUpper()));
+            
 
         CreateMap<AttributeDto, Attributes>()
             .ForMember(a => a.Id, a => a.Ignore());
@@ -55,7 +57,9 @@ public class MappingProfiles:Profile
         CreateMap<MenuSalesItemsDto, MenuSalesItems>()
             .ForMember(s => s.ImagePath, s => s.Ignore())
             .ForMember(s => s.NormalizedEnglishName, s =>
-            s.MapFrom(s => s.EnglishName.ToUpper()));
+            s.MapFrom(s => s.EnglishName.ToUpper()))
+            .ForMember(i => i.AttributeId, i =>
+            i.MapFrom(i => i.AttributeId));
 
 
            
@@ -80,7 +84,9 @@ public class MappingProfiles:Profile
         CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
             .ForMember<string>(s => s.ImageUrl,
             s =>
-            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>());
+            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
+            .ForMember(c => c.CategoryId, c =>
+            c.MapFrom(c => c.CategoryId));
 
         CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
          .ForMember<string>(s => s.ImageUrl,
@@ -101,6 +107,4 @@ public class MappingProfiles:Profile
                    }
                }).ToList() : null : null));
     }
-
-
 }

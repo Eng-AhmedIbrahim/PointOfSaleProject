@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-
-namespace POS.Core.Entities.Item;
+﻿namespace POS.Core.Entities.Item;
 
 public class MenuSalesItems : BaseEntity
 {
@@ -20,7 +17,7 @@ public class MenuSalesItems : BaseEntity
     public MainCategories? MainCategoryId { get; set; }
     public string? BackColor { get; set; }
     public string? TextColor { get; set; }
-    public int? TextSize { get; set; } // px or pt
+    public int? TextSize { get; set; }
     public bool Invisible { get; set; } = false;
     public DateTime CreationDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
@@ -33,5 +30,7 @@ public class MenuSalesItems : BaseEntity
 
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }
-    public Attributes? Attribute { get; set; }  // An item can have an attribute
+    public Attributes? Attribute { get; set; }
+
+    public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
 }

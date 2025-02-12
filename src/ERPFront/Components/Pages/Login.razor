@@ -1,0 +1,41 @@
+﻿@page "/"
+@page "/login"
+
+<div class="container">
+    <div class="left-panel">
+        <div>
+            <h1>New Tech</h1>
+            <p>ERP Management System</p>
+            <img src="/images/logo.png" />
+        </div>
+    </div>
+    <div class="right-panel">
+        <div class="login-form">
+            <label class="login-label">Login</label>
+            <select class="form-control">
+                <option>Administrator</option>
+            </select>
+            <input type="password" class="form-control mt-2" placeholder="Enter PIN" @bind-value="_pin" />
+            <div class="keypad">
+                @for (byte keypadNumber = 1; keypadNumber <= 9; keypadNumber++)
+                {
+                    var number = keypadNumber;
+                    <button @onclick="()=>AddDigit(number.ToString())">
+                        @(number.ToString())
+                    </button>
+                }
+                <button @onclick="DeleteLastDigit">BS</button>
+                <button @onclick='() => AddDigit("0")'>0</button>
+                <button @onclick="ClearInput">DEL</button>
+            </div>
+        </div>
+        <div class="login-btn">
+            <button class="btn btn-primary custom-btn">
+                Login
+            </button>
+            <button class="btn btn-danger custom-btn">
+                Exit
+            </button>
+        </div>
+    </div>
+</div>

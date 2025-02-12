@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Repository", "POS.Repos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Services", "POS.Services\POS.Services.csproj", "{76363131-2EDF-425C-AF7D-95510DBF0854}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPFront", "ERPFront\ERPFront.csproj", "{B69914AC-0546-4B0A-BABC-C3BAF33816A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract.Common", "Contract.Common\Contract.Common.csproj", "{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B69914AC-0546-4B0A-BABC-C3BAF33816A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B69914AC-0546-4B0A-BABC-C3BAF33816A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B69914AC-0546-4B0A-BABC-C3BAF33816A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B69914AC-0546-4B0A-BABC-C3BAF33816A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
