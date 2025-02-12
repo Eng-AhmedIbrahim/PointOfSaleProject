@@ -2,6 +2,8 @@
 
 public partial class POS
  {
-    private ICollection<CategoryToReturnDto> categories = new List<CategoryToReturnDto>(); 
+    private ICollection<CategoryToReturnDto> categories = new List<CategoryToReturnDto>();
+
+
 
 }
