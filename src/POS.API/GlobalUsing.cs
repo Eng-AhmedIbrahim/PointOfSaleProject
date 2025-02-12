@@ -52,5 +52,4 @@ global using POS.Core.Services.Contract.CategoryServices;
 
 global using POS.Services.CategoryService;
 
-global using Microsoft.AspNetCore.Http;
  

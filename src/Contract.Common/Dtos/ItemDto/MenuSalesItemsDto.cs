@@ -16,8 +16,8 @@ public class MenuSalesItemsDto
     public decimal? Tax { get; set; }
     public string? Description { get; set; }
     public IFormFile? Image { get; set; }
-    [Required]
-    public MainCategories? MainCategoryId { get; set; }
+    //[Required]
+    //public MainCategories? MainCategoryId { get; set; }
     public string? BackColor { get; set; }
     public string? TextColor { get; set; }
     public int? TextSize { get; set; } // px or pt

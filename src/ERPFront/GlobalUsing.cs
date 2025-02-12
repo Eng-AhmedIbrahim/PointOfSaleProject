@@ -1,2 +1,2 @@
-﻿global using Contract.Common.Dtos.CategoryDtos;
+﻿global using POS.Contract.Dtos.CategoryDtos;
  
