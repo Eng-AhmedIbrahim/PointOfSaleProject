@@ -1,4 +1,4 @@
-﻿namespace Contract.Common.Dtos.AttributeDtos;
+﻿namespace POS.Contract.Dtos.AttributeDtos;
 
 public class AttributeToReturnDto
 {

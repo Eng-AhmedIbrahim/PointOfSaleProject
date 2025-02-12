@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contract.Common\Contract.Common.csproj" />
+    <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
     <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
     <ProjectReference Include="..\POS.Repositpry\POS.Repository.csproj" />
     <ProjectReference Include="..\POS.Services\POS.Services.csproj" />

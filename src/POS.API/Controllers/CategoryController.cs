@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Contract.Dtos.CategoryDtos;
+
+namespace POS.API.Controllers;
 
 public class CategoryController : BaseApiController
 {

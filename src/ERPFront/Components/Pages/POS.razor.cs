@@ -1,4 +1,6 @@
-﻿namespace ERPFront.Components.Pages;
+﻿using POS.Contract.Dtos.CategoryDtos;
+
+namespace ERPFront.Components.Pages;
 
 public partial class POS
  {

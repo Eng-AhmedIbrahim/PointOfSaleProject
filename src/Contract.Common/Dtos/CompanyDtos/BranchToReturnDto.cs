@@ -1,4 +1,4 @@
-﻿namespace Contract.Common.Dtos.CompanyDtos;
+﻿namespace POS.Contract.Dtos.CompanyDtos;
 
 public class BranchToReturnDto
 {

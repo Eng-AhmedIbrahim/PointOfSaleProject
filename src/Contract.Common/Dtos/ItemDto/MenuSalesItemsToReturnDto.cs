@@ -1,4 +1,4 @@
-﻿namespace Contract.Common.Dtos.ItemDto;
+﻿namespace POS.Contract.Dtos.ItemDto;
 
 public class MenuSalesItemsToReturnDto
 {

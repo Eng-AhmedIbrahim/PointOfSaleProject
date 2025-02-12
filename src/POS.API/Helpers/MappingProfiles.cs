@@ -1,4 +1,9 @@
-﻿namespace POS.API.Helpers;
+﻿using POS.Contract.Dtos.AttributeDtos;
+using POS.Contract.Dtos.CategoryDtos;
+using POS.Contract.Dtos.CompanyDtos;
+using POS.Contract.Dtos.ItemDto;
+
+namespace POS.API.Helpers;
 
 public class MappingProfiles:Profile
 {

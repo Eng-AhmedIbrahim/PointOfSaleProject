@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Contract.Dtos.AttributeDtos;
+
+namespace POS.API.Controllers;
 
 public class AttributeController : BaseApiController
 {

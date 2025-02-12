@@ -1,4 +1,4 @@
-﻿namespace Contract.Common.Dtos.CategoryDtos;
+﻿namespace POS.Contract.Dtos.CategoryDtos;
 
 public class CategoryToReturnDto
 {

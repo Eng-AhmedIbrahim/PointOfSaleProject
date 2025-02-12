@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Contract.Dtos.CompanyDtos;
+
+namespace POS.API.Controllers;
 
 public class CompanyController : BaseApiController
 {

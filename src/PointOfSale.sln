@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Services", "POS.Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPFront", "ERPFront\ERPFront.csproj", "{B69914AC-0546-4B0A-BABC-C3BAF33816A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract.Common", "Contract.Common\Contract.Common.csproj", "{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Contract", "Contract.Common\POS.Contract.csproj", "{1FD48BCF-1A3F-4638-AADD-1F82BDE29A08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

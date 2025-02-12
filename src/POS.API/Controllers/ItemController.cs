@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Contract.Dtos.ItemDto;
+
+namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {
