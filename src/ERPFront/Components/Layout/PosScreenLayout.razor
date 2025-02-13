@@ -1,5 +1,5 @@
 @using MudBlazor
-
+@inject NavigationManager _navigationManager
 @inherits LayoutComponentBase
 
 @* Required *@
@@ -85,7 +85,8 @@
                 <MudButton Variant="Variant.Text"
                            Size="Size.Large"
                            StartIcon="@Icons.Material.Filled.Settings"
-                           Color="Color.Primary">
+                           Color="Color.Primary"
+                           OnClick=@(() =>_navigationManager.NavigateTo("/slider"))>
                     اعدادات
                 </MudButton>
             </MudStack>

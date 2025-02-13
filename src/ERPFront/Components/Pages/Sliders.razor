@@ -1,0 +1,124 @@
+﻿@page "/slider"
+@using BlazorBase
+@using MudBlazor
+@using System.Globalization
+@inject CommonProsperites _slider
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager _navigationManager
+
+@layout PosScreenLayout
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="padding:0;">
+    <MudGrid Spacing="0" Justify="Justify.Center">
+        <!-- Section 1 -->
+        <MudItem xs="2" Class="full-height">
+            <MudText Typo="Typo.h6" Class="section-label">Categories</MudText>
+            <MudPaper Elevation="1" Height="93%" Class="overflow-y-auto overflow-x-hidden hidden">
+                <!-- Add content for Section 1 here -->
+                <MudStack Spacing="0" Class="z-0 ma-n2">
+                    @foreach (var category in _categories??new List<CategoryToReturnDto>())
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Class="mt-1"
+                                   Style="@($"padding: {_slider.Padding}px; font-size: {_slider.FontSize}px;font-weight:800")">
+                            @category.ArabicName
+                        </MudButton>
+
+                    }
+                    <div class="slider-style not-hidden">
+                        <MudSlider @bind-Value="_slider.Spacing"
+                                   Vertical="true"
+                                   Min="4"
+                                   Max="10"
+                                   Step="0.1">
+
+                            Spacing: @_slider.Spacing.ToString(CultureInfo.InvariantCulture)
+                        </MudSlider>
+                    </div>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Section 2 -->
+        <MudItem xs="4">
+            <MudPaper Elevation="1" Height="100%">
+                <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
+                <!-- Add content for Section 2 here -->
+            </MudPaper>
+        </MudItem>
+
+        <!-- Section 3 -->
+        <MudItem xs="2">
+            <MudPaper Elevation="1" Height="100%">
+                <MudText Typo="Typo.h6" Class="section-label">Section 3</MudText>
+                <!-- Add content for Section 3 here -->
+
+            </MudPaper>
+        </MudItem>
+
+        <!-- Section 4 -->
+        <MudItem xs="4">
+              
+            <MudPaper Elevation="1" Height="100%" >
+                <MudText Typo="Typo.h6" Class="section-label">Apply Changes</MudText>
+                <!-- Add content for Section 4 here -->
+                
+                <div class=" d-flex align-items-center h-100">
+
+                    <div class="save-changes-btn">
+                        <button class="btn btn-primary custom-btn" @onclick="SaveChanges">
+                            Save
+                        </button>
+                        <button class="btn btn-danger custom-btn" @onclick='()=>_navigationManager.NavigateTo("/pos")'>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<style>
+
+    .full-height {
+        height: calc(100vh - 96px) !important;
+    }
+
+
+    .section-label {
+        background-color: #022e66 !important;
+        color: var(--mud-palette-primary-text);
+        padding: 8px;
+        text-align: center;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--mud-palette-primary-light);
+    }
+    .hidden {
+        pointer-events: none;
+        opacity: 0.6;
+        filter: grayscale(50%)
+    }
+
+    .not-hidden {
+        pointer-events: all;
+        opacity: 1;
+        position: relative;
+        top: 107px;
+        left: 51%;
+    }
+
+    .save-changes-btn {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        width:100%
+    }
+    .save-changes-img
+    {
+        width:50px;
+        height:150px;
+        align-items:center;
+    }
+</style>

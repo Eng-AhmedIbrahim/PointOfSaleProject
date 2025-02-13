@@ -1,3 +1,5 @@
+using BlazorBase;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMudServices();
@@ -8,6 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.AddSerilogService();
+builder.Services.AddSingleton<CommonProsperites>();
 
 
 

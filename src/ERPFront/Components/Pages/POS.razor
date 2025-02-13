@@ -1,43 +1,38 @@
 @page "/pos"
 @page "/"
+@using BlazorBase
 @using MudBlazor
 @using System.Globalization
+@inject IHttpClientFactory _clientFactory
+@inject CommonProsperites _slider
+
 
 @layout PosScreenLayout
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="padding:0">
-    <MudGrid Spacing="0" Justify="Justify.Center">
+    <MudGrid  Spacing="0" Justify="Justify.Center">
         <!-- Section 1 -->
         <MudItem xs="2" Class="full-height">
-            <MudText Typo="Typo.h6" Class="section-label">Section 1</MudText>
+            <MudText Typo="Typo.h6" Class="section-label">Categories</MudText>
             <MudPaper Elevation="1" Height="93%" Class="overflow-y-auto overflow-x-hidden">
                 <!-- Add content for Section 1 here -->
                 <MudStack Spacing="0" Class="z-0 ma-n2">
-                    @for (var i = 0; i < 30; i++)
+                    @foreach(var category in _categories??new List<CategoryToReturnDto>())
                     {
-                        var i1 = i;
                         <MudButton Variant="Variant.Filled"
                                    Class="mt-1"
-                                   Style="@($"padding: {_spacing * 4}px; font-size: {_spacing * 4}px;")">
-                            Item @i1.ToString()
+                                   Style="@($"padding: {_slider.Padding}px; font-size: {_slider.FontSize}px;font-weight:800")">
+                             @category.ArabicName
                         </MudButton>
                     }
                 </MudStack>
-                @* <MudSlider Class="z-10 my-n2" *@
-                @*            @bind-Value="_spacing" *@
-                @*            Style="width: 450px; height: 16px;" *@
-                @*            Vertical="true" *@
-                @*            Min="4" *@
-                @*            Max="10"> *@
-                @*     Spacing: @_spacing.ToString(CultureInfo.InvariantCulture) *@
-                @* </MudSlider> *@
             </MudPaper>
         </MudItem>
 
         <!-- Section 2 -->
         <MudItem xs="4">
             <MudPaper Elevation="1" Height="100%">
-                <MudText Typo="Typo.h6" Class="section-label">Section 2</MudText>
+                <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
                 <!-- Add content for Section 2 here -->
             </MudPaper>
         </MudItem>
@@ -47,12 +42,7 @@
             <MudPaper Elevation="1" Height="100%">
                 <MudText Typo="Typo.h6" Class="section-label">Section 3</MudText>
                 <!-- Add content for Section 3 here -->
-                <MudSlider @bind-Value="_spacing"
-                           Vertical="true"
-                           Min="4"
-                           Max="10">
-                    Spacing: @_spacing.ToString(CultureInfo.InvariantCulture)
-                </MudSlider>
+               
             </MudPaper>
         </MudItem>
 
@@ -68,11 +58,6 @@
     </MudGrid>
 </MudContainer>
 
-@code {
-    private double _spacing = 4.0;
-}
-
-
 <style>
 
     .full-height {
@@ -87,5 +72,13 @@
         text-align: center;
         font-size: 1rem;
         border-bottom: 1px solid var(--mud-palette-primary-light);
+    }
+
+
+    .slider-style
+    {
+        position:relative;
+        left: 0;
+
     }
 </style>
