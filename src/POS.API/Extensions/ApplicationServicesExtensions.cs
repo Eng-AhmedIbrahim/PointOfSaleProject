@@ -1,4 +1,6 @@
-﻿namespace POS.API.Extensions;
+﻿using POS.Services.AuthModuleService;
+
+namespace POS.API.Extensions;
 
 public static class ApplicationServicesExtensions
 {
@@ -11,6 +13,8 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(ICategoryService), typeof(CategoryService));
         services.AddScoped(typeof(IMenuSalesItemService), typeof(MenuSalesItemService));
         services.AddScoped(typeof(IAttributeService), typeof(AttributeService));
+        services.AddScoped(typeof(IUserSetting), typeof(UserSetting));
+        services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
         services.AddAutoMapper(typeof(MappingProfiles));
         services.AddHttpClient();

@@ -1,4 +1,5 @@
-﻿using POS.Core.Entities.OrderEntity;
+﻿using POS.Core.Entities.Categorie;
+using POS.Core.Entities.OrderEntity;
 
 namespace POS.Repository.Data;
 

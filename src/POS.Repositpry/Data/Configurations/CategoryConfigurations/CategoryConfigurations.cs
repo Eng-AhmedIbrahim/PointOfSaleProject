@@ -1,4 +1,6 @@
 ﻿
+using POS.Core.Entities.Categorie;
+
 namespace POS.Repository.Data.Configurations.CategoryConfigurations;
 
 public class CategoryConfigurations : IEntityTypeConfiguration<Category>

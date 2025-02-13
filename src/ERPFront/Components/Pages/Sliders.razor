@@ -2,7 +2,7 @@
 @using BlazorBase
 @using MudBlazor
 @using System.Globalization
-@inject CommonProsperites _slider
+@inject CommonProsperities _slider
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navigationManager
 
@@ -20,19 +20,19 @@
                     {
                         <MudButton Variant="Variant.Filled"
                                    Class="mt-1"
-                                   Style="@($"padding: {_slider.Padding}px; font-size: {_slider.FontSize}px;font-weight:800")">
+                                   Style="@($"padding: {_slider.CategoryPadding}px; font-size: {_slider.CategoryFontSize}px;font-weight:800")">
                             @category.ArabicName
                         </MudButton>
 
                     }
                     <div class="slider-style not-hidden">
-                        <MudSlider @bind-Value="_slider.Spacing"
+                        <MudSlider @bind-Value="_slider.CategorySpacing"
                                    Vertical="true"
                                    Min="4"
                                    Max="10"
                                    Step="0.1">
 
-                            Spacing: @_slider.Spacing.ToString(CultureInfo.InvariantCulture)
+                            Spacing: @_slider.CategorySpacing.ToString(CultureInfo.InvariantCulture)
                         </MudSlider>
                     </div>
                 </MudStack>

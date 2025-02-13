@@ -1,11 +1,9 @@
 @page "/pos"
 @page "/"
 @using BlazorBase
-@using MudBlazor
 @using System.Globalization
 @inject IHttpClientFactory _clientFactory
-@inject CommonProsperites _slider
-
+@using MudBlazor
 
 @layout PosScreenLayout
 
@@ -19,15 +17,18 @@
                 <MudStack Spacing="0" Class="z-0 ma-n2">
                     @foreach(var category in _categories??new List<CategoryToReturnDto>())
                     {
+                        @* todo get user settings from data base*@
                         <MudButton Variant="Variant.Filled"
                                    Class="mt-1"
-                                   Style="@($"padding: {_slider.Padding}px; font-size: {_slider.FontSize}px;font-weight:800")">
+                                   Style="@($"padding: 20px; font-size: 20px;font-weight:800")">
                              @category.ArabicName
                         </MudButton>
                     }
                 </MudStack>
             </MudPaper>
         </MudItem>
+        @* Style="@($"padding: {_slider.Padding}px; font-size: {_slider.FontSize}px;font-weight:800")"> *@
+
 
         <!-- Section 2 -->
         <MudItem xs="4">

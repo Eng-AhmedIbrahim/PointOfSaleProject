@@ -1,4 +1,6 @@
-﻿namespace POS.Repository.Data.Configurations.ItemConfigurations;
+﻿using POS.Core.Entities.Categorie;
+
+namespace POS.Repository.Data.Configurations.ItemConfigurations;
 
 public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
 {

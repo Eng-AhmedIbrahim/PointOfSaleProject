@@ -1,4 +1,6 @@
-﻿namespace POS.Services.CategoryService;
+﻿using POS.Core.Entities.Categorie;
+
+namespace POS.Services.CategoryService;
 
 public class CategoryService : ICategoryService
 {

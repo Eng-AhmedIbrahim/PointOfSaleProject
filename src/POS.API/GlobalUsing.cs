@@ -46,10 +46,14 @@ global using POS.Core.Entities.Company;
 global using System.ComponentModel.DataAnnotations;
 
 global using POS.Contract.Dtos.CompanyDtos;
-global using POS.Core.Entities.Category;
 
 global using POS.Core.Services.Contract.CategoryServices;
 
 global using POS.Services.CategoryService;
 
- 
+global using POS.Core.Entities.UserSettings;
+global using POS.Contract.Dtos.AccountDtos;
+global using POS.Core.Services.Contract.AccountDomainContracts;
+global using System.Security.Claims;
+global using POS.Core.Services.Contract.UserSettingServices;
+global using POS.Services.UserSettingsService;

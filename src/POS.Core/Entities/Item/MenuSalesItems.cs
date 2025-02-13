@@ -1,4 +1,6 @@
-﻿namespace POS.Core.Entities.Item;
+﻿using POS.Core.Entities.Categorie;
+
+namespace POS.Core.Entities.Item;
 
 public class MenuSalesItems : BaseEntity
 {
@@ -26,7 +28,7 @@ public class MenuSalesItems : BaseEntity
     public Branch? Branch { get; set; }
     
     public int? CategoryId { get; set; }
-    public Category.Category? Category { get; set; }
+    public Category? Category { get; set; }
 
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }

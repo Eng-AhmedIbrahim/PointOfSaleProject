@@ -58,4 +58,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     IQueryable<T> ApplySpecification(ISpecifications<T> spec)
         => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsNoTracking(), spec);
+
+    public async Task<T?> GetUserSettingByIdAsync(string id)
+    =>await _dbContext.Set<T>(id).FirstOrDefaultAsync();
 }

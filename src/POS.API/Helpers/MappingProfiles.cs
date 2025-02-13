@@ -2,6 +2,7 @@
 using POS.Contract.Dtos.CategoryDtos;
 using POS.Contract.Dtos.CompanyDtos;
 using POS.Contract.Dtos.ItemDto;
+using POS.Core.Entities.Categorie;
 
 namespace POS.API.Helpers;
 
@@ -111,5 +112,8 @@ public class MappingProfiles:Profile
                         }
                    }
                }).ToList() : null : null));
+
+        CreateMap<AppUser,UserDto>()
+            .ForMember(dest=>dest.UserId,src=>src.MapFrom(s=>s.Id));  
     }
 }

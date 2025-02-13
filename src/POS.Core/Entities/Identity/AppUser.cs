@@ -2,5 +2,7 @@
 
 public class AppUser : IdentityUser
 {
-
+    public DateTime RegistrationDate { get; set; }
+    public bool UpdatedUserPosSetting { get; set; } = false;
+    public string DefaultLanguage { get; set; } = "en";
 }

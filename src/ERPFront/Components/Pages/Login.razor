@@ -1,6 +1,8 @@
 ﻿@* @page "/" *@
 @page "/login"
 @using MudBlazor
+@inject IHttpClientFactory _clientFactory
+
 
 <div class="container">
     <div class="left-panel">
@@ -14,7 +16,10 @@
         <div class="login-form">
             <label class="login-label">Login</label>
             <select class="form-control">
-                <option>Administrator</option>
+                @foreach(var user in Users)
+                {
+                    <option>@user.UserName</option>
+                }
             </select>
             <input type="password" class="form-control mt-2" placeholder="Enter PIN" @bind-value="_pin" />
 

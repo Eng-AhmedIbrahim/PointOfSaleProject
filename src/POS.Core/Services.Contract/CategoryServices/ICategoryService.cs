@@ -1,4 +1,6 @@
-﻿namespace POS.Core.Services.Contract.CategoryServices;
+﻿using POS.Core.Entities.Categorie;
+
+namespace POS.Core.Services.Contract.CategoryServices;
 
 public interface ICategoryService
 {

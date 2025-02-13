@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Core.Entities.Categorie;
+
+namespace POS.API.Controllers;
 
 public class CategoryController : BaseApiController
 {

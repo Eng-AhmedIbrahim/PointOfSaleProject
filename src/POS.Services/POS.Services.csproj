@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
+    <ProjectReference Include="..\POS.Repositpry\POS.Repository.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,8 @@
-﻿namespace POS.Repository.Identity;
+﻿using POS.Core.Entities.Identity;
 
-public class AppIdentityDbContext:IdentityDbContext
+namespace POS.Repository.Identity;
+
+public class AppIdentityDbContext:IdentityDbContext<AppUser>
 {
     public AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options) :base(options)
     {

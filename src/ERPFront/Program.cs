@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.AddSerilogService();
-builder.Services.AddSingleton<CommonProsperites>();
+builder.Services.AddSingleton<CommonProsperities>();
 
 
 

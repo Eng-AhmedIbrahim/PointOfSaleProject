@@ -48,12 +48,14 @@ public class Program
         var services = scope.ServiceProvider;
 
         var _dbContext = services.GetRequiredService<AppDbContext>();
+        var _IdentitydbContext = services.GetRequiredService<AppIdentityDbContext>();
 
         var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
         try
         {
             await _dbContext.Database.MigrateAsync();
+            await _IdentitydbContext.Database.MigrateAsync();
             //await PosDbContextDataSeed.SeedAsync(_dbContext);
         }
         catch (Exception ex)
@@ -67,7 +69,6 @@ public class Program
 
         app.UseMiddleware<ExeptionMiddleWare>();
 
-        //if (app.Environment.IsDevelopment())
             app.UseSwaggerServices();
 
         app.UseStatusCodePagesWithReExecute("/errors/{0}");

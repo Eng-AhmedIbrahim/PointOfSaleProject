@@ -5,6 +5,7 @@ public interface IGenericRepository<T> where T : BaseEntity
     Task<IReadOnlyList<T>> GetAllAsync();
     Task<IReadOnlyList<T>> GetAllWithSpecificationAsync(ISpecifications<T>spec);    
     Task<T?> GetByIdAsync(int id);
+    Task<T?> GetUserSettingByIdAsync(string id);
     Task<T?> GetByIdWithSpecificationAsync(ISpecifications<T> specs);
     Task AddAsync(T entity);
     Task AddRangeAsync(IEnumerable<T> entities);
