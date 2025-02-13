@@ -1,11 +1,9 @@
-using ERPFront.Components;
-using MudBlazor.Services;
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+builder.AddSerilogService();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -16,7 +14,6 @@ builder.Services.AddHttpClient(ConstantStrings.ApiUrlName, client =>
 {
      client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseApiUrl")!);
 });
-//builder.Services.AddLogging();
 
 
 builder.Services.AddAuthenticationCore();

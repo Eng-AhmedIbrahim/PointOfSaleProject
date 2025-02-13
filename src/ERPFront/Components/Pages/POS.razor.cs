@@ -3,7 +3,6 @@
 public partial class POS
 {
     private ICollection<CategoryToReturnDto> categories = new List<CategoryToReturnDto>();
-
     protected async override Task OnInitializedAsync()
     {
         try
@@ -19,9 +18,7 @@ public partial class POS
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
-            //_logger.LogError(ex, ex.Message);
+            Log.Error(ex.Message);
         }
     }
-
 }
