@@ -50,30 +50,22 @@ public class AccountController : BaseApiController
     [HttpPost("Login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto model)
     {
-        if (ModelState.IsValid)
-        {
-            var user = await _userManager.FindByNameAsync(model.UserName);
+        if (!ModelState.IsValid)
+            return Unauthorized(new ApiResponse(401));
 
-            if (user is null)
-                return Unauthorized(new ApiResponse(401));
+        var user = await _userManager.FindByNameAsync(model.UserName);
 
-            if (!user.EmailConfirmed)
-                return Unauthorized(new ApiResponse(401, "Email Needs to be confirmed"));
+        if (user is null)
+            return Unauthorized(new ApiResponse(401));
 
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password,false,false);
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
-            if (!result.Succeeded)
-                return Unauthorized(new ApiResponse(401));
+        if (!result.Succeeded)
+            return Unauthorized(new ApiResponse(401));
 
-            return Ok(new UserDto
-            {
-                UserName = user.UserName ?? string.Empty,
-                //Token = await _authService.CreateTokenAsync(user, _userManager),
-            });
-        }
-
-        return Unauthorized(new ApiResponse(401));
+        var userDto = _mapper.Map<UserDto>(user);  
+        return Ok(userDto);
     }
 
     //[Authorize]
@@ -94,8 +86,8 @@ public class AccountController : BaseApiController
     [HttpGet("GetUsers")]
     public async Task<ActionResult<List<UserDto>>> GetUsers()
     {
-       var users = await _userManager.Users.ToListAsync();
-        var mappedUsers=  _mapper.Map<List<UserDto>>(users);
+        var users = await _userManager.Users.ToListAsync();
+        var mappedUsers = _mapper.Map<List<UserDto>>(users);
         return Ok(mappedUsers);
     }
 

@@ -6,3 +6,5 @@ global using ERPFront.Extensions;
 global using MudBlazor.Services;
 global using Serilog;
 global using POS.Contract.Dtos.AccountDtos;
+global using Microsoft.AspNetCore.Components;
+global using MudBlazor;

@@ -3,8 +3,9 @@
 public partial class Login
 {
     private string _pin = string.Empty;
+    private string _userName = string.Empty;
     private ICollection<UserDto> Users = new List<UserDto>();
-
+    private HttpClient? client;
     private void AddDigit(string digit)
         => _pin += digit;
 
@@ -19,16 +20,33 @@ public partial class Login
 
     protected async override Task OnInitializedAsync()
     {
-        var client = _clientFactory.CreateClient(ConstantStrings.ApiUrlName);
-        var response = await client.GetAsync(ConstantStrings.GetAllUsersUrl);
-        if(response.IsSuccessStatusCode)
+        client = _clientFactory.CreateClient(ConstantStrings.ApiUrlName);
+        var response = await client.GetAsync(ConstantStrings.GetAllUsersUrl) ?? new();
+        if (response.IsSuccessStatusCode)
         {
             var usersString = await response.Content.ReadAsStringAsync();
             var users = JsonSerializer.Deserialize<List<UserDto>>(usersString,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true})??new();
-            
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+
             Users = users.OrderByDescending(u => u.UserName == "Administrator").ToList();
         }
         await base.OnInitializedAsync();
     }
+
+    private async Task LoginAction()
+    {
+        var response = await client.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin }) ?? new();
+        if (response.IsSuccessStatusCode)
+        {
+            _navigationManager.NavigateTo("/pos");
+        }
+        else
+        {
+            Snackbar.Add("Login Failed", Severity.Error);
+        }
+
+    }
+
+    private void HandelOnChange(ChangeEventArgs e)
+       => _userName = e.Value?.ToString() ?? string.Empty;
 }

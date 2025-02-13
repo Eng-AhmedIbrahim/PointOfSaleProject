@@ -63,8 +63,8 @@
 }
 
 .login-label {
-    padding: 23px;
-    font-size: x-large;
+    padding: 25px;
+    font-size: 28px !important;
     font-weight: 600;
 }
 
@@ -90,13 +90,8 @@
         transform: scale(1.05);
     }
 
-.login-label {
-    font-size: 19px; 
-    font-weight: bold;
-}
-
 .form-control {
-    font-size: 19px; /* Increase input & select font size */
-    padding: 10px; /* Optional: Adjust padding for better appearance */
-    height: 50px; /* Optional: Increase height */
+    font-size: 19px;
+    padding: 10px;
+    height: 50px;
 }
