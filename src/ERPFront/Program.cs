@@ -1,14 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMudServices();
+builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.
-builder.AddSerilogService();
-
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddMudServices();
-builder.Services.AddBlazorBootstrap();
+builder.AddSerilogService();
+
+
 
 builder.Services.AddHttpClient(ConstantStrings.ApiUrlName, client =>
 {

@@ -1,19 +1,119 @@
-﻿@using MudBlazor
+@using MudBlazor
+
 @inherits LayoutComponentBase
+
 @* Required *@
-<MudThemeProvider />
-<MudPopoverProvider />
+<MudThemeProvider/>
+<MudPopoverProvider/>
 
 @* Needed for dialogs *@
-<MudDialogProvider />
+<MudDialogProvider/>
 
 @* Needed for snackbars *@
-<MudSnackbarProvider />
-<div class="page">
-    <main>
-        <NavBar />
-        @Body
-        <Footer />
-    </main>
+<MudSnackbarProvider/>
 
-</div>
+<MudLayout>
+    <MudStack Spacing="0" Justify="Justify.Center" AlignItems="AlignItems.Center" StretchItems="StretchItems.Middle" Style="height: 100vh;">
+        <MudAppBar Class="make-color fix-padding" Dense="true" Fixed="false">
+
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Start" Justify="Justify.Center">
+                <img src="/images/Logo.png" alt="Logo" style="width: 40px; height: 40px;"/>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.TableRestaurant"
+                           Color="Color.Primary">
+                    طاولات
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.DirectionsRun"
+                           Color="Color.Primary">
+                    تيك أواي
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.DeliveryDining"
+                           Color="Color.Primary">
+                    توصيل للمنازل
+                </MudButton>
+            </MudStack>
+            <MudSpacer/>
+            <MudStack Row="true" Spacing="1" AlignItems="AlignItems.End" Justify="Justify.Center">
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.AttachMoney"
+                           Color="Color.Primary">
+                    الحسابات
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.AreaChart"
+                           Color="Color.Primary">
+                    ملخص
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.PushPin"
+                           Color="Color.Primary">
+                    توزيع
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                           StartIcon="@Icons.Material.Filled.Checklist"
+                           Color="Color.Primary">
+                    الطلبات
+                </MudButton>
+            </MudStack>
+
+        </MudAppBar>
+        <MudMainContent Class="pt-0" Style="width: 100%;">
+            @Body
+        </MudMainContent>
+        <MudPaper Width="100%">
+            <MudStack StretchItems="StretchItems.All" Row="true" AlignItems="AlignItems.Center">
+                <MudButton Variant="Variant.Text"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.Discount"
+                           Color="Color.Primary">
+                    خصم
+                </MudButton>
+                <MudButton Variant="Variant.Text"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.SetMeal"
+                           Color="Color.Primary">
+                    الوجبات
+                </MudButton>
+                <MudButton Variant="Variant.Text"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.Alarm"
+                           Color="Color.Primary">
+                    الانتظار
+                </MudButton>
+                <MudButton Variant="Variant.Text"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.Settings"
+                           Color="Color.Primary">
+                    اعدادات
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</MudLayout>
+
+<style>
+    .make-color {
+        background-color: #022e66; /*1366ce*/
+    }
+
+    .fix-padding {
+        padding: 0 10px !important;
+    }
+
+    .mud-toolbar-gutters {
+        padding: 0 !important;
+    }
+
+    .bottom-appbar {
+        position: fixed; /* Stick to the bottom of the viewport */
+        bottom: 0; /* Align to the bottom */
+        left: 0; /* Stretch from the left */
+        right: 0; /* Stretch to the right */
+        z-index: 1000; /* Ensure it stays above other content */
+    }
+
+</style>
+
+

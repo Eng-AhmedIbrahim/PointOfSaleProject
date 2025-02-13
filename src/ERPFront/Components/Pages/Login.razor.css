@@ -44,13 +44,14 @@
     margin-top: 20px;
 }
 
-    .keypad button {
-        width: 106px;
-        height: 68px;
-        font-size: 25px;
-        border: #ffffff;
-        border-radius: 6px
-    }
+.mud-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    height: 64px;
+    border: 0.5px #0000001f solid;
+}
 
 .login-form {
     width: 100%;
@@ -66,7 +67,6 @@
     font-size: x-large;
     font-weight: 600;
 }
-
 
 .login-btn {
     display: flex;
@@ -89,3 +89,14 @@
     .custom-btn:hover {
         transform: scale(1.05);
     }
+
+.login-label {
+    font-size: 19px; 
+    font-weight: bold;
+}
+
+.form-control {
+    font-size: 19px; /* Increase input & select font size */
+    padding: 10px; /* Optional: Adjust padding for better appearance */
+    height: 50px; /* Optional: Increase height */
+}
