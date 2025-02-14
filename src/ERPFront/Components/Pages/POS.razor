@@ -1,4 +1,4 @@
-@page "/pos"
+﻿@page "/pos"
 @using BlazorBase
 @using System.Globalization
 @inject IHttpClientFactory _clientFactory
@@ -7,20 +7,20 @@
 @layout PosScreenLayout
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="padding:0">
-    <MudGrid  Spacing="0" Justify="Justify.Center">
+    <MudGrid Spacing="0" Justify="Justify.Center">
         <!-- Section 1 -->
         <MudItem xs="2" Class="full-height">
             <MudText Typo="Typo.h6" Class="section-label">Categories</MudText>
-            <MudPaper Elevation="1" Height="93%" Class="overflow-y-auto overflow-x-hidden">
+            <MudPaper Elevation="1" Height="93.5%" Class="overflow-y-auto overflow-x-hidden">
                 <!-- Add content for Section 1 here -->
-                <MudStack Spacing="0" Class="z-0 ma-n2">
-                    @foreach(var category in _categories??new List<CategoryToReturnDto>())
+                <MudStack Spacing="0">
+                    @foreach (var category in _categories ?? new List<CategoryToReturnDto>())
                     {
                         @* todo get user settings from data base*@
                         <MudButton Variant="Variant.Filled"
                                    Class="mt-1"
                                    Style="@($"padding: 20px; font-size: 20px;font-weight:800")">
-                             @category.ArabicName
+                            @category.ArabicName
                         </MudButton>
                     }
                 </MudStack>
@@ -30,21 +30,125 @@
 
 
         <!-- Section 2 -->
-        <MudItem xs="4">
+        <MudItem xs="4" Class="full-height">
             <MudPaper Elevation="1" Height="100%">
                 <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
-                <!-- Add content for Section 2 here -->
+                <MudPaper Elevation="1" Height="93.5%" Class="overflow-y-auto overflow-x-hidden">
+                    <!-- Add content for Section 1 here -->
+                    <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All" Spacing="0">
+                        @for (var i = 0; i <= 10; i++)
+                        {
+                            <MudButton Size="Size.Large" Variant="Variant.Filled"
+                                       Class="mt-1"
+                                       Style="@($"padding:{_salesItemsVerticalSlider * 4}px;font-size:{_salesItemsVerticalSlider*4}px;width:{_salesItemsHorizontalSider*10}px;font-weight: bolder")">
+                                مكس جريل
+                            </MudButton>
+                        }
+                    </MudStack>
+                </MudPaper>
             </MudPaper>
         </MudItem>
 
         <!-- Section 3 -->
-        <MudItem xs="2">
+        <MudItem xs="2" Class="full-height">
             <MudPaper Elevation="1" Height="100%">
-                <MudText Typo="Typo.h6" Class="section-label">Section 3</MudText>
-                <!-- Add content for Section 3 here -->
-               
+                <MudText Typo="Typo.h6" Class="section-label">Keypad</MudText>
+                <MudPaper Elevation="1" Height="93.5%" Class="overflow-y-auto overflow-x-hidden">
+                    <MudStack Spacing="0" Direction="Direction.Column" StretchItems="StretchItems.All">
+
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(1)
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%; font-size:larger">
+                                @(2)
+                            </MudButton>
+                        </div>
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(3)
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(4)
+                            </MudButton>
+                        </div>
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(5)
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(6)
+                            </MudButton>
+                        </div>
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(7)
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(8)
+                            </MudButton>
+                        </div>
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                @(9)
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style="height: 100%; width: 50%;font-size:larger">
+                                0
+                            </MudButton>
+                        </div>
+
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled " Style=" height: 100%; width: 50%;font-size:larger" Disabled="true">
+                                @("$")
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled" Style=" height: 100%; width: 50%;font-size:larger">
+                                BS
+                            </MudButton>
+                        </div>
+
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled"
+                                       Style=" height: 100%; width: 50%;font-size:larger">
+                                @("1/8")
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled"
+                                       Style=" height: 100%; width: 50%;font-size:larger">
+                                @("1/4")
+                            </MudButton>
+                        </div>
+                        <div class="button-row">
+                            <MudButton Variant="Variant.Filled"
+                                       Style=" height: 100%; width: 50%;font-size:larger">
+                                @("1/2")
+                            </MudButton>
+                            <MudButton Variant="Variant.Filled"
+                                       Style=" height: 100%; width: 50%;font-size:larger">
+                                @("3/4")
+                            </MudButton>
+                        </div>
+
+
+                        <div class="button-row">
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.AddCircle" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                        </div>
+
+                        <div class="button-row">
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.RemoveShoppingCart" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Percent" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                        </div>
+
+                        <div class="button-row">
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Edit" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                            <MudIconButton Variant="Variant.Filled" Icon="@Icons.Material.Filled.Add" Size="Size.Large" Style="flex: 1; height: 100%;font-size:larger" />
+                        </div>
+                    </MudStack>
+                </MudPaper>
+
             </MudPaper>
         </MudItem>
+
+
 
         <!-- Section 4 -->
         <MudItem xs="4">
@@ -64,7 +168,6 @@
         height: calc(100vh - 96px) !important;
     }
 
-
     .section-label {
         background-color: #022e66 !important;
         color: var(--mud-palette-primary-text);
@@ -74,11 +177,41 @@
         border-bottom: 1px solid var(--mud-palette-primary-light);
     }
 
-
-    .slider-style
-    {
-        position:relative;
+    .slider-style {
+        position: relative;
         left: 0;
-
     }
+
+    body {
+        overflow: hidden;
+    }
+
+    .section3 {
+        width: 100%;
+    }
+
+    .button-full-height {
+        height: 100%;
+        flex-grow: 1;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 0;
+        width: 100%;
+    }
+
+        .button-row .mud-icon-button {
+            margin: 0 !important;
+            width: 100%;
+        }
 </style>
+
+
+@code
+{
+    private double _salesItemsHorizontalSider = 4.0;
+    private double _salesItemsVerticalSlider = 4.0;
+    List<string> _specialNumbers = [".", "1/2", "1/4", "3/4", "1/8"];
+
+}
