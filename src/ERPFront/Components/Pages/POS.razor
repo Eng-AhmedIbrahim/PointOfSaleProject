@@ -1,10 +1,9 @@
 @page "/pos"
-@using BlazorBase
-@using ERPFront.Components.PosComponent
 @layout PosScreenLayout
-@inject IHttpClientFactory _clientFactory
-@inject CommonProsperities  _commonProsperities
-@inject IJSRuntime JS
+@inject CommonProperties CommonProperties
+@inject ICategoryServices CategoryServices
+@inject IJSRuntime JsRuntime
+
 
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="overflow-hidden">
@@ -13,12 +12,12 @@
         <MudText Typo="Typo.h6" Class="section-label">Section 1</MudText>
         <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height">
             <MudGrid Spacing="0">
-                @foreach (var category in _categories ?? new List<CategoryToReturnDto>())
+                @foreach (var category in _categories ?? [])
                 {
                     <MudButton Variant="Variant.Filled"
                                FullWidth="true"
                                Style="@($"padding: {20}px; font-size: {20}px;")"
-                               OnClick="()=>InvokeItems(category.Id)">
+                               OnClick="async () => await InvokeItems(category.Id)">
                         @category.ArabicName
                     </MudButton>
                 }
@@ -31,12 +30,13 @@
     <MudItem xs="4" Class="full-height">
         <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
         <MudPaper Elevation="1" Class="overflow-y-auto overflow-x-hidden section-height">
-            <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All" Spacing="0">
+            <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All"
+                      Spacing="0">
                 @foreach (var item in _itemByCatId)
                 {
                     <MudButton Size="Size.Large" Variant="Variant.Filled"
                                Class="same-width"
-                               Style="@($"padding:{_commonProsperities._salesItemsHorizontalSider * 4}px;font-size:{_commonProsperities._salesItemsVerticalSlider * 4}px;width:{_commonProsperities._salesItemsHorizontalSider * 20}px;font-weight: bolder;")"
+                               Style="@($"padding:{CommonProperties.SalesItemsHorizontalSlider * 4}px;font-size:{CommonProperties.SalesItemsVerticalSlider * 4}px;width:{CommonProperties.SalesItemsHorizontalSlider * 20}px;font-weight: bolder;")"
                                OnClick="@(() => AddItemToSection4(item))">
                         @item.ArabicName
                     </MudButton>
@@ -71,7 +71,7 @@
         <MudPaper Elevation="1" Height="100%" Class="rounded-0 full-height overflow-y-auto overflow-x-hidden">
             <!-- Add content for Section 4 here -->
             <MudPaper MaxHeight="65%" Class="rounded-0 overflow-y-auto">
-                <Section4Table Items="_commonProsperities._tableItems" OnItemsChanged="OnSection4ItemsChanged" />
+                <Section4Table Items="CommonProperties.TableItems" OnItemsChanged="OnSection4ItemsChanged"/>
             </MudPaper>
         </MudPaper>
     </MudItem>
@@ -82,11 +82,6 @@
 @code {
     private double _spacing = 4.0;
 
-    private void HandleItemsFetched(ICollection<MenuSalesItemsToReturnDto> items)
-    {
-        _itemByCatId = items;
-        StateHasChanged();
-    }
 }
 
 

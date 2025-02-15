@@ -20,7 +20,7 @@
                     , new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); ;
             }
 
-            var response2 = await client?.GetAsync(url) ?? new();
+            var response2 = await client!.GetAsync(url) ?? new();
             if (response.IsSuccessStatusCode)
             {
                 var dataAsStringStream = await response2.Content.ReadAsStringAsync();

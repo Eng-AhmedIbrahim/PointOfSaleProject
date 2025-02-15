@@ -11,3 +11,8 @@ global using MudBlazor;
 global using POS.Contract.Dtos.ItemDto;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using System.Security.Claims;
+global using BlazorBase;
+global using BlazorBase.API;
+global using Microsoft.Extensions.Options;
+global using BlazorBase.Helpers;
+global using ERPFront.ERPFrontServices.CategoryServices;

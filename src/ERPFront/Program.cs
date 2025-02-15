@@ -1,27 +1,30 @@
-using BlazorBase;
-using Microsoft.JSInterop;
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddMudServices();
-builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddMudServices();
+builder.Services.AddBlazorBootstrap();
+
 builder.AddSerilogService();
-builder.Services.AddSingleton<CommonProsperities>();
+
+builder.Services.Configure<ApiSettings>(
+    builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddSingleton<ApiSettings>(sp =>
+    sp.GetRequiredService<IOptions<ApiSettings>>()
+        .Value);
+
+builder.Services.AddSingleton<CommonProperties>();
 
 
-builder.Services.AddHttpClient(ConstantStrings.ApiUrlName, client =>
-{
-     client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseApiUrl")!);
-});
+builder.Services.AddHttpClient(builder.Configuration["ApiSettings:ApiName"]!,
+    client => { client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!); });
 
+builder.Services.AddScoped<ICategoryServices, CategoryService>();
 
 builder.Services.AddAuthenticationCore();
-//builder.Services.AddHttpClient
+
 
 var app = builder.Build();
 
@@ -44,4 +47,4 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+await app.RunAsync();

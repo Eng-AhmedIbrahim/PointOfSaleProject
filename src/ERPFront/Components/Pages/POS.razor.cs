@@ -6,46 +6,17 @@ public partial class POS
 {
     private ICollection<CategoryToReturnDto>? _categories = new List<CategoryToReturnDto>();
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
-    private static readonly JsonSerializerOptions option = new() { PropertyNameCaseInsensitive = true };
 
-    HttpClient? client;
-
-    protected async override Task OnInitializedAsync()
-    {
-        client = _clientFactory?.CreateClient(ConstantStrings.ApiUrlName);
-        var response = await client!.GetFromJsonAsync<List<CategoryToReturnDto>>(ConstantStrings.GetAllCategoriesUrl, option) ?? new();
-
-        if (!response.Any())
-            _categories = new List<CategoryToReturnDto>();
-
-        _categories = response;
-    }
-
-    private async Task<ICollection<MenuSalesItemsToReturnDto>> GetItemsByCatId(int catId)
-    {
-
-        var items = new HashSet<MenuSalesItemsToReturnDto>();
-
-        string url = $"{ConstantStrings.GetItemsByCategoryId}?catId={catId}";
-        var response = await client!.GetAsync(url) ?? new();
-        if (response.IsSuccessStatusCode)
-        {
-            var dataAsStringStream = await response.Content.ReadAsStringAsync();
-
-            items = JsonSerializer.Deserialize<HashSet<MenuSalesItemsToReturnDto>>(dataAsStringStream, option);
-        }
-
-        return items ?? [];
-    }
+    protected override async Task OnInitializedAsync()
+        => _categories = await CategoryServices.GetAllCategoriesAsync();
 
     private async Task InvokeItems(int catId)
-    {
-        _itemByCatId = await GetItemsByCatId(catId);
-    }
+        => _itemByCatId = await CategoryServices.GetItemsByCategoryIdAsync(catId);
 
-    private async Task OnSection4ItemsChanged()
+    private Task OnSection4ItemsChanged()
     {
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
     private void AddItemToSection4(MenuSalesItemsToReturnDto selectedItem)
@@ -59,26 +30,26 @@ public partial class POS
             Total = (double)(selectedItem.Price ?? 0)
         };
 
-        _commonProsperities?._tableItems?.Add(newItem);
+        CommonProperties?.TableItems?.Add(newItem);
         UpdateTableItemCount();
         StateHasChanged();
     }
     private void UpdateTableItemCount()
     {
-        int count = _commonProsperities?._tableItems?.Count ?? 0;
-        JS.InvokeVoidAsync("setTableItemCount", count);
+        int count = CommonProperties?.TableItems?.Count ?? 0;
+        JsRuntime.InvokeVoidAsync("setTableItemCount", count);
     }
 
     private void RemoveItemFromSection4(TableItem item)
     {
-        _commonProsperities?._tableItems?.Remove(item);
+        CommonProperties?.TableItems?.Remove(item);
         UpdateTableItemCount(); // Update count after removal
         StateHasChanged();
     }
 
     public void ClearTableItems()
     {
-        _commonProsperities?._tableItems?.Clear();
+        CommonProperties?.TableItems?.Clear();
         StateHasChanged();
     }
 }

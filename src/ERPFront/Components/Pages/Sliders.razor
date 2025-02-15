@@ -2,7 +2,7 @@
 @using BlazorBase
 @using MudBlazor
 @using System.Globalization
-@inject CommonProsperities _slider
+@inject CommonProperties _slider
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navigationManager
 
@@ -41,7 +41,7 @@
                     {
                         <MudButton Size="Size.Large" Variant="Variant.Filled"
                                    Class="same-width"
-                                   Style="@($"padding:{_slider._salesItemsHorizontalSider * 4}px;font-size:{_slider._salesItemsVerticalSlider * 4}px;width:{_slider._salesItemsHorizontalSider * 20}px;font-weight: bolder;")">
+                                   Style="@($"padding:{_slider.SalesItemsHorizontalSlider * 4}px;font-size:{_slider.SalesItemsVerticalSlider * 4}px;width:{_slider.SalesItemsHorizontalSlider * 20}px;font-weight: bolder;")">
                             @item.ArabicName
                         </MudButton>
                     }
@@ -87,22 +87,22 @@
                 @* </div> *@
 
                 <div class="slider-style H-SalesItems-Slider">
-                    <MudSlider @bind-Value="_slider._salesItemsHorizontalSider"
+                    <MudSlider @bind-Value="_slider.SalesItemsHorizontalSlider"
                                Min="1"
                                Max="40"
                                Color="Color.Info"
                                Step="0.1">
-                        H-SalesItems: @_slider._salesItemsHorizontalSider.ToString(CultureInfo.InvariantCulture)
+                        H-SalesItems: @_slider.SalesItemsHorizontalSlider.ToString(CultureInfo.InvariantCulture)
                     </MudSlider>
                 </div>
 
                 <div class="slider-style V-SalesItems-Slider">
-                    <MudSlider @bind-Value="_slider._salesItemsVerticalSlider"
+                    <MudSlider @bind-Value="_slider.SalesItemsVerticalSlider"
                                Vertical="true"
                                Min="4"
                                Max="10"
                                Step="0.1">
-                        V-SalesItems: @_slider._salesItemsVerticalSlider.ToString(CultureInfo.InvariantCulture)
+                        V-SalesItems: @_slider.SalesItemsVerticalSlider.ToString(CultureInfo.InvariantCulture)
                     </MudSlider>
                 </div>
             </MudPaper>
