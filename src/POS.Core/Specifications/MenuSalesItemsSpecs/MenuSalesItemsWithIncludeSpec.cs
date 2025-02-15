@@ -12,6 +12,7 @@ public class MenuSalesItemsWithIncludeSpec : BaseSpecifications<MenuSalesItems>
     {
         AddInclude();
     }
+
     private void AddInclude()
     {
         Includes.Add(s => s.Attribute!);

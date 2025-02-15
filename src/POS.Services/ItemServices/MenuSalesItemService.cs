@@ -191,4 +191,23 @@ public class MenuSalesItemService : IMenuSalesItemService
             return null;
         }
     }
+
+    public async Task<IReadOnlyList<MenuSalesItems>?> GetItemByCategoryIdAsync(int catId)
+    {
+        try
+        {
+            var itemSpecs = new ItemsSpecs(c=>c.CategoryId == catId);
+            var items = await _unitOfWork.Repository<MenuSalesItems>().GetAllWithSpecificationAsync(itemSpecs);
+
+
+            if (items == null) return null;
+
+            return items;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            return null;
+        }
+    }
 }

@@ -13,7 +13,7 @@
         <!-- Section 1 -->
         <MudItem xs="2" Class="full-height">
             <MudText Typo="Typo.h6" Class="section-label">Categories</MudText>
-            <MudPaper Elevation="1" Height="93.5%" Class="overflow-y-auto overflow-x-hidden hidden">
+            <MudPaper Elevation="1" Class="overflow-y-auto overflow-x-hidden section-height hidden">
                 <!-- Add content for Section 1 here -->
                 <MudStack Spacing="0">
                     @foreach (var category in _categories ?? new List<CategoryToReturnDto>())
@@ -34,23 +34,21 @@
 
         <!-- Section 2 -->
         <MudItem xs="4" Class="full-height">
-            <MudPaper Elevation="1" Height="100%">
-                <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
-                <MudPaper Elevation="1" Height="93.5%" Class="overflow-y-auto overflow-x-hidden hidden">
-                    <!-- Add content for Section 1 here -->
-                    <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All" Spacing="0">
-                        @for (var i = 0; i <= 10; i++)
-                        {
-                            <MudButton Size="Size.Large" Variant="Variant.Filled"
-                                       Class="mt-1"
-                                       Style="@($"padding:{_slider._salesItemsVerticalSlider * 4}px;font-size:{_slider._salesItemsVerticalSlider*4}px;width:{_slider._salesItemsHorizontalSider*10}px;font-weight: bolder")">
-                                مكس جريل
-                            </MudButton>
-                        }
-                    </MudStack>
-                </MudPaper>
+            <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
+            <MudPaper Elevation="1" Class="overflow-y-auto overflow-x-hidden section-height hidden">
+                <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All" Spacing="0">
+                    @foreach (var item in _itemByCatId)
+                    {
+                        <MudButton Size="Size.Large" Variant="Variant.Filled"
+                                   Class="same-width"
+                                   Style="@($"padding:{_slider._salesItemsHorizontalSider * 4}px;font-size:{_slider._salesItemsVerticalSlider * 4}px;width:{_slider._salesItemsHorizontalSider * 20}px;font-weight: bolder;")">
+                            @item.ArabicName
+                        </MudButton>
+                    }
+                </MudStack>
             </MudPaper>
         </MudItem>
+
 
         <!-- Section 3 -->
         <MudItem xs="2">
@@ -66,6 +64,27 @@
                         CategorySlider: @_slider.CategorySpacing.ToString(CultureInfo.InvariantCulture)
                     </MudSlider>
                 </div>
+
+                @* <div class="slider-style H-SalesItems-Slider"> *@
+                @*     <MudSlider @bind-Value="_slider._salesItemsHorizontalSider" *@
+                @*                Min="1" *@
+                @*                Max="40" *@
+                @*                Color="Color.Info" *@
+                @*                Step="0.1"> *@
+                @*         H-SalesItems: @_slider._salesItemsHorizontalSider.ToString(CultureInfo.InvariantCulture) *@
+                @*     </MudSlider> *@
+                @* </div> *@
+
+                @* <div class="slider-style V-SalesItems-Slider"> *@
+                @*     <MudSlider @bind-Value="_slider._salesItemsVerticalSlider" *@
+                @*                Vertical="true" *@
+                @*                Min="4" *@
+                @*                Max="10" *@
+                @*                Step="0.1"> *@
+
+                @*         V-SalesItems: @_slider._salesItemsVerticalSlider.ToString(CultureInfo.InvariantCulture) *@
+                @*     </MudSlider> *@
+                @* </div> *@
 
                 <div class="slider-style H-SalesItems-Slider">
                     <MudSlider @bind-Value="_slider._salesItemsHorizontalSider"
@@ -83,7 +102,6 @@
                                Min="4"
                                Max="10"
                                Step="0.1">
-
                         V-SalesItems: @_slider._salesItemsVerticalSlider.ToString(CultureInfo.InvariantCulture)
                     </MudSlider>
                 </div>
@@ -118,7 +136,6 @@
         height: calc(100vh - 96px) !important;
     }
 
-
     .section-label {
         background-color: #022e66 !important;
         color: var(--mud-palette-primary-text);
@@ -127,6 +144,46 @@
         font-size: 1rem;
         border-bottom: 1px solid var(--mud-palette-primary-light);
     }
+
+    .slider-style {
+        position: relative;
+        left: 0;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
+    .section3 {
+        width: 100%;
+    }
+
+    .button-full-height {
+        height: 100%;
+        flex-grow: 1;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 0;
+        width: 100%;
+    }
+
+        .button-row .mud-icon-button {
+            margin: 0 !important;
+            width: 100%;
+        }
+
+    .section-height {
+        height: calc(100vh - 138px) !important;
+    }
+
+    .same-width {
+        width: 120px;
+        min-width: 120px;
+        text-align: center;
+    }
+
 
     .hidden {
         pointer-events: none;

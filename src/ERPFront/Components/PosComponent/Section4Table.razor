@@ -1,0 +1,119 @@
+@inject IJSRuntime Js
+@inject ISnackbar Snackbar
+
+<MudTable Items="@_tableItems" Dense="true" Hover="true" FixedHeader="true" CanCancelEdit="true"
+          CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))"
+          RowEditPreview="BackupItem"
+          RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted"
+          ApplyButtonPosition="TableApplyButtonPosition.Start"
+          EditButtonPosition="TableEditButtonPosition.End"
+          EditTrigger="TableEditTrigger.RowClick">
+
+    <HeaderContent>
+        <MudTh Style="width: min-content; white-space: nowrap;">Quantity</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Price</MudTh>
+        <MudTh>Total</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Quantity" Style="width: min-content; white-space: nowrap;">
+            @context.Quantity
+        </MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd DataLabel="Total">@context.Total</MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Quantity">
+            <MudNumericField @bind-Value="context.Quantity" Required AutoFocus />
+        </MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd DataLabel="Total">@context.Total</MudTd>
+    </RowEditingTemplate>
+</MudTable>
+
+@code {
+    private List<TableItem> _tableItems =
+    [
+        new TableItem { Id = 1, Quantity = 1, Name = "Item 1", Price = 100, Total = 100 },
+        new TableItem { Id = 2, Quantity = 2, Name = "Item 2", Price = 200, Total = 400 },
+        new TableItem { Id = 3, Quantity = 3, Name = "Item 3", Price = 300, Total = 900 },
+        new TableItem { Id = 4, Quantity = 4, Name = "Item 4", Price = 400, Total = 1600 },
+        new TableItem { Id = 5, Quantity = 5, Name = "Item 5", Price = 500, Total = 2500 },
+        new TableItem { Id = 6, Quantity = 6, Name = "Item 6", Price = 600, Total = 3600 },
+        new TableItem { Id = 7, Quantity = 7, Name = "Item 7", Price = 700, Total = 4900 },
+        new TableItem { Id = 8, Quantity = 8, Name = "Item 8", Price = 800, Total = 6400 },
+        new TableItem { Id = 9, Quantity = 9, Name = "Item 9", Price = 900, Total = 8100 },
+    ];
+
+    private TableItem? _elementBeforeEdit;
+
+    class TableItem
+    {
+        public int Id { get; set; }
+        public int Quantity { get; set; }
+        public string? Name { get; set; }
+        public double Price { get; set; }
+        public double Total { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+    }
+
+    private async void BackupItem(object element)
+    {
+        var item = (TableItem)element;
+        _elementBeforeEdit = new TableItem
+        {
+            Id = item.Id,
+            Quantity = item.Quantity,
+            Name = item.Name,
+            Price = item.Price,
+            Total = item.Total
+        };
+
+        Snackbar.Add("Backup Item Handler Invoked");
+
+        // Focus on the selected row
+        await Js.InvokeVoidAsync("focusRow", $"row-{item.Name}");
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        if (_elementBeforeEdit != null)
+        {
+            var item = (TableItem)element;
+            item.Quantity = _elementBeforeEdit.Quantity;
+            item.Name = _elementBeforeEdit.Name;
+            item.Price = _elementBeforeEdit.Price;
+            item.Total = _elementBeforeEdit.Total;
+        }
+
+        Snackbar.Add("Reset Item Handler Invoked");
+    }
+
+    private void ItemHasBeenCommitted(object element)
+    {
+        ((TableItem)element).Total =
+            ((TableItem)element).Quantity * ((TableItem)element).Price;
+
+        Snackbar.Add("Item Has Been Committed Handler Invoked");
+    }
+}
+
+
+<script>
+    window.focusRow = (elementId) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.focus();
+        }
+    };
+</script>

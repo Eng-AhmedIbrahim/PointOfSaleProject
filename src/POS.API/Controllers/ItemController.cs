@@ -1,6 +1,4 @@
-﻿using POS.Contract.Dtos.ItemDto;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {
@@ -8,7 +6,7 @@ public class ItemController : BaseApiController
     private readonly IMenuSalesItemService _itemService;
     private readonly IMapper _mapper;
 
-    public ItemController(IAttributeService attributeService,IMenuSalesItemService menuSalesItemService, IMapper mapper)
+    public ItemController(IAttributeService attributeService, IMenuSalesItemService menuSalesItemService, IMapper mapper)
     {
         _attributeService = attributeService;
         _itemService = menuSalesItemService;
@@ -113,13 +111,13 @@ public class ItemController : BaseApiController
         var mappedNewItem = _mapper.Map<UpdatedItemDto, MenuSalesItems>(newItem);
         if (newItem.Image is not null)
         {
-            DocumentSetting.DeleteFile(oldItem?.ImagePath);
+            DocumentSetting.DeleteFile(oldItem?.ImagePath??string.Empty);
             logoPath = DocumentSetting.UploadFile(newItem.Image, "Imgs");
             mappedNewItem.ImagePath = logoPath;
         }
 
 
-        var item = await _itemService.UpdateItemAsync(oldItem, mappedNewItem);
+        var item = await _itemService.UpdateItemAsync(oldItem??new(), mappedNewItem);
         if (item is null)
             return null;
 
@@ -131,7 +129,7 @@ public class ItemController : BaseApiController
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpDelete("{itemId}")]
-    public async Task<IActionResult> DeleteItem([Required]int itemId)
+    public async Task<IActionResult> DeleteItem([Required] int itemId)
     {
         var item = await _itemService.GetItemByIdAsync(itemId);
         if (item is null)
@@ -140,7 +138,7 @@ public class ItemController : BaseApiController
         var result = await _itemService.DeleteItem(item);
         if (result is true)
         {
-            DocumentSetting.DeleteFile(item?.ImagePath??string.Empty);
+            DocumentSetting.DeleteFile(item?.ImagePath ?? string.Empty);
             return Ok("Deleted Successfully");
         }
 
@@ -151,15 +149,50 @@ public class ItemController : BaseApiController
     [ProducesResponseType(typeof(MenuSalesItemsToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPost("AddAttributeToItem")]
-    public async Task<IActionResult?> AddAttributeToItem([Required]int attributeId, [Required] int ItemId)
+    public async Task<IActionResult?> AddAttributeToItem([Required] int attributeId, [Required] int ItemId)
     {
-        var item = await _itemService.AddAttributeToItem(attributeId,ItemId);
+        var item = await _itemService.AddAttributeToItem(attributeId, ItemId);
 
         if (item is null)
             return NotFound(new ApiResponse(404));
 
         var itemToReturn = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
         return Ok(itemToReturn);
+    }
+
+
+    [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [HttpGet("GetItemsByCategoryId")]
+    public async Task<IActionResult> GetItemsByCatId([Required]int catId)
+    {
+        // Fetch items by category ID
+        var items = await _itemService.GetItemByCategoryIdAsync(catId);
+        if (items is null || !items.Any())
+        {
+            Log.Information($"No Items Found Has CatId={catId}");
+            return NotFound(new ApiResponse(404, $"No Items Found Has CatId={catId}"));
+        }
+
+        // Map items to DTO
+        var mappedItems = _mapper.Map<IReadOnlyList<MenuSalesItems>, IReadOnlyList<MenuSalesItemsToReturnDto>>(items);
+
+        // Aggregate attributes for each item
+        foreach (var item in mappedItems)
+        {
+            var aggregatedAttributes = item.Attributes
+                .GroupBy(attr => attr.AppearanceIndex)
+                .Select(group => new MenuSalesItemAttributes
+                {
+                    AppearanceIndex = group.Key,
+                    GroupItems = group.SelectMany(g => g.GroupItems).ToList()
+                })
+                .ToList();
+
+            item.Attributes = aggregatedAttributes;
+        }
+
+        return Ok(mappedItems);
     }
 
 }

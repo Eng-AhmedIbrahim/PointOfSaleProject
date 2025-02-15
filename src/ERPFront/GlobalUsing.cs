@@ -8,3 +8,6 @@ global using Serilog;
 global using POS.Contract.Dtos.AccountDtos;
 global using Microsoft.AspNetCore.Components;
 global using MudBlazor;
+global using POS.Contract.Dtos.ItemDto;
+global using Microsoft.AspNetCore.Components.Authorization;
+global using System.Security.Claims;

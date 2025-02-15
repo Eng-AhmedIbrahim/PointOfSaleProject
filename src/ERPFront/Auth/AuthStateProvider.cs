@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using System.Security.Claims;
-
-namespace ERPFront.Auth
+﻿namespace ERPFront.Auth
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
@@ -12,7 +9,7 @@ namespace ERPFront.Auth
         {
             _authenticated = false;
             var user = _unauthenticated;
-            return new AuthenticationState(user);
+            return  new AuthenticationState(user);
         }
     }
 }
