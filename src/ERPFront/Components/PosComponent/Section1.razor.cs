@@ -24,15 +24,6 @@ public partial class Section1
         _categories = response.ToList();
     }
 
-    //private async Task GetItemsByCatId(int catId)
-    //{
-    //    string url = $"{ConstantStrings.GetItemsByCategoryId}?catId={catId}";
-    //    var items = await client!.GetFromJsonAsync<List<MenuSalesItemsToReturnDto>>(url, option) ?? new();
-
-
-    //    await OnItemsFetched.InvokeAsync(items);
-    //}
-
     private async Task GetItemsByCatId(int catId)
     {
         string url = $"{ConstantStrings.GetItemsByCategoryId}?catId={catId}";

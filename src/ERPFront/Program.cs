@@ -1,4 +1,5 @@
 using BlazorBase;
+using Microsoft.JSInterop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,6 @@ builder.Services.AddRazorComponents()
 
 builder.AddSerilogService();
 builder.Services.AddSingleton<CommonProsperities>();
-
 
 
 builder.Services.AddHttpClient(ConstantStrings.ApiUrlName, client =>

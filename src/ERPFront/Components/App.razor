@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using BlazorBase
+@inject CommonProsperities _commons
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -31,6 +33,53 @@
     <!-- Add sortable.js reference if SortableList component is used in your application. -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+
+    <script>
+        function setTableItemCount(count) {
+            localStorage.setItem('tableItemCount', count);
+        }
+
+        window.addEventListener('beforeunload', function (event) {
+            const count = localStorage.getItem('tableItemCount') || 0;
+            if (count > 0) {
+                event.preventDefault();
+                event.returnValue = 'You have unfinished orders. Please finish them before leaving.';
+            }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                clearTableItems();
+            }
+        });
+
+        function clearTableItems() {
+            localStorage.removeItem('tableItemCount');
+            console.log('Table items cleared');
+            // @_commons.ClearTableItems();
+        }
+    </script>
+
+
+
+    @* <script> *@
+    @*     function confirmUnload() { *@
+    @*         const count = localStorage.getItem('tableItemCount') || 0; *@
+    @*         if (count > 0) { *@
+    @*             return confirm('You have unfinished orders. Please finish them before leaving.'); *@
+    @*         } *@
+    @*         return true; *@
+    @*     } *@
+
+    @*     window.addEventListener('beforeunload', function (event) { *@
+    @*         if (!confirmUnload()) { *@
+    @*             event.preventDefault(); *@
+    @*             event.returnValue = ''; *@
+    @*         } *@
+    @*     }); *@
+    @* </script> *@
+
+
 </body>
 
 </html>
