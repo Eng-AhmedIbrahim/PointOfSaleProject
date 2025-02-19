@@ -1,4 +1,4 @@
-@using BlazorBase
+﻿@using BlazorBase
 @inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
@@ -14,36 +14,41 @@
           EditTrigger="TableEditTrigger.RowClick">
 
     <HeaderContent>
-        <MudTh Style="width: min-content; white-space: nowrap;">Quantity</MudTh>
+        <MudTh Style="width: min-content; white-space: nowrap;">Qty</MudTh>
         <MudTh>Name</MudTh>
         <MudTh>Price</MudTh>
         <MudTh>Total</MudTh>
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd>@context.Quantity</MudTd>
-        <MudTd>@context.Name</MudTd>
-        <MudTd>@context.Price</MudTd>
-        <MudTd>@context.Total</MudTd>
+        <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style">
+            @context.Quantity
+        </MudTd>
+        <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
+        <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
+        <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
     </RowTemplate>
 
-    @* <RowEditingTemplate> *@
-    @*     <MudTd DataLabel="Quantity"> *@
-    @*         <MudNumericField @bind-Value="context.Quantity" Required AutoFocus /> *@
-    @*     </MudTd> *@
-    @*     <MudTd DataLabel="Name">@context.Name</MudTd> *@
-    @*     <MudTd DataLabel="Price">@context.Price</MudTd> *@
-    @*     <MudTd DataLabel="Total">@context.Total</MudTd> *@
-    @* </RowEditingTemplate> *@
+    <ChildRowContent>
+        @if (context.Attributes?.Any() == true)
+        {
+            <MudTr Class="attribute-row">
+                <MudTd></MudTd>
+                <MudTd ColSpan="3" Style="padding-top: 6px;padding-bottom: 0px;">
+
+                    <div style="font-size: 12px; color:black;">
+                        @foreach (var attr in context.Attributes)
+                        {
+                            <p class="attribute-name" style="margin-right: 0px;margin-bottom: 5px;">➤ @attr</p>
+                        }
+                    </div>
+                </MudTd>
+            </MudTr>
+        }
+    </ChildRowContent>
 </MudTable>
 
 @code {
- 
-
-  
-
-    
-
     protected override void OnInitialized()
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
@@ -53,17 +58,16 @@
     {
         var item = (TableItem)element;
         _elementBeforeEdit = new TableItem
-        {
-            Id = item.Id,
-            Quantity = item.Quantity,
-            Name = item.Name,
-            Price = item.Price,
-            Total = item.Total
-        };
+            {
+                Id = item.Id,
+                Quantity = item.Quantity,
+                Name = item.Name,
+                Price = item.Price,
+                Total = item.Total
+            };
 
         Snackbar.Add("Backup Item Handler Invoked");
 
-        // Focus on the selected row
         await Js.InvokeVoidAsync("focusRow", $"row-{item.Name}");
     }
 
@@ -90,12 +94,11 @@
     }
 }
 
+<style>
 
-<script>
-    window.focusRow = (elementId) => {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.focus();
-        }
-    };
-</script>
+    .table-style{
+        font-size: 14px;
+        color: black;
+        font-weight: bold;
+    }
+</style>

@@ -7,4 +7,5 @@ public class TableItem
     public string? Name { get; set; }
     public double Price { get; set; }
     public double Total { get; set; }
+    public List<string> Attributes { get; set; } = new List<string>();
 }

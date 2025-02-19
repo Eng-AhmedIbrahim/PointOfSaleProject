@@ -1,6 +1,4 @@
-﻿using BlazorBase;
-
-namespace ERPFront.Components.PosComponent;
+﻿namespace ERPFront.Components.PosComponent;
 
 public partial class Section4Table
 {

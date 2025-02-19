@@ -4,8 +4,8 @@ public partial class POS
 {
     private ICollection<CategoryToReturnDto>? _categories = new List<CategoryToReturnDto>();
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
-    private ICollection<MenuSalesItemsToReturnDto> currentItems = new List<MenuSalesItemsToReturnDto>();
     private int currentCatId;
+    private List<string>? currentSelectedAttribute;
 
     protected override async Task OnInitializedAsync()
         => _categories = await _categoryServices.GetAllCategoriesAsync();
@@ -36,14 +36,20 @@ public partial class POS
 
         if (currentClickCount < _currentBaseItem?.Attributes.Count)
         {
+            if(currentClickCount > 0)
+                currentSelectedAttribute?.Add(selectedMenuItem.ArabicName??"");
+            
             UpdateAttributeGroup(currentClickCount);
             IncrementClickCount();
+            
         }
         else
         {
-            AddItemToTable(_currentBaseItem??new());
+            if(_currentBaseItem!.Attributes.Any())
+                currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
+
+            await AddItemToTable(_currentBaseItem??new());
             ResetClickCountAndBaseItem();
-            await InvokeItems(currentCatId);
         }
 
         UpdateTableItemCount();
@@ -54,12 +60,11 @@ public partial class POS
     {
         _currentBaseItem = menuItem;
         _itemClickCount[menuItem.Id] = 0;
+        currentSelectedAttribute = new List<string>();
     }
 
     private int GetCurrentClickCount()
-    {
-        return _itemClickCount[_currentBaseItem?.Id ?? 0];
-    }
+     => _itemClickCount[_currentBaseItem?.Id ?? 0];
 
     private void UpdateAttributeGroup(int clickCount)
     {
@@ -84,9 +89,8 @@ public partial class POS
     }
 
     private void IncrementClickCount()
-    {
+         =>
         _itemClickCount[_currentBaseItem?.Id ?? 0]++;
-    }
 
     private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem)
     {
@@ -96,7 +100,8 @@ public partial class POS
             Name = menuItem.ArabicName,
             Price = (double)(menuItem.Price ?? 0),
             Quantity = 1,
-            Total = (double)(menuItem.Price ?? 0)
+            Total = (double)(menuItem.Price ?? 0),
+            Attributes = currentSelectedAttribute ?? []
         };
         _commonProperties?.TableItems?.Add(newTableItem);
         await InvokeItems(currentCatId);
