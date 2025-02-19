@@ -2,6 +2,8 @@
 
 public partial class POS
 {
+    private Dictionary<int, int> _itemClickCount = new Dictionary<int, int>();
+    private MenuSalesItemsToReturnDto? _currentBaseItem;
     private ICollection<CategoryToReturnDto>? _categories = new List<CategoryToReturnDto>();
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
     private int currentCatId;
@@ -22,39 +24,59 @@ public partial class POS
         return Task.CompletedTask;
     }
 
-    private Dictionary<int, int> _itemClickCount = new Dictionary<int, int>();
-    private MenuSalesItemsToReturnDto? _currentBaseItem;
-
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
-        if (_itemClickCount.Count == 0)
-            InitializeBaseItem(selectedMenuItem);
+        //var selectedMenuItemId = new TableItem
+        //{
+        //    Id = selectedMenuItem.Id,
+        //    Name = selectedMenuItem.ArabicName,
+        //    Price = selectedMenuItem.Price,
 
-        var currentClickCount = GetCurrentClickCount();
+                
+        //};
 
-        if (currentClickCount < _currentBaseItem?.Attributes.Count)
+        TableItem? selectedTableItem = GetItemFromTableById(selectedMenuItem);
+
+        if (!selectedMenuItem.Attributes.Any() && selectedTableItem != null)
         {
-            if (currentClickCount > 0)
-                AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
-
-            UpdateAttributeGroup(currentClickCount);
-            IncrementClickCount();
+            selectedTableItem.Quantity++;
+            selectedTableItem.Total = selectedTableItem.Total + selectedTableItem.Price;
         }
         else
         {
-            if (_currentBaseItem!.Attributes.Any())
-                AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
 
-            await AddItemToTable(_currentBaseItem ?? new());
-            ResetClickCountAndBaseItem();
+            if (_itemClickCount.Count == 0)
+                InitializeBaseItem(selectedMenuItem);
+
+            var currentClickCount = GetCurrentClickCount();
+
+            if (currentClickCount < _currentBaseItem?.Attributes.Count)
+            {
+                if (currentClickCount > 0)
+                    AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
+
+                UpdateAttributeGroup(currentClickCount);
+                IncrementClickCount();
+            }
+            else
+            {
+                if (_currentBaseItem!.Attributes.Any())
+                    AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
+
+                await AddItemToTable(_currentBaseItem ?? new());
+                ResetClickCountAndBaseItem();
+            }
+
         }
-
         UpdateTableItemCount();
         StateHasChanged();
     }
 
     private void AddAttributeNameToSection4Item(MenuSalesItemsToReturnDto selectedMenuItem, int currentClickCount)
-          => currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
+    {
+        currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
+        _currentBaseItem!.Price += selectedMenuItem.Price ?? 0;
+    }
 
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
     {
@@ -97,9 +119,9 @@ public partial class POS
         {
             Id = menuItem.Id,
             Name = menuItem.ArabicName,
-            Price = (double)(menuItem.Price ?? 0),
+            Price = menuItem.Price ?? 0,
             Quantity = 1,
-            Total = (double)(menuItem.Price ?? 0),
+            Total = menuItem.Price ?? 0,
             Attributes = currentSelectedAttribute ?? []
         };
         _commonProperties?.TableItems?.Add(newTableItem);
@@ -129,4 +151,6 @@ public partial class POS
         StateHasChanged();
     }
 
+    private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
+        => _commonProperties?.TableItems?.Where(c=>c.Attributes.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
 }
