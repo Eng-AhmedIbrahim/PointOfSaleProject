@@ -10,22 +10,23 @@
           RowEditCommit="ItemHasBeenCommitted"
           ApplyButtonPosition="TableApplyButtonPosition.Start"
           EditButtonPosition="TableEditButtonPosition.End"
-          EditTrigger="TableEditTrigger.RowClick">
+          EditTrigger="TableEditTrigger.RowClick"
+          RowClass="liner-grid-buttons">
 
     <HeaderContent>
-        <MudTh Style="width: min-content; white-space: nowrap;font-weight:bold">Qty</MudTh>
-        <MudTh Style="font-weight:bold">Name</MudTh>
-        <MudTh Style="font-weight:bold">Price</MudTh>
-        <MudTh Style="font-weight:bold">Total</MudTh>
+        <MudTh Style="width: min-content; white-space: nowrap;font-weight:bold;color: #143155">Qty</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">Name</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">Price</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">Total</MudTh>
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style">
-            @context.Quantity
-        </MudTd>
-        <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
-        <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
-        <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
+            <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style ">
+                @context.Quantity
+            </MudTd>
+            <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
+            <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
+            <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
     </RowTemplate>
 
     <ChildRowContent>
@@ -95,9 +96,14 @@
 
 <style>
 
-    .table-style{
+    .table-style {
         font-size: 14px;
         color: black;
         font-weight: bold;
+    }
+
+    .liner-grid-buttons {
+        background: linear-gradient(135deg, #ffffff, #e7ecf5);
+        color: #143155;
     }
 </style>
