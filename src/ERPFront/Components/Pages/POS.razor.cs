@@ -28,27 +28,24 @@ public partial class POS
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
         if (_itemClickCount.Count == 0)
-        {
             InitializeBaseItem(selectedMenuItem);
-        }
 
         var currentClickCount = GetCurrentClickCount();
 
         if (currentClickCount < _currentBaseItem?.Attributes.Count)
         {
-            if(currentClickCount > 0)
-                currentSelectedAttribute?.Add(selectedMenuItem.ArabicName??"");
-            
+            if (currentClickCount > 0)
+                AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
+
             UpdateAttributeGroup(currentClickCount);
             IncrementClickCount();
-            
         }
         else
         {
-            if(_currentBaseItem!.Attributes.Any())
-                currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
+            if (_currentBaseItem!.Attributes.Any())
+                AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
 
-            await AddItemToTable(_currentBaseItem??new());
+            await AddItemToTable(_currentBaseItem ?? new());
             ResetClickCountAndBaseItem();
         }
 
@@ -56,11 +53,14 @@ public partial class POS
         StateHasChanged();
     }
 
+    private void AddAttributeNameToSection4Item(MenuSalesItemsToReturnDto selectedMenuItem, int currentClickCount)
+          => currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
+
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
     {
         _currentBaseItem = menuItem;
         _itemClickCount[menuItem.Id] = 0;
-        currentSelectedAttribute = new List<string>();
+        currentSelectedAttribute = [];
     }
 
     private int GetCurrentClickCount()
@@ -89,8 +89,7 @@ public partial class POS
     }
 
     private void IncrementClickCount()
-         =>
-        _itemClickCount[_currentBaseItem?.Id ?? 0]++;
+         => _itemClickCount[_currentBaseItem?.Id ?? 0]++;
 
     private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem)
     {
@@ -118,16 +117,16 @@ public partial class POS
         JsRuntime.InvokeVoidAsync("setTableItemCount", count);
     }
 
-    private void RemoveItemFromSection4(TableItem item)
-    {
-        _commonProperties?.TableItems?.Remove(item);
-        UpdateTableItemCount(); 
-        StateHasChanged();
-    }
-
     public void ClearTableItems()
     {
         _commonProperties?.TableItems?.Clear();
         StateHasChanged();
     }
+    private void RemoveItemFromSection4(TableItem item)
+    {
+        _commonProperties?.TableItems?.Remove(item);
+        UpdateTableItemCount();
+        StateHasChanged();
+    }
+
 }
