@@ -1,0 +1,51 @@
+:root {
+    --dynamic-icon-size: 1.125rem;
+    --dynamic-keypad-btn-size: 1.125rem;
+    --dynamic-quantity-btn-size: 1.125rem;
+}
+
+.custom-button-color {
+    color: rgb(66 66 66) !important;
+}
+
+.special-keypad-button {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-keypad-btn-size) !important;
+}
+
+.special-quantity-button {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-quantity-btn-size) !important;
+}
+
+.special-icon-btn svg {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-icon-size) !important;
+}
+
+
+.full-height {
+    height: calc(100vh - 90.25px - 41.59px) !important;
+    max-height: calc(100vh - 90.25px - 41.59px) !important;
+    box-sizing: border-box;
+}
+
+
+.section-label {
+    background-color: #022e66 !important; /*var(--mud-palette-primary)*/ /*1366ce*/
+    color: var(--mud-palette-primary-text);
+    padding: 8px;
+    text-align: center;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--mud-palette-primary-light);
+}
+
+.custom-border-color {
+    border-color: #0072BC !important;
+}
+
+.same-width {
+    width: 120px;
+    min-width: 120px;
+    text-align: center;
+}

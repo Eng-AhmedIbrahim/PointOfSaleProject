@@ -1,80 +1,87 @@
 <MudGrid Spacing="1" Justify="Justify.Center">
+
     @for (var i = 1; i <= 9; i++)
     {
         var number = i.ToString();
-        <MudItem xs="3" sm="6">
-            <MudButton Variant="Variant.Filled" FullWidth="true" Size="Size.Small">
+        <MudItem xs="12" sm="6">
+            <button
+                class="mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color special-keypad-button">
                 @number
-            </MudButton>
+            </button>
         </MudItem>
     }
-    <MudItem xs="3" sm="6">
-        <MudButton Variant="Variant.Filled" FullWidth="true" Size="Size.Small">
+    <MudItem xs="12" sm="6">
+        <button
+            class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color">
             0
-        </MudButton>
+        </button>
     </MudItem>
 
-    <MudItem xs="3" sm="6">
-        <MudButton Variant="Variant.Filled" FullWidth="true" Size="Size.Small">
+    <MudItem xs="12" sm="6">
+        <button
+            class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color ">
             BS
-        </MudButton>
+        </button>
     </MudItem>
-    <MudItem xs="3" sm="6">
-        <MudButton Variant="Variant.Filled" FullWidth="true" Disabled="true" Size="Size.Small">
+    <MudItem xs="12" sm="6">
+        <button
+            class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color ">
             .
-        </MudButton>
+        </button>
     </MudItem>
     @foreach (var specialNumber in _specialNumbers)
     {
-        <MudItem xs="3" sm="6">
-            <MudButton Variant="Variant.Filled" FullWidth="true" Size="Size.Small">
+        <MudItem xs="12" sm="6">
+            <button
+                class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color ">
                 @specialNumber
-            </MudButton>
+            </button>
         </MudItem>
     }
-    <MudItem xs="3" sm="6">
+
+    <MudItem xs="12" sm="6">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.AddCircle"
                        Size="Size.Small"/>
     </MudItem>
-    <MudItem xs="3" sm="6">
+    <MudItem xs="12" sm="6">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.RemoveCircle"
                        Size="Size.Small"/>
     </MudItem>
 
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.RemoveShoppingCart"
                        Size="Size.Medium"/>
     </MudItem>
 
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.Percent"
                        Size="Size.Medium"/>
     </MudItem>
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.Edit"
-                       Size="Size.Small"/>
+                       Size="Size.Medium"/>
     </MudItem>
 
-    <MudItem xs="3" sm="6">
+    <MudItem xs="12" sm="6">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.Add"
                        Size="Size.Small"/>
     </MudItem>
 
-    <MudItem xs="3" sm="6">
+    <MudItem xs="12" sm="6">
         <MudIconButton Variant="Variant.Filled"
-                       Class="w-100"
+                       Class="w-100 special-icon-btn"
                        Icon="@Icons.Material.Filled.Remove"
                        Size="Size.Small"/>
     </MudItem>
@@ -86,4 +93,3 @@
 {
     List<string> _specialNumbers = ["1/2", "1/4", "3/4", "1/8"];
 }
-

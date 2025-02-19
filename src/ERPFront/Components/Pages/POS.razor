@@ -8,7 +8,7 @@
     <!-- Section 1 -->
     <MudItem xs="2">
         <MudText Typo="Typo.h6" Class="section-label">Section 1</MudText>
-        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height">
+        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
             <MudGrid Spacing="0">
                 @foreach (var category in _categories ?? [])
                 {
@@ -27,7 +27,7 @@
 
     <MudItem xs="4" Class="full-height">
         <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
-        <MudPaper Elevation="1" Class="overflow-y-auto overflow-x-hidden section-height">
+        <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
             <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All"
                       Spacing="0">
                 @foreach (var item in _itemByCatId)
@@ -44,9 +44,9 @@
     </MudItem>
 
     <!-- Section 3 -->
-    <MudItem xs="2">
-        <MudText Typo="Typo.h6" Class="section-label">Section 3</MudText>
-        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height">
+    <MudItem xs="1">
+        <MudText Typo="Typo.h6" Class="section-label">Sec 3</MudText>
+        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-hidden full-height border-r border-b border-solid custom-border-color">
             <Section3 />
         </MudPaper>
     </MudItem>
@@ -64,9 +64,9 @@
     @*     </MudPaper> *@
     @* </MudItem> *@
 
-    <MudItem xs="4">
+    <MudItem xs="5">
         <MudText Typo="Typo.h6" Class="section-label">Section 4</MudText>
-        <MudPaper Elevation="1" Height="100%" Class="rounded-0 full-height overflow-y-auto overflow-x-hidden">
+        <MudPaper Elevation="1" Height="100%" Class="rounded-0 full-height overflow-y-auto overflow-x-hidden border-r border-b border-solid custom-border-color">
             <!-- Add content for Section 4 here -->
             <MudPaper MaxHeight="65%" Class="rounded-0 overflow-y-auto">
                 <Section4Table Items="_commonProperties.TableItems" OnItemsChanged="OnSection4ItemsChanged" />
@@ -83,26 +83,3 @@
 }
 
 
-<style>
-    .full-height {
-        height: calc(100vh - 90.25px - 41.59px) !important;
-        max-height: calc(100vh - 90.25px - 41.59px) !important;
-        box-sizing: border-box;
-    }
-
-
-    .section-label {
-        background-color: #022e66 !important; /*var(--mud-palette-primary)*/ /*1366ce*/
-        color: var(--mud-palette-primary-text);
-        padding: 8px;
-        text-align: center;
-        font-size: 1rem;
-        border-bottom: 1px solid var(--mud-palette-primary-light);
-    }
-
-    .same-width {
-        width: 120px;
-        min-width: 120px;
-        text-align: center;
-    }
-</style>

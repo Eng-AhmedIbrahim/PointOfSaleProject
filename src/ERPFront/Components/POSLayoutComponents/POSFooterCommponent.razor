@@ -19,8 +19,21 @@
     </MudButton>
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
+               OnClick="ToggleDrawer"
                StartIcon="@Icons.Material.Filled.Settings"
                Color="Color.Primary">
         اعدادات
     </MudButton>
 </MudStack>
+
+<SettingsDrawer @bind-Open="_drawerOpen">
+    @* <MudText>Drawer Content Goes Here</MudText> *@
+</SettingsDrawer>
+
+@code {
+    private bool _drawerOpen;
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

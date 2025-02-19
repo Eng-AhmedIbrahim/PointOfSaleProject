@@ -1,0 +1,34 @@
+@inject NavigationManager Navigation
+
+<MudDrawer @bind-Open="@Open" Anchor="@Anchor" Elevation="1" Variant="@DrawerVariant.Temporary"
+           OverlayAutoClose="@OverlayAutoClose">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">@Title</MudText>
+    </MudDrawerHeader>
+    <div class="px-4">
+        <MudButtonGroup Color="Color.Primary" Class="mb-1" Variant="Variant.Filled">
+            <MudButton>@_buttonText</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" Style="align-self: auto;">
+                <MudMenuItem OnClick="() => SetAnchor(Anchor.Start)">Start</MudMenuItem>
+                <MudMenuItem OnClick="() => SetAnchor(Anchor.End)">End</MudMenuItem>
+                <MudMenuItem OnClick="() => SetAnchor(Anchor.Top)">Top</MudMenuItem>
+                <MudMenuItem OnClick="() => SetAnchor(Anchor.Bottom)">Bottom</MudMenuItem>
+            </MudMenu>
+        </MudButtonGroup>
+
+        @if (CurrentPageName.Equals(PagesNames.POS))
+        {
+            <Section3SettingsComponent/>
+        }
+
+    </div>
+
+    <MudNavMenu>
+        <MudNavLink OnClick="@CloseDrawer">Close Drawer</MudNavLink>
+    </MudNavMenu>
+    <p>Current Page: @CurrentPageName</p>
+    @ChildContent
+</MudDrawer>
+
+
+
