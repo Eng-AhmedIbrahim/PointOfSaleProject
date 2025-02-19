@@ -59,27 +59,6 @@
             // @_commons.ClearTableItems();
         }
     </script>
-
-
-
-    @* <script> *@
-    @*     function confirmUnload() { *@
-    @*         const count = localStorage.getItem('tableItemCount') || 0; *@
-    @*         if (count > 0) { *@
-    @*             return confirm('You have unfinished orders. Please finish them before leaving.'); *@
-    @*         } *@
-    @*         return true; *@
-    @*     } *@
-
-    @*     window.addEventListener('beforeunload', function (event) { *@
-    @*         if (!confirmUnload()) { *@
-    @*             event.preventDefault(); *@
-    @*             event.returnValue = ''; *@
-    @*         } *@
-    @*     }); *@
-    @* </script> *@
-
-
 </body>
 
 </html>

@@ -1,17 +1,20 @@
-﻿using BlazorBase;
-using Microsoft.JSInterop;
-namespace ERPFront.Components.Pages;
+﻿namespace ERPFront.Components.Pages;
 
 public partial class POS
 {
     private ICollection<CategoryToReturnDto>? _categories = new List<CategoryToReturnDto>();
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
+    private ICollection<MenuSalesItemsToReturnDto> currentItems = new List<MenuSalesItemsToReturnDto>();
+    private int currentCatId;
 
     protected override async Task OnInitializedAsync()
-        => _categories = await CategoryServices.GetAllCategoriesAsync();
+        => _categories = await _categoryServices.GetAllCategoriesAsync();
 
     private async Task InvokeItems(int catId)
-        => _itemByCatId = await CategoryServices.GetItemsByCategoryIdAsync(catId);
+    {
+        _itemByCatId = await _categoryServices.GetItemsByCategoryIdAsync(catId);
+        currentCatId = catId;
+    }
 
     private Task OnSection4ItemsChanged()
     {
@@ -19,37 +22,107 @@ public partial class POS
         return Task.CompletedTask;
     }
 
-    private void AddItemToSection4(MenuSalesItemsToReturnDto selectedItem)
-    {
-        var newItem = new TableItem
-        {
-            Id = selectedItem.Id,
-            Name = selectedItem.ArabicName,
-            Price = (double)(selectedItem.Price ?? 0),
-            Quantity = 1,
-            Total = (double)(selectedItem.Price ?? 0)
-        };
+    private Dictionary<int, int> _itemClickCount = new Dictionary<int, int>();
+    private MenuSalesItemsToReturnDto? _currentBaseItem;
 
-        CommonProperties?.TableItems?.Add(newItem);
+    private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
+    {
+        if (_itemClickCount.Count == 0)
+        {
+            InitializeBaseItem(selectedMenuItem);
+        }
+
+        var currentClickCount = GetCurrentClickCount();
+
+        if (currentClickCount < _currentBaseItem?.Attributes.Count)
+        {
+            UpdateAttributeGroup(currentClickCount);
+            IncrementClickCount();
+        }
+        else
+        {
+            AddItemToTable(_currentBaseItem??new());
+            ResetClickCountAndBaseItem();
+            await InvokeItems(currentCatId);
+        }
+
         UpdateTableItemCount();
         StateHasChanged();
     }
+
+    private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
+    {
+        _currentBaseItem = menuItem;
+        _itemClickCount[menuItem.Id] = 0;
+    }
+
+    private int GetCurrentClickCount()
+    {
+        return _itemClickCount[_currentBaseItem?.Id ?? 0];
+    }
+
+    private void UpdateAttributeGroup(int clickCount)
+    {
+        var attributeGroup = _currentBaseItem?.Attributes
+            .FirstOrDefault(a => a.AppearanceIndex == clickCount + 1);
+
+        if (attributeGroup != null)
+        {
+            _itemByCatId.Clear();
+            foreach (var item in attributeGroup.GroupItems)
+            {
+                var newMenuItem = new MenuSalesItemsToReturnDto
+                {
+                    Id = item.Id,
+                    ArabicName = item.ArabicName,
+                    EnglishName = item.EnglishName,
+                    Price = item.Price
+                };
+                _itemByCatId.Add(newMenuItem);
+            }
+        }
+    }
+
+    private void IncrementClickCount()
+    {
+        _itemClickCount[_currentBaseItem?.Id ?? 0]++;
+    }
+
+    private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem)
+    {
+        var newTableItem = new TableItem
+        {
+            Id = menuItem.Id,
+            Name = menuItem.ArabicName,
+            Price = (double)(menuItem.Price ?? 0),
+            Quantity = 1,
+            Total = (double)(menuItem.Price ?? 0)
+        };
+        _commonProperties?.TableItems?.Add(newTableItem);
+        await InvokeItems(currentCatId);
+    }
+
+    private void ResetClickCountAndBaseItem()
+    {
+        _itemClickCount.Clear();
+        _currentBaseItem = null;
+    }
     private void UpdateTableItemCount()
     {
-        int count = CommonProperties?.TableItems?.Count ?? 0;
+        int count = _commonProperties?.TableItems?.Count ?? 0;
         JsRuntime.InvokeVoidAsync("setTableItemCount", count);
     }
 
     private void RemoveItemFromSection4(TableItem item)
     {
-        CommonProperties?.TableItems?.Remove(item);
-        UpdateTableItemCount(); // Update count after removal
+        _commonProperties?.TableItems?.Remove(item);
+        UpdateTableItemCount(); 
         StateHasChanged();
     }
 
     public void ClearTableItems()
     {
-        CommonProperties?.TableItems?.Clear();
+        _commonProperties?.TableItems?.Clear();
         StateHasChanged();
     }
 }

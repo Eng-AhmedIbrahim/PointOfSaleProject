@@ -106,6 +106,7 @@ public class MappingProfiles:Profile
                    {
                         new MenuSalesItemsGroupDto
                         {
+                            Id = ai.Id,
                             ArabicName = ai.RelatedMenuItem.ArabicName,
                             EnglishName = ai.RelatedMenuItem.EnglishName,
                             Price = ai.RelatedMenuItem.Price
