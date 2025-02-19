@@ -40,8 +40,16 @@
     border-bottom: 1px solid var(--mud-palette-primary-light);
 }
 
+.section4-label {
+    background-color: rgba(0, 200, 83, 1) !important;
+    color: var(--mud-palette-primary-text);
+    padding: 8px;
+    text-align: center;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--mud-palette-primary-light);
+}
 .custom-border-color {
-    border-color: #0072BC !important;
+    border-color: #80808033 !important;
 }
 
 .same-width {

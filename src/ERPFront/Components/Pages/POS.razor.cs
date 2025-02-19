@@ -10,7 +10,10 @@ public partial class POS
     private List<string>? currentSelectedAttribute;
 
     protected override async Task OnInitializedAsync()
-        => _categories = await _categoryServices.GetAllCategoriesAsync();
+    {
+         _categories = await _categoryServices.GetAllCategoriesAsync();
+        _commonProperties.OnChange += StateHasChanged;
+    }
 
     private async Task InvokeItems(int catId)
     {
@@ -26,15 +29,6 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
-        //var selectedMenuItemId = new TableItem
-        //{
-        //    Id = selectedMenuItem.Id,
-        //    Name = selectedMenuItem.ArabicName,
-        //    Price = selectedMenuItem.Price,
-
-                
-        //};
-
         TableItem? selectedTableItem = GetItemFromTableById(selectedMenuItem);
 
         if (!selectedMenuItem.Attributes.Any() && selectedTableItem != null)
@@ -44,7 +38,6 @@ public partial class POS
         }
         else
         {
-
             if (_itemClickCount.Count == 0)
                 InitializeBaseItem(selectedMenuItem);
 
@@ -66,7 +59,6 @@ public partial class POS
                 await AddItemToTable(_currentBaseItem ?? new());
                 ResetClickCountAndBaseItem();
             }
-
         }
         UpdateTableItemCount();
         StateHasChanged();
@@ -153,4 +145,9 @@ public partial class POS
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
         => _commonProperties?.TableItems?.Where(c=>c.Attributes.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
+
+    public void Dispose()
+    {
+        _commonProperties.OnChange -= StateHasChanged;
+    }
 }
