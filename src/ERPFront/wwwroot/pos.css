@@ -32,7 +32,7 @@
 
 
 .section-label {
-    background-color: #022e66 !important; /*var(--mud-palette-primary)*/ /*1366ce*/
+    background-color: #114484 !important; /*var(--mud-palette-primary)*/ /*1366ce*/
     color: var(--mud-palette-primary-text);
     padding: 8px;
     text-align: center;
@@ -41,7 +41,8 @@
 }
 
 .section4-label {
-    background-color: rgba(0, 200, 83, 1) !important;
+/*    background-color: rgba(0, 200, 83, 1) !important;*/
+    background-color: #114484 !important;
     color: var(--mud-palette-primary-text);
     padding: 8px;
     text-align: center;
@@ -57,3 +58,4 @@
     min-width: 120px;
     text-align: center;
 }
+

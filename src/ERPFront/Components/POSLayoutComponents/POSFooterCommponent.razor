@@ -2,26 +2,26 @@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.Discount"
-               Color="Color.Primary">
+               class="button-color-footer">
         خصم
     </MudButton>
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.SetMeal"
-               Color="Color.Primary">
+               class="button-color-footer">
         الوجبات
     </MudButton>
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.Alarm"
-               Color="Color.Primary">
+               class="button-color-footer">
         الانتظار
     </MudButton>
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                OnClick="ToggleDrawer"
                StartIcon="@Icons.Material.Filled.Settings"
-               Color="Color.Primary">
+               class="button-color-footer">
         اعدادات
     </MudButton>
 </MudStack>
@@ -37,3 +37,10 @@
         _drawerOpen = !_drawerOpen;
     }
 }
+
+
+<style>
+    .button-color-footer {
+        color: #114484 !important;
+    }
+</style>

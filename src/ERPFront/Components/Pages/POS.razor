@@ -15,8 +15,9 @@
                 {
                     <MudButton Variant="Variant.Filled"
                                FullWidth="true"
-                               Style="@($"font-size: {22}px;font-weight: bold;")"
-                               OnClick="async () => await InvokeItems(category.Id)">
+                               Style="@($"font-size: {22}px;font-weight: bold;margin-bottom: 3px;")"
+                               OnClick="async () => await InvokeItems(category.Id)"
+                               Class="liner-grid-buttons">
                         @category.ArabicName
                     </MudButton>
                 }
@@ -34,8 +35,8 @@
                 @foreach (var item in _itemByCatId)
                 {
                     <MudButton Size="Size.Large" Variant="Variant.Filled"
-                               Class="same-width"
-                               Style="@($"padding:{_commonProperties.SalesItemsHorizontalSlider * 4}px;font-size:{_commonProperties.SalesItemsVerticalSlider * 4}px;width:{_commonProperties.SalesItemsHorizontalSlider * 20}px;font-weight: bolder;")"
+                               Class="same-width liner-grid-buttons"
+                               Style="@($"padding:{_commonProperties.SalesItemsHorizontalSlider * 4}px;font-size:{_commonProperties.SalesItemsVerticalSlider * 4}px;width:{_commonProperties.SalesItemsHorizontalSlider * 20}px;font-weight: bolder;margin: 1px;")"
                                OnClick="@(() => AddItemToSection4(item))">
                         @item.ArabicName
                     </MudButton>
@@ -71,4 +72,13 @@
 
 }
 
+<style>
+    .liner-grid-buttons {
+        background: linear-gradient(135deg, #ffffff, #e7ecf5)
+    }
+
+    .make-color {
+        background-color: #143155 !important ;
+    }
+</style>
 

@@ -3,44 +3,45 @@
 <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Justify="Justify.Center">
     <img src="/images/Logo.png" alt="Logo" style="width: 40px; height: 40px;" />
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.TableRestaurant"
-    Color="@(_commonProperties.CurrentPosMode == "Tables" ? Color.Success : Color.Primary)"
-    OnClick='() => SetMode("Tables")'>
+               StartIcon="@Icons.Material.Filled.TableRestaurant"
+               Class="@( _commonProperties.CurrentPosMode == "Tables" ? "btn-success" : "button-color")"
+               OnClick='() => SetMode("Tables")'>
         طاولات
     </MudButton>
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.DeliveryDining"
-    Color="@(_commonProperties.CurrentPosMode == "Delivery" ? Color.Success : Color.Primary)"
-    OnClick='() => SetMode("Delivery")'>
+               StartIcon="@Icons.Material.Filled.DeliveryDining"
+               Class="@( _commonProperties.CurrentPosMode == "Delivery" ? "btn-success" : "button-color")"
+               OnClick='() => SetMode("Delivery")'>
         توصيل للمنازل
     </MudButton>
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.DirectionsRun"
-    Color="@(_commonProperties.CurrentPosMode == "TakeAway" ? Color.Success : Color.Primary)"
-    OnClick='() => SetMode("TakeAway")'>
+               StartIcon="@Icons.Material.Filled.DirectionsRun"
+               Class="@( _commonProperties.CurrentPosMode == "TakeAway" ? "btn-success" : "button-color")"
+               OnClick='() => SetMode("TakeAway")'>
         تيك أواي
     </MudButton>
 
     <MudSpacer />
 
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.AttachMoney"
-    Color="Color.Primary">
+               StartIcon="@Icons.Material.Filled.AttachMoney"
+               Class="button-color"
+                >
         الحسابات
     </MudButton>
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.AreaChart"
-    Color="Color.Primary">
+               StartIcon="@Icons.Material.Filled.AreaChart"
+               Class="button-color">
         ملخص
     </MudButton>
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.PushPin"
-    Color="Color.Primary">
+               StartIcon="@Icons.Material.Filled.PushPin"
+               Class="button-color">
         توزيع
     </MudButton>
     <MudButton Variant="Variant.Filled"
-    StartIcon="@Icons.Material.Filled.Checklist"
-    Color="Color.Primary">
+               StartIcon="@Icons.Material.Filled.Checklist"
+               Class="button-color">
         الطلبات
     </MudButton>
 </MudStack>
@@ -55,4 +56,16 @@
             InvokeAsync(StateHasChanged);
         }
     }
-}   
+}
+
+<style>
+    .button-color {
+        background-color: #114484 !important;
+        color:white
+    }
+
+    .btn-success {
+        background-color: #28a745; /* Green */
+        color: white;
+    }
+</style>
