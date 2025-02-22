@@ -57,15 +57,12 @@
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         _cartService.OnChange += HandleCartServiceChange;
     }
+   
     private async void HandleCartServiceChange()
-    {
-        await InvokeAsync(StateHasChanged); // Ensures UI updates on the correct thread
-    }
+     => await InvokeAsync(StateHasChanged);
 
     public void Dispose()
-    {
-        _cartService.OnChange -= HandleCartServiceChange;
-    }
+    => _cartService.OnChange -= HandleCartServiceChange;
 
     private async void BackupItem(object element)
     {
@@ -77,7 +74,7 @@
                 Name = item.Name,
                 Price = item.Price,
                 Total = item.Total
-            };
+        };
 
         Snackbar.Add("Backup Item Handler Invoked");
 

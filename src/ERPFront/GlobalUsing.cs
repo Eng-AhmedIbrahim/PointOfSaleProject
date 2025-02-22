@@ -19,5 +19,6 @@ global using ERPFront.ERPFrontServices.CategoryServices;
 
 global using  Microsoft.JSInterop;
 
-global using BlazorBase.Services;
+global using ERPFront.ERPFrontServices.CartServices;
+
 
