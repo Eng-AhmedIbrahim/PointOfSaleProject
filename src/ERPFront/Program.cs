@@ -16,6 +16,7 @@ builder.Services.AddSingleton<ApiSettings>(sp =>
         .Value);
 
 builder.Services.AddSingleton<CommonProperties>();
+builder.Services.AddSingleton<CartService>();
 
 
 builder.Services.AddHttpClient(builder.Configuration["ApiSettings:ApiName"]!,

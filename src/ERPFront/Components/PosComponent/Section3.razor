@@ -1,22 +1,27 @@
+@inject CartService _cartService
+@inject CommonProperties _commonProperties
 <MudGrid Spacing="1" Justify="Justify.Center">
 
     @for (var i = 1; i <= 9; i++)
     {
         var number = i.ToString();
         <MudItem xs="12" sm="6">
-            <button class="mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color special-keypad-button liner-grid-buttons">
+            <button class="mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color special-keypad-button liner-grid-buttons"
+                    @onclick="() => _cartService.AppendNumberToQuantity(number)">
                 @number
             </button>
         </MudItem>
     }
     <MudItem xs="12" sm="6">
-        <button class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color liner-grid-buttons">
+        <button class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color liner-grid-buttons"
+                @onclick='() => _cartService.AppendNumberToQuantity("0")'>
             0
         </button>
     </MudItem>
 
     <MudItem xs="12" sm="6">
-        <button class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color liner-grid-buttons">
+        <button class="special-keypad-button mud-button-root mud-icon-button mud-button mud-button-filled mud-button-filled-default mud-button-filled-size-small mud-ripple mud-icon-button-size-small w-100 custom-button-color liner-grid-buttons"
+                @onclick="() => _cartService.OnClickBS()">
             BS
         </button>
     </MudItem>
@@ -39,48 +44,50 @@
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.AddCircle"
                        Size="Size.Small"
-                       />
+                       OnClick="() => _cartService.IncrementQuantity()" />
 
     </MudItem>
     <MudItem xs="12" sm="6">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.RemoveCircle"
-                       Size="Size.Small"/>
+                       Size="Size.Small"
+                       OnClick="() => _cartService.DecrementQuantity()" />
     </MudItem>
 
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.RemoveShoppingCart"
-                       Size="Size.Medium"/>
+                       Size="Size.Medium" 
+                       OnClick="() => _cartService.RemoveItem(_commonProperties.TableItems??[])" />
     </MudItem>
 
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Percent"
-                       Size="Size.Medium"/>
+                       Size="Size.Medium"  Disabled/>
     </MudItem>
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Edit"
-                       Size="Size.Medium"/>
+                       Size="Size.Medium" />
     </MudItem>
 
-    <MudItem xs="12" sm="6">
-        <MudIconButton Variant="Variant.Filled"
-                       Class="w-100 special-icon-btn liner-grid-buttons"
-                       Icon="@Icons.Material.Filled.Add"
-                       Size="Size.Small"/>
-    </MudItem>
+    @* <MudItem xs="12" sm="6"> *@
+    @*     <MudIconButton Variant="Variant.Filled" *@
+    @*                    Class="w-100 special-icon-btn liner-grid-buttons" *@
+    @*                    Icon="@Icons.Material.Filled.Add" *@
+    @*                    Size="Size.Small"/> *@
+    @* </MudItem> *@
 
-    <MudItem xs="12" sm="6">
+    <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Remove"
-                       Size="Size.Small"/>
+                       Size="Size.Medium" Disabled/>
     </MudItem>
 </MudGrid>
 
@@ -93,7 +100,7 @@
 
 
 <style>
-    .liner-grid-buttons{
+    .liner-grid-buttons {
         background: linear-gradient(135deg,#ffffff, #e7ecf5);
         color: #143155 !important;
     }

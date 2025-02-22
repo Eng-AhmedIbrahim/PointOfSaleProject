@@ -30,4 +30,6 @@ public class CommonProperties
         return Task.CompletedTask;
     }
 
+    public int SelectedItemCount { get; set; }
+
 }

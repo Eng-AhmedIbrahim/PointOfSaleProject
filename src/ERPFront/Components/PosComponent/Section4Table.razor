@@ -1,6 +1,7 @@
 ﻿@inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
+@inject CartService _cartService
 
 <MudTable Items="Items" Dense="true" Hover="true" FixedHeader="true" CanCancelEdit="true"
           CommitEditTooltip="Commit Edit"
@@ -21,12 +22,14 @@
     </HeaderContent>
 
     <RowTemplate>
-            <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style ">
-                @context.Quantity
-            </MudTd>
-            <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
-            <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
-            <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
+        <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style" @onclick="() => SelectItem(context)">
+            <MudNumericField T="int" Value="context.Quantity" Min="1"
+                             Style="width: 60px;" Immediate="true"
+                             ValueChanged="(val) => UpdateQuantity(context, val)" />
+        </MudTd>
+        <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
+        <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
+        <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
     </RowTemplate>
 
     <ChildRowContent>
@@ -52,6 +55,16 @@
     protected override void OnInitialized()
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        _cartService.OnChange += HandleCartServiceChange;
+    }
+    private async void HandleCartServiceChange()
+    {
+        await InvokeAsync(StateHasChanged); // Ensures UI updates on the correct thread
+    }
+
+    public void Dispose()
+    {
+        _cartService.OnChange -= HandleCartServiceChange;
     }
 
     private async void BackupItem(object element)
@@ -92,6 +105,16 @@
 
         Snackbar.Add("Item Has Been Committed Handler Invoked");
     }
+
+    private void UpdateQuantity(TableItem item, int newQuantity)
+    {
+        item.Quantity = newQuantity;
+        item.Total = item.Quantity * item.Price; // Update total
+    }
+
+
+    private void SelectItem(TableItem item)
+     => _cartService.SetSelectedItem(item);
 }
 
 <style>
