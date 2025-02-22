@@ -1,4 +1,4 @@
-﻿namespace BlazorBase.Services;
+﻿namespace ERPFront.ERPFrontServices.CartServices;
 
 public class CartService : ICartService
 {
@@ -37,7 +37,7 @@ public class CartService : ICartService
 
     public void RemoveItem(List<TableItem> items)
     {
-        items.Remove(SelectedItem??new TableItem());
+        items.Remove(SelectedItem ?? new TableItem());
         NotifyStateChanged();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BlazorBase.Services;
+﻿namespace ERPFront.ERPFrontServices.CartServices;
 public interface ICartService
 {
     public void SetSelectedItem(TableItem item);

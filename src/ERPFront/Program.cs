@@ -1,3 +1,5 @@
+using ERPFront.ERPFrontServices.CartServices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
