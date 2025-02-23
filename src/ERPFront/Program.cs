@@ -61,5 +61,5 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapControllers();
+//app.MapControllers();
 await app.RunAsync();

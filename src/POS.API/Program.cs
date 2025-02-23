@@ -1,7 +1,12 @@
 using DevExpress.AspNetCore;
 using DevExpress.AspNetCore.Reporting;
-
-namespace POS.API;
+using DevExpress.XtraReports.Serialization;
+using DevExpress.DataAccess.Native.Web;
+using DevExpress.DataAccess.ObjectBinding;
+using DevExpress.DataAccess.Web;
+using DevExpress.XtraReports.Configuration;
+using DevExpress.Utils.Serializing;
+using POS.API.ReportEntities;
 
 public class Program
 {
@@ -19,18 +24,22 @@ public class Program
         builder.Services.AddSwaggerServices();
         builder.Services.AddApplicationServices();
 
-        builder.Services.AddFlexibleCaching(redisConnectionString);
+        DevExpress.XtraReports.Web.WebDocumentViewer.DefaultWebDocumentViewerContainer.Register<IObjectDataSourceWizardTypeProvider, ObjectDataSourceWizardCustomTypeProvider>();
 
-        builder.Services.AddDevExpressControls();
-        builder.Services.ConfigureReportingServices(configurator => {
-            configurator.ConfigureWebDocumentViewer(viewerConfigurator => { });
-            configurator.ConfigureReportDesigner(designerConfigurator => { });
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("MyPolicy", options =>
+            {
+                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
         });
+
+
         #region Database connections
         builder.Services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseSqlServer(databaseConnectionString);
-        });
+            {
+                options.UseSqlServer(databaseConnectionString);
+            });
 
         builder.Services.AddDbContext<AppIdentityDbContext>(options =>
         {
@@ -77,7 +86,7 @@ public class Program
 
         app.UseMiddleware<ExeptionMiddleWare>();
 
-            app.UseSwaggerServices();
+        app.UseSwaggerServices();
 
         app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
@@ -90,8 +99,16 @@ public class Program
 
         app.MapControllers();
 
-        #endregion
 
+        #endregion
         await app.RunAsync();
+    }
+}
+
+public class ObjectDataSourceWizardCustomTypeProvider : IObjectDataSourceWizardTypeProvider
+{
+    public IEnumerable<Type> GetAvailableTypes(string context)
+    {
+        return new[] { typeof(TakeAwayReceiptDetails) };
     }
 }

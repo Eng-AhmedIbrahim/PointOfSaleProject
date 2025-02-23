@@ -1,4 +1,6 @@
-﻿namespace POS.Core.Entities.ReportEntities;
+﻿using BlazorBase;
+
+namespace POS.API.ReportEntities;
 
 public class TakeAwayReceiptDetails
 {
@@ -8,16 +10,7 @@ public class TakeAwayReceiptDetails
     public string? OrderDate { get; set; }
     public string? OrderTime { get; set; }
     public string? CashierName { get; set; }
-    public ICollection<OrderItems>? OrderItems { get; set; }
+    public List<TableItem>? OrderItems { get; set; }
     public string? TotalOrderAmount { get; set; }
     public string? PaymentType { get; set; }
-}
-
-
-public class OrderItems
-{
-    public string? Quantity { get; set; }
-    public string? ItemName { get; set; }
-    public string? Price { get; set; }
-    public string? ItemTotal { get; set; }
 }
