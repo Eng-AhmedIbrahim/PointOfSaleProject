@@ -59,7 +59,7 @@
     }
    
     private async void HandleCartServiceChange()
-     => await InvokeAsync(StateHasChanged);
+    => await InvokeAsync(StateHasChanged);
 
     public void Dispose()
     => _cartService.OnChange -= HandleCartServiceChange;

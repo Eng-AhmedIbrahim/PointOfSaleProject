@@ -1,4 +1,3 @@
-using ERPFront.ERPFrontServices.CartServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +19,16 @@ builder.Services.AddSingleton<ApiSettings>(sp =>
 builder.Services.AddSingleton<CommonProperties>();
 builder.Services.AddSingleton<CartService>();
 
+//DevExpress Configurations
+builder.Services.AddDevExpressBlazor();
+builder.Services.AddDevExpressServerSideBlazorReportViewer();
+builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(options =>
+{
+    options.BootstrapVersion = DevExpress.Blazor.BootstrapVersion.v5;
+});
+builder.WebHost.UseWebRoot("wwwroot");
+builder.WebHost.UseStaticWebAssets();
+
 
 builder.Services.AddHttpClient(builder.Configuration["ApiSettings:ApiName"]!,
     client => { client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!); });
@@ -40,7 +49,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
+//app.UsedevExpressBlazorWepServerReportViewer();
 
 app.UseStatusCodePagesWithRedirects("/404");
 
@@ -50,4 +61,5 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapControllers();
 await app.RunAsync();

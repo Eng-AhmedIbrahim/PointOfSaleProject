@@ -1,3 +1,6 @@
+using DevExpress.AspNetCore;
+using DevExpress.AspNetCore.Reporting;
+
 namespace POS.API;
 
 public class Program
@@ -18,6 +21,11 @@ public class Program
 
         builder.Services.AddFlexibleCaching(redisConnectionString);
 
+        builder.Services.AddDevExpressControls();
+        builder.Services.ConfigureReportingServices(configurator => {
+            configurator.ConfigureWebDocumentViewer(viewerConfigurator => { });
+            configurator.ConfigureReportDesigner(designerConfigurator => { });
+        });
         #region Database connections
         builder.Services.AddDbContext<AppDbContext>(options =>
         {
