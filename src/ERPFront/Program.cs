@@ -20,12 +20,12 @@ builder.Services.AddSingleton<CommonProperties>();
 builder.Services.AddSingleton<CartService>();
 
 //DevExpress Configurations
-builder.Services.AddDevExpressBlazor();
-builder.Services.AddDevExpressServerSideBlazorReportViewer();
-builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(options =>
-{
-    options.BootstrapVersion = DevExpress.Blazor.BootstrapVersion.v5;
-});
+// builder.Services.AddDevExpressBlazor();
+// builder.Services.AddDevExpressServerSideBlazorReportViewer();
+// builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(options =>
+// {
+//     options.BootstrapVersion = DevExpress.Blazor.BootstrapVersion.v5;
+// });
 builder.WebHost.UseWebRoot("wwwroot");
 builder.WebHost.UseStaticWebAssets();
 

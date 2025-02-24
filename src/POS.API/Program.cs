@@ -1,114 +1,91 @@
-using DevExpress.AspNetCore;
-using DevExpress.AspNetCore.Reporting;
-using DevExpress.XtraReports.Serialization;
-using DevExpress.DataAccess.Native.Web;
-using DevExpress.DataAccess.ObjectBinding;
-using DevExpress.DataAccess.Web;
-using DevExpress.XtraReports.Configuration;
-using DevExpress.Utils.Serializing;
-using POS.API.ReportEntities;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+builder.AddSerilogService();
+
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+builder.Services.AddControllers();
+builder.Services.AddSwaggerServices();
+builder.Services.AddApplicationServices();
+
+builder.Services.AddCors(options =>
 {
-    private static async Task Main(string[] args)
+    options.AddPolicy("MyPolicy", options =>
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        builder.AddSerilogService();
-
-        var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-        var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-
-        builder.Services.AddControllers();
-        builder.Services.AddSwaggerServices();
-        builder.Services.AddApplicationServices();
-
-        DevExpress.XtraReports.Web.WebDocumentViewer.DefaultWebDocumentViewerContainer.Register<IObjectDataSourceWizardTypeProvider, ObjectDataSourceWizardCustomTypeProvider>();
-
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("MyPolicy", options =>
-            {
-                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            });
-        });
+        options.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin();
+    });
+});
 
 
-        #region Database connections
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseSqlServer(databaseConnectionString);
-            });
+#region Database connections
 
-        builder.Services.AddDbContext<AppIdentityDbContext>(options =>
-        {
-            options.UseSqlServer(databaseConnectionString);
-        });
-        #endregion
+builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
-        builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddDbContext<AppIdentityDbContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("MyPolicy", options =>
-            {
-                options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            });
-        });
+#endregion
 
-        var app = builder.Build();
+builder.Services.AddIdentityServices(builder.Configuration);
 
-        #region Database Migrate
-        using var scope = app.Services.CreateScope();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyPolicy", options =>
+    {
+        options.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin();
+    });
+});
 
-        var services = scope.ServiceProvider;
+var app = builder.Build();
 
-        var _dbContext = services.GetRequiredService<AppDbContext>();
-        var _IdentitydbContext = services.GetRequiredService<AppIdentityDbContext>();
+#region Database Migrate
 
-        var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+using var scope = app.Services.CreateScope();
 
-        try
-        {
-            await _dbContext.Database.MigrateAsync();
-            await _IdentitydbContext.Database.MigrateAsync();
-            //await PosDbContextDataSeed.SeedAsync(_dbContext);
-        }
-        catch (Exception ex)
-        {
-            var logger = loggerFactory.CreateLogger<Program>();
-            logger.LogError(ex, "An error occurred during migration");
-        }
-        #endregion
+var services = scope.ServiceProvider;
 
-        #region Configure Kestrel Middelewares
+var dbContext = services.GetRequiredService<AppDbContext>();
+var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
 
-        app.UseMiddleware<ExeptionMiddleWare>();
+var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
-        app.UseSwaggerServices();
-
-        app.UseStatusCodePagesWithReExecute("/errors/{0}");
-
-        app.UseHttpsRedirection();
-        app.UseCors("MyPolicy");
-        app.UseStaticFiles();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-
-        #endregion
-        await app.RunAsync();
-    }
+try
+{
+    await dbContext.Database.MigrateAsync();
+    await identityDbContext.Database.MigrateAsync();
+    //await PosDbContextDataSeed.SeedAsync(_dbContext);
+}
+catch (Exception ex)
+{
+    var logger = loggerFactory.CreateLogger<Program>();
+    logger.LogError(ex, "An error occurred during migration");
 }
 
-public class ObjectDataSourceWizardCustomTypeProvider : IObjectDataSourceWizardTypeProvider
-{
-    public IEnumerable<Type> GetAvailableTypes(string context)
-    {
-        return new[] { typeof(TakeAwayReceiptDetails) };
-    }
-}
+#endregion
+
+#region Configure Kestrel Middelewares
+
+app.UseMiddleware<ExeptionMiddleWare>();
+
+app.UseSwaggerServices();
+
+app.UseStatusCodePagesWithReExecute("/errors/{0}");
+
+app.UseHttpsRedirection();
+app.UseCors("MyPolicy");
+app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+#endregion
+
+await app.RunAsync();
+await app.RunAsync();

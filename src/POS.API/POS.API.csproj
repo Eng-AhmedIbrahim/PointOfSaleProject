@@ -8,9 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="24.2.3" />
-    <PackageReference Include="DevExpress.Drawing" Version="24.2.3" />
-    <PackageReference Include="DevExpress.Reporting.Core" Version="24.2.3" />
+<!--    <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="24.2.3" />-->
+<!--    <PackageReference Include="DevExpress.Drawing" Version="24.2.3" />-->
+<!--    <PackageReference Include="DevExpress.Reporting.Core" Version="24.2.3" />-->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +29,7 @@
     <ProjectReference Include="..\Common\BlazorBase\BlazorBase.csproj" />
     <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
     <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
+    <ProjectReference Include="..\POS.Reports\POS.Reports.csproj" />
     <ProjectReference Include="..\POS.Repositpry\POS.Repository.csproj" />
     <ProjectReference Include="..\POS.Services\POS.Services.csproj" />
   </ItemGroup>

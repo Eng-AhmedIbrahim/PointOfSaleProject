@@ -11,21 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0b4c42b9-530d-4059-81bb-96c88fb9beec" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Common/BlazorBase/Helpers/PagesNames.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ERPFront/Components/POSLayoutComponents/SettingsDrawer.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ERPFront/Components/POSLayoutComponents/SettingsDrawer.razor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ERPFront/Components/POSSettingsComponents/Section3SettingsComponent.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ERPFront/Components/POSSettingsComponents/Section3SettingsComponent.razor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ERPFront/wwwroot/pos.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PointOfSale/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PointOfSale/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PointOfSale/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PointOfSale/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/App.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/App.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/POSLayoutComponents/POSFooterCommponent.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/POSLayoutComponents/POSFooterCommponent.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/Pages/POS.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/Pages/POS.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/PosComponent/Section3.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/PosComponent/Section3.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/PosComponent/Section4Table.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/PosComponent/Section4Table.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ERPFront/Components/_Imports.razor" beforeDir="false" afterPath="$PROJECT_DIR$/ERPFront/Components/_Imports.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/POS.API/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/POS.API/appsettings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,12 +37,12 @@
     &quot;assignee&quot;: &quot;Ibra-himAbdo&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://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@github.com/Ibra-himAbdo/PointOfSale",
-    "accountId": "8cdfe00a-7203-4872-954d-c994df9b6bdf"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://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@github.com/Ibra-himAbdo/PointOfSale&quot;,
+    &quot;accountId&quot;: &quot;8cdfe00a-7203-4872-954d-c994df9b6bdf&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock:///home/ibra-him/RiderProjects/PointOfSale/src/Common/BlazorBase/API/ApiEndpoints.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/ibra-him/RiderProjects/PointOfSale/src/Common/BlazorBase/API/ApiEndpoints.cs" root0="SKIP_HIGHLIGHTING" />
@@ -74,25 +60,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.ERPFront: https.executor": "Run",
-    ".NET Launch Settings Profile.POS.API: https.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/ibra-him/RiderProjects/PointOfSale",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.ERPFront: https.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.POS.API: https.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ibra-him/RiderProjects/PointOfSale&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Multi-Launch.Multi-Launch: PointOfSale">
     <configuration name="ERPFront: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ERPFront/ERPFront.csproj" />
@@ -204,7 +190,8 @@
       <workItem from="1739657241170" duration="238000" />
       <workItem from="1739851283286" duration="8000" />
       <workItem from="1739979389171" duration="153000" />
-      <workItem from="1739990901558" duration="1301000" />
+      <workItem from="1739990901558" duration="1835000" />
+      <workItem from="1739999123309" duration="14000" />
     </task>
     <task id="LOCAL-00001" summary="adding api service helpers">
       <option name="closed" value="true" />
@@ -214,7 +201,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739657166082</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="fix sec3 and add its Settings To Drawer">
+      <option name="closed" value="true" />
+      <created>1739992583255</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1739992583255</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -248,6 +243,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="adding api service helpers" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding api service helpers" />
+    <MESSAGE value="fix sec3 and add its Settings To Drawer" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix sec3 and add its Settings To Drawer" />
   </component>
 </project>
