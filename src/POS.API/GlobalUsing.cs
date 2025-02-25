@@ -57,3 +57,4 @@ global using POS.Core.Services.Contract.AccountDomainContracts;
 global using System.Security.Claims;
 global using POS.Core.Services.Contract.UserSettingServices;
 global using POS.Services.UserSettingsService;
+global using QuestPDF.Infrastructure;

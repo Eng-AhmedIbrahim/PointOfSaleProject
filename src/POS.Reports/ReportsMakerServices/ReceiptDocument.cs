@@ -154,7 +154,7 @@ public class ReceiptDocument(Receipt receipt) : IDocument
                     table.Cell()
                         .Element(CellStyle)
                         .Text(item.Name)
-                        .AlignCenter();
+                        .AlignEnd();
 
                     table.Cell()
                         .Element(CellStyle)

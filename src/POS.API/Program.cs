@@ -1,3 +1,5 @@
+QuestPDF.Settings.License = LicenseType.Community;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddSerilogService();
@@ -87,5 +89,4 @@ app.MapControllers();
 
 #endregion
 
-await app.RunAsync();
 await app.RunAsync();

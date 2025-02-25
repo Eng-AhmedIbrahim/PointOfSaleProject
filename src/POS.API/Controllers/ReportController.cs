@@ -9,22 +9,27 @@ namespace POS.API.Controllers;
 public class ReportController : ControllerBase
 {
     private readonly IWebHostEnvironment _hostEnvironment;
-    private readonly string _reportPath;
+    private readonly string _reportsFolder;
 
     public ReportController(IWebHostEnvironment hostEnvironment)
     {
         _hostEnvironment = hostEnvironment;
-        _reportPath = Path.Combine(_hostEnvironment.WebRootPath, "Reports");
+        _reportsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Reports");
+        Directory.CreateDirectory(_reportsFolder);
     }
 
     [HttpGet("GenerateReceipt")]
     public async Task<IActionResult> GenerateReceiptReport()
     {
-        var receipt = FakeDataGenerator.GenerateFakeReceipt(5);
+        var receipt = FakeDataGenerator.GenerateFakeReceipt(20);
         var document = await Task.Run(() => new ReceiptDocument(receipt));
 
-        var outputPath = Path.Combine(_reportPath, $"{DateTimeOffset.Now}-receipt.pdf");
+        var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd_hh-mm-ss_tt");
+        var outputPath = Path.Combine(_reportsFolder, $"{timestamp}-receipt.pdf");
+
+        // Save the PDF
         document.GeneratePdf(outputPath);
-        return Ok("Report generated successfully");
+
+        return Ok($"Report generated successfully: {outputPath}");
     }
 }
