@@ -15,6 +15,7 @@
         <PackageReference Include="Blazor.Bootstrap" Version="3.3.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.13" />
         <PackageReference Include="MudBlazor" Version="8.2.0" />
+        <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     </ItemGroup>
 
     <ItemGroup>

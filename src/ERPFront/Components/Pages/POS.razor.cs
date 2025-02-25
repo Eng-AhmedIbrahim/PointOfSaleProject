@@ -8,6 +8,7 @@ public partial class POS
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
     private int currentCatId;
     private List<string>? currentSelectedAttribute;
+    public string NoteValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,5 +150,6 @@ public partial class POS
     public void Dispose()
     {
         _commonProperties.OnChange -= StateHasChanged;
+        CustomizationSettingsService.OnChanged -= StateHasChanged;
     }
 }

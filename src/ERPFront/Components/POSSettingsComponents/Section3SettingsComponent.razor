@@ -1,113 +1,65 @@
 @inject IJSRuntime Js
-<MudGrid Spacing="1" Justify="Justify.Center">
-    <MudItem xs="12">
-        <MudText Typo="Typo.h6">Section 3</MudText>
-    </MudItem>
-    <MudItem xs="12">
-        <MudText Typo="Typo.subtitle1">Resize Keypad</MudText>
-    </MudItem>
-    <MudItem xs="12">
-        <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
-            <MudIconButton Icon="@Icons.Material.Filled.Add"
-                           OnClick="() => IncreaseSize(SpecialKeypadButton)"
-                           Size="Size.Large"/>
-            <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                           OnClick="() => DecreaseSize(SpecialKeypadButton)"
-                           Size="Size.Large"/>
-        </MudButtonGroup>
-    </MudItem>
-    <MudItem xs="12">
-        <MudText Typo="Typo.subtitle1">Resize Icon</MudText>
-    </MudItem>
-    <MudItem xs="12">
-        <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
-            <MudIconButton Icon="@Icons.Material.Filled.Add"
-                           OnClick="() => IncreaseSize(SpecialIconBtn)"
-                           Size="Size.Large"/>
-            <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                           OnClick="() => DecreaseSize(SpecialIconBtn)"
-                           Size="Size.Large"/>
-        </MudButtonGroup>
-    </MudItem>
-    <MudItem xs="12">
-        <MudButton StartIcon="@Icons.Material.Filled.RestartAlt"
-                   OnClick="Reset"
-                   Variant="Variant.Filled"
-                   Class="my-2 rounded-0"
-                   Size="Size.Medium">
-            Reset
-        </MudButton>
-    </MudItem>
+
+<MudButton OnClick="OnExpandCollapseClick"
+           EndIcon="@(_expanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)">
+    <MudText Class="section-btn-label" Typo="Typo.h6">Section 3</MudText>
+</MudButton>
+<MudCollapse Class="px-3" Expanded="_expanded">
+
+    <MudGrid Spacing="1" Justify="Justify.Center">
+        @* <MudItem xs="12"> *@
+        @*     <MudText Typo="Typo.h6">Section 3</MudText> *@
+        @* </MudItem> *@
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle1">Resize Keypad</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="() => IncreaseSize(SpecialKeypadButton)"
+                               Size="Size.Large"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="() => DecreaseSize(SpecialKeypadButton)"
+                               Size="Size.Large"/>
+            </MudButtonGroup>
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle1">Resize Icon</MudText>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="() => IncreaseSize(SpecialIconBtn)"
+                               Size="Size.Large"/>
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="() => DecreaseSize(SpecialIconBtn)"
+                               Size="Size.Large"/>
+            </MudButtonGroup>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton StartIcon="@Icons.Material.Filled.RestartAlt"
+                       OnClick="Reset"
+                       Variant="Variant.Filled"
+                       Class="my-2 rounded-0"
+                       Size="Size.Medium">
+                Reset
+            </MudButton>
+        </MudItem>
 
 
-</MudGrid>
+    </MudGrid>
+
+</MudCollapse>
 
 
-<script>
-    window.updateFontSize = (className, step) => {
-        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // Default 16px
-        let cssVarName = "";
+@code {
+    bool _expanded = false;
 
-        // Determine which CSS variable to modify
-        if (className === "special-keypad-button") {
-            cssVarName = "--dynamic-keypad-btn-size";
-        } else if (className === "special-icon-btn") {
-            cssVarName = "--dynamic-icon-size";
-        } else if (className === "special-quantity-button") {
-            cssVarName = "--dynamic-quantity-btn-size";
-        } else {
-            console.warn(`No variable associated with class: ${className}`);
-            return;
-        }
-
-        // Get current font size from CSS variable
-        let currentSizeRem = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(cssVarName)) || 1.25;
-
-        const stepRem = step / rootFontSize; // Convert step from px to rem
-        const newFontSizeRem = currentSizeRem + stepRem; // Adjust font size in rem
-
-        // Update the CSS variable
-        document.documentElement.style.setProperty(cssVarName, `${newFontSizeRem}rem`);
-
-        console.log(`Updated ${className} Font Size: ${newFontSizeRem}rem`);
-
-        // Store updated font size in localStorage
-        localStorage.setItem(`fontSize_${className}`, newFontSizeRem);
-    };
-
-    // Restore font sizes from localStorage on page load
-    document.addEventListener("DOMContentLoaded", () => {
-        loadStoredFontSizes();
-    });
-
-    function loadStoredFontSizes() {
-        const keypadBtnSize = localStorage.getItem("fontSize_special-keypad-button");
-        const quantityBtnSize = localStorage.getItem("fontSize_special-quantity-button");
-        const iconSize = localStorage.getItem("fontSize_special-icon-btn");
-
-        if (keypadBtnSize) {
-            document.documentElement.style.setProperty("--dynamic-keypad-btn-size", `${keypadBtnSize}rem`);
-        }
-        if (iconSize) {
-            document.documentElement.style.setProperty("--dynamic-icon-size", `${iconSize}rem`);
-        }
-        if (quantityBtnSize) {
-            document.documentElement.style.setProperty("--dynamic-quantity-btn-size", `${quantityBtnSize}rem`);
-        }
+    private void OnExpandCollapseClick()
+    {
+        _expanded = !_expanded;
     }
 
-    function clearFontSizeStorage() {
-        // Remove specific font size keys from local storage
-        localStorage.removeItem("fontSize_special-keypad-button");
-        localStorage.removeItem("fontSize_special-quantity-button");
-        localStorage.removeItem("fontSize_special-icon-btn");
+}
 
-        // Reset CSS variables to default values (adjust as needed)
-        document.documentElement.style.setProperty("--dynamic-keypad-btn-size", "1rem");
-        document.documentElement.style.setProperty("--dynamic-icon-size", "1.25rem");
-        document.documentElement.style.setProperty("--dynamic-quantity-btn-size", "1rem");
 
-        console.log("Font sizes reset and local storage cleared.");
-    }
-
-</script>

@@ -16,7 +16,7 @@ global using BlazorBase.API;
 global using Microsoft.Extensions.Options;
 global using BlazorBase.Helpers;
 global using ERPFront.ERPFrontServices.CategoryServices;
-
+global using ERPFront.ERPFrontServices;
 global using  Microsoft.JSInterop;
 
 global using ERPFront.ERPFrontServices.CartServices;

@@ -1,7 +1,10 @@
 :root {
     --dynamic-icon-size: 1.125rem;
     --dynamic-keypad-btn-size: 1.125rem;
+    --dynamic-sec4-btn-size: 1.125rem;
     --dynamic-quantity-btn-size: 1.125rem;
+    --dynamic-finance-label-text-size: 1.125rem;
+    --dynamic-finance-input-text-size: 1rem;
 }
 
 .custom-button-color {
@@ -59,3 +62,39 @@
     text-align: center;
 }
 
+.finance-label-text-size {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-finance-label-text-size) !important;
+}
+
+.finance-input-text-size input {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-finance-input-text-size) !important;
+}
+
+
+.align-text-center {
+    align-items: center;
+    /*text-align: center;*/
+}
+
+.align-text-center input {
+    text-align: center;
+}
+
+.section-btn-label {
+    font-size: 1.2rem !important;
+}
+
+.mud-overlay-dark {
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.special-sec4-button {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-sec4-btn-size) !important;
+}
+.special-sec4-button svg {
+    transition: font-size 0.2s ease-in-out;
+    font-size: var(--dynamic-sec4-btn-size) !important;
+}

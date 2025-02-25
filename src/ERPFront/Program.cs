@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Blazored.LocalStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,13 +21,6 @@ builder.Services.AddSingleton<ApiSettings>(sp =>
 builder.Services.AddSingleton<CommonProperties>();
 builder.Services.AddSingleton<CartService>();
 
-//DevExpress Configurations
-// builder.Services.AddDevExpressBlazor();
-// builder.Services.AddDevExpressServerSideBlazorReportViewer();
-// builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(options =>
-// {
-//     options.BootstrapVersion = DevExpress.Blazor.BootstrapVersion.v5;
-// });
 builder.WebHost.UseWebRoot("wwwroot");
 builder.WebHost.UseStaticWebAssets();
 
@@ -34,7 +29,17 @@ builder.Services.AddHttpClient(builder.Configuration["ApiSettings:ApiName"]!,
     client => { client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!); });
 
 builder.Services.AddScoped<ICategoryServices, CategoryService>();
-
+builder.Services.AddScoped<ICustomizationSettingsService, CustomizationSettingsService>();
+builder.Services.AddBlazoredLocalStorage(config =>
+{
+    config.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    config.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    config.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+    config.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    config.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+    config.JsonSerializerOptions.WriteIndented = false;
+});
 builder.Services.AddAuthenticationCore();
 
 
