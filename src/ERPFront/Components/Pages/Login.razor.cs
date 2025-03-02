@@ -6,6 +6,7 @@ public partial class Login
     private string _userName = string.Empty;
     private ICollection<UserDto> Users = new List<UserDto>();
     private HttpClient? client;
+
     private void AddDigit(string digit)
         => _pin += digit;
 

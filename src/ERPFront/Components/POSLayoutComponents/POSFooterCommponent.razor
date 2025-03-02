@@ -1,3 +1,7 @@
+@inject NavigationManager navigationManager
+@inject CommonProperties commonProperties
+@inject ISnackbar Snackbar
+
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
@@ -14,7 +18,8 @@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.Alarm"
-               class="button-color-footer">
+               class="button-color-footer"
+               OnClick="()=>GotoWaitingPage()">
         الانتظار
     </MudButton>
     <MudButton Variant="Variant.Text"
@@ -35,6 +40,18 @@
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private void GotoWaitingPage()
+    {
+        if (commonProperties!.TableItems!.Count() > 0)
+        {
+            Snackbar.Add("Please Finish The Order First", Severity.Warning);
+        }
+        else
+        {
+            navigationManager.NavigateTo("/waitingPage");
+        }
     }
 }
 

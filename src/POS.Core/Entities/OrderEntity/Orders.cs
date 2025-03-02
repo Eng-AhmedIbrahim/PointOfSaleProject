@@ -1,4 +1,8 @@
-﻿namespace POS.Core.Entities.OrderEntity;
+﻿using POS.Contract.Models;
+using POS.Core.Entities.Customer;
+using System.Text.Json.Serialization;
+
+namespace POS.Core.Entities.OrderEntity;
 
 public class Orders:BaseEntity
 {
@@ -9,13 +13,13 @@ public class Orders:BaseEntity
     public int? CashierID { get; set; }
     public string? CashierName { get; set; }
     public DateTime? OrderDate { get; set; }
-    public string? OrderType { get; set; } 
-    public string? OrderState { get; set; }
+    public OrderTypes? OrderType { get; set; } 
+    public OrderStates? OrderState { get; set; }
     public string? DeliveryCompany { get; set; }
     public int? TakerID { get; set; }
     public string? TakerName { get; set; }
     public string? TitleName { get; set; }
-    public int? CustomerID { get; set; }
+    public int? CustomerID { get; set; }    
     public string? CustomerName { get; set; }
     public string? Phone1 { get; set; }
     public string? Phone2 { get; set; }
@@ -45,9 +49,7 @@ public class Orders:BaseEntity
     public decimal? DiscountedItems { get; set; }
     public decimal? FreeItems { get; set; }
     public decimal? TotalDiscount { get; set; }
-    public decimal? CashPaid { get; set; }
-    public decimal? VisaPaid { get; set; }
-    public decimal? MastercardPaid { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
     public decimal? GrandTotal { get; set; }
     public decimal? Paid { get; set; }
     public decimal? Remain { get; set; }
@@ -76,6 +78,9 @@ public class Orders:BaseEntity
     public DateTime? KitchenOutTime { get; set; }
     public DateTime? PackingOutTime { get; set; }
     public DateTime? ClosingTime { get; set; }
-
+    public int? TakeawayCustomerId { get; set; }
+    public TakeawayCustomer? TakeawayCustomer { get; set; }
+    public string? TakeawayCustomerName { get; set; }
+    public string? TakeawayCustomerPhone { get; set; }
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
-}
+}   

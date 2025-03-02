@@ -1,17 +1,22 @@
+@inject CommonProperties _commonProperties
+@inject Section4ButtonsServices _section4ButtonsServices
+@inject CartService _cartService
+
 <MudGrid Spacing="0" Justify="Justify.Center" Class="align-text-center">
     @foreach (var setting in Settings)
     {
         <MudItem xs="4" Class="m-0">
-            <MudText Class="px-2 finance-label-text-size" Typo="Typo.subtitle1">@setting.Label</MudText>
+            <MudText Class="px-2 finance-label-text-size liner-grid-buttons" Typo="Typo.subtitle1">@setting.Label</MudText>
         </MudItem>
         <MudItem Class="m-0" xs="@GetNumericFieldColumnSize(setting)">
             <MudNumericField Variant="Variant.Outlined"
-                             Margin="Margin.Dense"
-                             Class="finance-input-text-size"
-                             Min="0.00M"
-                             Culture="@_en"
-                             @bind-Value="setting.Value"
-                             HideSpinButtons="true"/>
+            Margin="Margin.Dense"
+            Class="finance-input-text-size label-color"
+            Min="0.00M"
+            Culture="@_en"
+            @bind-Value="setting.Value"
+            HideSpinButtons="true"
+            Disabled/>
         </MudItem>
         @if (!setting.IsTotal)
         {
@@ -19,11 +24,11 @@
                 @if (setting.HasSwitch)
                 {
                     <MudSwitch
-                        T="bool"
-                        Class="mx-3"
-                        ThumbIcon="@(setting.IsEnabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
-                        ThumbIconColor="@(setting.IsEnabled ? Color.Success : Color.Error)"
-                        @bind-Value="setting.IsEnabled"/>
+                    T="bool"
+                    Class="mx-3"
+                    ThumbIcon="@(setting.IsEnabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
+                    ThumbIconColor="@(setting.IsEnabled ? Color.Success : Color.Error)"
+                    @bind-Value="setting.IsEnabled"/>
                 }
             </MudItem>
         }
@@ -41,4 +46,16 @@
     [Parameter, EditorRequired] public List<FinanceSettings> Settings { get; set; } = [];
 
     private int GetNumericFieldColumnSize(FinanceSettings setting) => setting.IsTotal ? 8 : 4;
+
+    protected override void OnInitialized()
+    {
+        _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
+        _cartService.OnChange += HandleCartServiceChange;
+    }
+
+    private async void HandleCartServiceChange()
+    => await InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    => _cartService.OnChange -= HandleCartServiceChange;
 }

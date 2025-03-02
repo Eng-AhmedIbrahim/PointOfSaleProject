@@ -1,4 +1,6 @@
-﻿namespace POS.Repository;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace POS.Repository;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -31,4 +33,9 @@ public class UnitOfWork : IUnitOfWork
 
     public async ValueTask DisposeAsync()
         => await _dbContext.DisposeAsync();
+
+    public IDbContextTransaction BeginTransaction()
+    {
+        return _dbContext.Database.BeginTransaction();
+    }
 }

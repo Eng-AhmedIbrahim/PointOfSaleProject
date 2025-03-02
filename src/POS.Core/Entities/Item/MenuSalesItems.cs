@@ -13,6 +13,7 @@ public class MenuSalesItems : BaseEntity
     public decimal? ThirdPrice { get; set; }
     public decimal? FourthPrice { get; set; }
     public decimal? FifthPrice { get; set; }
+    public decimal? AttributePrice { get; set; }
     public decimal? Tax { get; set; }
     public string? Description { get; set; }
     public string? ImagePath { get; set; }

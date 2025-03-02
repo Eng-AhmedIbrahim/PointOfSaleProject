@@ -1,5 +1,6 @@
 ﻿@page "/"
 @page "/login"
+@using ERPFront.Components.CommonComponent
 @using MudBlazor
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navigationManager
@@ -25,6 +26,7 @@
                 }
             </select>
             <input type="password" class="form-control mt-2" placeholder="Enter PIN" @bind-value="_pin" />
+
 
             <MudGrid Class="keypad m-0 w-100 mt-3">
                 @for (byte keypadNumber = 1; keypadNumber <= 9; keypadNumber++)
@@ -54,6 +56,7 @@
                     </div>
                 </MudItem>
             </MudGrid>
+
         </div>
         <div class="login-btn">
             <button class="btn btn-primary custom-btn" @onclick="()=>LoginAction()">
@@ -71,9 +74,8 @@
         font-size: 22px;
     }
 
-    .mud-snackbar
-    {
+    .mud-snackbar {
         background-color: #bb2d3b;
-        color:white;
+        color: white;
     }
 </style>

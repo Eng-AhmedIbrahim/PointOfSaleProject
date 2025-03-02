@@ -1,27 +1,33 @@
+@using ERPFront.ERPFrontServices.Section4ButtonsService
+@inject CommonProperties _commonProperties
+@inject Section4ButtonsServices _services
+
 <MudGrid Spacing="0" Justify="Justify.Center">
     <MudItem xs="4">
         <MudButton Variant="Variant.Filled"
                    FullWidth="true"
-                   Class="special-sec4-button"
-                   Size="Size.Medium"
-                   StartIcon="@Icons.Material.Filled.Cancel">
+                   Class="special-sec4-button liner-grid-buttons"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.Cancel"
+                   OnClick="()=>_services.RemoveAllItems(_commonProperties?.TableItems??[])" >
             Cancel
         </MudButton>
     </MudItem>
     <MudItem xs="4">
         <MudButton Variant="Variant.Filled"
                    FullWidth="true"
-                   Class="special-sec4-button"
-                   Size="Size.Medium"
-                   StartIcon="@Icons.Material.Filled.HourglassTop">
+                   Class="special-sec4-button liner-grid-buttons"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.HourglassTop"
+                   OnClick="()=>_services.AddOrderToWaitingQueue(_commonProperties?.TableItems??[])">
             Waiting
         </MudButton>
     </MudItem>
     <MudItem xs="4">
         <MudButton Variant="Variant.Filled"
                    FullWidth="true"
-                   Class="special-sec4-button"
-                   Size="Size.Medium"
+                   Class="special-sec4-button liner-grid-buttons"
+                   Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.Print">
             Print
         </MudButton>

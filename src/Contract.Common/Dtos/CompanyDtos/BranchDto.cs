@@ -2,6 +2,7 @@
 
 public class BranchDto
 {
+    public int Id { get; set; }
     public BranchDto()
     {
         CreationDate = DateTime.Now;

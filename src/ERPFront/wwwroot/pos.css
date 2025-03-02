@@ -98,3 +98,22 @@
     transition: font-size 0.2s ease-in-out;
     font-size: var(--dynamic-sec4-btn-size) !important;
 }
+
+.liner-grid-buttons {
+    background: linear-gradient(135deg, #ffffff, #e7ecf5);
+    color: #143155;
+}
+
+.make-color {
+    background-color: #143155 !important;
+}
+
+.label-color {
+    color: #143155 !important;
+}
+
+
+.button-height
+{
+    height:100px
+}

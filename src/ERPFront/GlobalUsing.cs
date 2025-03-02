@@ -20,5 +20,9 @@ global using ERPFront.ERPFrontServices;
 global using  Microsoft.JSInterop;
 
 global using ERPFront.ERPFrontServices.CartServices;
-
-
+global using BlazorBase.Models;
+global using System.Text.Json.Serialization;
+global using Blazored.LocalStorage;
+global using ERPFront.ERPFrontServices.Section4ButtonsService;
+global using POS.Contract;
+ 

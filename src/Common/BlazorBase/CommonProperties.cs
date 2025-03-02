@@ -1,4 +1,7 @@
-﻿namespace BlazorBase;
+﻿using BlazorBase.Models;
+using POS.Contract.Models;
+
+namespace BlazorBase;
 
 public class CommonProperties
 {
@@ -7,8 +10,11 @@ public class CommonProperties
     public double CategoryFontSize => CategorySpacing + 16;
     public double SalesItemsHorizontalSlider = 4;
     public double SalesItemsVerticalSlider = 4;
+
+    public decimal? TotalOrderPrice { get; set; }
+    public decimal? TotalDiscount { get; set; }
+    public decimal? TotalItemsBeforeOrder { get; set; }
     public List<TableItem>? TableItems { get; set; } = [];
-    
     public event Action? OnChange;
     private string _currentPosMode = "TakeAway";
 
@@ -31,5 +37,9 @@ public class CommonProperties
     }
 
     public int SelectedItemCount { get; set; }
+
+    public List<FinanceSettings>? _financeSettingsList = new();
+
+    public WaitingQueue? WaitingQueue { get; set; } = new();
 
 }

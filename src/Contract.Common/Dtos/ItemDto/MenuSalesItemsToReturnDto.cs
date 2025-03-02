@@ -6,6 +6,7 @@ public class MenuSalesItemsToReturnDto
     public string? ArabicName { get; set; }
     public string? EnglishName { get; set; }
     public decimal? Price { get; set; }
+    public decimal? AttributePrice { get; set; } = 0;
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
     public string? BackColor { get; set; }

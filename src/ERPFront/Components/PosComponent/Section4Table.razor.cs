@@ -1,4 +1,6 @@
-﻿namespace ERPFront.Components.PosComponent;
+﻿using POS.Contract.Models;
+
+namespace ERPFront.Components.PosComponent;
 
 public partial class Section4Table
 {

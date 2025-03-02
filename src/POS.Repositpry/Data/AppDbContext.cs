@@ -1,5 +1,5 @@
 ﻿using POS.Core.Entities.Categorie;
-using POS.Core.Entities.OrderEntity;
+using POS.Core.Entities.Customer;
 
 namespace POS.Repository.Data;
 
@@ -19,10 +19,11 @@ public class AppDbContext:DbContext
     public DbSet<AttributeItem> AttributeItems { get; set; }
     public DbSet<MenuSalesItems> MenuSalesItems { get; set; }
     public DbSet<Orders> Orders { get; set; }
-    //public DbSet<OrderItemsDetails> OrderDetails { get; set; }
-    public DbSet<DiscountCode> DiscountCodes { get; set; }
-    public DbSet<DiscountCodesOccasion> DiscountCodesOccasions { get; set; }
-    public DbSet<DiscountReason> DiscountReasons { get; set; }
-    public DbSet<ShiftHandover> Shifts { get; set; }
-        
+    public DbSet<OrderItemsDetails> OrdersDetails { get; set; }
+    public DbSet<TakeawayCustomer> TakeawayCustomers { get; set; }
+
+    //public DbSet<DiscountCode> DiscountCodes { get; set; }
+    //public DbSet<DiscountCodesOccasion> DiscountCodesOccasions { get; set; }
+    //public DbSet<DiscountReason> DiscountReasons { get; set; }
+    //public DbSet<ShiftHandover> Shifts { get; set; }
 }

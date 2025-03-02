@@ -67,5 +67,8 @@ public class BranchConfigurations : IEntityTypeConfiguration<Branch>
         builder.HasOne(b => b.Company)
             .WithMany(b => b.Branches)
             .HasForeignKey(b => b.CompanyId);
+
+        builder.Property(b=>b.Id)
+            .ValueGeneratedNever();
     }
 }

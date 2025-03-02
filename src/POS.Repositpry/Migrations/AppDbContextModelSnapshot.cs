@@ -22,7 +22,7 @@ namespace POS.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("POS.Core.Entities.Category.Category", b =>
+            modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,16 +69,13 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("Active")
                         .ValueGeneratedOnAdd()
@@ -144,7 +141,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Company", b =>
@@ -199,7 +196,28 @@ namespace POS.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Customer.TakeawayCustomer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TakeawayCustomers");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
@@ -225,7 +243,7 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("RelatedMenuItemId");
 
-                    b.ToTable("AttributeItems", (string)null);
+                    b.ToTable("AttributeItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
@@ -245,7 +263,7 @@ namespace POS.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
@@ -263,6 +281,9 @@ namespace POS.Repository.Migrations
 
                     b.Property<int?>("AttributeId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("AttributePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("BackColor")
                         .HasMaxLength(7)
@@ -345,10 +366,365 @@ namespace POS.Repository.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("MenuSalesItems", (string)null);
+                    b.ToTable("MenuSalesItems");
                 });
 
-            modelBuilder.Entity("POS.Core.Entities.Category.Category", b =>
+            modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttributeItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AttributeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId", "AttributeItemId");
+
+                    b.HasIndex("AttributeItemId");
+
+                    b.ToTable("OrderItemAttributes");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("Discount")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsVoided")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MenuSalesItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MenuSalesItemsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("Quantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<decimal?>("TotalAfterDiscount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalDiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalDiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalDiscountPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("VoidAmount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuSalesItemId");
+
+                    b.HasIndex("MenuSalesItemsId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrdersDetails");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddressNotice")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ApartmentNum")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<DateTime?>("AssignTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("BackTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BranchID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BranchName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("CashierID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CashierName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ClosingTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CustomerCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("DeliveryCompany")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("DeliveryFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("DiscountBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DiscountByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("DiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DiscountReason")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime?>("DiscountTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DiscountType")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<decimal?>("DiscountedItems")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DispatchID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DriverID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DriverName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FloorNum")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<decimal?>("FreeItems")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("GrandTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("HomeNum")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<DateTime?>("KitchenOutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderNotice")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("OrderState")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("OrderType")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("TakeAway");
+
+                    b.Property<DateTime?>("PackingOutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Paid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PaymentMethod")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Cash");
+
+                    b.Property<string>("Phone1")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Phone2")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int?>("PrintCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Remain")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ReservationPaid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ReservationRemain")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("ScheduleDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Service")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ShiftID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StreetName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("TableID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TableName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TableState")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TakeawayCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TakeawayCustomerName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TakeawayCustomerPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("TakerID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TakerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TitleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TotalDiscount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalVoid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("VoidAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("VoidBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VoidByName")
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
+
+                    b.Property<int?>("VoidCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VoidReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("VoidTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("WaiterID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WaiterName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool?>("WithoutDeliveryFees")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("WithoutService")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("WithoutTax")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("ZoneBonus")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ZoneID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ZoneName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TakeawayCustomerId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
                 {
                     b.HasOne("POS.Core.Entities.Company.Branch", "Branch")
                         .WithMany()
@@ -379,7 +755,7 @@ namespace POS.Repository.Migrations
                     b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "RelatedMenuItem")
                         .WithMany()
                         .HasForeignKey("RelatedMenuItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Attribute");
@@ -399,7 +775,7 @@ namespace POS.Repository.Migrations
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("POS.Core.Entities.Category.Category", "Category")
+                    b.HasOne("POS.Core.Entities.Categorie.Category", "Category")
                         .WithMany("MenuSalesItems")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -411,7 +787,58 @@ namespace POS.Repository.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("POS.Core.Entities.Category.Category", b =>
+            modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.AttributeItem", "AttributeItem")
+                        .WithMany()
+                        .HasForeignKey("AttributeItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.OrderEntity.OrderItemsDetails", "OrderItem")
+                        .WithMany("OrderItemAttributes")
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AttributeItem");
+
+                    b.Navigation("OrderItem");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "MenuSalesItem")
+                        .WithMany()
+                        .HasForeignKey("MenuSalesItemId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", null)
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("MenuSalesItemsId");
+
+                    b.HasOne("POS.Core.Entities.OrderEntity.Orders", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuSalesItem");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Customer.TakeawayCustomer", "TakeawayCustomer")
+                        .WithMany("Orders")
+                        .HasForeignKey("TakeawayCustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("TakeawayCustomer");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
                 {
                     b.Navigation("MenuSalesItems");
                 });
@@ -421,9 +848,29 @@ namespace POS.Repository.Migrations
                     b.Navigation("Branches");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Customer.TakeawayCustomer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
                 {
                     b.Navigation("AttributeItems");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
+                {
+                    b.Navigation("OrderItemAttributes");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

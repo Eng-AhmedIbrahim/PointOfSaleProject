@@ -60,9 +60,9 @@ public class BranchController : BaseApiController
     [HttpGet("{branchId}")]
     public async Task<IActionResult> GetBranchById(int branchId)
     {
-        var branch = await _branchService.GetBranchByIdAsync(branchId);
+        var branch = await _branchService!.GetBranchByIdAsync(branchId)??new();
 
-        var mappedBranch = _mapper.Map<Branch,BranchToReturnDto>(branch);   
+        var mappedBranch = _mapper.Map<Branch,BranchToReturnDto>(branch??new());   
         if (mappedBranch is null)
             return NotFound(new ApiResponse(404));
 

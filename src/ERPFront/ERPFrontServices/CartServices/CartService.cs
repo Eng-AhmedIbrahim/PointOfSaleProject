@@ -1,4 +1,6 @@
-﻿namespace ERPFront.ERPFrontServices.CartServices;
+﻿using POS.Contract.Models;
+
+namespace ERPFront.ERPFrontServices.CartServices;
 
 public class CartService : ICartService
 {
@@ -6,11 +8,17 @@ public class CartService : ICartService
     public event Action? OnChange;
     public string? Quantity { get; set; }
 
+    private readonly CommonProperties? _commonProperties;
+    public CartService(CommonProperties commonProperties)
+    {
+        _commonProperties = commonProperties;
+    }
+
     public void SetSelectedItem(TableItem item)
        => SelectedItem = item;
 
     private async void NotifyStateChanged()
-     => OnChange?.Invoke();
+     =>  OnChange?.Invoke();
 
     public void AppendNumberToQuantity(string number)
     => UpdateQuantity(_ => int.Parse(number));
@@ -31,13 +39,37 @@ public class CartService : ICartService
         {
             SelectedItem.Quantity = updateFunc(SelectedItem.Quantity);
             SelectedItem.Total = SelectedItem.Quantity * SelectedItem.Price;
+            UpdateAmount();
             NotifyStateChanged();
         }
     }
 
     public void RemoveItem(List<TableItem> items)
     {
-        items.Remove(SelectedItem ?? new TableItem());
+        if (SelectedItem != null && items.Contains(SelectedItem))
+        {
+            items.Remove(SelectedItem);
+        }
+
+        CalculateTotalAmount(items);
         NotifyStateChanged();
     }
+
+    private void CalculateTotalAmount(List<TableItem> items)
+    => UpdateAmount();
+
+    private void UpdateAmount()
+        => _commonProperties!._financeSettingsList![0].Value = _commonProperties!.TableItems!.Sum(i => i.Total ?? 0);
+
+
+    public void CalculateTotalAmountFromTableItems(List<TableItem> items)
+    {
+        CalculateTotalAmount(items);
+        NotifyStateChanged();
+    }
+
+    //public void UpdateTotalAmount()
+    //{
+    //    NotifyStateChanged();
+    //}
 }

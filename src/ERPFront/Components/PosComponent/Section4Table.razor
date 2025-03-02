@@ -1,18 +1,19 @@
-﻿@inject IJSRuntime Js
+﻿@using POS.Contract.Models
+@inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
 @inject CartService _cartService
 
-<MudTable Items="Items" Dense="true" Hover="true" FixedHeader="true" CanCancelEdit="true"
-          CommitEditTooltip="Commit Edit"
-          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))"
-          RowEditPreview="BackupItem"
-          RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted"
-          ApplyButtonPosition="TableApplyButtonPosition.Start"
-          EditButtonPosition="TableEditButtonPosition.End"
-          EditTrigger="TableEditTrigger.RowClick"
-          RowClass="liner-grid-buttons">
+<MudTable Items="Items??[]" Dense="true" Hover="true" FixedHeader="true" CanCancelEdit="true"
+CommitEditTooltip="Commit Edit"
+OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))"
+RowEditPreview="BackupItem"
+RowEditCancel="ResetItemToOriginalValues"
+RowEditCommit="ItemHasBeenCommitted"
+ApplyButtonPosition="TableApplyButtonPosition.Start"
+EditButtonPosition="TableEditButtonPosition.End"
+EditTrigger="TableEditTrigger.RowClick"
+RowClass="liner-grid-buttons">
 
     <HeaderContent>
         <MudTh Style="width: min-content; white-space: nowrap;font-weight:bold;color: #143155">Qty</MudTh>
@@ -24,8 +25,8 @@
     <RowTemplate>
         <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style" @onclick="() => SelectItem(context)">
             <MudNumericField T="int" Value="context.Quantity" Min="1"
-                             Style="width: 60px;" Immediate="true"
-                             ValueChanged="(val) => UpdateQuantity(context, val)" />
+            Style="width: 60px;" Immediate="true"
+            ValueChanged="(val) => UpdateQuantity(context, val)" />
         </MudTd>
         <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
         <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
@@ -38,11 +39,10 @@
             <MudTr Class="attribute-row">
                 <MudTd></MudTd>
                 <MudTd ColSpan="3" Style="padding-top: 6px;padding-bottom: 0px;">
-
                     <div style="font-size: 12px; color:black;">
                         @foreach (var attr in context.Attributes)
                         {
-                            <p class="attribute-name" style="margin-right: 0px;margin-bottom: 5px;">➤ @attr</p>
+                            <p class="attribute-name" style="margin-right: 0px; margin-bottom: 5px;">➤ @attr.Name</p>
                         }
                     </div>
                 </MudTd>
@@ -52,12 +52,13 @@
 </MudTable>
 
 @code {
+
     protected override void OnInitialized()
     {
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         _cartService.OnChange += HandleCartServiceChange;
     }
-   
+
     private async void HandleCartServiceChange()
     => await InvokeAsync(StateHasChanged);
 
@@ -106,12 +107,15 @@
     private void UpdateQuantity(TableItem item, int newQuantity)
     {
         item.Quantity = newQuantity;
-        item.Total = item.Quantity * item.Price; // Update total
+        item.Total = item.Quantity * item.Price;
+        _cartService.CalculateTotalAmountFromTableItems(CommonProperties!.TableItems ?? []);
     }
 
 
     private void SelectItem(TableItem item)
      => _cartService.SetSelectedItem(item);
+
+   
 }
 
 <style>

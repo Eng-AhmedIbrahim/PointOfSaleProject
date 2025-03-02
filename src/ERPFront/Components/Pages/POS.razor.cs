@@ -1,4 +1,6 @@
-﻿namespace ERPFront.Components.Pages;
+﻿using POS.Contract.Models;
+
+namespace ERPFront.Components.Pages;
 
 public partial class POS
 {
@@ -7,13 +9,25 @@ public partial class POS
     private ICollection<CategoryToReturnDto>? _categories = new List<CategoryToReturnDto>();
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
     private int currentCatId;
-    private List<string>? currentSelectedAttribute;
-    public string NoteValue { get; set; }
+    private List<AttributeDto>? currentSelectedAttribute;
+    public string? NoteValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
          _categories = await _categoryServices.GetAllCategoriesAsync();
-        _commonProperties.OnChange += StateHasChanged;
+         _commonProperties.OnChange += StateHasChanged;
+        CustomizationSettingsService.OnChanged += StateHasChanged;
+        _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
+
+        _commonProperties._financeSettingsList = new()
+        {
+            new FinanceSettings { Label = "Account", Value = 0M},
+            new FinanceSettings { Label = "Discount", Value = 20M },
+            new FinanceSettings { Label = "ToTal", Value = 15M },
+        };
+
+        if (_commonProperties.TableItems is not null)
+            _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems??new());
     }
 
     private async Task InvokeItems(int catId)
@@ -26,16 +40,17 @@ public partial class POS
     {
         StateHasChanged();
         return Task.CompletedTask;
-    }
+    }   
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
         TableItem? selectedTableItem = GetItemFromTableById(selectedMenuItem);
 
-        if (!selectedMenuItem.Attributes.Any() && selectedTableItem != null)
+        if (!selectedMenuItem.Attributes.Any()&& _itemClickCount.Count() == 0 && selectedTableItem != null)
         {
             selectedTableItem.Quantity++;
             selectedTableItem.Total = selectedTableItem.Total + selectedTableItem.Price;
+            _cartService.CalculateTotalAmountFromTableItems(_commonProperties.TableItems);
         }
         else
         {
@@ -67,8 +82,16 @@ public partial class POS
 
     private void AddAttributeNameToSection4Item(MenuSalesItemsToReturnDto selectedMenuItem, int currentClickCount)
     {
-        currentSelectedAttribute?.Add(selectedMenuItem.ArabicName ?? "");
-        _currentBaseItem!.Price += selectedMenuItem.Price ?? 0;
+        if (selectedMenuItem == null) return;
+
+        var newAttribute = new AttributeDto
+        {
+            Id = selectedMenuItem.Id,
+            Name = selectedMenuItem.ArabicName ?? string.Empty
+        };
+
+        currentSelectedAttribute?.Add(newAttribute);
+        _currentBaseItem!.Price += selectedMenuItem.AttributePrice ?? 0;
     }
 
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
@@ -118,6 +141,9 @@ public partial class POS
             Attributes = currentSelectedAttribute ?? []
         };
         _commonProperties?.TableItems?.Add(newTableItem);
+
+        CalculateTotalAmount();
+
         await InvokeItems(currentCatId);
     }
 
@@ -135,21 +161,25 @@ public partial class POS
     public void ClearTableItems()
     {
         _commonProperties?.TableItems?.Clear();
-        StateHasChanged();
-    }
-    private void RemoveItemFromSection4(TableItem item)
-    {
-        _commonProperties?.TableItems?.Remove(item);
-        UpdateTableItemCount();
+        CalculateTotalAmount();
         StateHasChanged();
     }
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
-        => _commonProperties?.TableItems?.Where(c=>c.Attributes.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
-
+        => _commonProperties?.TableItems?.Where(c => c.Attributes.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
     public void Dispose()
     {
         _commonProperties.OnChange -= StateHasChanged;
         CustomizationSettingsService.OnChanged -= StateHasChanged;
+        _section4ButtonsServices.OnChanged -= StateHasChanged;
     }
+    public void CalculateTotalAmount()
+    {
+        if (_commonProperties?.TableItems != null)
+        {
+            _commonProperties._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
+            StateHasChanged();
+        }
+    }
+
 }

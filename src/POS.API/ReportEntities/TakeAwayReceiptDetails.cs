@@ -1,4 +1,4 @@
-﻿using BlazorBase;
+﻿using POS.Contract.Models;
 
 namespace POS.API.ReportEntities;
 

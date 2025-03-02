@@ -9,13 +9,15 @@ public class AttributeItemsConfigurations : IEntityTypeConfiguration<AttributeIt
         builder.Property(c => c.AppearanceIndex)
            .HasColumnType("int");
 
-        builder.HasOne(c=>c.Attribute)
-            .WithMany(c=>c.AttributeItems)
-            .HasForeignKey(c=>c.AttributeId)
+        builder.HasOne(c => c.Attribute)
+            .WithMany(c => c.AttributeItems)
+            .HasForeignKey(c => c.AttributeId)
             .OnDelete(DeleteBehavior.Cascade);
 
+
         builder.HasOne(c => c.RelatedMenuItem)
-            .WithMany()
-            .HasForeignKey(c => c.RelatedMenuItemId);
+        .WithMany()
+        .HasForeignKey(c => c.RelatedMenuItemId)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 }

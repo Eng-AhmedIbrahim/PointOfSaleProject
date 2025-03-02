@@ -1,7 +1,10 @@
-﻿namespace POS.Core.Repository.Contract;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace POS.Core.Repository.Contract;
 
 public interface IUnitOfWork:IAsyncDisposable
 {
     IGenericRepository<T> Repository<T>() where T :BaseEntity;
     Task<int> CompleteAsync();
+    IDbContextTransaction BeginTransaction();
 }
