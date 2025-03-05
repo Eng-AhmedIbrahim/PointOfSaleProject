@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers;
+﻿    namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {

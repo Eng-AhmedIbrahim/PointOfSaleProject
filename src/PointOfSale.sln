@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.API", "POS.API\POS.API.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Core", "POS.Core\POS.Core.csproj", "{E7D75F36-D947-4F1E-A542-8ED288866BB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Repository", "POS.Repositpry\POS.Repository.csproj", "{3A5BBC27-84FF-4F49-969C-534571BCAA78}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Services", "POS.Services\POS.Services.csproj", "{76363131-2EDF-425C-AF7D-95510DBF0854}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPFront", "ERPFront\ERPFront.csproj", "{B69914AC-0546-4B0A-BABC-C3BAF33816A7}"
@@ -18,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorBase", "Common\BlazorBase\BlazorBase.csproj", "{A0D5A368-F2BB-48FA-8BF3-1DE65B0CAAAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Reports", "POS.Reports\POS.Reports.csproj", "{EF6C3318-62F2-44C8-9D4B-9EFB5B485B0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pos.Repository", "Pos.Repository\Pos.Repository.csproj", "{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.BackOffice", "POS.BackOffice\POS.BackOffice.csproj", "{4C86BF41-B930-46E8-8698-35C18CAFF7B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +35,6 @@ Global
 		{E7D75F36-D947-4F1E-A542-8ED288866BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7D75F36-D947-4F1E-A542-8ED288866BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7D75F36-D947-4F1E-A542-8ED288866BB4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A5BBC27-84FF-4F49-969C-534571BCAA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A5BBC27-84FF-4F49-969C-534571BCAA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A5BBC27-84FF-4F49-969C-534571BCAA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A5BBC27-84FF-4F49-969C-534571BCAA78}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76363131-2EDF-425C-AF7D-95510DBF0854}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +55,14 @@ Global
 		{EF6C3318-62F2-44C8-9D4B-9EFB5B485B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF6C3318-62F2-44C8-9D4B-9EFB5B485B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF6C3318-62F2-44C8-9D4B-9EFB5B485B0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

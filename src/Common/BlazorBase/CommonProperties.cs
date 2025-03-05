@@ -1,6 +1,6 @@
 ﻿using BlazorBase.Models;
 using POS.Contract.Models;
-
+using POS.Reports.Models;
 namespace BlazorBase;
 
 public class CommonProperties
@@ -18,6 +18,13 @@ public class CommonProperties
     public event Action? OnChange;
     private string _currentPosMode = "TakeAway";
 
+    public Receipt? OrderReceipt { get; set; }
+    public string? CurrentUser { get; set; }
+    public string? StoreName { get; set; }
+    public string? PaymentMethod { get; set; } = "Cash";
+
+    public int CurrentOrderCount { get; set; }
+
     public string CurrentPosMode
     {
         get => _currentPosMode;
@@ -25,7 +32,7 @@ public class CommonProperties
         {
             if (_currentPosMode != value)
             {
-                _currentPosMode = value;
+                _currentPosMode = value ?? "TakeAway";
                 OnChange?.Invoke();
             }
         }

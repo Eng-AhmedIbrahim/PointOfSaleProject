@@ -1,6 +1,8 @@
 @using ERPFront.ERPFrontServices.Section4ButtonsService
 @inject CommonProperties _commonProperties
 @inject Section4ButtonsServices _services
+@inject NavigationManager _navigationManager
+@inject ISnackbar _snackbar
 
 <MudGrid Spacing="0" Justify="Justify.Center">
     <MudItem xs="4">
@@ -28,7 +30,8 @@
                    FullWidth="true"
                    Class="special-sec4-button liner-grid-buttons"
                    Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.Print">
+                   StartIcon="@Icons.Material.Filled.Print"
+                   OnClick="PrintOrder">
             Print
         </MudButton>
     </MudItem>

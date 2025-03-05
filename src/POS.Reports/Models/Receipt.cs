@@ -12,7 +12,7 @@ public record Receipt
     public string FooterMessage { get; set; } = string.Empty;
     private List<ReceiptItem> _items = [];
     public IReadOnlyList<ReceiptItem> Items => _items;
-    public decimal TotalAmount => _items.Sum(item => item.Total);
+    public decimal? TotalAmount { get; set; }
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);

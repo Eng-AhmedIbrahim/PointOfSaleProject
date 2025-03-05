@@ -7,6 +7,7 @@ public class UserSetting : IUserSetting
     {
         _unitOfWork = unitOfWork;
     }
+
     public async Task<UserSettingEntity?> AddUserSetting(UserSettingEntity userSetting)
     {
         try

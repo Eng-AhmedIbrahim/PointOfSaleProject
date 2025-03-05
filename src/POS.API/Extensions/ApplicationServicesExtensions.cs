@@ -1,6 +1,4 @@
-﻿using POS.Services.AuthModuleService;
-
-namespace POS.API.Extensions;
+﻿namespace POS.API.Extensions;
 
 public static class ApplicationServicesExtensions
 {

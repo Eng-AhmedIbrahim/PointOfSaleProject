@@ -1,4 +1,5 @@
-﻿using POS.Contract.Models;
+﻿using Microsoft.AspNetCore.Components;
+using POS.Contract.Models;
 
 namespace ERPFront.Components.Pages;
 
@@ -50,7 +51,7 @@ public partial class POS
         {
             selectedTableItem.Quantity++;
             selectedTableItem.Total = selectedTableItem.Total + selectedTableItem.Price;
-            _cartService.CalculateTotalAmountFromTableItems(_commonProperties.TableItems);
+            _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems!);
         }
         else
         {
@@ -181,5 +182,4 @@ public partial class POS
             StateHasChanged();
         }
     }
-
 }

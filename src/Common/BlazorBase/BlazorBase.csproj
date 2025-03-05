@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Contract.Common\POS.Contract.csproj" />
+      <ProjectReference Include="..\..\POS.Reports\POS.Reports.csproj" />
     </ItemGroup>
 
 </Project>

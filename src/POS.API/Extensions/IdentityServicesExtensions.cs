@@ -1,4 +1,6 @@
-﻿namespace POS.API.Extensions;
+﻿using Pos.Repository.Identity;
+
+namespace POS.API.Extensions;
 
 public static class IdentityServicesExtensions
 {
@@ -7,41 +9,44 @@ public static class IdentityServicesExtensions
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
-        }).AddEntityFrameworkStores<AppIdentityDbContext>()
-          .AddDefaultTokenProviders()
-          .AddRoles<IdentityRole>();
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // Password settings (Uncomment if needed)
+            //options.Password.RequireNonAlphanumeric = true;
+            //options.Password.RequireUppercase = true;
+            //options.Password.RequireLowercase = true;
         })
-            .AddJwtBearer(options =>
-            {
-                var secretKey = Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"] ?? string.Empty);
-                var requiredKeyLength = 256 / 8; // 256 bits
-                if (secretKey.Length < requiredKeyLength)
-                {
-                    // Pad the key to meet the required length
-                    Array.Resize(ref secretKey, requiredKeyLength);
-                }
+        .AddRoles<IdentityRole>() // Register Role Management
+        .AddEntityFrameworkStores<AppIdentityDbContext>()
+        .AddDefaultTokenProviders();
 
-                // Configure authentication handler
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateAudience = true,
-                    ValidAudience = configuration["JWT:ValidAudience"],
-                    ValidateIssuer = true,
-                    ValidIssuer = configuration["JWT:ValidIssuer"],
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(secretKey),
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:DurationInDays"] ?? string.Empty))
-                };
-            });
+
+        //services.AddAuthentication(options =>
+        //{
+        //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //})
+        //    .AddJwtBearer(options =>
+        //    {
+        //        var secretKey = Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"] ?? string.Empty);
+        //        var requiredKeyLength = 256 / 8; // 256 bits
+        //        if (secretKey.Length < requiredKeyLength)
+        //        {
+        //            // Pad the key to meet the required length
+        //            Array.Resize(ref secretKey, requiredKeyLength);
+        //        }
+
+        //        // Configure authentication handler
+        //        options.TokenValidationParameters = new TokenValidationParameters()
+        //        {
+        //            ValidateAudience = true,
+        //            ValidAudience = configuration["JWT:ValidAudience"],
+        //            ValidateIssuer = true,
+        //            ValidIssuer = configuration["JWT:ValidIssuer"],
+        //            ValidateIssuerSigningKey = true,
+        //            IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+        //            ValidateLifetime = true,
+        //            ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:DurationInDays"] ?? string.Empty))
+        //        };
+        //    });
         return services;
     }
 }

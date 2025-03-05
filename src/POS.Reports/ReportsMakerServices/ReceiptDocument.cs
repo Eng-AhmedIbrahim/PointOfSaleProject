@@ -165,7 +165,7 @@ public class ReceiptDocument(Receipt receipt) : IDocument
                 table.Cell()
                     .ColumnSpan(2)
                     .Padding(4)
-                    .Text(receipt.TotalAmount.ToString("N2"))
+                    .Text(receipt.TotalAmount.ToString())
                     .FontSize(20)
                     .Bold()
                     .AlignCenter();

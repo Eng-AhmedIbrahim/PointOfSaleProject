@@ -1,3 +1,7 @@
+using Pos.Repository.Data;
+using Pos.Repository.Data.DataSeed;
+using Pos.Repository.Identity;
+
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +28,7 @@ builder.Services.AddCors(options =>
 
 
 #region Database connections
+
 
 builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(databaseConnectionString); });
 
@@ -53,6 +58,8 @@ var services = scope.ServiceProvider;
 
 var dbContext = services.GetRequiredService<AppDbContext>();
 var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+var userManager = services.GetRequiredService<UserManager<AppUser>>();
+var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
@@ -60,7 +67,8 @@ try
 {
     await dbContext.Database.MigrateAsync();
     await identityDbContext.Database.MigrateAsync();
-    //await PosDbContextDataSeed.SeedAsync(_dbContext);
+    await PosDbContextDataSeed.SeedAsync(dbContext);
+    await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager, identityDbContext);
 }
 catch (Exception ex)
 {

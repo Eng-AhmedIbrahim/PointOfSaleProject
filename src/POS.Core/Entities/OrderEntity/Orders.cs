@@ -1,6 +1,5 @@
 ﻿using POS.Contract.Models;
 using POS.Core.Entities.Customer;
-using System.Text.Json.Serialization;
 
 namespace POS.Core.Entities.OrderEntity;
 

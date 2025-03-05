@@ -10,7 +10,6 @@ global using POS.API.Extensions;
 global using POS.API.MiddleWare;
 global using POS.Repository.Data;
 global using StackExchange.Redis;
-global using POS.Repository.Identity;
 global using Microsoft.AspNetCore.Mvc;
 global using POS.Contract.Dtos.ItemDto;
 global using POS.Core.Services.Contract;
@@ -37,7 +36,6 @@ global using POS.Core.Services.Contract.ItemServices;
 
 global using POS.Repository;
 global using POS.Core.Repository.Contract;
-global using POS.Repository.Repositories;
 global using POS.Services.CompanyService;
 
 global using POS.Core.Entities.Company;
@@ -64,3 +62,6 @@ global using QuestPDF.Infrastructure;
 global using POS.Contract.Dtos.TakeawayOrderDtos;
 global using POS.Core.Entities.OrderEntity;
 global using POS.Core.Services.Contract.OrderServices;
+
+global using Pos.Repository.Repositories;
+global using POS.Services.AuthModuleService;

@@ -1,4 +1,6 @@
-﻿namespace ERPFront.Components.Pages;
+﻿using BlazorBase;
+
+namespace ERPFront.Components.Pages;
 
 public partial class Login
 {
@@ -36,9 +38,10 @@ public partial class Login
 
     private async Task LoginAction()
     {
-        var response = await client.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin }) ?? new();
+        var response = await client!.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin }) ?? new();
         if (response.IsSuccessStatusCode)
         {
+            _commonProperties.CurrentUser = _userName;
             _navigationManager.NavigateTo("/pos");
         }
         else

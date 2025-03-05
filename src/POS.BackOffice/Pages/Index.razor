@@ -1,0 +1,104 @@
+﻿@page "/"
+
+
+@page "/roles-claims"
+@inject HttpClient Http
+
+<h3>Roles</h3>
+<div class="roles-container">
+    <ul>
+        @foreach (var role in Roles)
+        {
+            <li @onclick="() => LoadClaims(role.Id)" class="@(SelectedRoleId == role.Id ? "selected" : "")">
+                @role.Name
+            </li>
+        }
+    </ul>
+</div>
+
+@if (SelectedRoleId != null)
+{
+    <h3>@SelectedRoleName Permissions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Permission</th>
+                <th>View</th>
+                <th>Add & Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in AvailableClaims)
+            {
+                <tr>
+                    <td>@claim.Name</td>
+                    <td>@(claim.ViewChecked ? "✔" : "✘")</td>
+                    <td>@(claim.EditChecked ? "✔" : "✘")</td>
+                    <td>@(claim.DeleteChecked ? "✔" : "✘")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<RoleModel> Roles = new();
+    private List<ClaimViewModel> AvailableClaims = new();
+    private string SelectedRoleId;
+    private string SelectedRoleName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Roles = await Http.GetFromJsonAsync<List<RoleModel>>("/api/roles");
+    }
+
+    private async Task LoadClaims(string roleId)
+    {
+        SelectedRoleId = roleId;
+        SelectedRoleName = Roles.FirstOrDefault(r => r.Id == roleId)?.Name;
+
+        // var roleClaims = await Http.GetFromJsonAsync<List<ClaimModel>>($"/api/role-claims/{roleId}");
+
+        AvailableClaims = new List<ClaimViewModel>
+        {
+            new("Project"),
+            new("Test Case"),
+            new("Test Run"),
+            new("Dashboard")
+        };
+
+        // foreach (var claim in roleClaims)
+        // {
+        //     var match = AvailableClaims.FirstOrDefault(c => c.Name == claim.Value.Split('_')[1]);
+        //     if (match != null)
+        //     {
+        //         if (claim.Value.Contains("View")) match.ViewChecked = true;
+        //         if (claim.Value.Contains("Edit")) match.EditChecked = true;
+        //         if (claim.Value.Contains("Delete")) match.DeleteChecked = true;
+        //     }
+        // }
+    }
+
+    public class RoleModel
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class ClaimViewModel
+    {
+        public string Name { get; set; }
+        public bool ViewChecked { get; set; }
+        public bool EditChecked { get; set; }
+        public bool DeleteChecked { get; set; }
+
+        public ClaimViewModel(string name)
+        {
+            Name = name;
+        }
+    }
+}
+ }
+    }
+}

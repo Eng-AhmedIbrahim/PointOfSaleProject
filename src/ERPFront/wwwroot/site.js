@@ -94,3 +94,13 @@ function clearSec3FontSizeStorage() {
 
     console.log("Font sizes reset and local storage cleared.");
 }
+
+function showModal(id) {
+    var myModal = new bootstrap.Modal(document.querySelector(id));
+    myModal.show();
+}
+
+function hideModal(id) {
+    var modal = bootstrap.Modal.getInstance(document.querySelector(id));
+    modal.hide();
+}

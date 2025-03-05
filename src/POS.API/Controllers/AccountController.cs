@@ -34,6 +34,9 @@ public class AccountController : BaseApiController
         {
             UserName = model.UserName,
             RegistrationDate = DateTime.Now,
+            Email = model.Email,
+            PhoneNumber = model.PhoneNumber,
+            NormalizedUserName = model.DisplayName
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -41,6 +44,19 @@ public class AccountController : BaseApiController
         if (!result.Succeeded)
         {
             string errors = string.Join(", ", result.Errors.Select(error => error.Description));
+            Log.Error($"Cant Create User With Name {model.UserName}",errors);
+            return BadRequest(new ApiResponse(400, errors));
+        }
+
+        if(!await _roleManager.RoleExistsAsync(model.roleName))
+            return BadRequest(new ApiResponse(400, "Role not found"));
+
+        var result1= await _userManager.AddToRoleAsync(user, model.roleName);
+
+        if (!result1.Succeeded)
+        {
+            string errors = string.Join(", ", result1.Errors.Select(error => error.Description));
+            Log.Error($"Cant Add User To Role {model.UserName}",errors);
             return BadRequest(new ApiResponse(400, errors));
         }
 
@@ -53,18 +69,18 @@ public class AccountController : BaseApiController
         if (!ModelState.IsValid)
             return Unauthorized(new ApiResponse(401));
 
-        var user = await _userManager.FindByNameAsync(model.UserName);
+        var user = await _userManager.FindByNameAsync(model!.UserName!);
 
         if (user is null)
             return Unauthorized(new ApiResponse(401));
 
 
-        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(user, model!.Password!, false, false);
 
         if (!result.Succeeded)
             return Unauthorized(new ApiResponse(401));
 
-        var userDto = _mapper.Map<UserDto>(user);  
+        var userDto = _mapper.Map<UserDto>(user);
         return Ok(userDto);
     }
 
@@ -74,11 +90,11 @@ public class AccountController : BaseApiController
     {
         var UserName = User.FindFirstValue(ClaimTypes.Name);
 
-        var user = await _userManager.FindByNameAsync(UserName);
+        var user = await _userManager.FindByNameAsync(UserName!);
 
         return Ok(new UserDto()
         {
-            UserName = user.UserName,
+            UserName = user!.UserName!,
             //Token = await _authService.CreateTokenAsync(user, _userManager)
         });
     }
@@ -141,29 +157,65 @@ public class AccountController : BaseApiController
     }
 
 
-    [HttpPost("CreateAdmin")]
-    public async Task<IActionResult> CreateAdminUser(RegisterDto model)
+    [HttpDelete("delete-role/{roleName}")]
+    public async Task<IActionResult> DeleteRole(string roleName)
     {
-        if (CheckUserExists(model.UserName).Result.Value)
-            return BadRequest(new ApiValidationErrorResponse() { Errors = new string[] { "This email already exists!" } });
-
-        var user = new AppUser
-        {
-            UserName = model.UserName,
-            RegistrationDate = DateTime.Now,
-        };
-
-
-        var result = await _userManager.CreateAsync(user, model.Password);
-
-        if (!result.Succeeded)
-        {
-            var userRole = await _userManager.AddToRoleAsync(user, "admin");
-            string errors = string.Join(", ", result.Errors.Select(error => error.Description));
-            return BadRequest(new ApiResponse(400, errors));
-        }
-
-        return Ok(true);
-
+        var result = await _authService.DeleteRoleAsync(roleName);
+        return result ? Ok("Role deleted successfully") : NotFound("Role not found");
     }
+
+    [HttpDelete("delete-user/{userId}")]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        var result = await _authService.DeleteUserAsync(userId);
+        return result ? Ok("User deleted successfully") : NotFound("User not found");
+    }
+
+    [HttpGet("get-roles")]
+    public async Task<ActionResult<List<IdentityRole>>> GetAllRoles()
+    {
+        var roles = await _authService.GetAllRolesAsync();
+        return Ok(roles);
+    }
+
+    [HttpGet("get-users")]
+    public async Task<ActionResult<List<AppUser>>> GetAllUsers()
+    {
+        var users = await _authService.GetAllUsersAsync();
+        return Ok(users);
+    }
+
+    [HttpGet("get-role/{roleName}")]
+    public async Task<ActionResult<IdentityRole>> GetRole(string roleName)
+    {
+        var role = await _authService.GetRoleAsync(roleName);
+        return role != null ? Ok(role) : NotFound("Role not found");
+    }
+
+    [HttpGet("get-user/{userId}")]
+    public async Task<ActionResult<AppUser>> GetUser(string userId)
+    {
+        var user = await _authService.GetUserAsync(userId);
+        return user != null ? Ok(user) : NotFound("User not found");
+    }
+
+    [HttpPost("remove-user-from-role")]
+    public async Task<IActionResult> RemoveUserFromRole([FromBody] UserRoleRequest request)
+    {
+        var result = await _authService.RemoveUserFromRoleAsync(request!.UserId!, request!.RoleName!);
+        return result ? Ok("User removed from role successfully") : BadRequest("Failed to remove user from role");
+    }
+
+    [HttpPost("add-user-to-role")]
+    public async Task<IActionResult> AddUserToRole([FromBody] UserRoleRequest request)
+    {
+        var result = await _authService.AddUserToRoleAsync(request!.UserId!, request!.RoleName!);
+        return result ? Ok("User added to role successfully") : BadRequest("Failed to add user to role");
+    }
+}
+
+public class UserRoleRequest
+{
+    public string? UserId { get; set; }
+    public string? RoleName { get; set; }
 }
