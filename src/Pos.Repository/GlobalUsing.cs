@@ -7,7 +7,7 @@ global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 global using System.Linq.Expressions;
 
 global using POS.Core.Entities.Company;
-    
+
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 global using POS.Core.Entities.Item;
@@ -30,3 +30,6 @@ global using POS.Core.Entities.Identity;
 global using Microsoft.EntityFrameworkCore.Storage;
 
 global using POS.Core.Entities.Kitchen;
+global using POS.Core.Entities.DineIn;
+global using POS.Core.Entities.Date;
+global using POS.Core.Entities.Shift;

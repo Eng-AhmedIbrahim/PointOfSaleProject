@@ -1,4 +1,8 @@
-﻿namespace POS.API.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using POS.Contract.Dtos.AccountDtos;
+
+namespace POS.API.Controllers;
 
 public class AccountController : BaseApiController
 {
@@ -25,40 +29,45 @@ public class AccountController : BaseApiController
     }
 
     [HttpPost("CreateUser")]
-    public async Task<IActionResult> Register(RegisterDto model)
+    public async Task<IActionResult> Register(RegisterDto registerDto)
     {
-        if (CheckUserExists(model.UserName).Result.Value)
+        if (CheckUserExists(registerDto!.UserName!).Result.Value)
             return BadRequest(new ApiValidationErrorResponse() { Errors = new string[] { "This User already exists!" } });
 
-        var user = new AppUser
+        AppUser? user = new AppUser
         {
-            UserName = model.UserName,
+            UserName = registerDto.UserName,
+            DisplayName = registerDto.DisplayName,
+            Email = registerDto.Email,
             RegistrationDate = DateTime.Now,
-            Email = model.Email,
-            PhoneNumber = model.PhoneNumber,
-            NormalizedUserName = model.DisplayName
+            DateOfBirth = registerDto.DateOfBirth,
+            //ImageUrl = registerDto!.ImageUrl!.FileName,
+            ArabicName = registerDto.ArabicName,
+            PhoneNumber = registerDto.PhoneNumber,
         };
 
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userManager.CreateAsync(user, registerDto!.Password!);
 
         if (!result.Succeeded)
         {
-            string errors = string.Join(", ", result.Errors.Select(error => error.Description));
-            Log.Error($"Cant Create User With Name {model.UserName}",errors);
-            return BadRequest(new ApiResponse(400, errors));
+            Log.Error("Cant create user");
+            return BadRequest(new ApiResponse(400, "Cant create user"));
         }
 
-        if(!await _roleManager.RoleExistsAsync(model.roleName))
-            return BadRequest(new ApiResponse(400, "Role not found"));
+        if (!await _roleManager.RoleExistsAsync(registerDto!.roleName!))
+        {
+            Log.Error("Cant find role");
+            return BadRequest(new ApiResponse(400, "Cant find role"));
+        }
 
-        var result1= await _userManager.AddToRoleAsync(user, model.roleName);
+        var result1 = await _userManager.AddToRoleAsync(user, registerDto!.roleName!);
 
         if (!result1.Succeeded)
         {
-            string errors = string.Join(", ", result1.Errors.Select(error => error.Description));
-            Log.Error($"Cant Add User To Role {model.UserName}",errors);
-            return BadRequest(new ApiResponse(400, errors));
+            Log.Error("Cant add user to role");
+            return BadRequest(new ApiResponse(400, "Cant add user to role"));
         }
+
 
         return Ok(true);
     }
@@ -69,22 +78,40 @@ public class AccountController : BaseApiController
         if (!ModelState.IsValid)
             return Unauthorized(new ApiResponse(401));
 
-        var user = await _userManager.FindByNameAsync(model!.UserName!);
-
+        var user = await _userManager.FindByNameAsync(model.UserName!);
         if (user is null)
             return Unauthorized(new ApiResponse(401));
 
-
-        var result = await _signInManager.PasswordSignInAsync(user, model!.Password!, false, false);
-
+        var result = await _signInManager.PasswordSignInAsync(user, model.Password!, false, false);
         if (!result.Succeeded)
             return Unauthorized(new ApiResponse(401));
 
+        var roles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>();
+
+        foreach (var role in roles)
+        {
+            var roleObj = await _roleManager.FindByNameAsync(role);
+            if (roleObj != null)
+            {
+                var roleClaims = await _roleManager.GetClaimsAsync(roleObj);
+                claims.AddRange(roleClaims); // ✅ Collect role-based claims here
+            }
+        }
+
+        var token = await _authService!.CreateTokenAsync(user, roles, claims); // ✅ Pass roles & claims
+
         var userDto = _mapper.Map<UserDto>(user);
+        userDto.Token = token;
+        userDto.Roles = roles.ToList();
+        userDto.Permissions = claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
+
         return Ok(userDto);
     }
 
-    //[Authorize]
+
+
+    [Authorize]
     [HttpGet("GetCurrentUser")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
@@ -212,6 +239,140 @@ public class AccountController : BaseApiController
         var result = await _authService.AddUserToRoleAsync(request!.UserId!, request!.RoleName!);
         return result ? Ok("User added to role successfully") : BadRequest("Failed to add user to role");
     }
+
+    [HttpPost("add-claim-to-user")]
+    public async Task<IActionResult> AddClaimToUser([FromBody] UserClaimRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request!.UserId!);
+        if (user == null) return NotFound("User not found");
+
+        var claim = new Claim(request!.ClaimType!, request!.ClaimValue!);
+        var result = await _userManager.AddClaimAsync(user, claim);
+
+        return result.Succeeded ? Ok("Claim added successfully") : BadRequest("Failed to add claim");
+    }
+
+    [HttpPost("remove-claim-from-user")]
+    public async Task<IActionResult> RemoveClaimFromUser([FromBody] UserClaimRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request!.UserId!);
+        if (user == null) return NotFound("User not found");
+
+        var claim = new Claim(request!.ClaimType!, request!.ClaimValue!);
+        var result = await _userManager.RemoveClaimAsync(user, claim);
+
+        return result.Succeeded ? Ok("Claim removed successfully") : BadRequest("Failed to remove claim");
+    }
+
+    [HttpGet("get-user-claims/{userId}")]
+    public async Task<IActionResult> GetUserClaims(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound("User not found");
+
+        var claims = await _userManager.GetClaimsAsync(user);
+        return Ok(claims.Select(c => new { c.Type, c.Value }));
+    }
+
+
+    [HttpGet("user-permissions")]
+    public async Task<ActionResult<HashSet<string>>> GetUserPermissions()
+    {
+        var userPermissions = await _authService.GetUserPermissionsAsync(User);
+        return Ok(userPermissions);
+    }
+
+
+
+
+    [HttpPost("seed")]
+    public async Task<IActionResult> AddRoleClaims([FromBody] RoleClaimsRequest request)
+    {
+        if (request == null || request.Roles == null || request.Roles.Count == 0)
+        {
+            return BadRequest(new ApiResponse(404, "Invalid or empty roles data"));
+        }
+
+        foreach (var role in request.Roles)
+        {
+            var identityRole = await _roleManager.FindByNameAsync(role.Key);
+            if (identityRole != null)
+            {
+                foreach (var permission in role.Value)
+                {
+                    var existingClaims = await _roleManager.GetClaimsAsync(identityRole);
+                    if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == permission))
+                    {
+                        await _roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
+                    }
+                }
+            }
+        }
+
+        return Ok(new { message = "Role claims seeded successfully" });
+    }
+
+    [HttpPost("update-permissions")]
+    public async Task<IActionResult> UpdateRolePermissions([FromBody] RolePermissionsRequest request)
+    {
+        if (request == null || string.IsNullOrEmpty(request.RoleName) || request.Permissions == null || !request.Permissions.Any())
+        {
+            return BadRequest(new { message = "Invalid request data" });
+        }
+
+        var role = await _roleManager.FindByNameAsync(request.RoleName);
+        if (role == null)
+        {
+            return NotFound(new { message = "Role not found" });
+        }
+
+        var existingClaims = await _roleManager.GetClaimsAsync(role);
+
+        foreach (var permissionItem in request.Permissions)
+        {
+            var existingClaim = existingClaims.FirstOrDefault(c => c.Type == "Permission" && c.Value == permissionItem.Permission);
+
+            if (permissionItem.IsGranted)
+            {
+                // Grant permission if not already assigned
+                if (existingClaim == null)
+                {
+                    await _roleManager.AddClaimAsync(role, new Claim("Permission", permissionItem.Permission));
+                }
+            }
+            else
+            {
+                // Remove permission if it exists (Deny it)
+                if (existingClaim != null)
+                {
+                    await _roleManager.RemoveClaimAsync(role, existingClaim);
+                }
+            }
+        }
+
+        return Ok(new { message = "Permissions updated successfully" });
+    }
+
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(CaptainOrderUserToReturnDto), StatusCodes.Status200OK)]
+    [HttpGet("GetUsersByRole/{roleName}")]
+    public async Task<IActionResult> GetUsersByRole(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+        
+        if (role is null) return 
+                NotFound(new ApiResponse(404, "Role not found"));
+
+        var users = await _authService.GetUsersHasSpecificRole(roleName);
+        
+        var mappedUsers = _mapper.Map<List<AppUser>,List<CaptainOrderUserToReturnDto>>(users);
+
+        if(users is null) 
+            return NotFound(new ApiResponse(404, "No users found"));
+        
+        return Ok(mappedUsers);
+    }
+
 }
 
 public class UserRoleRequest
@@ -219,3 +380,48 @@ public class UserRoleRequest
     public string? UserId { get; set; }
     public string? RoleName { get; set; }
 }
+
+public class UserClaimRequest
+{
+    public string? UserId { get; set; }
+    public string? ClaimType { get; set; }
+    public string? ClaimValue { get; set; }
+}
+
+public class RoleClaimsRequest
+{
+    public Dictionary<string, List<string>> Roles { get; set; }
+}
+
+
+public class RolePermissionRequest
+{
+    public string RoleName { get; set; }
+    public string Permission { get; set; }
+    public bool IsGranted { get; set; } // true = grant, false = deny (remove)
+}
+
+
+
+
+public class RolePermissionItem
+{
+    public string Permission { get; set; }
+    public bool IsGranted { get; set; } // true = grant, false = deny
+}
+
+public class RolePermissionsRequest
+{
+    public string RoleName { get; set; }
+    public List<RolePermissionItem> Permissions { get; set; } = new List<RolePermissionItem>();
+}
+
+
+//{
+//    "RoleName": "Administrator",
+//    "Permissions": [
+//        { "Permission": "CanAccessTables", "IsGranted": true },
+//        { "Permission": "CanAccessOrders", "IsGranted": false },
+//        { "Permission": "CanAccessAccounts", "IsGranted": true }
+//    ]
+//}

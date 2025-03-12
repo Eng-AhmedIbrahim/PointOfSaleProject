@@ -4,11 +4,11 @@ public class ResetPasswordDto
 {
     [Required]
     [DataType(DataType.Password)]
-    public string Password { get; set; }
+    public string? Password { get; set; }
     [Required]
     [DataType(DataType.Password)]
     [Compare("Password", ErrorMessage = "Password Not Match")]
-    public string RetryPassword { get; set; }
-    public string Email { get; set; }
-    public string Token { get; set; }
+    public string? RetryPassword { get; set; }
+    public string? Email { get; set; }
+    public string? Token { get; set; }
 }

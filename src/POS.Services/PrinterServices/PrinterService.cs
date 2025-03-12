@@ -1,4 +1,5 @@
 ﻿using POS.Core.Entities.Kitchen;
+using POS.Core.Entities.OrderEntity;
 using POS.Core.Services.Contract.PrinterServices;
 using System.Reflection;
 

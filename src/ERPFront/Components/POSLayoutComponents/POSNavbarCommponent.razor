@@ -1,62 +1,82 @@
+@using Microsoft.AspNetCore.Authorization
+@using POS.Contract.Enums
+
 @inject CommonProperties _commonProperties
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navigationManager
 
 <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center" Justify="Justify.Center">
     <img src="/images/Logo.png" alt="Logo" style="width: 40px; height: 40px;" />
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.TableRestaurant"
-               Class="@( _commonProperties.CurrentPosMode == "Tables" ? "btn-success" : "button-color")"
-               OnClick='() => SetMode("Tables")'>
-        طاولات
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.DeliveryDining"
-               Class="@( _commonProperties.CurrentPosMode == "Delivery" ? "btn-success" : "button-color")"
-               OnClick='() => SetMode("Delivery")'>
-        توصيل للمنازل
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.DirectionsRun"
-               Class="@( _commonProperties.CurrentPosMode == "TakeAway" ? "btn-success" : "button-color")"
-               OnClick='() => SetMode("TakeAway")'>
-        تيك أواي
-    </MudButton>
+
+    @if (canAccessTables)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.TableRestaurant"
+                   Class="@( _commonProperties.CurrentPosMode == "DineIn" ? "btn-success" : "button-color")"
+                   OnClick='() => SetMode(PosModes.DineIn.ToString())'>
+            طاولات
+        </MudButton>
+    }
+
+    @if (canAccessDelivery)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.DeliveryDining"
+                   Class="@( _commonProperties.CurrentPosMode == "Delivery" ? "btn-success" : "button-color")"
+                   OnClick='() => SetMode(PosModes.Delivery.ToString())'>
+            توصيل للمنازل
+        </MudButton>
+    }
+
+    @if (canAccessTakeAway)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.DirectionsRun"
+                   Class="@( _commonProperties.CurrentPosMode == "TakeAway" ? "btn-success" : "button-color")"
+                   OnClick='() => SetMode(PosModes.TakeAway.ToString())'>
+            تيك أواي
+        </MudButton>
+    }
 
     <MudSpacer />
 
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.AttachMoney"
-               Class="button-color"
-                >
-        الحسابات
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.AreaChart"
-               Class="button-color">
-        ملخص
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.PushPin"
-               Class="button-color">
-        توزيع
-    </MudButton>
-    <MudButton Variant="Variant.Filled"
-               StartIcon="@Icons.Material.Filled.Checklist"
-               Class="button-color">
-        الطلبات
-    </MudButton>
-</MudStack>
-
-
-@code {
-    private void SetMode(string mode)
+    @if (canAccessAccounts)
     {
-        if (_commonProperties.CurrentPosMode != mode)
-        {
-            _commonProperties.CurrentPosMode = mode;
-            InvokeAsync(StateHasChanged);
-        }
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.AttachMoney"
+                   Class="button-color">
+            الحسابات
+        </MudButton>
     }
-}
+
+    @if (canAccessSummary)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.AreaChart"
+                   Class="button-color">
+            ملخص
+        </MudButton>
+    }
+
+    @if (canAccessDistribution)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.PushPin"
+                   Class="button-color">
+            توزيع
+        </MudButton>
+    }
+
+    @if (canAccessOrders)
+    {
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Checklist"
+                   Class="button-color">
+            الطلبات
+        </MudButton>
+    }
+</MudStack>
 
 <style>
     .button-color {

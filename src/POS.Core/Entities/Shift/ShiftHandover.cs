@@ -4,11 +4,13 @@ public class ShiftHandover :BaseEntity
 {
     public int BranchID { get; set; } = 1;
     public DateTime? WorkingDate { get; set; } 
+    public DateTime? StartShiftTime { get; set; } 
     public DateTime? EndShiftTime { get; set; } 
     public int? ShiftNumber { get; set; } 
-    public int? FromCashierID { get; set; } 
+    public int? FromCashierID { get; set; }
     public string? FromCashierName { get; set; } 
     public int? ToCashierID { get; set; } 
     public string? ToCashierName { get; set; } 
     public decimal? Amount { get; set; }
+    public List<Orders>? Orders { get; set; }
 }

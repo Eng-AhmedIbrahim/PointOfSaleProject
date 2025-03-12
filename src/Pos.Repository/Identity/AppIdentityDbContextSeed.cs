@@ -1,4 +1,7 @@
-﻿namespace Pos.Repository.Identity;
+﻿using POS.Core.Entities.UserSettings;
+using System.Security.Claims;
+
+namespace Pos.Repository.Identity;
 
 public static class AppIdentityDbContextSeed
 {
@@ -15,6 +18,13 @@ public static class AppIdentityDbContextSeed
         {
             var roles = await GetDataFromJsonFile<IdentityRole>("roles.json");
             context.Roles.AddRange(roles);
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.Permissions.Any())
+        {
+            var rolePermissions = await GetDataFromJsonFile<Permission>("permissions.json");
+            context.Permissions.AddRange(rolePermissions);
             await context.SaveChangesAsync();
         }
 
@@ -46,7 +56,15 @@ public static class AppIdentityDbContextSeed
                 throw new Exception($"User creation failed: {errors}");
             }
         }
+
+        if (!context.Set<IdentityRoleClaim<string>>().Any())
+        {
+            await SeedRoleClaims(roleManager);
+        }
+
     }
+
+
     private static string FindValidFilePath(List<string> paths, string fileName)
     {
         foreach (var path in paths)
@@ -67,4 +85,28 @@ public static class AppIdentityDbContextSeed
         var data = await File.ReadAllTextAsync(filePath);
         return JsonSerializer.Deserialize<List<T>>(data) ?? [];
     }
+
+
+    public static async Task SeedRoleClaims(RoleManager<IdentityRole> roleManager)
+    {
+        var roles = new Dictionary<string, List<string>>
+        {
+            { "Administrator", new List<string> { "CanAccessTables", "CanAccessDelivery", "CanAccessAccounts", "CanAccessSummary", "CanAccessOrders" } },
+            { "Manager", new List<string> { "CanAccessTables", "CanAccessSummary", "CanAccessOrders" } },
+            { "مدير فرع", new List<string> { "CanAccessTakeAway", "CanAccessOrders" } }
+        };
+
+        foreach (var role in roles)
+        {
+            var identityRole = await roleManager.FindByNameAsync(role.Key);
+            if (identityRole != null)
+            {
+                foreach (var permission in role.Value)
+                {
+                    await roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
+                }
+            }
+        }
+    }
+
 }

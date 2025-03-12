@@ -15,7 +15,7 @@
   },
   {
     "BranchID": 1,
-    "OrderType": "DineIN",
+    "OrderType": "DineIn",
     "OrderStatement": "اهلا ومرحبا بكم في مطعمنا",
     "Service": 12.00,
     "Tax": 0.00,
@@ -29,7 +29,7 @@
   },
   {
     "BranchID": 1,
-    "OrderType": "Takeaway",
+    "OrderType": "TakeAway",
     "OrderStatement": "اهلا ومرحبا بكم في مطعمنا",
     "Service": 0.00,
     "Tax": 0.00,

@@ -1,6 +1,4 @@
-﻿using POS.Core.Entities.Kitchen;
-
-namespace Pos.Repository.Data;
+﻿namespace Pos.Repository.Data;
 
 public class AppDbContext : DbContext
 {
@@ -24,5 +22,8 @@ public class AppDbContext : DbContext
     public DbSet<OrderSetting> OrderSettings { get; set; }
     public DbSet<PrintingSettings> PrintingSettings { get; set; }
     public DbSet<TakeawayCustomer> TakeawayCustomers { get; set; }
-
+    public DbSet<TableGroup> TableGroups { get; set; }
+    public DbSet<Table> Tables { get; set; }
+    public DbSet<AppDate> AppDate { get; set; }
+    public DbSet<ShiftHandover> ShiftHandovers { get; set; }
 }

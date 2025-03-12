@@ -1,26 +1,22 @@
-using BlazorBase.API;
-using Microsoft.Extensions.Logging;
-
 namespace BlazorBase.Helpers;
 
 public static class ApiRequestHelpers
 {
-    public static readonly JsonSerializerOptions Options = new()
+   
+    public static JsonSerializerOptions Options { get; } = new JsonSerializerOptions
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
-
     public static async Task<HttpResponseMessage?> SendApiRequest(
-        Func<Task<HttpResponseMessage>> apiRequest, ILogger logger)
+        Func<Task<HttpResponseMessage>> apiRequest)
     {
         try
         {
             return await apiRequest();
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            logger.LogError("API request failed: {ErrorMessage}", ex.Message);
-            return null;
+            return default;
         }
     }
 
@@ -38,9 +34,9 @@ public static class ApiRequestHelpers
             case HttpStatusCode.BadRequest:
             case HttpStatusCode.NotFound:
                 var errorResponse = DeserializeResponseContent<ApiResponse>(content);
-                return $" {errorResponse!.GetType()} Bad request or Not found";
+                return $"{errorResponse?.Message ?? "Bad request or Not found"}";
             default:
-                return $"Unexpected error: {response.StatusCode} 🤔";
+                return $"Unexpected error: {response.StatusCode}";
         }
     }
 

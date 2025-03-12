@@ -1,4 +1,5 @@
-﻿global using POS.Contract.Dtos.CategoryDtos;
+﻿global using BlazorBase;
+global using POS.Contract.Dtos.CategoryDtos;
 global using System.Text.Json;
 global using BlazorBase.Constants;
 global using ERPFront.Components;
@@ -11,18 +12,20 @@ global using MudBlazor;
 global using POS.Contract.Dtos.ItemDto;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using System.Security.Claims;
-global using BlazorBase;
 global using BlazorBase.API;
 global using Microsoft.Extensions.Options;
 global using BlazorBase.Helpers;
-global using ERPFront.ERPFrontServices.CategoryServices;
-global using ERPFront.ERPFrontServices;
 global using  Microsoft.JSInterop;
-
-global using ERPFront.ERPFrontServices.CartServices;
 global using BlazorBase.Models;
 global using System.Text.Json.Serialization;
 global using Blazored.LocalStorage;
-global using ERPFront.ERPFrontServices.Section4ButtonsService;
-global using POS.Contract;
- 
+global using ERPFront.Auth;
+global using Microsoft.AspNetCore.Authorization;
+global using BlazorBase.ERPFrontServices.Section4ButtonsService;
+global using BlazorBase.ERPFrontServices.CartServices;
+global using POS.Contract.Models;
+global using BlazorBase.ERPFrontServices;
+global using BlazorBase.ERPFrontServices.CategoryServices;
+global using POS.Contract.Dtos.DineInDtos;
+global using Microsoft.AspNetCore.Components.Web;
+global using POS.Core.Entities.Kitchen;

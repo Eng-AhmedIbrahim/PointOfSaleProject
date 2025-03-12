@@ -7,7 +7,9 @@ public class TableItem
     public string? Name { get; set; }
     public decimal? Price { get; set; }
     public decimal? Total { get; set; }
-    public List<AttributeDto> Attributes { get; set; } = new List<AttributeDto>();
+    public decimal? LineDiscount { get; set; }
+    public string? LineComment { get; set; }
+    public List<AttributeDto>? Attributes { get; set; } = new List<AttributeDto>();
 }
 
 

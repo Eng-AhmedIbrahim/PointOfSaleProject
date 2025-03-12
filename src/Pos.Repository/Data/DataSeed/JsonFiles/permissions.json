@@ -1,0 +1,35 @@
+[
+  {
+    "Name": "CanAccessTables"
+  },
+  {
+    "Name": "CanAccessDelivery"
+  },
+  {
+    "Name": "CanAccessTakeAway"
+  },
+  {
+    "Name": "CanAccessAccounts"
+  },
+  {
+    "Name": "CanAccessSummary"
+  },
+  {
+    "Name": "CanAccessDistribution"
+  },
+  {
+    "Name": "CanAccessOrders"
+  },
+  {
+    "Name": "CanAccessDiscount"
+  },
+  {
+    "Name": "CanAccessMeals"
+  },
+  {
+    "Name": "CanAccessWaiting"
+  },
+  {
+    "Name": "CanAccessSettings"
+  },
+]

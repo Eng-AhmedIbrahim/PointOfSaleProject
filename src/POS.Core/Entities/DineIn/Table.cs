@@ -12,10 +12,11 @@ public class Table :BaseEntity
     public bool? NearWindows { get; set; }
     public bool? BoothSeating { get; set; } 
     public bool? PrivateSeating { get; set; } 
-    public string? GroupID { get; set; } 
     public int? LoadIndex { get; set; } 
     public bool? Usable { get; set; } 
     public string? TableShape { get; set; } 
     public string? TimeStamp { get; set; }
     public string? ImageUrl { get; set; }
+    public int? GroupID { get; set; }
+    public TableGroup? TableGroup { get; set; }
 }

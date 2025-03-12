@@ -22,6 +22,18 @@ public static class PosDbContextDataSeed
 
         Branch? branch = await _dbContext.Branches.FirstOrDefaultAsync();
 
+        if(!_dbContext.AppDate.Any())
+        {
+            var appDate = new AppDate()
+            {
+                BranchId = branch!.Id,
+                PosDate = DateTime.Now.Date,
+                StoreDate = DateTime.Now.Date
+            };
+            await _dbContext.AppDate.AddAsync(appDate);
+            await _dbContext.SaveChangesAsync();
+        }
+
         if (!_dbContext.KitchenTypes.Any())
         {
             var kitchenTypes = await GetDataFromJsonFile<KitchenType>("kitchenTypes.json");
@@ -45,6 +57,36 @@ public static class PosDbContextDataSeed
             await _dbContext.OrderSettings.AddRangeAsync(orderSettings);
             await _dbContext.SaveChangesAsync();
         }
+
+
+        if (!_dbContext.TableGroups.Any())
+        {
+            var tableGroups = await GetDataFromJsonFile<TableGroup>("TableGroups.json");
+            if (branch != null)
+            {
+                foreach (var tableGroup in tableGroups)
+                {
+                    tableGroup.BranchID = branch!.Id;
+                    tableGroup.CreationDate = DateTime.Now;
+                }
+            }
+            await _dbContext.TableGroups.AddRangeAsync(tableGroups);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        if (!_dbContext.Tables.Any() && _dbContext.TableGroups.Any())
+        {
+            var tables = await GetDataFromJsonFile<Table>("Tables.json");
+            if (branch != null)
+            {
+                foreach (var table in tables)
+                    table.BranchID = branch!.Id;
+            }
+            await _dbContext.Tables.AddRangeAsync(tables);
+            await _dbContext.SaveChangesAsync();
+        }
+
+
 
         //if (!_dbContext.PrintingSettings.Any())
         //{

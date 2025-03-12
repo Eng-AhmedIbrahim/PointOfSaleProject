@@ -28,6 +28,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.VoidReason).HasMaxLength(500);
         builder.Property(o => o.PaymentMethod).HasMaxLength(50);
         builder.Property(o => o.OrderType).HasMaxLength(50);
+        builder.Property(o => o.ShiftID).IsRequired(false);
 
         builder.Property(o => o.DeliveryCompany).HasMaxLength(100);
         builder.Property(o => o.TakeawayCustomerName).HasMaxLength(50);
@@ -67,5 +68,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.OrderState)
         .HasConversion<string>()
            .HasDefaultValue(OrderStates.Pending);
+
+        builder.HasOne(o => o.Shift)
+            .WithMany(s => s.Orders)
+            .HasForeignKey(o => o.ShiftID)
+            .OnDelete(DeleteBehavior.NoAction);
+            
     }
 }

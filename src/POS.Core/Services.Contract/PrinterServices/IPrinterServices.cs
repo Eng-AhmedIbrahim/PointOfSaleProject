@@ -1,6 +1,4 @@
-﻿using POS.Core.Entities.Kitchen;
-
-namespace POS.Core.Services.Contract.PrinterServices;
+﻿namespace POS.Core.Services.Contract.PrinterServices;
 
 public interface IPrinterServices 
 {

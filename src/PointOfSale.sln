@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Reports", "POS.Reports\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pos.Repository", "Pos.Repository\Pos.Repository.csproj", "{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.BackOffice", "POS.BackOffice\POS.BackOffice.csproj", "{4C86BF41-B930-46E8-8698-35C18CAFF7B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Authorization", "POS.Authorization\POS.Authorization.csproj", "{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,10 @@ Global
 		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33C5F73C-FCA5-453B-A3C3-AF66ECA5CAFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C86BF41-B930-46E8-8698-35C18CAFF7B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,5 @@
-﻿using BlazorBase.Models;
-using POS.Contract.Models;
-using POS.Reports.Models;
+﻿using POS.Reports.Models;
+using System.Security.Claims;
 namespace BlazorBase;
 
 public class CommonProperties
@@ -48,5 +47,23 @@ public class CommonProperties
     public List<FinanceSettings>? _financeSettingsList = new();
 
     public WaitingQueue? WaitingQueue { get; set; } = new();
+    public ClaimsPrincipal AuthUser { get; set; } = new();
 
+    //DineIN
+    public OrderDiscount? OrderDiscount { get; set; } = new();
+    public DineInOrderDetails? CurrentDineInOrder { get; set; } = new();
+    public Dictionary<int, DineInOrderDetails>? DineOrdersDetails { get; set; } = new();
+    /////////
+   
+    public decimal DiscountOrderValue { get; set; } = 0M;
+
+    public decimal DiscountPercentage { get; set; } = 0M;
+    public DateOnly? PosDate { get; set; } = new();
+    //public TimeOnly? PosTime { get; set; }
+
+    public ICollection<OrderSettingToReturnDto> OrderSettings { get; set; } = new List<OrderSettingToReturnDto>();
+
+    public string? TakeAwayStatment { get; set; }
+    public string? DineInStatment { get; set; }
+    public string? DeliveryStatment { get; set; }
 }

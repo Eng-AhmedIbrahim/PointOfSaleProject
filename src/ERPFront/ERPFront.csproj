@@ -12,11 +12,13 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\BlazorBase\BlazorBase.csproj" />
     <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
+    <ProjectReference Include="..\POS.Authorization\POS.Authorization.csproj" />
     <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
     <ProjectReference Include="..\POS.Reports\POS.Reports.csproj" />
   </ItemGroup>

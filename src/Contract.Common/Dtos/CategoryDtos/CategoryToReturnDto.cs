@@ -7,4 +7,7 @@ public class CategoryToReturnDto
     public string? EnglishName { get; set; }
     public string? ItemsFont { get; set; }
     public bool Invisible { get; set; } = false;
+
+    public DateTime CreationDate { get; set; }
+    public DateTime? UpdatedDate { get; set; }
 }

@@ -7,4 +7,6 @@ public class AppUser : IdentityUser
     public string DefaultLanguage { get; set; } = "en";
     public string? ImageUrl { get; set; }
     public DateTime? DateOfBirth { get; set; }
+    public string? DisplayName { get; set; }
+    public string? ArabicName { get; set; }
 }

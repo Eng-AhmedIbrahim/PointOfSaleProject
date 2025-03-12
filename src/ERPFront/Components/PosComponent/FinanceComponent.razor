@@ -1,35 +1,63 @@
 @inject CommonProperties _commonProperties
 @inject Section4ButtonsServices _section4ButtonsServices
 @inject CartService _cartService
+@using MudBlazor
+@using System.Globalization
 
-<MudGrid Spacing="0" Justify="Justify.Center" Class="align-text-center">
+<MudGrid Spacing="0">
     @foreach (var setting in Settings)
     {
-        <MudItem xs="4" Class="m-0">
-            <MudText Class="px-2 finance-label-text-size liner-grid-buttons" Typo="Typo.subtitle1">@setting.Label</MudText>
-        </MudItem>
-        <MudItem Class="m-0" xs="@GetNumericFieldColumnSize(setting)">
-            <MudNumericField Variant="Variant.Outlined"
-            Margin="Margin.Dense"
-            Class="finance-input-text-size label-color"
-            Min="0.00M"
-            Culture="@_en"
-            @bind-Value="setting.Value"
-            HideSpinButtons="true"
-            Disabled/>
-        </MudItem>
-        @if (!setting.IsTotal)
+        if (setting.IsTotal)
         {
-            <MudItem xs="4">
-                @if (setting.HasSwitch)
-                {
-                    <MudSwitch
-                    T="bool"
-                    Class="mx-3"
-                    ThumbIcon="@(setting.IsEnabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
-                    ThumbIconColor="@(setting.IsEnabled ? Color.Success : Color.Error)"
-                    @bind-Value="setting.IsEnabled"/>
-                }
+            <MudItem xs="12" Class="m-0">
+                <MudGrid Spacing="0">
+                    <MudItem xs="4" Class="m-0">
+                        <MudText Class="px-2 finance-label-text-size liner-grid-buttons font-weight-bold" Typo="Typo.subtitle1">@setting.Label</MudText>
+                    </MudItem>
+                    <MudItem xs="8" Class="m-0">
+                        <MudNumericField Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Class="finance-input-text-size label-color full-width"
+                                         Min="0.00M"
+                                         Culture="@_en"
+                                         @bind-Value="setting.Value"
+                                         HideSpinButtons="true"
+                                         Disabled />
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="6" Class="m-0">
+                <MudGrid Spacing="0">
+                    <MudItem xs="4" Class="m-0">
+                        <MudText Class="px-2 finance-label-text-size liner-grid-buttons" Typo="Typo.subtitle1">@setting.Label</MudText>
+                    </MudItem>
+                    <MudItem xs="8" Class="m-0">
+                        <MudNumericField Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Class="finance-input-text-size label-color"
+                                         Min="0.00M"
+                                         Culture="@_en"
+                                         @bind-Value="setting.Value"
+                                         HideSpinButtons="true"
+                                         Disabled />
+                    </MudItem>
+                    @if (!setting.IsTotal)
+                    {
+                        <MudItem xs="4" Class="m-0">
+                            @if (setting.HasSwitch)
+                            {
+                                <MudSwitch T="bool"
+                                           Class="mx-3"
+                                           ThumbIcon="@(setting.IsEnabled ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)"
+                                           ThumbIconColor="@(setting.IsEnabled ? Color.Success : Color.Error)"
+                                           @bind-Value="setting.IsEnabled" />
+                            }
+                        </MudItem>
+                    }
+                </MudGrid>
             </MudItem>
         }
     }

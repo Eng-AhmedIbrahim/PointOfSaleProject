@@ -11,4 +11,7 @@ public class RegisterDto
     public string? roleName { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
+    public string? ArabicName { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public IFormFile? ImageUrl { get; set; }
 }

@@ -1,13 +1,11 @@
-﻿using POS.Contract.Models;
-using POS.Core.Entities.Customer;
-
-namespace POS.Core.Entities.OrderEntity;
+﻿namespace POS.Core.Entities.OrderEntity;
 
 public class Orders:BaseEntity
 {
     public int BranchID { get; set; }
     public int OrderID { get; set; }
     public string? BranchName { get; set; }
+    public ShiftHandover? Shift { get; set; }
     public int? ShiftID { get; set; } = 1;
     public int? CashierID { get; set; }
     public string? CashierName { get; set; }

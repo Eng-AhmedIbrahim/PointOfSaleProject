@@ -1,6 +1,8 @@
-﻿using Pos.Repository.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Pos.Repository.Data;
+using Pos.Repository.Identity;
+using POS.Contract.Dtos.AccountDtos;
 using POS.Core.Entities.Identity;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace POS.Services.AuthModuleService;
 
@@ -10,16 +12,19 @@ public class AuthService : IAuthService
     private readonly AppDbContext _context;
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly AppIdentityDbContext _identityDbContext;
 
     public AuthService(IConfiguration configuration,
         AppDbContext context,
          UserManager<AppUser> userManager,
-         RoleManager<IdentityRole> roleManager
+         RoleManager<IdentityRole> roleManager,
+         AppIdentityDbContext identityDbContext
         )
     {
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
+        _identityDbContext = identityDbContext;
         _configuration = configuration;
     }
 
@@ -33,7 +38,7 @@ public class AuthService : IAuthService
         if (role is null)
             return false;
 
-        var result= await _userManager.AddToRoleAsync(user, roleName);
+        var result = await _userManager.AddToRoleAsync(user, roleName);
 
         return result.Succeeded;
     }
@@ -48,19 +53,21 @@ public class AuthService : IAuthService
         return result.Succeeded;
     }
 
-    public async Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager)
+    public async Task<string> CreateTokenAsync(AppUser user, IList<string> roles, List<Claim> roleClaims)
     {
-        // Private claims (user-defined)
-        var authClaims = new List<Claim>()
+        var authClaims = new List<Claim>
         {
-            new Claim(ClaimTypes.GivenName, user?.UserName??string.Empty),
-            new Claim(ClaimTypes.Email, user?.Email??string.Empty)
+            new Claim(JwtRegisteredClaimNames.Sub, user?.Id ?? string.Empty),
+            new Claim(ClaimTypes.Name, user?.UserName ?? string.Empty),
+            new Claim(ClaimTypes.NameIdentifier, user?.Id ?? string.Empty)
         };
 
-        var userRoles = await userManager.GetRolesAsync(user);
-
-        foreach (var role in userRoles)
+        foreach (var role in roles)
+        {
             authClaims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        authClaims.AddRange(roleClaims); // ✅ Directly add role claims
 
         var secretKey = Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"] ?? string.Empty);
         var requiredKeyLength = 256 / 8;
@@ -80,28 +87,33 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<AppUser> CreateUserAsync(string userName,string displayName, string password, string? userRole)
+
+
+    public async Task<AppUser?> CreateUserAsync(RegisterDto registerDto)
     {
         var user = new AppUser
         {
-            UserName = userName,
-            NormalizedUserName = displayName,
-            Email = userName,
-            RegistrationDate = DateTime.UtcNow,
-            EmailConfirmed = true
+            UserName = registerDto.UserName,
+            DisplayName = registerDto.DisplayName,
+            Email = registerDto.Email,
+            RegistrationDate = DateTime.Now,
+            DateOfBirth = registerDto.DateOfBirth,
+            //ImageUrl = registerDto!.ImageUrl!.FileName,
+            ArabicName = registerDto.ArabicName
         };
 
-        var result = await _userManager.CreateAsync(user, password);
+        var result = await _userManager.CreateAsync(user, registerDto!.Password!);
+
         if (!result.Succeeded)
-            Log.Error("User creation failed: {0}", string.Join(", ", result.Errors.Select(e => e.Description)));
+             return null;
 
-        if (!string.IsNullOrEmpty(userRole))
-        {
-            if (!await _roleManager.RoleExistsAsync(userRole))
-                await _roleManager.CreateAsync(new IdentityRole(userRole));
+        if (!await _roleManager.RoleExistsAsync(registerDto!.roleName!))
+            return null;
 
-            await _userManager.AddToRoleAsync(user, userRole);
-        }
+        var result1 = await _userManager.AddToRoleAsync(user, registerDto!.roleName!);
+
+        if (!result1.Succeeded)
+            return null;
 
         return user;
     }
@@ -126,16 +138,16 @@ public class AuthService : IAuthService
     }
 
     public async Task<List<IdentityRole>> GetAllRolesAsync()
-    =>  _roleManager.Roles.ToList();
+    => _roleManager.Roles.ToList();
 
     public async Task<List<AppUser>> GetAllUsersAsync()
     => _userManager.Users.ToList();
 
     public async Task<IdentityRole> GetRoleAsync(string roleName)
-    => await _roleManager.FindByNameAsync(roleName)??new();
+    => await _roleManager.FindByNameAsync(roleName) ?? new();
 
     public async Task<AppUser> GetUserAsync(string userId)
-    => await _userManager.FindByIdAsync(userId)??new();
+    => await _userManager.FindByIdAsync(userId) ?? new();
 
     public async Task<bool> RemoveUserFromRoleAsync(string userId, string roleName)
     {
@@ -147,7 +159,7 @@ public class AuthService : IAuthService
         return result.Succeeded;
     }
 
-    public async Task<bool> UpdateUserAsync(string userId,string newUserName, string newPassword, string newDisplayName, string newRole)
+    public async Task<bool> UpdateUserAsync(string userId, string newUserName, string newPassword, string newDisplayName, string newRole)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -183,5 +195,38 @@ public class AuthService : IAuthService
 
         var roleResult = await _userManager.AddToRoleAsync(user, newRole);
         return roleResult.Succeeded;
+    }
+
+
+
+    public async Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user)
+    {
+        var appUser = await _userManager.GetUserAsync(user);
+        if (appUser == null) return new HashSet<string>();
+
+        // Get the roles associated with the user
+        var roles = await _userManager.GetRolesAsync(appUser);
+
+        if (roles.Count == 0) return new HashSet<string>();
+
+        var role = await _roleManager.FindByNameAsync(roles[0]);
+        if (role == null) return new HashSet<string>();
+
+
+        var permissions = await _identityDbContext.RoleClaims
+            .Where(rc => rc.RoleId == role.Id && rc.ClaimType == "Permission")
+            .Select(rc => rc.ClaimValue)
+            .Distinct()
+            .ToListAsync();
+
+        // Return the distinct permissions as a HashSet
+        return new HashSet<string>(permissions!);
+    }
+
+    public async Task<List<AppUser>> GetUsersHasSpecificRole(string roleName)
+    {
+        var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+        return usersInRole.ToList();
     }
 }

@@ -1,6 +1,4 @@
-﻿using BlazorBase;
-
-namespace ERPFront.Components.Pages;
+﻿namespace ERPFront.Components.Pages;
 
 public partial class Login
 {
@@ -8,6 +6,9 @@ public partial class Login
     private string _userName = string.Empty;
     private ICollection<UserDto> Users = new List<UserDto>();
     private HttpClient? client;
+
+    [Inject] private AuthenticationStateProvider _authenticationStateProvider { get; set; } = default!;
+
 
     private void AddDigit(string digit)
         => _pin += digit;
@@ -38,18 +39,52 @@ public partial class Login
 
     private async Task LoginAction()
     {
-        var response = await client!.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin }) ?? new();
+        var response = await client!.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin });
+
         if (response.IsSuccessStatusCode)
         {
+            var responseContent = await response.Content.ReadFromJsonAsync<UserDto>(); // Deserialize response
+            string token = responseContent?.Token ?? string.Empty; // Extract token
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Snackbar.Add("Login Failed: No token received", Severity.Error);
+                return;
+            }
+
             _commonProperties.CurrentUser = _userName;
-            _navigationManager.NavigateTo("/pos");
+
+            //Store token in local storage &update authentication state
+            if (_authenticationStateProvider is CustomAuthenticationStateProvider customAuthStateProvider)
+            {
+                await customAuthStateProvider.NotifyUserAuthentication(token);
+            }
+
+            _navigationManager.NavigateTo("/pos", true);
         }
         else
         {
             Snackbar.Add("Login Failed", Severity.Error);
         }
-
     }
+
+
+
+
+    private async Task<List<string>> GetUserPermissions()
+    {
+        var url = ConstantStrings.GetUserPermissionsUrl; // No userId
+        var permissionsResponse = await client!.GetAsync(url);
+
+        if (permissionsResponse.IsSuccessStatusCode)
+        {
+            var permissionsString = await permissionsResponse.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<string>>(permissionsString) ?? new List<string>();
+        }
+
+        return new List<string>();
+    }
+
 
     private void HandelOnChange(ChangeEventArgs e)
        => _userName = e.Value?.ToString() ?? string.Empty;

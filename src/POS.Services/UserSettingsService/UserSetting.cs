@@ -53,7 +53,7 @@ public class UserSetting : IUserSetting
         UserSettingEntity oldUserSetting = new();
         try
         {
-            oldUserSetting = await _unitOfWork.Repository<UserSettingEntity>().GetUserSettingByIdAsync(userSetting.UserId);
+            oldUserSetting = await _unitOfWork.Repository<UserSettingEntity>().GetUserSettingByIdAsync(userSetting!.UserId!)??new();
 
             if (oldUserSetting is null)
             {

@@ -1,12 +1,12 @@
-﻿using POS.Core.Entities.Identity;
+﻿using POS.Contract.Dtos.DineInDtos;
 
 namespace POS.Core.Services.Contract.AccountDomainContracts;
 
 public interface IAuthService
 {
-    public Task<string> CreateTokenAsync(AppUser user, UserManager<AppUser> userManager);
+    public Task<string> CreateTokenAsync(AppUser user, IList<string> roles, List<Claim> roleClaims);
 
-    public Task<AppUser> CreateUserAsync(string userName, string displayName, string password, string? userRole);
+    public Task<AppUser?> CreateUserAsync(RegisterDto registerDto);
 
     public Task<bool> CreateRoleAsync(string roleName);
 
@@ -21,4 +21,9 @@ public interface IAuthService
 
     public Task<List<IdentityRole>> GetAllRolesAsync();
     public Task<IdentityRole> GetRoleAsync(string roleName);
+
+    public Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user);
+
+    //InUse
+    public Task<List<AppUser>> GetUsersHasSpecificRole(string roleName);
 }

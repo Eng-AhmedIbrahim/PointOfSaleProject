@@ -4,9 +4,14 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IJSRuntime JS
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
+
+    @* @if (canAccessDiscount) *@
+    @* { *@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.Discount"
@@ -14,6 +19,7 @@
                OnClick="@(() => OpenDrawer(Anchor.Bottom))">
         خصم
     </MudButton>
+    @* } *@
     <MudDrawer @bind-Open="@_open" MaxWidth="100%" MaxHeight="100vh" Anchor="@_anchor" Elevation="3" Variant="@DrawerVariant.Temporary">
         <!-- Drawer Header with Close Button -->
         <MudDrawerHeader Class="drawer-header">
@@ -47,28 +53,26 @@
                 </MudButton>
             </MudStack>
 
-            <!-- Percentage Discount: Slider -->
             @if (discountType == "percentage")
             {
-                <MudSlider @bind-Value="@discountPercentage" Min="1" Max="100" Step="1" ShowTicks ShowValueLabel Color="Color.Primary"
+                <MudSlider @bind-Value="@commonProperties.DiscountPercentage" Min="1" Max="100" Step="1" ShowTicks ShowValueLabel Color="Color.Primary"
                            Class="mt-3" />
+
                 <MudText Typo="Typo.h6" Class="mt-2 text-center">
-                    <MudIcon Icon="@Icons.Material.Filled.Percent" Class="mr-1" /> Selected Percentage <strong>@discountPercentage%</strong>
+                    <MudIcon Icon="@Icons.Material.Filled.Percent" Class="mr-1" /> Selected Percentage <strong>@commonProperties.DiscountPercentage%</strong>
                 </MudText>
             }
 
-            <!-- Fixed Value Discount: Input with Icon -->
             @if (discountType == "value")
             {
                 <div class="input-container text-center mt-3">
-                    <MudTextField T="decimal" @bind-Value="@discountValue" Placeholder="Enter Discount Amount"
+                    <MudTextField T="decimal" @bind-Value="@commonProperties.DiscountOrderValue" Placeholder="Enter Discount Amount"
                                   Variant="Variant.Filled" Color="Color.Primary"
                                   Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
                                   Class="discount-input" />
                 </div>
             }
 
-            <!-- Discount Reason Selection -->
             <MudText Typo="Typo.subtitle1" Class="mt-4">
                 <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-2" /> Select Discount Reason
             </MudText>
@@ -82,7 +86,6 @@
                 }
             </MudSelect>
 
-            <!-- Apply Discount Button -->
             <MudButton Variant="Variant.Filled" Color="Color.Success" Class="apply-btn mt-4 w-100" OnClick="ApplyDiscount"
                        StartIcon="@Icons.Material.Filled.CheckCircle">
                 Apply Discount
@@ -92,13 +95,18 @@
 
 
 
-
+    @* @if (canAccessMeals) *@
+    @* { *@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.SetMeal"
                class="button-color-footer">
         الوجبات
     </MudButton>
+    @* } *@
+
+    @* @if (canAccessWaiting) *@
+    @* { *@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                StartIcon="@Icons.Material.Filled.Alarm"
@@ -106,6 +114,10 @@
                OnClick="()=>GotoWaitingPage()">
         الانتظار
     </MudButton>
+    @* } *@
+
+    @* @if (canAccessSettings) *@
+    @* { *@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
                OnClick="ToggleDrawer"
@@ -113,10 +125,10 @@
                class="button-color-footer">
         اعدادات
     </MudButton>
+    @* } *@
 </MudStack>
 
 <SettingsDrawer @bind-Open="_drawerOpen">
-    @* <MudText>Drawer Content Goes Here</MudText> *@
 </SettingsDrawer>
 
 @code {
@@ -141,10 +153,7 @@
     private bool _open = false;
     private Anchor _anchor;
     private string _width = "100%", _height = "300px";
-
-    private string discountType = "percentage"; // Default selection
-    private int discountPercentage = 10;       // Default percentage value
-    private decimal discountValue = 0;         // Default fixed value
+    private string discountType = "percentage"; 
 
     private void OpenDrawer(Anchor anchor)
     {
@@ -157,12 +166,14 @@
     {
         if (discountType == "percentage")
         {
-            Console.WriteLine($"تم تطبيق خصم بنسبة {discountPercentage}%");
+            commonProperties!.OrderDiscount!.Percentage = commonProperties.DiscountPercentage;
         }
         else
         {
-            Console.WriteLine($"تم تطبيق خصم بقيمة {discountValue} ريال");
+            commonProperties!.OrderDiscount!.Value = commonProperties.DiscountPercentage;
         }
+
+        commonProperties!.OrderDiscount!.DiscountReason = SelectedReason.ToString();
         _open = false;
     }
     private void CloseDrawer()

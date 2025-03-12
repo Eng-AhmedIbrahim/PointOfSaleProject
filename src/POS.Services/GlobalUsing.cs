@@ -32,3 +32,10 @@ global using POS.Repository.Data;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.Security.Claims;
 global using System.Text;
+
+
+
+global using POS.Core.Entities.DineIn;
+global using POS.Core.Services.Contract.DineInServices;
+global using POS.Core.Services.Contract.AppDateServices;
+global using POS.Core.Entities.Date;

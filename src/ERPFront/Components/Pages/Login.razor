@@ -1,11 +1,10 @@
 ﻿@page "/"
 @page "/login"
-@using MudBlazor
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navigationManager
 @inject ISnackbar Snackbar
 @inject CommonProperties _commonProperties
-
+@layout AuthLayout
 
 <div class="container">
     <div class="left-panel">

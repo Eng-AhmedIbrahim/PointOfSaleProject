@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
-using POS.Contract.Models;
+﻿using POS.Contract.Dtos.OrderDto;
+using POS.Contract.Enums;
+using POS.Core.Entities.OrderEntity;
 
 namespace ERPFront.Components.Pages;
 
@@ -11,29 +12,34 @@ public partial class POS
     private ICollection<MenuSalesItemsToReturnDto> _itemByCatId = new List<MenuSalesItemsToReturnDto>();
     private int currentCatId;
     private List<AttributeDto>? currentSelectedAttribute;
+    private delegate void FinanceSettingsDelegate(OrderSettingToReturnDto? orderSettings);
+
     public string? NoteValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-         _categories = await _categoryServices.GetAllCategoriesAsync();
-         _commonProperties.OnChange += StateHasChanged;
+        _categories = await _categoryServices.GetAllCategoriesAsync();
+        _categories = _categories.Where(c => c.Invisible == false).ToList();
+
+        _commonProperties.OnChange += StateHasChanged;
         CustomizationSettingsService.OnChanged += StateHasChanged;
         _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
 
-        _commonProperties._financeSettingsList = new()
-        {
-            new FinanceSettings { Label = "Account", Value = 0M},
-            new FinanceSettings { Label = "Discount", Value = 20M },
-            new FinanceSettings { Label = "ToTal", Value = 15M },
-        };
 
-        if (_commonProperties.TableItems is not null)
-            _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems??new());
+
+
+
+        await GetCurrentDayAndTime();
+        await GetOrdersSetting();
+
+        _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+
     }
-
     private async Task InvokeItems(int catId)
     {
         _itemByCatId = await _categoryServices.GetItemsByCategoryIdAsync(catId);
+        _itemByCatId = _itemByCatId.Where(i => i.Invisible == false).ToList();
+
         currentCatId = catId;
     }
 
@@ -41,13 +47,13 @@ public partial class POS
     {
         StateHasChanged();
         return Task.CompletedTask;
-    }   
+    }
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
         TableItem? selectedTableItem = GetItemFromTableById(selectedMenuItem);
 
-        if (!selectedMenuItem.Attributes.Any()&& _itemClickCount.Count() == 0 && selectedTableItem != null)
+        if (!selectedMenuItem.Attributes.Any() && _itemClickCount.Count() == 0 && selectedTableItem != null)
         {
             selectedTableItem.Quantity++;
             selectedTableItem.Total = selectedTableItem.Total + selectedTableItem.Price;
@@ -167,13 +173,7 @@ public partial class POS
     }
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
-        => _commonProperties?.TableItems?.Where(c => c.Attributes.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
-    public void Dispose()
-    {
-        _commonProperties.OnChange -= StateHasChanged;
-        CustomizationSettingsService.OnChanged -= StateHasChanged;
-        _section4ButtonsServices.OnChanged -= StateHasChanged;
-    }
+        => _commonProperties?.TableItems?.Where(c => c!.Attributes!.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
     public void CalculateTotalAmount()
     {
         if (_commonProperties?.TableItems != null)
@@ -181,5 +181,57 @@ public partial class POS
             _commonProperties._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
             StateHasChanged();
         }
+    }
+
+
+    private DateTime _lastEnterPress = DateTime.MinValue;
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            var now = DateTime.UtcNow;
+            if ((now - _lastEnterPress).TotalMilliseconds < 500)
+            {
+                await ExecuteDoubleEnterFunction();
+            }
+            _lastEnterPress = now;
+        }
+    }
+
+    private Task ExecuteDoubleEnterFunction()
+    {
+        Console.WriteLine("Double Enter Pressed!");
+        // Call your desired function here
+        return Task.CompletedTask;
+    }
+
+    private async Task GetCurrentDayAndTime()
+    {
+        var appDate = await _appDate.GetAppDate();
+        _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
+    }
+
+    private async Task GetOrdersSetting()
+        => _commonProperties.OrderSettings = await _orderSettingsService.GetOrderSettingsAsync();
+
+
+    private void SetFinanceSettings(OrderSettingToReturnDto? orderSettings)
+    {
+        _commonProperties._financeSettingsList = new()
+    {
+        new FinanceSettings { Label = "Account", Value = 0M },
+        new FinanceSettings { Label = "Discount", Value = 0M },
+        new FinanceSettings { Label = "Tax", Value = orderSettings?.Tax ?? 0M },
+        new FinanceSettings { Label = "Service", Value = orderSettings?.Service ?? 0M },
+        new FinanceSettings { Label = "Total", Value = 0M }
+    };
+    }
+
+
+    public void Dispose()
+    {
+        _commonProperties.OnChange -= StateHasChanged;
+        CustomizationSettingsService.OnChanged -= StateHasChanged;
+        _section4ButtonsServices.OnChanged -= StateHasChanged;
     }
 }

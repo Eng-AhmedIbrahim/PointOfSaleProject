@@ -50,7 +50,7 @@ public class CompanyController : BaseApiController
     [HttpGet("{companyId}")]
     public async Task<IActionResult> GetCompanyById(int companyId)
     {
-        Company? company = await _companyService.GetCompanyByIdAsync(companyId);
+        Company? company = await _companyService!.GetCompanyByIdAsync(companyId)!;
         if (company is null)
             return NotFound(new ApiResponse(404));
 
@@ -63,9 +63,9 @@ public class CompanyController : BaseApiController
     [HttpPut]
     public async Task<IActionResult> UpdateCompany([FromQuery]UpdatedCompanyDto company)
     {
-        Company? storedCompany = await _companyService.GetCompanyByIdAsync(company.CompanyId)??new();
+        Company? storedCompany = await _companyService!.GetCompanyByIdAsync(company!.CompanyId!)!;
         var newCompany = _mapper.Map<UpdatedCompanyDto,Company>(company);
-        newCompany.Id = storedCompany.Id;   
+        newCompany.Id = storedCompany!.Id;   
 
         if (storedCompany is null)
             return NotFound(new ApiResponse(404));
@@ -84,7 +84,7 @@ public class CompanyController : BaseApiController
     [HttpDelete]
     public async Task<IActionResult> DeleteCompany(int companyId)
     {
-        var company = await _companyService.GetCompanyByIdAsync(companyId);
+        var company = await _companyService!.GetCompanyByIdAsync(companyId)!;
         if (company is null)
             return NotFound(new ApiResponse(404));
 

@@ -14,6 +14,9 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(IUserSetting), typeof(UserSetting));
         services.AddScoped(typeof(IAuthService), typeof(AuthService));
         services.AddScoped(typeof(IOrderService), typeof(OrderService));
+        services.AddScoped(typeof(IDineInService), typeof(DineInService));
+        services.AddScoped(typeof(IAppDateService), typeof(AppDateService));
+
 
         services.AddAutoMapper(typeof(MappingProfiles));
         services.AddHttpClient();
