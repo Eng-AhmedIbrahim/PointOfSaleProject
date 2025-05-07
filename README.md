@@ -1,2 +1,1 @@
 # PointOfSale
-point of sale
