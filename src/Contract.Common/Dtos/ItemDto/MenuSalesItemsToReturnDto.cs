@@ -14,6 +14,10 @@ public class MenuSalesItemsToReturnDto
     public int? TextSize { get; set; }
     public bool Invisible { get; set; } = false;
     public int CategoryId { get; set; }
+    public bool? PrintInBackupReceiptFromItem { get; set; }
+    public bool? PrintInBackupReceiptFromCategory { get; set; }
+    public int? ItemKitchenTypeId { get; set; }
+    public int? CategoryKitchenTypeId { get; set; }
     public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
     //public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
 }

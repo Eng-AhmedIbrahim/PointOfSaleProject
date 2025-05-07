@@ -4,4 +4,5 @@ public interface IAppDateService
 {
     public Task<AppDate> GetAppDateAsync();
     public Task<AppDate> UpdateAppDate();
+    public Task<AppDate> UpdateOrderNumber();
 }

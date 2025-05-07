@@ -1,7 +1,4 @@
-﻿using POS.Core.Entities.UserSettings;
-using System.Security.Claims;
-
-namespace Pos.Repository.Identity;
+﻿namespace Pos.Repository.Identity;
 
 public static class AppIdentityDbContextSeed
 {

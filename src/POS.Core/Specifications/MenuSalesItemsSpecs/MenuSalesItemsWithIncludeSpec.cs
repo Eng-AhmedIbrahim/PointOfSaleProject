@@ -13,8 +13,17 @@ public class MenuSalesItemsWithIncludeSpec : BaseSpecifications<MenuSalesItems>
         AddInclude();
     }
 
+    public MenuSalesItemsWithIncludeSpec(Expression<Func<MenuSalesItems, bool>> criteria)
+     : base(criteria)
+    {
+        AddInclude();
+    }
+
+    
+
     private void AddInclude()
     {
+        Includes.Add(s => s.Category!);
         Includes.Add(s => s.Attribute!);
         IncludeStrings.Add($"{nameof(MenuSalesItems.Attribute)}.{nameof(Attributes.AttributeItems)}.{nameof(AttributeItem.RelatedMenuItem)}");
     }

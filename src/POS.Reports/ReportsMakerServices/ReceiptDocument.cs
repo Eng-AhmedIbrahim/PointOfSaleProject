@@ -1,7 +1,15 @@
-namespace POS.Reports.ReportsMakerServices;
+﻿namespace POS.Reports.ReportsMakerServices;
 
-public class ReceiptDocument(Receipt receipt) : IDocument
+public class ReceiptDocument : IDocument
 {
+    private readonly List<TableItem> _items;
+    private readonly Receipt receipt;
+
+    public ReceiptDocument(Receipt _receipt, List<TableItem> items)
+    {
+        receipt = _receipt;
+        _items = items;
+    }
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
     public void Compose(IDocumentContainer container)
@@ -16,7 +24,7 @@ public class ReceiptDocument(Receipt receipt) : IDocument
                     BuildDateAndCashierInfo(ref column);
                     BuildItemsTable(ref column);
                     BuildPaymentMethod(ref column);
-                    BuildBarcodeOrNoteSection(ref column);
+                    //BuildBarcodeOrNoteSection(ref column);
                 });
 
             page.Footer()
@@ -29,17 +37,23 @@ public class ReceiptDocument(Receipt receipt) : IDocument
         page.Size(PageSizes.A6);
         page.ContinuousSize(10.5f, Unit.Centimetre);
         page.PageColor(Colors.White);
-        page.MarginTop(40);
-        page.MarginRight(20);
-        page.MarginBottom(20);
-        page.MarginLeft(20);
+        page.MarginTop(15);
+        page.MarginRight(5);
+        page.MarginBottom(10);
+        page.MarginLeft(5);
         page.DefaultTextStyle(
             TextStyle.Default.FontFamily("Noto Sans", "Noto Sans Arabic"));
     }
 
     private void AddHeader(ref ColumnDescriptor column)
     {
-        /*Header * Name */
+        // 🖼️ Logo section
+        column.Item()
+        .AlignCenter()
+        .Width(receipt.LogoWidth) 
+        .Image(receipt.LogoPath)
+        .FitWidth();
+
         column.Item()
             .Text(text =>
             {
@@ -75,6 +89,7 @@ public class ReceiptDocument(Receipt receipt) : IDocument
     private void BuildDateAndCashierInfo(ref ColumnDescriptor column)
     {
         column.Item()
+            .PaddingTop(5)
             .Table(table =>
             {
                 table.ColumnsDefinition(cols =>
@@ -100,7 +115,6 @@ public class ReceiptDocument(Receipt receipt) : IDocument
 
                 table.Cell()
                     .Element(CellStyle)
-                    .Padding(-6)
                     .Text(ArabicConstStrings.From)
                     .AlignCenter();
             });
@@ -112,59 +126,68 @@ public class ReceiptDocument(Receipt receipt) : IDocument
             .PaddingTop(3)
             .Table(table =>
             {
-                table.ColumnsDefinition(cols =>
+                table.ColumnsDefinition(columns =>
                 {
-                    cols.ConstantColumn(60);
-                    cols.ConstantColumn(60);
-                    cols.RelativeColumn();
-                    cols.ConstantColumn(30);
+                    columns.RelativeColumn(2);     // Total
+                    columns.RelativeColumn(2);     // Price
+                    columns.RelativeColumn(4.5f);  // Name
+                    columns.RelativeColumn(1.5f);  // Quantity
                 });
 
+                // Table Header
                 table.Header(header =>
                 {
                     header.Cell()
+                        .Element(CellStyle)
                         .Text(ArabicConstStrings.Total)
-                        .AlignCenter();
+                        .AlignCenter()
+                        .Bold();
 
                     header.Cell()
+                        .Element(CellStyle)
                         .Text(ArabicConstStrings.Price)
-                        .AlignCenter();
+                        .AlignCenter()
+                        .Bold();
 
                     header.Cell()
+                        .Element(CellStyle)
                         .Text(ArabicConstStrings.Name)
-                        .AlignCenter();
+                        .AlignCenter()
+                        .Bold();
 
                     header.Cell()
+                        .Element(CellStyle)
                         .Text(ArabicConstStrings.Quantity)
-                        .AlignCenter();
+                        .AlignCenter()
+                        .Bold();
                 });
-// Table Rows
-                foreach (var item in receipt.Items)
+
+                foreach (TableItem item in _items)
                 {
-                    table.Cell()
-                        .Element(CellStyle)
-                        .Text(item.Total.ToString("N2"))
-                        .AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.Total?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.Price?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
+                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
 
-                    table.Cell()
-                        .Element(CellStyle)
-                        .Text(item.Price.ToString("N2"))
-                        .AlignCenter();
+                    // Add attributes if available
+                    if (item.Attributes?.Any() == true)
+                    {
+                        foreach (var attribute in item.Attributes)
+                        {
+                            table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                                .PaddingRight(45)
+                                .Text(attribute.Name + "<==")
+                                .FontSize(10)
+                                .AlignEnd();
+                        }
+                    }
 
-                    table.Cell()
-                        .Element(CellStyle)
-                        .Text(item.Name)
-                        .AlignEnd();
-
-                    table.Cell()
-                        .Element(CellStyle)
-                        .Text(item.Quantity.ToString("N0"))
-                        .AlignCenter();
                 }
 
                 table.Cell()
                     .ColumnSpan(2)
-                    .Padding(4)
+                    .PaddingTop(8)
                     .Text(receipt.TotalAmount.ToString())
                     .FontSize(20)
                     .Bold()
@@ -172,7 +195,7 @@ public class ReceiptDocument(Receipt receipt) : IDocument
 
                 table.Cell()
                     .ColumnSpan(2)
-                    .PaddingTop(-4)
+                    .PaddingTop(8)
                     .Text(ArabicConstStrings.Total)
                     .FontSize(18)
                     .Bold()
@@ -188,41 +211,14 @@ public class ReceiptDocument(Receipt receipt) : IDocument
             .Text(receipt.PaymentMethod)
             .AlignCenter()
             .Bold()
-            .FontSize(20)
+            .FontSize(15)
             .AlignCenter();
-    }
-
-    private void BuildBarcodeOrNoteSection(ref ColumnDescriptor column)
-    {
-        column.Item()
-            .Table(table =>
-            {
-                table.ColumnsDefinition(cols => { cols.RelativeColumn(); });
-
-                if (string.IsNullOrEmpty(receipt.ReceiptNote))
-                {
-                    table.Cell()
-                        .PaddingTop(4)
-                        .Element(CellStyle)
-                        .Text("Empty Note Item")
-                        .FontSize(15)
-                        .AlignCenter();
-                }
-                else
-                {
-                    table.Cell()
-                        .PaddingTop(4)
-                        .Element(CellStyle)
-                        .Text(receipt.ReceiptNote)
-                        .FontSize(15)
-                        .AlignCenter();
-                }
-            });
     }
 
     private void BuildFooter(ref ColumnDescriptor column)
     {
         column.Item()
+            .PaddingTop(5)
             .Text(receipt.FooterMessage)
             .Bold()
             .FontSize(15)
@@ -238,15 +234,15 @@ public class ReceiptDocument(Receipt receipt) : IDocument
                 });
 
                 table.Cell()
-                    .PaddingTop(4)
+                    .PaddingTop(5)
                     .Text("FB:New Tech")
-                    .FontSize(14)
+                    .FontSize(9)
                     .AlignLeft();
 
                 table.Cell()
-                    .PaddingTop(4)
-                    .Text("www.newtech.com")
-                    .FontSize(14)
+                    .PaddingTop(5)
+                    .Text("www.NewTech.com")
+                    .FontSize(9)
                     .AlignRight();
             });
     }

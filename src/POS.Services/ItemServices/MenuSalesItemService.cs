@@ -196,7 +196,7 @@ public class MenuSalesItemService : IMenuSalesItemService
     {
         try
         {
-            var itemSpecs = new ItemsSpecs(c=>c.CategoryId == catId);
+            var itemSpecs = new MenuSalesItemsWithIncludeSpec(c=>c.CategoryId == catId);
             var items = await _unitOfWork.Repository<MenuSalesItems>().GetAllWithSpecificationAsync(itemSpecs);
 
 

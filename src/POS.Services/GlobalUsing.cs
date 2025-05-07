@@ -39,3 +39,17 @@ global using POS.Core.Entities.DineIn;
 global using POS.Core.Services.Contract.DineInServices;
 global using POS.Core.Services.Contract.AppDateServices;
 global using POS.Core.Entities.Date;
+
+global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;
+global using POS.Core.Entities.Delivery;
+global using POS.Core.Services.Contract.DeliveryServices;
+global using POS.Core.Specifications.DeliverySpecs;
+
+global using PdfiumViewer;
+global using POS.Core.Entities.Kitchen;
+global using POS.Core.Entities.OrderEntity;
+global using POS.Core.Services.Contract.PrinterServices;
+global using System.Drawing.Printing;
+global using POS.Core.Services.Contract.KitchenServices;
+global using POS.Core.Specifications.KitchenSpecs;
+global using POS.Core.Services.Contract.DeliveryOrderServices;

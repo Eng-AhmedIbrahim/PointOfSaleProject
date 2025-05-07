@@ -1,5 +1,4 @@
 ﻿namespace BlazorBase.ERPFrontServices.OrderServices;
-
 public class OrderSettingsService : IOrderSettingsService
 {
     private readonly HttpClient _httpClient;
@@ -13,37 +12,46 @@ public class OrderSettingsService : IOrderSettingsService
     {
         _apiSettings = apiSettings;
         _logger = logger;
-        _httpClient = httpClientFactory.CreateClient(_apiSettings!.ApiName!);
+        _httpClient = httpClientFactory.CreateClient(apiSettings.ApiName!);
     }
 
-    public async Task<ICollection<OrderSettingToReturnDto>> GetOrderSettingsAsync()
+    public async Task<OrderDto?> CreateOrderAsync(OrderDto orderDto)
     {
-        return await GetApiResponseAsync<OrderSettingToReturnDto>(
-              GetOrderSettingsRequest,
-              "Failed to retrieve Order Settings from the API."
-          );
+        return await GetApiResponseAsync<OrderDto>(
+            () => CreateOrderRequest(orderDto),
+            "Failed to create order via the API."
+        );
     }
 
+    public async Task<ICollection<OrderSettingToReturnDto>?> GetOrderSettingsAsync()
+    {
+        return await GetApiResponseAsync<ICollection<OrderSettingToReturnDto>>(
+            GetOrderSettingsRequest,
+            "Failed to retrieve Order Settings from the API."
+        );
+    }
 
-    private async Task<ICollection<T>> GetApiResponseAsync<T>(
-       Func<Task<HttpResponseMessage>> apiRequest,
-       string? message)
+    private async Task<T> GetApiResponseAsync<T>(
+        Func<Task<HttpResponseMessage>> apiRequest,
+        string? message)
     {
         var response = await ApiRequestHelpers.SendApiRequest(apiRequest);
         if (response is null || !response.IsSuccessStatusCode)
         {
             _logger.LogError("API call failed: {ErrorMessage}", message ?? "No message provided.");
-            return [];
+            return default!;
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var items = ApiRequestHelpers.DeserializeResponseContent<List<T>>(content);
+        T? items = ApiRequestHelpers.DeserializeResponseContent<T>(content);
 
-        return items ?? [];
+        return items!;
     }
 
-    private Task<HttpResponseMessage> GetOrderSettingsRequest()
-        => _httpClient.GetAsync(_apiSettings!.Endpoints!.GetOrderSettings);
+    private Task<HttpResponseMessage> CreateOrderRequest(OrderDto orderDto)
+      => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateOrder!, orderDto);
 
+    private Task<HttpResponseMessage> GetOrderSettingsRequest()
+     => _httpClient.GetAsync(_apiSettings.Endpoints!.GetOrderSettings!);
 
 }

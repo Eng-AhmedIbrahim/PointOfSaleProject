@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class ItemController : BaseApiController
 {
@@ -45,7 +43,7 @@ public class ItemController : BaseApiController
         return Ok(itemToReturn);
     }
 
-    [Authorize]
+    //[Authorize]
     [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("GetAllItems")]

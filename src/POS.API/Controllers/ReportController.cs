@@ -1,7 +1,3 @@
-using POS.Reports.Models;
-using POS.Reports.ReportsMakerServices;
-using QuestPDF.Fluent;
-
 namespace POS.API.Controllers;
 
 [Route("api/[controller]")]
@@ -18,16 +14,64 @@ public class ReportController : ControllerBase
         Directory.CreateDirectory(_reportsFolder);
     }
 
-    [HttpGet("GenerateReceipt")]
+    [HttpGet("Generate-TakeAway-Receipt")]
     public async Task<IActionResult> GenerateReceiptReport()
     {
         var receipt = FakeDataGenerator.GenerateFakeReceipt(20);
-        var document = await Task.Run(() => new ReceiptDocument(receipt));
+        var document = await Task.Run(() => new ReceiptDocument(receipt.receipt, receipt.tableItems));
 
         var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd_hh-mm-ss_tt");
         var outputPath = Path.Combine(_reportsFolder, $"{timestamp}-receipt.pdf");
 
-        // Save the PDF
+        document.GeneratePdf(outputPath);
+
+        return Ok($"Report generated successfully: {outputPath}");
+    }
+
+    [HttpGet("Generate-Delivery-Receipt")]
+    public async Task<IActionResult> GenerateDeliveryReceiptReport()
+    {
+        var receiptData = FakeDeliveryDataGenerator.GenerateFakeReceipt(10);
+
+        var document = await Task.Run(() =>
+            new DeliveryReceiptDocument(receiptData.receipt, receiptData.tableItems));
+
+        var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd_hh-mm-ss_tt");
+        var outputPath = Path.Combine(_reportsFolder, $"{timestamp}-delivery-receipt.pdf");
+
+        document.GeneratePdf(outputPath);
+
+        return Ok($"Report generated successfully: {outputPath}");
+    }
+
+    [HttpGet("Generate-Kitchen-Receipt")]
+    public async Task<IActionResult> GenerateKitchenReceiptReport()
+    {
+        var receiptData = FakeKitchenDataGenerator.GenerateFakeReceipt(5);
+
+        var document = await Task.Run(() =>
+            new KitchenReceiptDocument(receiptData.receipt, receiptData.tableItems));
+
+        var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        var outputPath = Path.Combine(_reportsFolder, $"{timestamp}-kitchen-receipt.pdf");
+
+        document.GeneratePdf(outputPath);
+
+        return Ok($"Report generated successfully: {outputPath}");
+    }
+
+
+    [HttpGet("Generate-DineIn-Receipt")]
+    public async Task<IActionResult> GenerateDineInReceiptReport()
+    {
+        var receiptData  = FakeDineInDataGenerator.Generate(5);
+
+        var document = await Task.Run(() =>
+            new DineInReceiptDocument(receiptData.receipt, receiptData.tableItems));
+
+        var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        var outputPath = Path.Combine(_reportsFolder, $"{timestamp}-DineIn-receipt.pdf");
+
         document.GeneratePdf(outputPath);
 
         return Ok($"Report generated successfully: {outputPath}");

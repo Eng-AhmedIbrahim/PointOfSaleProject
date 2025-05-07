@@ -14,6 +14,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
 
         builder.Property(o => o.BranchName).HasMaxLength(100);
         builder.Property(o => o.CashierName).HasMaxLength(100);
+        builder.Property(o => o.CashierID)
+            .HasColumnType("nvarchar")
+            .HasMaxLength(200);
+
         builder.Property(o => o.OrderType).HasMaxLength(50);
         builder.Property(o => o.OrderState).HasMaxLength(50);
         builder.Property(o => o.CustomerName).HasMaxLength(150);
@@ -28,6 +32,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.VoidReason).HasMaxLength(500);
         builder.Property(o => o.PaymentMethod).HasMaxLength(50);
         builder.Property(o => o.OrderType).HasMaxLength(50);
+        builder.Property(o => o.TakerID).HasColumnType("int");
+        builder.Property(o => o.TakerName).HasMaxLength(200);
         builder.Property(o => o.ShiftID).IsRequired(false);
 
         builder.Property(o => o.DeliveryCompany).HasMaxLength(100);

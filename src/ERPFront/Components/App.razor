@@ -62,6 +62,26 @@
             // @_commons.ClearTableItems();
         }
     </script>
+
+
+    <script>
+            let lastEnterTime = 0;
+
+        window.listenToDoubleEnter = function (dotNetHelper) {
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+
+                    const now = Date.now();
+                    if (now - lastEnterTime < 500) {
+                        dotNetHelper.invokeMethodAsync("ExecuteDoubleEnterFunction");
+                    }
+                    lastEnterTime = now;
+                }
+            });
+        };
+    </script>
+
 </body>
 
 </html>

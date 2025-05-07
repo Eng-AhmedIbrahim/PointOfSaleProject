@@ -13,7 +13,23 @@ public class KitchenTypeConfiguration : IEntityTypeConfiguration<KitchenType>
 
         builder.Property(k => k.KitchenName)
             .HasMaxLength(100)
-            .IsRequired(false);
+        .IsRequired(false);
+
+        builder.HasOne(k => k.KitchenPrinters)
+               .WithOne(p => p.KitchenType)
+               .HasForeignKey<KitchenType>(k => k.KitchenPrinterId)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
+
+
+        builder.HasMany(c => c.Categories)
+           .WithOne(c => c.KitchenType)
+           .HasForeignKey(c => c.KitchenTypeId);
+
+
+        builder.HasMany(c => c.Items)
+          .WithOne(c => c.KitchenType)
+          .HasForeignKey(c => c.KitchenTypeId);
 
         builder.HasIndex(k => k.BranchId);
     }

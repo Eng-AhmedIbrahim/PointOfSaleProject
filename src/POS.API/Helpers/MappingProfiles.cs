@@ -1,4 +1,6 @@
-﻿namespace POS.API.Helpers;
+﻿using POS.Contract.Dtos.KitchenDtos;
+
+namespace POS.API.Helpers;
 
 public class MappingProfiles:Profile
 {
@@ -46,7 +48,7 @@ public class MappingProfiles:Profile
             .ForMember(c => c.NormalizedEnglishName, c => c.MapFrom(c => c!.EnglishName!.ToUpper()));
             
 
-        CreateMap<AttributeDto, Attributes>()
+        CreateMap<CreateAttributeDto, Attributes>()
             .ForMember(a => a.Id, a => a.Ignore());
 
         CreateMap<AttributeItem, AttributeItemToReturnDto>();
@@ -82,31 +84,40 @@ public class MappingProfiles:Profile
                 opt.MapFrom(src => src.AttributeItems));
 
         CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
-            .ForMember<string>(s => s!.ImageUrl!,
-            s =>
-            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
-            .ForMember(c => c.CategoryId, c =>
-            c.MapFrom(c => c.CategoryId));
-
-        CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
-         .ForMember<string>(s => s!.ImageUrl!,
-            s =>
-            s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
-           .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src =>
-               src.HasAttribute ? src.Attribute != null ? src.Attribute.AttributeItems.Select(ai => new MenuSalesItemAttributes
-               {
-                   AppearanceIndex = ai.AppearanceIndex,
-                   GroupItems = new List<MenuSalesItemsGroupDto>
-                   {
+    .ForMember(s => s.ImageUrl,
+        s => s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
+    .ForMember(dest=> dest.PrintInBackupReceiptFromItem,
+    src=>
+    src.MapFrom(s=>s.PrintInBackupReceipt))
+    .ForMember(dest => dest.PrintInBackupReceiptFromCategory,
+    src =>
+    src.MapFrom(s => s.Category!.PrintInBackupReceipt))
+    .ForMember(dest => dest.CategoryId,
+        c => c.MapFrom(c => c.CategoryId))
+    .ForMember(dest => dest.ItemKitchenTypeId,
+        src => src.MapFrom(i => i.KitchenTypeId))
+    .ForMember(dest => dest.CategoryKitchenTypeId,
+        src => src.MapFrom(i => i.Category != null ? i.Category.KitchenTypeId : null))
+    .ForMember(dest => dest.Attributes,
+        opt => opt.MapFrom(src =>
+            src.HasAttribute && src.Attribute != null
+                ? src.Attribute.AttributeItems.Select(ai => new MenuSalesItemAttributes
+                {
+                    AppearanceIndex = ai.AppearanceIndex,
+                    GroupItems = new List<MenuSalesItemsGroupDto>
+                    {
                         new MenuSalesItemsGroupDto
                         {
                             Id = ai.Id,
-                            ArabicName = ai !.RelatedMenuItem !.ArabicName,
+                            ArabicName = ai.RelatedMenuItem!.ArabicName,
                             EnglishName = ai.RelatedMenuItem.EnglishName,
                             Price = ai.RelatedMenuItem.Price
                         }
-                   }
-               }).ToList() : null : null));
+                    }
+                }).ToList()
+                : null
+        ));
+
 
         CreateMap<AppUser,UserDto>()
             .ForMember(dest=>dest.UserId,src=>src.MapFrom(s=>s.Id));
@@ -122,5 +133,69 @@ public class MappingProfiles:Profile
         CreateMap<AppUser, CaptainOrderUserToReturnDto>();
 
         CreateMap<AppDate, AppDateToReturnDto>();
+
+        CreateMap<DeliveryZone, DeliveryZonesToReturnDto>().ReverseMap();
+        CreateMap<DeliveryZoneDto, DeliveryZone>().ReverseMap();
+
+
+        CreateMap<DeliveryCustomerInfo, DeliveryCustomerToReturnDto>()
+        .ForMember(dest => dest.CustomerAddresses,
+             opt =>
+                opt.MapFrom(src => src.CustomerAddresses));
+
+        CreateMap<CustomerAddress, CustomerAddressDto>();
+
+
+        CreateMap<DeliveryCustomerDto, DeliveryCustomerInfo>()
+            .ForMember(dest => dest.CustomerAddresses, opt => opt.MapFrom(src => new List<CustomerAddress>
+            {
+                new CustomerAddress
+                {
+                    BranchName = src.BranchName,
+                    ZoneName = src.ZoneName,
+                    HomeNumber = src.HomeNumber,
+                    FloorNumber = src.FloorNumber,
+                    FlatNumber = src.FlatNumber,
+                    ClientAddress = src.ClientAddress,
+                    AddressNote = src.AddressNote
+                }
+            }));
+
+        CreateMap<DeliveryCustomerInfo, DeliveryCustomerDto>()
+          .ForMember(dest => dest.ClientAddress,
+          opt =>
+          opt.MapFrom(src => src.CustomerAddresses));
+
+
+        CreateMap<CustomerNewAddressDto, CustomerAddress>();
+
+
+        CreateMap<KitchenType, KitchenTypeToReturnDto>()
+               .ForMember(dest => dest.KitchenPrinter, opt
+               => opt.MapFrom(src => src.KitchenPrinters))
+               .ForMember(dest => dest.KitchenPrinterId, opt
+               => opt.MapFrom(src => src.KitchenPrinterId));
+
+        CreateMap<KitchenPrinters, KitchenPrintersDto>().ReverseMap();
+
+
+        CreateMap<KitchenTypeDto, KitchenType>();
+        CreateMap<KitchenPrinters, KitchenPrintersToReturnDto>();
+
+
+        CreateMap<Orders, OrderDto>()
+            .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderID))
+            .ForMember(dest => dest.BranchId, opt => opt.MapFrom(src => src.BranchID))
+            .ForMember(dest => dest.TakeAwayCustomerName, opt => opt.MapFrom(src => src.TakeawayCustomerName))
+            .ForMember(dest => dest.TakeawayCustomerPhone, opt => opt.MapFrom(src => src.TakeawayCustomerPhone))
+            .ForMember(dest => dest.TotalOrderDiscount, opt => opt.MapFrom(src => src.TotalDiscount))
+            .ForMember(dest => dest.Remaining, opt => opt.MapFrom(src => src.Remain))
+            .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Service))
+            .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.ToString()))
+            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.ToString()))
+            .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)) // هنعمل مابنج تاني للجوه
+            .ForAllMembers(opts => opts.Ignore()); 
+
+        CreateMap<OrderItemsDetails, TableItem>();
     }
 }

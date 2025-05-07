@@ -26,7 +26,7 @@ public class CategoryController : BaseApiController
         if (mappedCategory is null)
             return BadRequest(new ApiResponse(400));
 
-        var category = await _categoryService.CreateCategoryAsync(mappedCategory);
+        var category = await _categoryService.CreateCategoryAsync(mappedCategory)!;
 
         if (category is null)
             return BadRequest(new ApiResponse(400));

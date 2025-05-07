@@ -34,4 +34,18 @@ public class AppDateService : IAppDateService
             return new();
         }
     }
+
+
+    public async Task<AppDate> UpdateOrderNumber()
+    {
+        var appDate = await GetAppDateAsync();
+        appDate.StoreDate = appDate.StoreDate;
+        appDate.PosDate = appDate.PosDate;
+        appDate.CurrentOrderNumber = appDate.CurrentOrderNumber + 1;
+        appDate.BranchId = appDate.BranchId;
+
+        _unitOfWork.Repository<AppDate>().Update(appDate);
+        await _unitOfWork.CompleteAsync();
+        return appDate;
+    }
 }

@@ -74,16 +74,19 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
         builder.Property(e => e.UpdatedDate)
             .IsRequired(false);
 
+        builder.Property(c => c.KitchenTypeId)
+         .HasColumnType("int")
+         .IsRequired(false);
 
         builder.HasOne(e => e.Branch)
            .WithMany()
-           .HasForeignKey(e => e.BranchId) // Foreign key to Branch, now nullable
-           .OnDelete(DeleteBehavior.SetNull); // This will work now
+           .HasForeignKey(e => e.BranchId) 
+           .OnDelete(DeleteBehavior.SetNull); 
 
         builder.HasOne(e => e.Category)
             .WithMany(e => e.MenuSalesItems)
             .HasForeignKey(e => e.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict); // Consider keeping this as restrict
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.Attribute)
             .WithOne()
@@ -94,5 +97,14 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
             .HasConversion(
                 v => v.ToString(),
                 v => (MainCategories)Enum.Parse(typeof(MainCategories), v!));
+
+
+        builder.HasOne(c => c.KitchenType)
+          .WithMany(c => c.Items)
+          .HasForeignKey(c => c.KitchenTypeId);
+
+        builder.Property(c => c.PrintInBackupReceipt)
+           .HasColumnType("bit")
+            .HasDefaultValue(true);
     }
 }

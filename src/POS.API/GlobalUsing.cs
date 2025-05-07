@@ -21,10 +21,14 @@ global using POS.Core.Services.Contract.CompanyService;
 global using POS.Services.ItemServices;
 global using POS.Core.Specifications.AttributeSpecs;
 global using POS.Contract.Dtos.AttributeDtos;
+global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;
+global using POS.Core.Services.Contract.DeliveryServices;
+global using POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
 
 
-
-
+global using POS.Contract.Dtos.OrderDtos;
+global using POS.Contract.Models;
+global using POS.Reports.Models;
 
 
 global using POS.Contract.Dtos.CategoryDtos;
@@ -59,7 +63,6 @@ global using QuestPDF.Infrastructure;
 
 
 
-global using POS.Contract.Dtos.TakeawayOrderDtos;
 global using POS.Core.Entities.OrderEntity;
 global using POS.Core.Services.Contract.OrderServices;
 
@@ -72,7 +75,6 @@ global using POS.Services.DineInService;
 
 global using POS.Contract.Dtos.DineInDtos;
 global using POS.Core.Entities.DineIn;
-global using POS.Core.Entities.Kitchen;
 global using Pos.Repository.Identity;
 global using POS.Core.Services.Contract.AppDateServices;
 global using Pos.Repository.Data;
@@ -82,3 +84,22 @@ global using POS.Core.Entities.Categorie;
 global using POS.Core.Entities.Date;
 global using POS.Services.AppDateServices;
 global using POS.Services.OrderServices;
+
+global using POS.Services.DeliveryServices;
+global using POS.Core.Entities.Delivery;
+global using POS.Contract.Dtos.DeliveryDtos.DeliveryZoneDtos;
+
+global using POS.Reports.Models.Delivery;
+global using POS.Reports.ReportsMakerServices;
+global using QuestPDF.Fluent;
+global using POS.Core.Entities.Kitchen;
+global using POS.Core.Services.Contract.PrinterServices;
+global using POS.Services.PrinterServices;
+
+global using POS.Reports.Models.DineIn;
+global using POS.Reports.Models.Kitchen;
+global using Microsoft.AspNetCore.Authorization;
+global using POS.Contract.Dtos.KitchenDtos;
+global using POS.Core.Services.Contract.KitchenServices;
+global using POS.Services.KitchenServices;
+global using POS.Core.Specifications.KitchenSpecs;

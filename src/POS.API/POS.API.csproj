@@ -12,14 +12,16 @@
 <!--    <PackageReference Include="DevExpress.Drawing" Version="24.2.3" />-->
 <!--    <PackageReference Include="DevExpress.Reporting.Core" Version="24.2.3" />-->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.15" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="PdfiumViewer" Version="2.13.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Spire.PDF" Version="11.4.10" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
   </ItemGroup>
 
@@ -33,7 +35,6 @@
 
   <ItemGroup>
     <Folder Include="Reports\" />
-    <Folder Include="wwwroot\Files\Imgs\" />
     <Folder Include="wwwroot\Reports\" />
   </ItemGroup>
 

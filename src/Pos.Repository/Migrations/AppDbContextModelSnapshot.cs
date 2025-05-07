@@ -57,10 +57,18 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar");
 
+                    b.Property<int?>("KitchenTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("NormalizedEnglishName")
                         .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar");
+
+                    b.Property<bool?>("PrintInBackupReceipt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime");
@@ -68,6 +76,8 @@ namespace Pos.Repository.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
+
+                    b.HasIndex("KitchenTypeId");
 
                     b.ToTable("Categories");
                 });
@@ -83,6 +93,10 @@ namespace Pos.Repository.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar");
+
+                    b.Property<string>("ApiUrl")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar");
 
@@ -236,6 +250,9 @@ namespace Pos.Repository.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrentOrderNumber")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("PosDate")
                         .HasColumnType("DATETIME");
 
@@ -245,6 +262,166 @@ namespace Pos.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppDates", (string)null);
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.CustomerAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddressNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BranchName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClientAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DeliveryCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeliveryZoneId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FlatNumber")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("FloorNumber")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("HomeNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ZoneName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("DeliveryCustomerId");
+
+                    b.HasIndex("DeliveryZoneId");
+
+                    b.ToTable("CustomerAddress");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCompanyInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("AssignTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("BackTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryCompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TotalOrdersAmount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalOrdersCash")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeliveryCompanyInfo");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientTitle")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FirstPhoneNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("SecondPhoneNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeliveryCustomerInfo");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerTitle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TitleName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeliveryCustomerTitle");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryZone", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("DeliveryFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ZoneName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("DeliveryZones", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.DineIn.Table", b =>
@@ -445,6 +622,9 @@ namespace Pos.Repository.Migrations
                     b.Property<bool>("Invisible")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("KitchenTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("MainCategoryId")
                         .HasColumnType("nvarchar(max)");
 
@@ -455,6 +635,11 @@ namespace Pos.Repository.Migrations
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool?>("PrintInBackupReceipt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<decimal?>("SecondPrice")
                         .HasColumnType("decimal(18,2)");
@@ -485,6 +670,8 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("KitchenTypeId");
+
                     b.ToTable("MenuSalesItems");
                 });
 
@@ -510,6 +697,67 @@ namespace Pos.Repository.Migrations
                     b.ToTable("OrderItemAttributes");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Copy1")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy10")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy2")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy3")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy4")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy5")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy6")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy7")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy8")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Copy9")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DeviceName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("KitchenTypeId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KitchenPrinters", (string)null);
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenType", b =>
                 {
                     b.Property<int>("Id")
@@ -525,61 +773,18 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("KitchenPrinterId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
 
+                    b.HasIndex("KitchenPrinterId")
+                        .IsUnique()
+                        .HasFilter("[KitchenPrinterId] IS NOT NULL");
+
                     b.ToTable("KitchenTypes", (string)null);
-                });
-
-            modelBuilder.Entity("POS.Core.Entities.Kitchen.OrderSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("AddServiceToItemPrice")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("BranchID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ClosingReceiptCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CustomerReceiptCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FullKitchenReceiptCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("JobID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OrderStatment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrderType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SeparateReceiptCount")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("Service")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Tax")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal?>("Tips")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.PrintingSettings", b =>
@@ -649,9 +854,6 @@ namespace Pos.Repository.Migrations
                     b.Property<int?>("MenuSalesItemId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MenuSalesItemsId")
-                        .HasColumnType("int");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -687,11 +889,59 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("MenuSalesItemId");
 
-                    b.HasIndex("MenuSalesItemsId");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrdersDetails");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("AddServiceToItemPrice")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("BranchID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClosingReceiptCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerReceiptCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FullKitchenReceiptCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderStatment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SeparateReceiptCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Service")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Tax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Tips")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
@@ -723,8 +973,9 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("CashierID")
-                        .HasColumnType("int");
+                    b.Property<string>("CashierID")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar");
 
                     b.Property<string>("CashierName")
                         .HasMaxLength(100)
@@ -746,6 +997,9 @@ namespace Pos.Repository.Migrations
                     b.Property<string>("DeliveryCompany")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("DeliveryCompanyInfoId")
+                        .HasColumnType("int");
 
                     b.Property<decimal?>("DeliveryFees")
                         .HasColumnType("decimal(18,2)");
@@ -898,7 +1152,8 @@ namespace Pos.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TakerName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("Tax")
                         .HasColumnType("decimal(18,2)");
@@ -959,6 +1214,8 @@ namespace Pos.Repository.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeliveryCompanyInfoId");
 
                     b.HasIndex("ShiftID");
 
@@ -1022,7 +1279,13 @@ namespace Pos.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("POS.Core.Entities.Kitchen.KitchenType", "KitchenType")
+                        .WithMany("Categories")
+                        .HasForeignKey("KitchenTypeId");
+
                     b.Navigation("Branch");
+
+                    b.Navigation("KitchenType");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
@@ -1032,6 +1295,42 @@ namespace Pos.Repository.Migrations
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.CustomerAddress", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Company.Branch", "Branch")
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("POS.Core.Entities.Delivery.DeliveryCustomerInfo", "DeliveryCustomer")
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("DeliveryCustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.Delivery.DeliveryZone", "DeliveryZone")
+                        .WithMany("CustomerAddresses")
+                        .HasForeignKey("DeliveryZoneId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("DeliveryCustomer");
+
+                    b.Navigation("DeliveryZone");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryZone", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Company.Branch", "Branch")
+                        .WithMany("DeliveryZones")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.DineIn.Table", b =>
@@ -1080,11 +1379,17 @@ namespace Pos.Repository.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("POS.Core.Entities.Kitchen.KitchenType", "KitchenType")
+                        .WithMany("Items")
+                        .HasForeignKey("KitchenTypeId");
+
                     b.Navigation("Attribute");
 
                     b.Navigation("Branch");
 
                     b.Navigation("Category");
+
+                    b.Navigation("KitchenType");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
@@ -1106,6 +1411,16 @@ namespace Pos.Repository.Migrations
                     b.Navigation("OrderItem");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenType", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Kitchen.KitchenPrinters", "KitchenPrinters")
+                        .WithOne("KitchenType")
+                        .HasForeignKey("POS.Core.Entities.Kitchen.KitchenType", "KitchenPrinterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("KitchenPrinters");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Kitchen.PrintingSettings", b =>
                 {
                     b.HasOne("POS.Core.Entities.Kitchen.KitchenType", "Kitchen")
@@ -1119,13 +1434,9 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
                 {
                     b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "MenuSalesItem")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("MenuSalesItemId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", null)
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("MenuSalesItemsId");
 
                     b.HasOne("POS.Core.Entities.OrderEntity.Orders", "Order")
                         .WithMany("OrderDetails")
@@ -1140,6 +1451,10 @@ namespace Pos.Repository.Migrations
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
                 {
+                    b.HasOne("POS.Core.Entities.Delivery.DeliveryCompanyInfo", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("DeliveryCompanyInfoId");
+
                     b.HasOne("POS.Core.Entities.Shift.ShiftHandover", "Shift")
                         .WithMany("Orders")
                         .HasForeignKey("ShiftID")
@@ -1160,6 +1475,13 @@ namespace Pos.Repository.Migrations
                     b.Navigation("MenuSalesItems");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
+                {
+                    b.Navigation("CustomerAddresses");
+
+                    b.Navigation("DeliveryZones");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Company.Company", b =>
                 {
                     b.Navigation("Branches");
@@ -1168,6 +1490,21 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Customer.TakeawayCustomer", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCompanyInfo", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerInfo", b =>
+                {
+                    b.Navigation("CustomerAddresses");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryZone", b =>
+                {
+                    b.Navigation("CustomerAddresses");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.DineIn.TableGroup", b =>
@@ -1183,6 +1520,18 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
+                {
+                    b.Navigation("KitchenType");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenType", b =>
+                {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>

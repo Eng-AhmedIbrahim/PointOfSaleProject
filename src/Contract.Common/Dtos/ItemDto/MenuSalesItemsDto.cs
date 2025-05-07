@@ -30,7 +30,7 @@ public class MenuSalesItemsDto
     public int? CategoryId { get; set; }
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }
-
+    public bool? PrintInBackupReceipt { get; set; } = true;
     public MenuSalesItemsDto()
     {
         CreationDate = DateTime.Now;

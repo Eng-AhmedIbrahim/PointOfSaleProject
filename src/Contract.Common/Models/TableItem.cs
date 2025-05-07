@@ -7,14 +7,81 @@ public class TableItem
     public string? Name { get; set; }
     public decimal? Price { get; set; }
     public decimal? Total { get; set; }
-    public decimal? LineDiscount { get; set; }
     public string? LineComment { get; set; }
+    public bool? PrintInBackupReceiptFromItem { get; set; }
+    public bool? PrintInBackupReceiptFromCategory { get; set; }
+    public int? ItemKitchenTypeId { get; set; }
+    public int? CategoryKitchenTypeId { get; set; }
     public List<AttributeDto>? Attributes { get; set; } = new List<AttributeDto>();
-}
 
+    public bool HasDiscount { get; set; }
+    public decimal? DiscountPercentage { get; set; } = null;
+    public decimal? DiscountAmount { get; set; } = null;
+    public decimal? TotalDiscountPrice { get; set; }
+    public decimal? TotalAfterDiscount { get; set; }
+
+    public bool HasTax { get; set; } = false;
+    public decimal TaxAmount { get; set; }
+    public decimal? TotalAmount { get; set; }
+
+    public bool IsReadOnly { get; set; }
+
+    public TableItem Clone()
+    {
+        return new TableItem
+        {
+            Id = this.Id,
+            Quantity = this.Quantity,
+            Name = this.Name,
+            Price = this.Price,
+            Total = this.Total,
+            LineComment = this.LineComment,
+            PrintInBackupReceiptFromItem = this.PrintInBackupReceiptFromItem,
+            PrintInBackupReceiptFromCategory = this.PrintInBackupReceiptFromCategory,
+            ItemKitchenTypeId = this.ItemKitchenTypeId,
+            CategoryKitchenTypeId = this.CategoryKitchenTypeId,
+
+            Attributes = this.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>(),
+            HasDiscount = this.HasDiscount,
+            DiscountPercentage = this.DiscountPercentage,
+            DiscountAmount = this.DiscountAmount,
+            HasTax = this.HasTax,
+            TaxAmount = this.TaxAmount,
+            TotalAmount = this.TotalAmount,
+            IsReadOnly = this.IsReadOnly,
+            TotalDiscountPrice = this.TotalDiscountPrice,
+            TotalAfterDiscount = this.TotalAfterDiscount
+        };
+    }
+}
 
 public class AttributeDto
 {
     public int? Id { get; set; }
     public string? Name { get; set; } = string.Empty;
+
+    public AttributeDto Clone()
+    {
+        return new AttributeDto
+        {
+            Id = this.Id,
+            Name = this.Name
+        };
+    }
+}
+
+public class AttributeDtoComparer : IEqualityComparer<AttributeDto>
+{
+    public bool Equals(AttributeDto? x, AttributeDto? y)
+    {
+        if (x == null || y == null)
+            return x == y; // Both null = equal, one null = not equal
+
+        return x.Id == y.Id && x.Name == y.Name;
+    }
+
+    public int GetHashCode(AttributeDto obj)
+    {
+        return HashCode.Combine(obj.Id, obj.Name);
+    }
 }

@@ -26,4 +26,9 @@ public class AppDbContext : DbContext
     public DbSet<Table> Tables { get; set; }
     public DbSet<AppDate> AppDate { get; set; }
     public DbSet<ShiftHandover> ShiftHandovers { get; set; }
+    public DbSet<DeliveryCompanyInfo> DeliveryCompanyInfo { get; set; }
+    public DbSet<DeliveryCustomerTitle> DeliveryCustomerTitle { get; set; }
+    public DbSet<DeliveryZone> DeliveryZones { get; set; }
+    public DbSet<CustomerAddress> CustomerAddress { get; set; }
+
 }

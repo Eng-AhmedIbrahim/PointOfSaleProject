@@ -11,4 +11,11 @@ public interface IPrinterServices
     public Task<OrderSetting?> UpdateOrderSettingAsync(OrderSetting orderSetting);
     public Task<List<OrderSetting>?> GetOrderSettingsAsync();
     public Task<OrderSetting?> GetOrderSettingByIdAsync(int orderSettingId);
+
+    public Task PrintPdfFromUrlAsync(string pdfUrl);
+    public Task<List<string>> GetInstalledPrinters();
+
+    public Task<bool> PrintPdfAsync(string pdfFilePath, string printerName);
+
+    public Task PrintPdfToMultipleAsync(string pdfFilePath, List<string> printerNames);
 }

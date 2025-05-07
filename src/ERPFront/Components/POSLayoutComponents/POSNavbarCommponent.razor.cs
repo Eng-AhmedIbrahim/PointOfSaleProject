@@ -13,6 +13,8 @@ public partial class POSNavbarCommponent
 
     protected override async Task OnInitializedAsync()
     {
+        _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -39,29 +41,42 @@ public partial class POSNavbarCommponent
 
     private void SetMode(string mode)
     {
-        if (_commonProperties.CurrentPosMode != mode)
-        {
-            _commonProperties.CurrentPosMode = mode;
 
-            InvokeAsync(StateHasChanged);
-        }
         switch (mode)
         {
             case "TakeAway":
                 {
-                    _navigationManager.NavigateTo("/pos");
+                    if (!_commonProperties!.TableItems!.Any())
+                    {
+                        _navigationManager.NavigateTo("/pos");
+                        _commonProperties.CurrentPosMode = "TakeAway";
+                    }
+                    else
+                    {
+                        _snackbar.Add("Complete Current Order", Severity.Info);
+                    }
                     break;
                 }
             case "Delivery":
                 {
-                    _navigationManager.NavigateTo("/pos/delivery");
+                    _navigationManager.NavigateTo("/delivery");
+                   
+
                     break;
                 }
             case "DineIn":
                 {
+
                     _navigationManager.NavigateTo("/dinein");
+                    _commonProperties.CurrentPosMode = "DineIn";
+                    if (_commonProperties.TableItems!.Any())
+                    {
+                        _cartService.ClearDineInOrderAttributes();
+                    }
                     break;
                 }
         }
+        _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+        InvokeAsync(StateHasChanged);
     }
 }

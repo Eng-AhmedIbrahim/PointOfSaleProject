@@ -1,4 +1,4 @@
-window.updateFontSize = (className, step) => {
+﻿window.updateFontSize = (className, step) => {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // Default 16px
     let cssVarName = "";
 
@@ -13,7 +13,7 @@ window.updateFontSize = (className, step) => {
         cssVarName = "--dynamic-finance-label-text-size";
     } else if (className === "finance-input-text-size") {
         cssVarName = "--dynamic-finance-input-text-size";
-    }else if (className === "special-sec4-button") {
+    } else if (className === "special-sec4-button") {
         cssVarName = "--dynamic-sec4-btn-size";
     } else {
         console.warn(`No variable associated with class: ${className}`);

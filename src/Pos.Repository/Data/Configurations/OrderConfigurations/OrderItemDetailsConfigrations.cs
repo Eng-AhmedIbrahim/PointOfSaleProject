@@ -17,30 +17,23 @@
             builder.Property(o => o.TotalDiscountAmount).HasColumnType("decimal(18,2)");
             builder.Property(o => o.TotalAfterDiscount).HasColumnType("decimal(18,2)");
             builder.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
-
+            builder.Property(o => o.MenuSalesItemId).HasColumnType("int");
             builder.Property(o => o.VoidAmount).HasColumnType("int");
 
             builder.HasOne(o => o.Order)
                .WithMany(o => o.OrderDetails)
-               .HasForeignKey(o => o.OrderId) // Foreign key references Id in Orders
+               .HasForeignKey(o => o.OrderId)
                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.MenuSalesItem)
-                   .WithMany()
+                   .WithMany(o=>o.OrderDetails)
                    .HasForeignKey(o => o.MenuSalesItemId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure the relationship with OrderItemAttributes
             builder.HasMany(o => o.OrderItemAttributes)
                    .WithOne(a => a.OrderItem)
                    .HasForeignKey(a => a.OrderItemId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            // Ensure AttributeName is stored as required
-            //builder.Entity<OrderItemAttributes>()
-            //       .Property(a => a.AttributeName)
-            //       .IsRequired()
-            //       .HasMaxLength(100);
         }
     }
 }

@@ -17,12 +17,12 @@ public class AttributeController : BaseApiController
     [ProducesResponseType(typeof(AttributeToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<IActionResult> CreateAttributeAsync([FromBody] AttributeDto attributeDto)
+    public async Task<IActionResult> CreateAttributeAsync([FromBody] CreateAttributeDto attributeDto)
     {
         if (attributeDto is null)
             return BadRequest(new ApiResponse(400));
 
-        var mappedAttribute = _mapper.Map<AttributeDto, Attributes>(attributeDto);
+        var mappedAttribute = _mapper.Map<CreateAttributeDto, Attributes>(attributeDto);
 
         if (mappedAttribute is null)
             return BadRequest(new ApiResponse(400));

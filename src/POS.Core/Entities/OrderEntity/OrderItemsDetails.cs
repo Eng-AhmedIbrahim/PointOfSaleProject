@@ -3,7 +3,7 @@
 public class OrderItemsDetails:BaseEntity
 {
     public int OrderId { get; set; }
-    public OrderTypes OrderType { get; set; } 
+    public OrderTypes OrderType { get; set; }
 
     public int? MenuSalesItemId { get; set; }
     public MenuSalesItems? MenuSalesItem { get; set; }

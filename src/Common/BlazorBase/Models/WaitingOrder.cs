@@ -1,6 +1,4 @@
-﻿using POS.Contract.Models;
-
-namespace BlazorBase.Models;
+﻿namespace BlazorBase.Models;
 
 public class WaitingOrder
 {

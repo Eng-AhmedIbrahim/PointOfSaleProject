@@ -1,6 +1,4 @@
-﻿using POS.Core.Entities.Categorie;
-
-namespace POS.Core.Entities.Item;
+﻿namespace POS.Core.Entities.Item;
 
 public class MenuSalesItems : BaseEntity
 {
@@ -36,4 +34,7 @@ public class MenuSalesItems : BaseEntity
     public Attributes? Attribute { get; set; }
 
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
+    public int? KitchenTypeId { get; set; }
+    public KitchenType? KitchenType { get; set; }
+    public bool? PrintInBackupReceipt { get; set; } = true;
 }

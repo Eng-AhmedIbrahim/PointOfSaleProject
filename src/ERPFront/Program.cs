@@ -1,7 +1,4 @@
-﻿using BlazorBase.ERPFrontServices.AppDateServices;
-using BlazorBase.ERPFrontServices.DineInServices;
-using BlazorBase.ERPFrontServices.OrderServices;
-using POS.Authorization.Models;
+﻿using BlazorBase.ERPFrontServices.PrintOrderServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +17,7 @@ builder.Services.AddSingleton<ApiSettings>(sp =>
         .Value);
 
 builder.Services.AddSingleton<CommonProperties>();
+builder.Services.AddSingleton<HandelDeliveryInvocation>();
 builder.Services.AddSingleton<CartService>();
 builder.Services.AddSingleton<Section4ButtonsServices>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
@@ -27,6 +25,10 @@ builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredServ
 builder.Services.AddScoped<DineInService>();
 builder.Services.AddScoped<AppDateService>();
 builder.Services.AddScoped<OrderSettingsService>();
+builder.Services.AddScoped<DeliveryServices>();
+builder.Services.AddScoped<BranchService>();
+builder.Services.AddScoped<OrderSettingsService>();
+builder.Services.AddScoped<PrintOrderService>();
 
 
 
@@ -37,7 +39,7 @@ builder.Services.AddHttpClient(builder.Configuration["ApiSettings:ApiName"]!,
     client => { client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!); })
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
-        UseCookies = true,  // Ensure authentication cookies are used
+        UseCookies = true,
         AllowAutoRedirect = true
     });
 
@@ -66,8 +68,6 @@ builder.Services.AddAuthorization(options =>
             policyBuilder.RequireClaim("Permission", policy.Value));
     }
 });
-
-
 
 
 

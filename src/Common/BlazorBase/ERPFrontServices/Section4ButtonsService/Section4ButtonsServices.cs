@@ -2,9 +2,9 @@
 
 public class Section4ButtonsServices : ISection4ButtonsServices
 {
+    public event Action? OnChanged;
     private readonly CartService? _cartService;
     private readonly CommonProperties _commonProperties;
-
     private int _nextOrderId = 1;
 
     public Section4ButtonsServices(CartService cartService, CommonProperties commonProperties)
@@ -12,15 +12,7 @@ public class Section4ButtonsServices : ISection4ButtonsServices
         _cartService = cartService;
         _commonProperties = commonProperties;
     }
-    public event Action? OnChanged;
 
-
-    public void RemoveAllItems(List<TableItem> tableItems)
-    {
-        tableItems.Clear();
-        _cartService!.CalculateTotalAmountFromTableItems(new List<TableItem>());
-        NotifyStateChanged();
-    }
     public void AddOrderToWaitingQueue(List<TableItem> tableItems)
     {
         if (tableItems.Any())
@@ -33,13 +25,25 @@ public class Section4ButtonsServices : ISection4ButtonsServices
             _commonProperties.WaitingQueue.WaitingOrders.Add(new()
             {
                 Id = _nextOrderId++,
-                Items = new List<TableItem>(tableItems)
+                Items = new List<TableItem>(tableItems),
             });
 
             RemoveAllItems(tableItems);
-            Console.WriteLine(_commonProperties.WaitingQueue.WaitingOrders.Count);
         }
     }
+    public void RemoveAllItems(List<TableItem> tableItems)
+    {
+        tableItems.Clear();
+        _commonProperties!._financeSettingsList![1].Value = 0M;
+        _commonProperties.OrderDiscount = new();
+        _commonProperties.TotalDiscount = 0M;
 
-    private void NotifyStateChanged() => OnChanged?.Invoke();
+        _cartService!.CalculateTotalAmountFromTableItems(new ());
+        _cartService.CalculateSection4Table();
+        _cartService.ResetDiscount();
+        
+        NotifyStateChanged();
+    }
+
+    public void NotifyStateChanged() => OnChanged?.Invoke();
 }

@@ -43,8 +43,8 @@ public partial class Login
 
         if (response.IsSuccessStatusCode)
         {
-            var responseContent = await response.Content.ReadFromJsonAsync<UserDto>(); // Deserialize response
-            string token = responseContent?.Token ?? string.Empty; // Extract token
+            var responseContent = await response.Content.ReadFromJsonAsync<UserDto>();
+            string token = responseContent?.Token ?? string.Empty;
 
             if (string.IsNullOrEmpty(token))
             {
@@ -53,6 +53,7 @@ public partial class Login
             }
 
             _commonProperties.CurrentUser = _userName;
+            _commonProperties.CurrentUserId = responseContent!.UserId;
 
             //Store token in local storage &update authentication state
             if (_authenticationStateProvider is CustomAuthenticationStateProvider customAuthStateProvider)

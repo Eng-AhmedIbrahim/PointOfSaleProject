@@ -15,6 +15,13 @@ public class AppDateService : IAppDateService
         _httpClient = httpClientFactory.CreateClient(_apiSettings.ApiName!);
     }
 
+    public async Task<MessageResponseDto> UpdateOrderCount()
+    {
+        return await GetApiResponseAsync<MessageResponseDto>(
+             UpdateOrderCountRequest,
+            "Failed to update order count.");
+    }
+
     public async Task<AppDateToReturnDto> GetAppDate()
     {
         return await GetApiResponseAsync<AppDateToReturnDto>(
@@ -41,6 +48,12 @@ public class AppDateService : IAppDateService
     }
 
     private Task<HttpResponseMessage> GetAppDateRequest()
-        =>_httpClient.GetAsync($"{_apiSettings!.Endpoints!.GetAppDate}");
+        => _httpClient.GetAsync($"{_apiSettings!.Endpoints!.GetAppDate}");
 
+    private async Task<HttpResponseMessage> UpdateOrderCountRequest()
+     => await _httpClient.PutAsync(_apiSettings!.Endpoints!.UpdateOrderNumber, null);
+}
+public class MessageResponseDto
+{
+    public string? Message { get; set; }
 }

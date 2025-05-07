@@ -1,4 +1,3 @@
-@using POS.Contract.Models
 @inject NavigationManager navigationManager
 @inject CommonProperties commonProperties
 @inject ISnackbar Snackbar
@@ -6,7 +5,7 @@
 @inject IJSRuntime JS
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
+@inject CartService _cartService
 
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
 
@@ -24,11 +23,18 @@
         <!-- Drawer Header with Close Button -->
         <MudDrawerHeader Class="drawer-header">
             <MudText Typo="Typo.h5" Class="drawer-title">Add Discount</MudText>
+
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseDrawer"
                        StartIcon="@Icons.Material.Filled.Close" Class="close-btn">
                 Close
             </MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Surface" OnClick='()=>_cartService.ResetDiscount()'
+                       StartIcon="@Icons.Material.Filled.Close" Class="close-btn">
+                Remove Discount
+            </MudButton>
         </MudDrawerHeader>
+
 
         <MudPaper Class="drawer-content p-4">
             <!-- Discount Type Selection -->
@@ -66,7 +72,7 @@
             @if (discountType == "value")
             {
                 <div class="input-container text-center mt-3">
-                    <MudTextField T="decimal" @bind-Value="@commonProperties.DiscountOrderValue" Placeholder="Enter Discount Amount"
+                    <MudTextField T="decimal" @bind-Value="@commonProperties.DiscountValue" Placeholder="Enter Discount Amount"
                                   Variant="Variant.Filled" Color="Color.Primary"
                                   Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
                                   Class="discount-input" />
@@ -131,64 +137,11 @@
 <SettingsDrawer @bind-Open="_drawerOpen">
 </SettingsDrawer>
 
-@code {
-    private bool _drawerOpen;
-    private void ToggleDrawer()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void GotoWaitingPage()
-    {
-        if (commonProperties!.TableItems!.Count() > 0)
-        {
-            Snackbar.Add("Please Finish The Order First", Severity.Warning);
-        }
-        else
-        {
-            navigationManager.NavigateTo("/waitingPage");
-        }
-    }
-
-    private bool _open = false;
-    private Anchor _anchor;
-    private string _width = "100%", _height = "300px";
-    private string discountType = "percentage"; 
-
-    private void OpenDrawer(Anchor anchor)
-    {
-        _anchor = anchor;
-        _open = true;
-    }
-    private DiscountReason SelectedReason { get; set; } = DiscountReason.LoyaltyReward;
-
-    private void ApplyDiscount()
-    {
-        if (discountType == "percentage")
-        {
-            commonProperties!.OrderDiscount!.Percentage = commonProperties.DiscountPercentage;
-        }
-        else
-        {
-            commonProperties!.OrderDiscount!.Value = commonProperties.DiscountPercentage;
-        }
-
-        commonProperties!.OrderDiscount!.DiscountReason = SelectedReason.ToString();
-        _open = false;
-    }
-    private void CloseDrawer()
-    {
-        _open = false;
-    }
-}
-
 
 <style>
     .button-color-footer {
         color: #114484 !important;
     }
-
-
 
     .drawer-header {
         background: linear-gradient(45deg, #1E3A8A, #ebf0ea);
@@ -248,4 +201,5 @@
         font-weight: bold;
         border-radius: 6px;
     }
+
 </style>

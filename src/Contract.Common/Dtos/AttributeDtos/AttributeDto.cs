@@ -1,6 +1,6 @@
 ﻿namespace POS.Contract.Dtos.AttributeDtos;
 
-public class AttributeDto
+public class CreateAttributeDto
 {
     [Required]
     public string? EnglishName { get; set; }

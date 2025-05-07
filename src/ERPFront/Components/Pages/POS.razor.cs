@@ -1,6 +1,4 @@
-﻿using POS.Contract.Dtos.OrderDto;
-using POS.Contract.Enums;
-using POS.Core.Entities.OrderEntity;
+﻿using Microsoft.JSInterop;
 
 namespace ERPFront.Components.Pages;
 
@@ -25,15 +23,31 @@ public partial class POS
         CustomizationSettingsService.OnChanged += StateHasChanged;
         _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
 
-
-
-
+        if (string.IsNullOrEmpty(_commonProperties.CustomerDetails!.FirstPhoneNumber))
+            _handelDeliveryInvocation.DeliveryDetails = string.Empty;
 
         await GetCurrentDayAndTime();
         await GetOrdersSetting();
 
+        if (!_commonProperties.UpdateDineInOrder)
+            _cartService.ResetDiscount();
+
+
         _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
 
+        if (_commonProperties!.TableItems!.Any())
+        {
+            CalculateTotalAmount();
+            _cartService.CalculateSection4Table();
+        }
+        else
+        {
+            _commonProperties.TotalDiscount = 0M;
+            _commonProperties!._financeSettingsList![1].Value = 0M;
+        }
+
+
+        _commonProperties.BranchDetails = await GetBranchDetails();
     }
     private async Task InvokeItems(int catId)
     {
@@ -51,40 +65,171 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
-        TableItem? selectedTableItem = GetItemFromTableById(selectedMenuItem);
+        TableItem? existingCashedItem = GetItemFromTableById(selectedMenuItem);
 
-        if (!selectedMenuItem.Attributes.Any() && _itemClickCount.Count() == 0 && selectedTableItem != null)
+        if (IsCashedItem(existingCashedItem))
         {
-            selectedTableItem.Quantity++;
-            selectedTableItem.Total = selectedTableItem.Total + selectedTableItem.Price;
-            _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems!);
+            HandleCashedItem(selectedMenuItem, existingCashedItem!);
         }
         else
         {
-            if (_itemClickCount.Count == 0)
-                InitializeBaseItem(selectedMenuItem);
-
-            var currentClickCount = GetCurrentClickCount();
-
-            if (currentClickCount < _currentBaseItem?.Attributes.Count)
-            {
-                if (currentClickCount > 0)
-                    AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
-
-                UpdateAttributeGroup(currentClickCount);
-                IncrementClickCount();
-            }
-            else
-            {
-                if (_currentBaseItem!.Attributes.Any())
-                    AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
-
-                await AddItemToTable(_currentBaseItem ?? new());
-                ResetClickCountAndBaseItem();
-            }
+            HandleNewItemSelection(selectedMenuItem, existingCashedItem);
         }
+
+        UpdateOrderTotals();
+    }
+
+    /// <summary>
+    /// Checks if the item is a cashed (read-only) order.
+    /// </summary>
+    private bool IsCashedItem(TableItem? item) => item != null && item.IsReadOnly;
+
+    /// <summary>
+    /// Handles adding a new item when the selected item is a cashed order.
+    /// </summary>
+    private void HandleCashedItem(MenuSalesItemsToReturnDto selectedMenuItem, TableItem existingCashedItem)
+    {
+        TableItem? existingNewItem = _commonProperties!.TableItems!
+            .FirstOrDefault(item => item.Name == existingCashedItem.Name && !item.IsReadOnly);
+
+        if (existingNewItem != null)
+        {
+            IncrementExistingNewItem(existingNewItem);
+        }
+        else
+        {
+            AddNewEditableItem(existingCashedItem);
+        }
+    }
+
+    /// <summary>
+    /// Increments the quantity and total price of an existing new item.
+    /// </summary>
+    private void IncrementExistingNewItem(TableItem existingNewItem)
+    {
+        existingNewItem.Quantity++;
+        existingNewItem.Total += existingNewItem.Price;
+        existingNewItem.TotalAmount += existingNewItem.Price;
+    }
+
+    /// <summary>
+    /// Creates and adds a new editable version of a cashed item.
+    /// </summary>
+    private void AddNewEditableItem(TableItem existingCashedItem)
+    {
+        TableItem newItem = new TableItem
+        {
+            Name = existingCashedItem.Name,
+            Price = existingCashedItem.Price,
+            Quantity = 1,
+            Total = existingCashedItem.Price,
+            IsReadOnly = false,
+            Attributes = existingCashedItem.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>(),
+            TotalAmount = existingCashedItem.Price
+        };
+
+        if (_commonProperties!.UpdateDineInOrder)
+            _commonProperties.AppendedTableItems!.Add(newItem);
+
+        _commonProperties!.TableItems!.Add(newItem);
+    }
+
+
+    /// <summary>
+    /// Handles adding a new item when the selected item is not a cashed order.
+    /// </summary>
+    private async void HandleNewItemSelection(MenuSalesItemsToReturnDto selectedMenuItem, TableItem? existingItem)
+    {
+        if (!selectedMenuItem.Attributes.Any() && _itemClickCount.Count() == 0 && existingItem != null)
+            IncrementExistingNewItem(existingItem);
+        else
+            ProcessAttributeSelection(selectedMenuItem);
+    }
+
+    /// <summary>
+    /// Processes attribute selection logic for new items.
+    /// </summary>
+    private async void ProcessAttributeSelection(MenuSalesItemsToReturnDto selectedMenuItem)
+    {
+        if (_itemClickCount.Count == 0)
+            InitializeBaseItem(selectedMenuItem);
+
+        var currentClickCount = GetCurrentClickCount();
+
+        if (currentClickCount < _currentBaseItem?.Attributes.Count)
+            ProcessAttributeClick(selectedMenuItem, currentClickCount);
+        else
+            await FinalizeAttributeSelection(selectedMenuItem);
+    }
+
+    /// <summary>
+    /// Handles attribute selection process.
+    /// </summary>
+    private void ProcessAttributeClick(MenuSalesItemsToReturnDto selectedMenuItem, int currentClickCount)
+    {
+        if (currentClickCount > 0)
+            AddAttributeNameToSection4Item(selectedMenuItem, currentClickCount);
+
+        UpdateAttributeGroup(currentClickCount);
+        IncrementClickCount();
+    }
+
+    /// <summary>
+    /// Finalizes the attribute selection and adds the item to the table.
+    /// </summary>
+
+    private async Task FinalizeAttributeSelection(MenuSalesItemsToReturnDto selectedMenuItem)
+    {
+        if (_currentBaseItem != null && _currentBaseItem.Attributes.Any())
+            AddAttributeNameToSection4Item(selectedMenuItem, GetCurrentClickCount());
+
+        var itemToAdd = _currentBaseItem;
+
+        ResetClickCountAndBaseItem();
+
+        if (itemToAdd != null)
+        {
+            await AddItemToTable(itemToAdd);
+            await UpdateSectionWithInitialItems();
+        }
+    }
+
+
+    private async Task UpdateSectionWithInitialItems()
+    {
+        var initialItems = await GetInitialMenuItems();
+
+        _itemByCatId = new List<MenuSalesItemsToReturnDto>(initialItems);
+
+        StateHasChanged();
+    }
+
+
+    private async Task<IEnumerable<MenuSalesItemsToReturnDto>> GetInitialMenuItems()
+    {
+        var initialItems = await _categoryServices.GetItemsByCategoryIdAsync(currentCatId);
+
+        return initialItems.Where(i => !i.Invisible);
+    }
+    /// <summary>
+    /// Updates order totals and UI.
+    /// </summary>
+    private void UpdateOrderTotals()
+    {
+        UpdateOrderTotal();
         UpdateTableItemCount();
         StateHasChanged();
+    }
+
+
+    private void UpdateOrderTotal()
+    {
+        _commonProperties!.TotalOrderPrice = _commonProperties!.TableItems!
+            .Where(item => !item.IsReadOnly)
+            .Sum(item => item.Total);
+
+        _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems!);
+        _cartService.CalculateSection4Table();
     }
 
     private void AddAttributeNameToSection4Item(MenuSalesItemsToReturnDto selectedMenuItem, int currentClickCount)
@@ -145,11 +290,21 @@ public partial class POS
             Price = menuItem.Price ?? 0,
             Quantity = 1,
             Total = menuItem.Price ?? 0,
-            Attributes = currentSelectedAttribute ?? []
+            Attributes = currentSelectedAttribute ?? [],
+            CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
+            ItemKitchenTypeId = menuItem.ItemKitchenTypeId,
+            PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
+            PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceiptFromItem,
+            TotalAmount = menuItem.Price
         };
         _commonProperties?.TableItems?.Add(newTableItem);
 
+        if (_commonProperties!.UpdateDineInOrder)
+            _commonProperties!.AppendedTableItems!.Add(newTableItem);
+
         CalculateTotalAmount();
+
+        _cartService.CalculateSection4Table();
 
         await InvokeItems(currentCatId);
     }
@@ -174,6 +329,8 @@ public partial class POS
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
         => _commonProperties?.TableItems?.Where(c => c!.Attributes!.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
+
+
     public void CalculateTotalAmount()
     {
         if (_commonProperties?.TableItems != null)
@@ -182,49 +339,72 @@ public partial class POS
             StateHasChanged();
         }
     }
-
-
-    private DateTime _lastEnterPress = DateTime.MinValue;
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            var now = DateTime.UtcNow;
-            if ((now - _lastEnterPress).TotalMilliseconds < 500)
-            {
-                await ExecuteDoubleEnterFunction();
-            }
-            _lastEnterPress = now;
-        }
-    }
-
-    private Task ExecuteDoubleEnterFunction()
-    {
-        Console.WriteLine("Double Enter Pressed!");
-        // Call your desired function here
-        return Task.CompletedTask;
-    }
-
     private async Task GetCurrentDayAndTime()
     {
         var appDate = await _appDate.GetAppDate();
         _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
+        _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber;
     }
 
     private async Task GetOrdersSetting()
-        => _commonProperties.OrderSettings = await _orderSettingsService.GetOrderSettingsAsync();
-
-
-    private void SetFinanceSettings(OrderSettingToReturnDto? orderSettings)
     {
-        _commonProperties._financeSettingsList = new()
-    {
-        new FinanceSettings { Label = "Account", Value = 0M },
-        new FinanceSettings { Label = "Discount", Value = 0M },
-        new FinanceSettings { Label = "Tax", Value = orderSettings?.Tax ?? 0M },
-        new FinanceSettings { Label = "Service", Value = orderSettings?.Service ?? 0M },
-        new FinanceSettings { Label = "Total", Value = 0M }
-    };
+        var orderSettingToReturnDtos = await _orderSettingsService.GetOrderSettingsAsync();
+
+        _commonProperties.OrderSettings = orderSettingToReturnDtos!;
+
+        foreach (var item in orderSettingToReturnDtos!)
+        {
+            switch (item.OrderType)
+            {
+                case "DineIn":
+                    _commonProperties.DineInSettings = new()
+                    {
+                        OrderStatment = item.OrderStatment,
+                        JobID = item.JobID,
+                        Service = item.Service,
+                        Tax = item.Tax,
+                        Tips = item.Tips,
+                        SeparateReceiptCount = item.SeparateReceiptCount,
+                        AddServiceToItemPrice = item.AddServiceToItemPrice,
+                        ClosingReceiptCount = item.ClosingReceiptCount,
+                        CustomerReceiptCount = item.CustomerReceiptCount,
+                        FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                    };
+                    break;
+                case "TakeAway":
+                    _commonProperties.TakeAwaySettings = new()
+                    {
+                        OrderStatment = item.OrderStatment,
+                        JobID = item.JobID,
+                        Service = item.Service,
+                        Tax = item.Tax,
+                        Tips = item.Tips,
+                        SeparateReceiptCount = item.SeparateReceiptCount,
+                        AddServiceToItemPrice = item.AddServiceToItemPrice,
+                        ClosingReceiptCount = item.ClosingReceiptCount,
+                        CustomerReceiptCount = item.CustomerReceiptCount,
+                        FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                    };
+                    break;
+                case "Delivery":
+                    _commonProperties.DeliverySettings = new()
+                    {
+                        OrderStatment = item.OrderStatment,
+                        JobID = item.JobID,
+                        Service = item.Service,
+                        Tax = item.Tax,
+                        Tips = item.Tips,
+                        SeparateReceiptCount = item.SeparateReceiptCount,
+                        AddServiceToItemPrice = item.AddServiceToItemPrice,
+                        ClosingReceiptCount = item.ClosingReceiptCount,
+                        CustomerReceiptCount = item.CustomerReceiptCount,
+                        FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                    };
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 
@@ -233,5 +413,60 @@ public partial class POS
         _commonProperties.OnChange -= StateHasChanged;
         CustomizationSettingsService.OnChanged -= StateHasChanged;
         _section4ButtonsServices.OnChanged -= StateHasChanged;
+    }
+
+    [JSInvokable]
+    public async Task ExecuteDoubleEnterFunction()
+    {
+        switch (_commonProperties.CurrentPosMode)
+        {
+            case "DineIn":
+                await CreateDineInOrder();
+                break;
+            case "Delivery":
+                await CreateDeliveryOrder();
+                break;
+            case "TakeAway":
+                await CreateTakeawayOrder();
+                break;
+            default:
+                break;
+        }
+    }
+    private async Task CreateDeliveryOrder()
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task CreateDineInOrder()
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task CreateTakeawayOrder()
+    {
+        if (_commonProperties.TableItems!.Count == 0)
+            return;
+
+        var result = await _printOrderService.PrintTakeAwayOrder();
+        if (result is true)
+        {
+            _cartService.ClearTakeAwayOrderAttributes();
+            _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+            await _appDate.UpdateOrderCount();
+            await GetCurrentDayAndTime();
+            _services.NotifyStateChanged();
+        }
+    }
+
+
+    private async Task<BranchToReturnDto> GetBranchDetails()
+    {
+        var branches = await _branchService.GetBranches();
+        var Branch = branches.FirstOrDefault(b => b.Id == 1);
+        if (Branch == null)
+            return new BranchToReturnDto();
+
+        return Branch!;
     }
 }

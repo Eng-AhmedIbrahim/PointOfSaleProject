@@ -33,3 +33,6 @@ global using POS.Core.Entities.Kitchen;
 global using POS.Core.Entities.DineIn;
 global using POS.Core.Entities.Date;
 global using POS.Core.Entities.Shift;
+global using POS.Core.Entities.Delivery;
+global using POS.Core.Entities.UserSettings;
+global using System.Security.Claims;

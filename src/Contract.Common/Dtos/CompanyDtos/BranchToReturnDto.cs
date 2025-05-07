@@ -14,4 +14,5 @@ public class BranchToReturnDto
     public string? Phone2 { get; set; }
     public bool Active { get; set; } = true;
     public bool Suspend { get; set; } = false;
+    public string? ApiUrl { get; set; }
 }

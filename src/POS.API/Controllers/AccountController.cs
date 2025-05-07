@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using POS.Contract.Dtos.AccountDtos;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class AccountController : BaseApiController
 {

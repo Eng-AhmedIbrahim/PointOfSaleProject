@@ -35,7 +35,7 @@
         <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
             <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All"
                       Spacing="0">
-                <Section4Table Items="Items" OnItemsChanged="OnWaitingItemsChanged" />
+                <Section4Table Disabled="true" Items="Items" OnItemsChanged="OnWaitingItemsChanged" />
             </MudStack>
         </MudPaper>
     </MudItem>
@@ -60,11 +60,8 @@
                        OnClick='()=>_navigationManager.NavigateTo("/pos")'>
                 <MudIcon Icon="@Icons.Material.Filled.ArrowBack" class="me-2" /> Back To POS
             </MudButton>
-
         </MudPaper>
     </MudItem>
-
-
 
 </MudGrid>
 

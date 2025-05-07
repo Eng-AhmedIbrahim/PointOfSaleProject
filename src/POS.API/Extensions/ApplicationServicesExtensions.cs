@@ -16,6 +16,12 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(IOrderService), typeof(OrderService));
         services.AddScoped(typeof(IDineInService), typeof(DineInService));
         services.AddScoped(typeof(IAppDateService), typeof(AppDateService));
+        services.AddScoped(typeof(IDeliveryCustomerTitleService), typeof(DeliveryCustomerTitleService));
+        services.AddScoped(typeof(IDeliveryZoneServices), typeof(DeliveryZoneServices));
+        services.AddScoped(typeof(IDeliveryCustomerService), typeof(DeliveryCustomerService));
+        services.AddScoped(typeof(IPrinterServices), typeof(PrinterService));
+        services.AddScoped(typeof(IKitchenServices), typeof(KitchenServices));
+        services.AddScoped(typeof(IKitchenPrintersService), typeof(KitchenPrinterService));
 
 
         services.AddAutoMapper(typeof(MappingProfiles));

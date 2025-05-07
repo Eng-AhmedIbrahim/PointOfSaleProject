@@ -1,5 +1,4 @@
 ﻿using POS.Core.Entities.Customer;
-using POS.Core.Entities.OrderEntity;
 using POS.Core.Services.Contract.OrderServices;
 using POS.Core.Specifications.OrderSpecs;
 
@@ -22,33 +21,32 @@ public class OrderService : IOrderService
         {
             try
             {
-                // Ensure the customer exists before assigning TakeawayCustomerId
-                if (order.TakeawayCustomer is not null)
+                if (order.OrderType == OrderTypes.TakeAway)
                 {
-                    var existingCustomer = await _unitOfWork.Repository<TakeawayCustomer>()
-                        .GetByIdAsync(order.TakeawayCustomer.Id);
-
-                    if (existingCustomer is null)
+                    if (order.TakeawayCustomer is not null)
                     {
-                        await _unitOfWork.Repository<TakeawayCustomer>().AddAsync(order.TakeawayCustomer);
-                        await _unitOfWork.CompleteAsync();
-                        order.TakeawayCustomerId = order.TakeawayCustomer.Id;
+                        var existingCustomer = await _unitOfWork.Repository<TakeawayCustomer>()
+                            .GetByIdAsync(order.TakeawayCustomer.Id);
+
+                        if (existingCustomer is null)
+                        {
+                            await _unitOfWork.Repository<TakeawayCustomer>().AddAsync(order.TakeawayCustomer);
+                            await _unitOfWork.CompleteAsync();
+                            order.TakeawayCustomerId = order.TakeawayCustomer.Id;
+                        }
+                        else
+                        {
+                            order.TakeawayCustomerId = existingCustomer.Id;
+                        }
                     }
                     else
                     {
-                        order.TakeawayCustomerId = existingCustomer.Id;
+                        order.TakeawayCustomerId = null;
                     }
                 }
-                else
-                {
-                    // If there's no customer, don't set TakeawayCustomerId (it should allow NULL in the DB)
-                    order.TakeawayCustomerId = null;
-                }
 
-                // Now add the order
                 await _unitOfWork.Repository<Orders>().AddAsync(order);
 
-                // Add order details if they exist
                 if (order.OrderDetails != null && order.OrderDetails.Any())
                 {
                     foreach (var item in order.OrderDetails)
@@ -57,7 +55,6 @@ public class OrderService : IOrderService
                     }
                 }
 
-                // Save changes
                 var result = await _unitOfWork.CompleteAsync();
                 if (result <= 0)
                 {
@@ -103,7 +100,7 @@ public class OrderService : IOrderService
         oldOrderSetting.SeparateReceiptCount = orderSetting.SeparateReceiptCount != 0 ? orderSetting.SeparateReceiptCount : oldOrderSetting.SeparateReceiptCount;
         oldOrderSetting.CustomerReceiptCount = orderSetting.CustomerReceiptCount != 0 ? orderSetting.CustomerReceiptCount : oldOrderSetting.CustomerReceiptCount;
         oldOrderSetting.ClosingReceiptCount = orderSetting.ClosingReceiptCount != 0 ? orderSetting.ClosingReceiptCount : oldOrderSetting.ClosingReceiptCount;
-        oldOrderSetting.FullKitchenReceiptCount = orderSetting.FullKitchenReceiptCount != 0 ? orderSetting.FullKitchenReceiptCount : oldOrderSetting.FullKitchenReceiptCount ;
+        oldOrderSetting.FullKitchenReceiptCount = orderSetting.FullKitchenReceiptCount != 0 ? orderSetting.FullKitchenReceiptCount : oldOrderSetting.FullKitchenReceiptCount;
         oldOrderSetting.JobID = orderSetting.JobID != 0 ? orderSetting.JobID : oldOrderSetting.JobID;
         oldOrderSetting.AddServiceToItemPrice = orderSetting.AddServiceToItemPrice;
 

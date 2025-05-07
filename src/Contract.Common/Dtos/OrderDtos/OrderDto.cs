@@ -1,0 +1,100 @@
+﻿using POS.Contract.Dtos.OrderDto;
+
+namespace POS.Contract.Dtos.OrderDtos;
+
+public class OrderDto
+{
+    //for all Orders
+    public string? OrderType { get; set; }
+    public string? CashierName { get; set; }
+    public List<TableItem>? OrderDetails { get; set; }
+    public int OrderId { get; set; }
+    public int BranchId { get; set; }
+    public string? BranchName { get; set; }
+    public string? CashierId { get; set; }
+    public string? FooterMessage { get; set; }
+    public string? CustomerPhone { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
+    public decimal? Paid { get; set; }
+    public decimal? Remaining { get; set; }
+    public decimal? SubTotal { get; set; }
+    public decimal? Services { get; set; }
+    public decimal? Tax { get; set; }
+    public decimal? TotalOrderDiscount { get; set; }
+    public decimal? GrandTotal { get; set;}
+
+    public DateTime? OrderDate { get; set; }
+    public string? OrderState { get; set; }
+    public string? OrderNotice { get; set; }
+
+    //discount
+    public decimal? DiscountedItems { get; set; }
+    public decimal? TotalDiscount { get; set; }
+    public string? DiscountType { get; set; }
+    public decimal? DiscountPercentage { get; set; }
+    public int? DiscountBy { get; set; }
+    public string? DiscountByName { get; set; }
+    public DateTime? DiscountTime { get; set; }
+    public string? DiscountReason { get; set; }
+    public bool? WithoutService { get; set; }
+    public bool? WithoutTax { get; set; }
+
+    public ICollection<OrderSettingToReturnDto>? OrderSettings { get; set; }
+
+    //for takeaway
+    public int? TakeawayCustomerId { get; set; }
+    public string? TakeAwayCustomerName { get; set; }
+    public string? TakeawayCustomerPhone { get; set; }
+
+    //for dinein
+
+    public int? TakerID { get; set; }
+    public string? TakerName { get; set; }
+    public decimal? ReservationPaid { get; set; }
+    public decimal? ReservationRemain { get; set; }
+    public DateTime? ScheduleDateTime { get; set; }
+    public int? CustomerCount { get; set; }
+
+
+    //for delivery
+    public string? DeliveryCompany { get; set; }
+    public string? TitleName { get; set; }
+    public int? CustomerID { get; set; }
+    public string? CustomerName { get; set; }
+    public string? Phone1 { get; set; }
+    public string? Phone2 { get; set; }
+    public string? HomeNum { get; set; }
+    public string? StreetName { get; set; }
+    public string? FloorNum { get; set; }
+    public string? ApartmentNum { get; set; }
+    public string? AddressNotice { get; set; }
+    public int? ZoneID { get; set; }
+    public string? ZoneName { get; set; }
+    public decimal? ZoneBonus { get; set; }
+    public string? DispatchID { get; set; }
+    public int? DriverID { get; set; }
+    public string? DriverName { get; set; }
+    public DateTime? AssignTime { get; set; }
+    public DateTime? BackTime { get; set; }
+    public bool? WithoutDeliveryFees { get; set; }
+    public DateTime? ClosingTime { get; set; }
+
+
+    //Void Details 
+    public decimal? VoidAmount { get; set; }
+    public int? VoidBy { get; set; }
+    public string? VoidByName { get; set; }
+    public DateTime? VoidTime { get; set; }
+    public string? VoidReason { get; set; }
+    public int? VoidCount { get; set; }
+    public decimal? TotalVoid { get; set; }
+
+    //Print Details 
+    public int? PrintCount { get; set; }
+
+
+    //Order Times 
+    public DateTime? KitchenOutTime { get; set; }
+    public DateTime? PackingOutTime { get; set; }
+
+}

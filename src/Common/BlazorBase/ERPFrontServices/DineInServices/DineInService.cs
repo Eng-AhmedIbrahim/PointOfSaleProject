@@ -1,8 +1,4 @@
-﻿using POS.Contract.Dtos.DineInDtos;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-
-namespace BlazorBase.ERPFrontServices.DineInServices;
+﻿namespace BlazorBase.ERPFrontServices.DineInServices;
 
 public class DineInService : IDineInService
 {
@@ -65,4 +61,15 @@ public class DineInService : IDineInService
 
     private async Task<HttpResponseMessage> GetCaptainOrdersRequest()
         => await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetUsersByRole}/كابتن صاله");
+
+    public async Task<ICollection<TableToReturnDto>> GetTables()
+    {
+        return await GetApiResponseAsync<TableToReturnDto>(
+             GetTablesRequest,
+             "Failed to retrieve Table Groups from the API."
+         );
+    }
+
+    private async Task<HttpResponseMessage> GetTablesRequest()
+     =>   await _httpClient.GetAsync($"{_apiSettings.Endpoints!.UpdateTables}");
 }

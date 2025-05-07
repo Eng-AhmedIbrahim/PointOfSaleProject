@@ -1,7 +1,4 @@
-﻿using POS.Contract.Dtos.AppDateDtos;
-using POS.Core.Entities.Date;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class AppDateController : BaseApiController
 {
@@ -30,5 +27,12 @@ public class AppDateController : BaseApiController
         var mappedAppDate = _mapper.Map<AppDate, AppDateToReturnDto>(appDate);
 
         return Ok(mappedAppDate);
+    }
+
+    [HttpPut("update-order-numbers")]
+    public async Task<ActionResult<object>> UpdateCurrentOrderNumber()
+    {
+        await _appSettingService.UpdateOrderNumber();
+        return Ok(new { message = "Current Order Number Updated Successfully" });
     }
 }

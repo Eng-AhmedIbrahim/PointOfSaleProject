@@ -28,7 +28,8 @@ public static class PosDbContextDataSeed
             {
                 BranchId = branch!.Id,
                 PosDate = DateTime.Now.Date,
-                StoreDate = DateTime.Now.Date
+                StoreDate = DateTime.Now.Date,
+               CurrentOrderNumber = 1
             };
             await _dbContext.AppDate.AddAsync(appDate);
             await _dbContext.SaveChangesAsync();
@@ -86,6 +87,13 @@ public static class PosDbContextDataSeed
             await _dbContext.SaveChangesAsync();
         }
 
+        if(!_dbContext.DeliveryCustomerTitle.Any())
+        {
+            var deliveryCustomerTitles = await GetDataFromJsonFile<DeliveryCustomerTitle>("DeliveryCustomerTitle.json");
+            
+            await _dbContext.DeliveryCustomerTitle.AddRangeAsync(deliveryCustomerTitles);
+            await _dbContext.SaveChangesAsync();
+        }
 
 
         //if (!_dbContext.PrintingSettings.Any())

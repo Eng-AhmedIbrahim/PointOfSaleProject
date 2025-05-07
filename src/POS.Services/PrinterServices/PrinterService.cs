@@ -1,17 +1,17 @@
-﻿using POS.Core.Entities.Kitchen;
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.PrinterServices;
-using System.Reflection;
+﻿using System.Diagnostics;
 
 namespace POS.Services.PrinterServices;
 
 public class PrinterService : IPrinterServices
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IConfiguration _configuration;
 
-    public PrinterService(IUnitOfWork unitOfWork)
+    public PrinterService(IUnitOfWork unitOfWork
+        ,IConfiguration configuration)
     {
         _unitOfWork = unitOfWork;
+        _configuration = configuration;
     }
 
     public async Task<OrderSetting?> CreateOrderSettingAsync(OrderSetting orderSetting)
@@ -160,5 +160,120 @@ public class PrinterService : IPrinterServices
         return orderSetting;
     }
 
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    public async Task<List<string>> GetInstalledPrinters()
+    {
+        return await Task.Run(() =>
+        {
+            var printers = new List<string>();
+            foreach (string printer in PrinterSettings.InstalledPrinters)
+            {
+                printers.Add(printer);
+            }
+            return printers;
+        });
+    }
 
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    public async Task<bool> PrintPdfAsync(string filePath, string printerName)
+    {
+        var exePath = _configuration["PrinterPath"];
+
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException("PDF file not found.", filePath);
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = $"\"{filePath}\" \"{printerName}\" /s /R0", // إضافة خيارات تحسين
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = false, // تعطيل الإخراج
+            RedirectStandardError = false   // تعطيل الأخطاء
+        };
+
+        using var process = new Process { StartInfo = psi };
+
+        process.Start();
+        await process.WaitForExitAsync(); // انتظار غير متزامن
+
+        if (process.ExitCode != 0)
+            throw new Exception($"فشلت الطباعة. الرمز: {process.ExitCode}");
+
+        return true;
+    }
+
+    //public async Task<bool> PrintPdfAsync(string pdfFilePath, string printerName)
+    //{
+    //    var stopwatch = Stopwatch.StartNew(); // بدء قياس الوقت
+
+    //    try
+    //    {
+    //        byte[] pdfBytes = await File.ReadAllBytesAsync(pdfFilePath);
+    //        using (var memoryStream = new MemoryStream(pdfBytes))
+    //        using (var pdfDocument = PdfDocument.Load(memoryStream))
+    //        {
+    //            var printDoc = new PrintDocument
+    //            {
+    //                PrinterSettings = new PrinterSettings { PrinterName = printerName },
+    //                DefaultPageSettings = new PageSettings
+    //                {
+    //                    // PaperSize = new PaperSize("A6", 413, 583),
+    //                    Margins = new Margins(0, 0, 0, 0)
+    //                }
+    //            };
+
+    //            int currentPage = 0;
+    //            printDoc.PrintPage += (sender, e) =>
+    //            {
+    //                if (currentPage < pdfDocument.PageCount)
+    //                {
+    //                    pdfDocument.Render(currentPage, e.Graphics, 150, 150, e.PageBounds, true);
+    //                    currentPage++;
+    //                    e.HasMorePages = currentPage < pdfDocument.PageCount;
+    //                }
+    //            };
+
+    //            printDoc.Print(); // عملية الطباعة الفعلية (تستغرق وقتًا)
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine($"Print failed: {ex.Message}");
+    //    }
+    //    finally
+    //    {
+    //        stopwatch.Stop(); // إيقاف القياس
+    //        Console.WriteLine($"Total time: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
+    //    }
+
+    //    return true;
+    //}
+
+
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    public async Task PrintPdfToMultipleAsync(string pdfFilePath, List<string> printerNames)
+    {
+        var printTasks = new List<Task>();
+
+        foreach (var printerName in printerNames)
+        {
+            printTasks.Add(PrintPdfAsync(pdfFilePath, printerName));
+        }
+
+        try
+        {
+            await Task.WhenAll(printTasks);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred while printing: {ex.Message}");
+            throw;
+        }
+    }
+
+    public Task PrintPdfFromUrlAsync(string pdfUrl)
+    {
+        throw new NotImplementedException();
+    }
 }

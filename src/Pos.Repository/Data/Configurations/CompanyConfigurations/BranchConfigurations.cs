@@ -68,5 +68,19 @@ public class BranchConfigurations : IEntityTypeConfiguration<Branch>
 
         builder.Property(b=>b.Id)
             .ValueGeneratedNever();
+
+        builder.HasMany(b=>b.DeliveryZones)
+            .WithOne(z=>z.Branch)
+            .HasForeignKey(z=>z.BranchId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(b => b.ApiUrl)
+            .HasColumnType("nvarchar")
+            .HasMaxLength(255);
+
+        builder.HasMany(b=>b.DeliveryZones)
+            .WithOne(b=>b.Branch)
+            .HasForeignKey(b=>b.BranchId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -16,6 +16,10 @@ public class Branch : BaseEntity
     public DateTime CreationDate { get; set; }
     public DateTime? UpdateDate { get; set; }
 
+    public string? ApiUrl { get; set; }
     public int? CompanyId { get; set; }
     public Company? Company { get; set; }
+
+    public ICollection<CustomerAddress>? CustomerAddresses { get; set; }
+    public ICollection<DeliveryZone>? DeliveryZones { get; set; }
 }

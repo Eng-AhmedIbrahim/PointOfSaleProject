@@ -2,7 +2,6 @@
 
 public class CategoryConfigurations : IEntityTypeConfiguration<Category>
 {
-    private readonly int MaxLength = 255;
     private readonly int MinLength = 70;
     public void Configure(EntityTypeBuilder<Category> builder)
     {
@@ -33,6 +32,10 @@ public class CategoryConfigurations : IEntityTypeConfiguration<Category>
             .HasColumnType("datetime");
 
 
+        builder.Property(c => c.PrintInBackupReceipt)
+            .HasColumnType("bit")
+             .HasDefaultValue(true);
+
 
         builder.Property(c => c.CreationDate)
             .HasColumnType("datetime");
@@ -42,9 +45,19 @@ public class CategoryConfigurations : IEntityTypeConfiguration<Category>
            .HasColumnType("int")
             .HasDefaultValue(1);
 
+
+        builder.Property(c => c.KitchenTypeId)
+          .HasColumnType("int")
+          .IsRequired(false);
+           
+
         builder.HasMany(c => c.MenuSalesItems)
             .WithOne(c => c.Category)
             .HasForeignKey(c => c.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(c => c.KitchenType)
+            .WithMany(c => c.Categories)
+            .HasForeignKey(c => c.KitchenTypeId);
     }
 }

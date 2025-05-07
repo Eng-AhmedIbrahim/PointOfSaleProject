@@ -1,6 +1,4 @@
-﻿using POS.Contract.Models;
-
-namespace ERPFront.Components.Pages;
+﻿namespace ERPFront.Components.Pages;
 
 public partial class WaitingPage
 {
@@ -9,7 +7,15 @@ public partial class WaitingPage
     private void ShowWaitingOrder(int orderId)
     {
         CurrentOrderId = orderId;
-        Items = _commonProperties!.WaitingQueue!.WaitingOrders.Where(o => o.Id == orderId).Select(o => o.Items).FirstOrDefault() ?? new();
+        Items = _commonProperties!.WaitingQueue!.WaitingOrders
+        .Where(o => o.Id == orderId)
+        .Select(o => o.Items.Select(item =>
+        {
+            var newItem = item.Clone();
+            newItem.IsReadOnly = true;
+            return newItem;
+        }).ToList())
+        .FirstOrDefault() ?? new();
     }
 
     private Task OnWaitingItemsChanged()
@@ -33,9 +39,11 @@ public partial class WaitingPage
 
     private void CompleteWaitingOrder()
     {
-        var waitingOrder = _commonProperties!.WaitingQueue!.WaitingOrders.FirstOrDefault(o => o.Id == CurrentOrderId);
+        WaitingOrder? waitingOrder = _commonProperties!.WaitingQueue!.WaitingOrders.FirstOrDefault(o => o.Id == CurrentOrderId);
         _commonProperties.TableItems = waitingOrder!.Items;
-         RemoveWaitingOrder();
+        _commonProperties!._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
+
+        RemoveWaitingOrder();
         _navigationManager.NavigateTo("/pos");
     }
 }

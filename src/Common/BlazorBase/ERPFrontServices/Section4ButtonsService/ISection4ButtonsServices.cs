@@ -1,6 +1,4 @@
-﻿using POS.Contract.Models;
-
-namespace BlazorBase.ERPFrontServices.Section4ButtonsService;
+﻿namespace BlazorBase.ERPFrontServices.Section4ButtonsService;
 
 public interface ISection4ButtonsServices
 {

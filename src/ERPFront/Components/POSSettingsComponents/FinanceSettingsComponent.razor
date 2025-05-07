@@ -1,8 +1,11 @@
 @inject IJSRuntime Js
 @inject ICustomizationSettingsService CustomizationSettingsService
+@inject Section4ButtonsServices _section4ButtonsServices
+
+
 
 <MudButton OnClick="OnExpandCollapseClick"
-           EndIcon="@(_expanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)">
+EndIcon="@(_expanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)">
     <MudText Class="section-btn-label" Typo="Typo.h6">Section 4</MudText>
 </MudButton>
 <MudCollapse Class="px-3" Expanded="_expanded">
@@ -14,11 +17,11 @@
         <MudItem xs="12">
             <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
                 <MudIconButton Icon="@Icons.Material.Filled.Add"
-                               OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),5)"
-                               Size="Size.Large"/>
+                OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),5)"
+                Size="Size.Large"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                               OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),-5)"
-                               Size="Size.Large"/>
+                OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),-5)"
+                Size="Size.Large"/>
             </MudButtonGroup>
         </MudItem>
         <MudItem xs="12">
@@ -27,11 +30,11 @@
         <MudItem xs="12">
             <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
                 <MudIconButton Icon="@Icons.Material.Filled.Add"
-                               OnClick="() => IncreaseSize(FinanceLabelTextSize)"
-                               Size="Size.Large"/>
+                OnClick="() => IncreaseSize(FinanceLabelTextSize)"
+                Size="Size.Large"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                               OnClick="() => DecreaseSize(FinanceLabelTextSize)"
-                               Size="Size.Large"/>
+                OnClick="() => DecreaseSize(FinanceLabelTextSize)"
+                Size="Size.Large"/>
             </MudButtonGroup>
         </MudItem>
         <MudItem xs="12">
@@ -40,11 +43,11 @@
         <MudItem xs="12">
             <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
                 <MudIconButton Icon="@Icons.Material.Filled.Add"
-                               OnClick="() => IncreaseSize(FinanceInputTextSize)"
-                               Size="Size.Large"/>
+                OnClick="() => IncreaseSize(FinanceInputTextSize)"
+                Size="Size.Large"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                               OnClick="() => DecreaseSize(FinanceInputTextSize)"
-                               Size="Size.Large"/>
+                OnClick="() => DecreaseSize(FinanceInputTextSize)"
+                Size="Size.Large"/>
             </MudButtonGroup>
         </MudItem>
 
@@ -54,19 +57,19 @@
         <MudItem xs="12">
             <MudButtonGroup Variant="Variant.Filled" OverrideStyles="true">
                 <MudIconButton Icon="@Icons.Material.Filled.Add"
-                               OnClick="() => IncreaseSize(ControlBtnSize)"
-                               Size="Size.Large"/>
+                OnClick="() => IncreaseSize(ControlBtnSize)"
+                Size="Size.Large"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Remove"
-                               OnClick="() => DecreaseSize(ControlBtnSize)"
-                               Size="Size.Large"/>
+                OnClick="() => DecreaseSize(ControlBtnSize)"
+                Size="Size.Large"/>
             </MudButtonGroup>
         </MudItem>
         <MudItem xs="12">
             <MudButton StartIcon="@Icons.Material.Filled.RestartAlt"
-                       OnClick="Reset"
-                       Variant="Variant.Filled"
-                       Class="my-2 rounded-0"
-                       Size="Size.Medium">
+            OnClick="Reset"
+            Variant="Variant.Filled"
+            Class="my-2 rounded-0"
+            Size="Size.Medium">
                 Reset
             </MudButton>
         </MudItem>

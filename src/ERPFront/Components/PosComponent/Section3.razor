@@ -1,5 +1,7 @@
+@using ERPFront.Components.PosDialog
 @inject CartService _cartService
 @inject CommonProperties _commonProperties
+@inject IDialogService _dialogService
 <MudGrid Spacing="1" Justify="Justify.Center">
 
     @for (var i = 1; i <= 9; i++)
@@ -59,7 +61,7 @@
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.RemoveShoppingCart"
-                       Size="Size.Medium" 
+                       Size="Size.Medium"
                        OnClick="() => _cartService.RemoveItem(_commonProperties.TableItems??[])" />
     </MudItem>
 
@@ -67,13 +69,15 @@
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Percent"
-                       Size="Size.Medium"  Disabled/>
+                       Size="Size.Medium"
+                       OnClick="OpenDiscountDialog" />
     </MudItem>
     <MudItem xs="12">
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Edit"
-                       Size="Size.Medium" />
+                       Size="Size.Medium"
+                       OnClick="OpenItemCommentDialog" />
     </MudItem>
 
     @* <MudItem xs="12" sm="6"> *@
@@ -87,7 +91,7 @@
         <MudIconButton Variant="Variant.Filled"
                        Class="w-100 special-icon-btn liner-grid-buttons"
                        Icon="@Icons.Material.Filled.Remove"
-                       Size="Size.Medium" Disabled/>
+                       Size="Size.Medium" Disabled />
     </MudItem>
 </MudGrid>
 
@@ -96,6 +100,23 @@
 @code
 {
     List<string> _specialNumbers = ["1/2", "1/4", "3/4", "1/8"];
+
+    private async Task OpenItemCommentDialog()
+    {
+        if (_commonProperties.TableItems!.Count == 0)
+            return;
+
+        _commonProperties.ItemCommentDialogReference = await _dialogService.ShowAsync<ItemCommentDialog>("Add New Address");
+    }
+
+
+    private async Task OpenDiscountDialog()
+    {
+        if (_commonProperties.TableItems!.Count == 0)
+            return;
+
+        _commonProperties.ItemDiscountDialogReference = await _dialogService.ShowAsync<ItemDiscountDialog>("Add New Discount");
+    }
 }
 
 
@@ -105,3 +126,4 @@
         color: #143155 !important;
     }
 </style>
+

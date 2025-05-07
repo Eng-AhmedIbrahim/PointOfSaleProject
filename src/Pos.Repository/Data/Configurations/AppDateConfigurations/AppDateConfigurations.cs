@@ -9,7 +9,7 @@ public class AppDateConfiguration : IEntityTypeConfiguration<AppDate>
         builder.HasKey(a => a.Id);
         
         builder.Property(a => a.BranchId)
-               .IsRequired();
+               .IsRequired(); 
 
         builder.Property(a => a.PosDate)
                .HasColumnType("DATETIME")
@@ -17,6 +17,9 @@ public class AppDateConfiguration : IEntityTypeConfiguration<AppDate>
 
         builder.Property(a => a.StoreDate)
                .HasColumnType("DATETIME")
+               .IsRequired();
+
+        builder.Property(a => a.CurrentOrderNumber)
                .IsRequired();
     }
 }

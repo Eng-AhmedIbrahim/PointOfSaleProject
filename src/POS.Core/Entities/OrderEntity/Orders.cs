@@ -6,10 +6,10 @@ public class Orders:BaseEntity
     public int OrderID { get; set; }
     public string? BranchName { get; set; }
     public ShiftHandover? Shift { get; set; }
-    public int? ShiftID { get; set; } = 1;
-    public int? CashierID { get; set; }
+    public int? ShiftID { get; set; }
+    public string? CashierID { get; set; }
     public string? CashierName { get; set; }
-    public DateTime? OrderDate { get; set; }
+    public DateTime? OrderDate { get; set; } = new DateTime();
     public OrderTypes? OrderType { get; set; } 
     public OrderStates? OrderState { get; set; }
     public string? DeliveryCompany { get; set; }

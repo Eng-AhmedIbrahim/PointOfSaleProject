@@ -1,6 +1,4 @@
-﻿using POS.Contract.Dtos.CompanyDtos;
-
-namespace POS.API.Controllers;
+﻿namespace POS.API.Controllers;
 
 public class BranchController : BaseApiController
 {
@@ -60,7 +58,7 @@ public class BranchController : BaseApiController
     [HttpGet("{branchId}")]
     public async Task<IActionResult> GetBranchById(int branchId)
     {
-        var branch = await _branchService!.GetBranchByIdAsync(branchId)??new();
+        var branch = await _branchService!.GetBranchByIdAsync(branchId)!;
 
         var mappedBranch = _mapper.Map<Branch,BranchToReturnDto>(branch??new());   
         if (mappedBranch is null)
@@ -75,16 +73,16 @@ public class BranchController : BaseApiController
     [HttpPut]
     public async Task<IActionResult> UpdateBranch([FromQuery] UpdatedBranchDto branch,bool updatedLogo)
     {
-        var storedBranch = await _branchService.GetBranchByIdAsync(branch.BranchId) ?? new();
+        var storedBranch = await _branchService.GetBranchByIdAsync(branch.BranchId)!;
      
         if(updatedLogo)
         {
             DocumentSetting.DeleteFile(storedBranch?.ImagePath??string.Empty);
-            DocumentSetting.UploadFile(branch.Logo, "Imgs");
+            DocumentSetting.UploadFile(branch.Logo!, "Imgs");
         }
 
         var newBranch = _mapper.Map<UpdatedBranchDto, Branch>(branch);
-        newBranch.Id = storedBranch.Id;
+        newBranch.Id = storedBranch!.Id;
 
         if (storedBranch is null)
             return NotFound(new ApiResponse(404));
@@ -103,7 +101,7 @@ public class BranchController : BaseApiController
     [HttpDelete]
     public async Task<IActionResult> DeleteCompany(int branchId)
     {
-        var branch = await _branchService.GetBranchByIdAsync(branchId);
+        var branch = await _branchService.GetBranchByIdAsync(branchId)!;
         if (branch is null)
             return NotFound(new ApiResponse(404));
 
