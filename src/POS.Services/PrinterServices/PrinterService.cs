@@ -63,7 +63,8 @@ public class PrinterService : IPrinterServices
 
     public async Task<List<KitchenType>?> GetKitchenTypesAsync()
     {
-        var kitchenTypes = await _unitOfWork.Repository<KitchenType>().GetAllAsync();
+        var spec = new KitchenTypeSpecs();
+        var kitchenTypes = await _unitOfWork.Repository<KitchenType>().GetAllWithSpecificationAsync(spec);
 
         if (kitchenTypes is null) return null;
 

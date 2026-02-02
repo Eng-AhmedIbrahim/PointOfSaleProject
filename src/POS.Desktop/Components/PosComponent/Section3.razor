@@ -1,0 +1,73 @@
+@using global::POS.Desktop.Components.PosDialog
+@inject CartService _cartService
+@inject CommonProperties _commonProperties
+@inject IDialogService _dialogService
+
+<link href="actions-section.css" rel="stylesheet" />
+
+<div class="actions-grid-container">
+    @for (var i = 1; i <= 9; i++)
+    {
+        var number = i.ToString();
+        <button class="action-button keypad-btn special-keypad-button" @onclick="() => _cartService.AppendNumberToQuantity(number)">
+            @number
+        </button>
+    }
+    <button class="action-button keypad-btn special-keypad-button" @onclick="() => _cartService.OnClickBS()">
+        BS
+    </button>
+    <button class="action-button keypad-btn special-keypad-button" @onclick='() => _cartService.AppendNumberToQuantity("0")'>
+        0
+    </button>
+    <button class="action-button keypad-btn special-keypad-button" disabled>
+        .
+    </button>
+
+    @foreach (var specialNumber in _specialNumbers)
+    {
+        <button class="action-button special-btn special-keypad-button" disabled>
+            @specialNumber
+        </button>
+    }
+
+    <button class="action-button icon-btn plus-btn special-icon-btn" @onclick="() => _cartService.IncrementQuantity()">
+        <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" />
+    </button>
+    <button class="action-button icon-btn minus-btn special-icon-btn" @onclick="() => _cartService.DecrementQuantity()">
+        <MudIcon Icon="@Icons.Material.Filled.Remove" Size="Size.Large" />
+    </button>
+
+    <button class="action-button icon-btn full-width delete-btn" @onclick="() => _cartService.RemoveItem(_commonProperties.TableItems??[])">
+        <MudIcon Icon="@Icons.Material.Outlined.DeleteOutline" Size="Size.Large" />
+    </button>
+
+    <button class="action-button icon-btn full-width discount-btn" @onclick="OpenDiscountDialog">
+        <MudIcon Icon="@Icons.Material.Outlined.Discount" Size="Size.Large" />
+    </button>
+    
+    <button class="action-button icon-btn full-width edit-btn" @onclick="OpenItemCommentDialog">
+        <MudIcon Icon="@Icons.Material.Outlined.EditNote" Size="Size.Large" />
+    </button>
+</div>
+
+@code
+{
+    List<string> _specialNumbers = ["1/2", "1/4", "3/4", "1/8"];
+
+    private async Task OpenItemCommentDialog()
+    {
+        if (_commonProperties.TableItems!.Count == 0)
+            return;
+
+        _commonProperties.ItemCommentDialogReference = await _dialogService.ShowAsync<ItemCommentDialog>("Add New Address");
+    }
+
+
+    private async Task OpenDiscountDialog()
+    {
+        if (_commonProperties.TableItems!.Count == 0)
+            return;
+
+        _commonProperties.ItemDiscountDialogReference = await _dialogService.ShowAsync<ItemDiscountDialog>("Add New Discount");
+    }
+}

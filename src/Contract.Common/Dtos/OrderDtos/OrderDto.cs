@@ -21,7 +21,7 @@ public class OrderDto
     public decimal? Services { get; set; }
     public decimal? Tax { get; set; }
     public decimal? TotalOrderDiscount { get; set; }
-    public decimal? GrandTotal { get; set;}
+    public decimal? GrandTotal { get; set; }
 
     public DateTime? OrderDate { get; set; }
     public string? OrderState { get; set; }
@@ -32,7 +32,7 @@ public class OrderDto
     public decimal? TotalDiscount { get; set; }
     public string? DiscountType { get; set; }
     public decimal? DiscountPercentage { get; set; }
-    public int? DiscountBy { get; set; }
+    public string? DiscountBy { get; set; }
     public string? DiscountByName { get; set; }
     public DateTime? DiscountTime { get; set; }
     public string? DiscountReason { get; set; }
@@ -48,12 +48,16 @@ public class OrderDto
 
     //for dinein
 
-    public int? TakerID { get; set; }
+    public string? TakerID { get; set; }
     public string? TakerName { get; set; }
     public decimal? ReservationPaid { get; set; }
     public decimal? ReservationRemain { get; set; }
     public DateTime? ScheduleDateTime { get; set; }
     public int? CustomerCount { get; set; }
+    public int? TableId { get; set; }
+    public string? TableName { get; set; }
+    public string? WaiterId { get; set; }
+    public string? WaiterName { get; set; }
 
 
     //for delivery
@@ -82,7 +86,7 @@ public class OrderDto
 
     //Void Details 
     public decimal? VoidAmount { get; set; }
-    public int? VoidBy { get; set; }
+    public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
@@ -96,5 +100,6 @@ public class OrderDto
     //Order Times 
     public DateTime? KitchenOutTime { get; set; }
     public DateTime? PackingOutTime { get; set; }
+    public bool? SkipPrintingOnServer { get; set; }
 
 }

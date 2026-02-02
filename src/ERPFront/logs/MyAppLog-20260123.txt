@@ -1,0 +1,177 @@
+2026-01-23 22:58:17.374 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 22:58:17.410 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 22:58:17.467 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 22:58:17.468 +02:00 [INF] Hosting environment: Development
+2026-01-23 22:58:17.469 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:03:25.605 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:03:25.647 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:03:25.695 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:03:25.697 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:03:25.698 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:07:44.467 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:07:44.562 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:07:44.650 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:07:44.676 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:07:44.694 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:10:32.849 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:10:32.891 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:10:32.934 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:10:32.935 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:10:32.937 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:15:18.640 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:15:18.698 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:15:18.751 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:15:18.752 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:15:18.753 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:18:35.300 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:18:35.390 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:18:35.437 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:18:35.439 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:18:35.440 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:18:44.514 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.Net.Http.HttpRequestException: No connection could be made because the target machine actively refused it. (localhost:7142)
+ ---> System.Net.Sockets.SocketException (10061): No connection could be made because the target machine actively refused it.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.CreateHttp11ConnectionAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.AddHttp11ConnectionAsync(QueueItem queueItem)
+   at System.Threading.Tasks.TaskCompletionSourceWithCancellation`1.WaitWithCancellationAsync(CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingScopeHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at ERPFront.Components.Pages.Login.OnInitializedAsync() in F:\PointOfSaleProject\src\ERPFront\Components\Pages\Login.razor.cs:line 28
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.StatusCodePagesMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-01-23 23:25:45.017 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:25:45.070 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:25:45.118 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:25:45.119 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:25:45.120 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:30:39.289 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:30:39.319 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:30:39.353 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:30:39.354 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:30:39.355 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:37:42.381 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:37:42.423 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:37:42.477 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:37:42.479 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:37:42.480 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:38:39.449 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:38:39.554 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:38:39.707 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:38:39.742 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:38:39.745 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:41:59.805 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:41:59.835 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:41:59.871 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:41:59.872 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:41:59.873 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:42:14.449 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.Net.Http.HttpRequestException: No connection could be made because the target machine actively refused it. (localhost:7142)
+ ---> System.Net.Sockets.SocketException (10061): No connection could be made because the target machine actively refused it.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.CreateHttp11ConnectionAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.AddHttp11ConnectionAsync(QueueItem queueItem)
+   at System.Threading.Tasks.TaskCompletionSourceWithCancellation`1.WaitWithCancellationAsync(CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingScopeHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at ERPFront.Components.Pages.Login.OnInitializedAsync() in F:\PointOfSaleProject\src\ERPFront\Components\Pages\Login.razor.cs:line 28
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.StatusCodePagesMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-01-23 23:48:12.567 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:48:12.598 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:48:12.630 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:48:12.630 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:48:12.631 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:50:23.041 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:50:23.073 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:50:23.107 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:50:23.108 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:50:23.110 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:55:10.936 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:55:10.967 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:55:10.998 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:55:11.000 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:55:11.002 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront
+2026-01-23 23:55:16.292 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.Net.Http.HttpRequestException: No connection could be made because the target machine actively refused it. (localhost:7142)
+ ---> System.Net.Sockets.SocketException (10061): No connection could be made because the target machine actively refused it.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.CreateHttp11ConnectionAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.AddHttp11ConnectionAsync(QueueItem queueItem)
+   at System.Threading.Tasks.TaskCompletionSourceWithCancellation`1.WaitWithCancellationAsync(CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at Microsoft.Extensions.Http.Logging.LoggingScopeHttpMessageHandler.<SendCoreAsync>g__Core|5_0(HttpRequestMessage request, Boolean useAsync, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at ERPFront.Components.Pages.Login.OnInitializedAsync() in F:\PointOfSaleProject\src\ERPFront\Components\Pages\Login.razor.cs:line 28
+   at Microsoft.AspNetCore.Components.ComponentBase.RunInitAndSetParametersAsync()
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.RenderTree.Renderer.GetErrorHandledTask(Task taskToHandle, ComponentState owningComponentState)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.<WaitForNonStreamingPendingTasks>g__Execute|38_0()
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.WaitForResultReady(Boolean waitForQuiescence, PrerenderedComponentHtmlContent result)
+   at Microsoft.AspNetCore.Components.Endpoints.EndpointHtmlRenderer.RenderEndpointComponent(HttpContext httpContext, Type rootComponentType, ParameterView parameters, Boolean waitForQuiescence)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Endpoints.RazorComponentEndpointInvoker.RenderComponentCore(HttpContext context)
+   at Microsoft.AspNetCore.Components.Rendering.RendererSynchronizationContext.<>c.<<InvokeAsync>b__10_0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.StatusCodePagesMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-01-23 23:55:38.692 +02:00 [INF] Now listening on: https://localhost:7268
+2026-01-23 23:55:38.728 +02:00 [INF] Now listening on: http://localhost:5257
+2026-01-23 23:55:38.759 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-01-23 23:55:38.760 +02:00 [INF] Hosting environment: Development
+2026-01-23 23:55:38.761 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\ERPFront

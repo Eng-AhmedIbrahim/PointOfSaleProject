@@ -23,6 +23,22 @@ public class CommonProperties
     public string? CurrentUser { get; set; }
     public string? CurrentUserId { get; set; }
     public string? StoreName { get; set; }
+    public string? CustomerName { get; set; }
+    public string? CustomerPhone { get; set; }
+    private global::POS.Contract.Models.PaymentMethod _selectedPaymentMethod = global::POS.Contract.Models.PaymentMethod.Cash;
+    public global::POS.Contract.Models.PaymentMethod SelectedPaymentMethod
+    {
+        get => _selectedPaymentMethod;
+        set
+        {
+            if (_selectedPaymentMethod != value)
+            {
+                _selectedPaymentMethod = value;
+                PaymentMethod = value.ToString(); // Sync with string property for legacy support
+                OnChange?.Invoke();
+            }
+        }
+    }
     public string? PaymentMethod { get; set; } = "Cash";
 
     public int CurrentOrderCount { get; set; }
@@ -56,6 +72,7 @@ public class CommonProperties
     /// <Discount>
     public OrderDiscount? OrderDiscount { get; set; } = new();
     public decimal? TotalDiscount { get; set; } = 0M;
+    public decimal? TotalLineDiscount { get; set; } = 0M;
     public decimal TotalAmountAfterDiscount { get; set; } = 0M;
     public decimal DiscountPercentage { get; set; } = 0M;
     public decimal DiscountValue { get; set; } = 0M;
@@ -89,4 +106,34 @@ public class CommonProperties
     public BranchToReturnDto? BranchDetails { get; set; } = new();
 
     public string? OrderNote { get; set; }
+
+    #region Localization & Layout
+    private string _language = "ar"; // Default to Arabic
+    public string Language
+    {
+        get => _language;
+        set
+        {
+            if (_language != value)
+            {
+                _language = value;
+                OnChange?.Invoke();
+            }
+        }
+    }
+
+    private bool _isRtl = true; // Default to RTL for Arabic
+    public bool IsRtl
+    {
+        get => _isRtl;
+        set
+        {
+            if (_isRtl != value)
+            {
+                _isRtl = value;
+                OnChange?.Invoke();
+            }
+        }
+    }
+    #endregion
 }

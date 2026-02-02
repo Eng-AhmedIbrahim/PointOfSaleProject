@@ -6,7 +6,7 @@ public class MenuSalesItemsToReturnDto
     public string? ArabicName { get; set; }
     public string? EnglishName { get; set; }
     public decimal? Price { get; set; }
-    public decimal? AttributePrice { get; set; } = 0;
+    public decimal? AttributePrice { get; set; }
     public string? Description { get; set; }
     public string? ImageUrl { get; set; }
     public string? BackColor { get; set; }
@@ -19,5 +19,4 @@ public class MenuSalesItemsToReturnDto
     public int? ItemKitchenTypeId { get; set; }
     public int? CategoryKitchenTypeId { get; set; }
     public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
-    //public List<MenuSalesItemAttributes> Attributes { get; set; } = [];
 }

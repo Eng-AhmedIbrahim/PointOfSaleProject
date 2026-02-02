@@ -46,6 +46,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.DiscountType).HasMaxLength(20);
         builder.Property(o => o.DiscountReason).HasMaxLength(250);
         builder.Property(o => o.VoidByName).HasMaxLength(70);
+        builder.Property(o => o.VoidBy).HasColumnType("nvarchar").HasMaxLength(100);
 
 
         builder.Property(o => o.Subtotal).HasColumnType("decimal(18,2)");
@@ -56,6 +57,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.Paid).HasColumnType("decimal(18,2)");
         builder.Property(o => o.Remain).HasColumnType("decimal(18,2)");
         builder.Property(o => o.VoidAmount).HasColumnType("decimal(18,2)");
+        builder.Property(o => o.DiscountBy).HasColumnType("nvarchar").HasMaxLength(100);
 
         builder.HasMany(o => o.OrderDetails)
                .WithOne(od => od.Order)
@@ -79,6 +81,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
             .WithMany(s => s.Orders)
             .HasForeignKey(o => o.ShiftID)
             .OnDelete(DeleteBehavior.NoAction);
-            
+
     }
 }

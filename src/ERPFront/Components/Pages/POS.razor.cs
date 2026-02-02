@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace ERPFront.Components.Pages;
+﻿namespace ERPFront.Components.Pages;
 
 public partial class POS
 {
@@ -11,8 +9,10 @@ public partial class POS
     private int currentCatId;
     private List<AttributeDto>? currentSelectedAttribute;
     private delegate void FinanceSettingsDelegate(OrderSettingToReturnDto? orderSettings);
-
+    private DotNetObjectReference<POS>? _dotNetRef;
     public string? NoteValue { get; set; }
+    private double _spacing = 4.0;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,6 +48,17 @@ public partial class POS
 
 
         _commonProperties.BranchDetails = await GetBranchDetails();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CustomizationSettingsService.LoadMaxHeights();
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JsRuntime.InvokeVoidAsync("listenToDoubleEnter", _dotNetRef);
+            StateHasChanged();
+        }
     }
     private async Task InvokeItems(int catId)
     {
@@ -194,7 +205,6 @@ public partial class POS
         }
     }
 
-
     private async Task UpdateSectionWithInitialItems()
     {
         var initialItems = await GetInitialMenuItems();
@@ -203,7 +213,6 @@ public partial class POS
 
         StateHasChanged();
     }
-
 
     private async Task<IEnumerable<MenuSalesItemsToReturnDto>> GetInitialMenuItems()
     {
@@ -220,7 +229,6 @@ public partial class POS
         UpdateTableItemCount();
         StateHasChanged();
     }
-
 
     private void UpdateOrderTotal()
     {
@@ -258,21 +266,24 @@ public partial class POS
 
     private void UpdateAttributeGroup(int clickCount)
     {
-        var attributeGroup = _currentBaseItem?.Attributes
+        MenuSalesItemAttributes? attributeGroup = _currentBaseItem?.Attributes
             .FirstOrDefault(a => a.AppearanceIndex == clickCount + 1);
 
         if (attributeGroup != null)
         {
             _itemByCatId.Clear();
-            foreach (var item in attributeGroup.GroupItems)
+
+            foreach (MenuSalesItemsGroupDto item in attributeGroup.GroupItems)
             {
                 var newMenuItem = new MenuSalesItemsToReturnDto
                 {
                     Id = item.Id,
                     ArabicName = item.ArabicName,
                     EnglishName = item.EnglishName,
-                    Price = item.Price
+                    Price = item.Price,
+                    AttributePrice = item.AttributePrice ?? 0
                 };
+
                 _itemByCatId.Add(newMenuItem);
             }
         }
@@ -283,7 +294,7 @@ public partial class POS
 
     private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem)
     {
-        var newTableItem = new TableItem
+        TableItem? newTableItem = new TableItem
         {
             Id = menuItem.Id,
             Name = menuItem.ArabicName,
@@ -295,7 +306,8 @@ public partial class POS
             ItemKitchenTypeId = menuItem.ItemKitchenTypeId,
             PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
             PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceiptFromItem,
-            TotalAmount = menuItem.Price
+            TotalAmount = menuItem.Price,
+            AttributePrice = menuItem.AttributePrice
         };
         _commonProperties?.TableItems?.Add(newTableItem);
 
@@ -329,7 +341,6 @@ public partial class POS
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
         => _commonProperties?.TableItems?.Where(c => c!.Attributes!.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
-
 
     public void CalculateTotalAmount()
     {
@@ -406,8 +417,6 @@ public partial class POS
             }
         }
     }
-
-
     public void Dispose()
     {
         _commonProperties.OnChange -= StateHasChanged;
@@ -458,7 +467,6 @@ public partial class POS
             _services.NotifyStateChanged();
         }
     }
-
 
     private async Task<BranchToReturnDto> GetBranchDetails()
     {

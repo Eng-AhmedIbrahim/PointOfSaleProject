@@ -27,3 +27,4 @@ global using BlazorBase.Models.DeliveryModels;
 global using MudBlazor;
 global using BlazorBase.ERPFrontServices.OrderServices;
 global using POS.Contract.Dtos.OrderDtos;
+global using BlazorBase.Services;

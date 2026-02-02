@@ -1,0 +1,11 @@
+wwwroot\actions-section.css
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png
+wwwroot\images\Logo.png
+wwwroot\index.html
+wwwroot\pos.css
+wwwroot\section4-footer.css
+wwwroot\settings-styles.css
+wwwroot\site.js

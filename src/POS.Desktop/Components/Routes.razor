@@ -1,0 +1,24 @@
+@using global::POS.Desktop.Components.Pages
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="typeof(global::POS.Desktop.App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeView Context="AuthorizationContext">
+                <Authorized>
+                    <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+                </Authorized>
+                <NotAuthorized>
+                    <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.AuthLayout)">
+                        <NotAuthorized><RedirectToLogin /></NotAuthorized>
+                    </AuthorizeRouteView>
+                </NotAuthorized>
+            </AuthorizeView>
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        </Found>
+    </Router>
+</CascadingAuthenticationState>
+

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Footer Buttons -->
+  <data name="Discount" xml:space="preserve">
+    <value>خصم</value>
+  </data>
+  <data name="Meals" xml:space="preserve">
+    <value>الوجبات</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>الانتظار</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="Payment" xml:space="preserve">
+    <value>دفع</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>اعدادات</value>
+  </data>
+  
+  <!-- Discount Dialog -->
+  <data name="OrderDiscount" xml:space="preserve">
+    <value>خصم الطلب</value>
+  </data>
+  <data name="SelectDiscountMode" xml:space="preserve">
+    <value>اختر نوع الخصم</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>نسبة مئوية (%)</value>
+  </data>
+  <data name="FixedAmount" xml:space="preserve">
+    <value>مبلغ ثابت (جنيه)</value>
+  </data>
+  <data name="DiscountReason" xml:space="preserve">
+    <value>سبب الخصم</value>
+  </data>
+  <data name="RemoveDiscount" xml:space="preserve">
+    <value>إزالة الخصم</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>تطبيق</value>
+  </data>
+  
+  <!-- Item Discount Dialog -->
+  <data name="ItemDiscount" xml:space="preserve">
+    <value>خصم الصنف</value>
+  </data>
+  <data name="ChooseMode" xml:space="preserve">
+    <value>اختر النوع</value>
+  </data>
+  <data name="Percent" xml:space="preserve">
+    <value>نسبة (%)</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>قيمة (جنيه)</value>
+  </data>
+  
+  <!-- Payment Dialog -->
+  <data name="PaymentMethod" xml:space="preserve">
+    <value>طريقة الدفع</value>
+  </data>
+  <data name="SelectPaymentMethod" xml:space="preserve">
+    <value>اختر طريقة الدفع المناسبة</value>
+  </data>
+  <data name="Cash" xml:space="preserve">
+    <value>كاش (نقدي)</value>
+  </data>
+  <data name="Visa" xml:space="preserve">
+    <value>فيزا (بطاقة)</value>
+  </data>
+  <data name="InstaPay" xml:space="preserve">
+    <value>انستا باي (تحويل)</value>
+  </data>
+  <data name="ConfirmOperation" xml:space="preserve">
+    <value>تأكيد العملية</value>
+  </data>
+  
+  <!-- Settings -->
+  <data name="Language" xml:space="preserve">
+    <value>اللغة</value>
+  </data>
+  <data name="LayoutDirection" xml:space="preserve">
+    <value>اتجاه الواجهة</value>
+  </data>
+  <data name="RightToLeft" xml:space="preserve">
+    <value>من اليمين لليسار</value>
+  </data>
+  <data name="LeftToRight" xml:space="preserve">
+    <value>من اليسار لليمين</value>
+  </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>العربية</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>الإنجليزية</value>
+  </data>
+  <data name="CloseSettings" xml:space="preserve">
+    <value>إغلاق الإعدادات</value>
+  </data>
+  
+  <!-- Section 4 Buttons -->
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>طباعة</value>
+  </data>
+  
+  <!-- Common -->
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>الضريبة</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>الخدمة</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+</root>

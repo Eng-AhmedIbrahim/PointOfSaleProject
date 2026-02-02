@@ -2,7 +2,7 @@
 
 namespace POS.API.Helpers;
 
-public class MappingProfiles:Profile
+public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
@@ -46,7 +46,7 @@ public class MappingProfiles:Profile
 
         CreateMap<UpdatedCategoryDto, Category>()
             .ForMember(c => c.NormalizedEnglishName, c => c.MapFrom(c => c!.EnglishName!.ToUpper()));
-            
+
 
         CreateMap<CreateAttributeDto, Attributes>()
             .ForMember(a => a.Id, a => a.Ignore());
@@ -64,8 +64,8 @@ public class MappingProfiles:Profile
             i.MapFrom(i => i.AttributeId));
 
 
-           
-            
+
+
 
         CreateMap<UpdatedItemDto, MenuSalesItems>()
             .ForMember(s => s.NormalizedEnglishName, s =>
@@ -86,9 +86,9 @@ public class MappingProfiles:Profile
         CreateMap<MenuSalesItems, MenuSalesItemsToReturnDto>()
     .ForMember(s => s.ImageUrl,
         s => s.MapFrom<ImageUrlResolver<MenuSalesItems, MenuSalesItemsToReturnDto>>())
-    .ForMember(dest=> dest.PrintInBackupReceiptFromItem,
-    src=>
-    src.MapFrom(s=>s.PrintInBackupReceipt))
+    .ForMember(dest => dest.PrintInBackupReceiptFromItem,
+    src =>
+    src.MapFrom(s => s.PrintInBackupReceipt))
     .ForMember(dest => dest.PrintInBackupReceiptFromCategory,
     src =>
     src.MapFrom(s => s.Category!.PrintInBackupReceipt))
@@ -111,7 +111,8 @@ public class MappingProfiles:Profile
                             Id = ai.Id,
                             ArabicName = ai.RelatedMenuItem!.ArabicName,
                             EnglishName = ai.RelatedMenuItem.EnglishName,
-                            Price = ai.RelatedMenuItem.Price
+                            Price = ai.RelatedMenuItem.Price,
+                            AttributePrice = ai.RelatedMenuItem.AttributePrice
                         }
                     }
                 }).ToList()
@@ -119,14 +120,14 @@ public class MappingProfiles:Profile
         ));
 
 
-        CreateMap<AppUser,UserDto>()
-            .ForMember(dest=>dest.UserId,src=>src.MapFrom(s=>s.Id));
+        CreateMap<AppUser, UserDto>()
+            .ForMember(dest => dest.UserId, src => src.MapFrom(s => s.Id));
 
         CreateMap<TableDto, Table>();
         CreateMap<TableGroupDto, TableGroup>();
         CreateMap<TableGroupToReturnDto, TableGroup>().ReverseMap();
         CreateMap<Table, TableToReturnDto>()
-            .ForMember(x=>x.TableState,src=>src.MapFrom(s=>s.TableState.ToString()))
+            .ForMember(x => x.TableState, src => src.MapFrom(s => s.TableState.ToString()))
             .ReverseMap();
 
 
@@ -194,7 +195,7 @@ public class MappingProfiles:Profile
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.ToString()))
             .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.ToString()))
             .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)) // هنعمل مابنج تاني للجوه
-            .ForAllMembers(opts => opts.Ignore()); 
+            .ForAllMembers(opts => opts.Ignore());
 
         CreateMap<OrderItemsDetails, TableItem>();
     }

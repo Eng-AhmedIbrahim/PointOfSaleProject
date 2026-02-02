@@ -1,0 +1,16 @@
+F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.deps.json
+F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.dll
+F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.pdb
+f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.deps.json
+f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.dll
+f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.pdb
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.csproj.AssemblyReference.cache
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.GeneratedMSBuildEditorConfig.editorconfig
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.AssemblyInfoInputs.cache
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.AssemblyInfo.cs
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.csproj.CoreCompileInputs.cache
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.sourcelink.json
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.dll
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\refint\POS.Contract.dll
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.pdb
+f:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\ref\POS.Contract.dll

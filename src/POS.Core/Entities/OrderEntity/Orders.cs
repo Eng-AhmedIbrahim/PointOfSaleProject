@@ -1,6 +1,6 @@
 ﻿namespace POS.Core.Entities.OrderEntity;
 
-public class Orders:BaseEntity
+public class Orders : BaseEntity
 {
     public int BranchID { get; set; }
     public int OrderID { get; set; }
@@ -10,13 +10,13 @@ public class Orders:BaseEntity
     public string? CashierID { get; set; }
     public string? CashierName { get; set; }
     public DateTime? OrderDate { get; set; } = new DateTime();
-    public OrderTypes? OrderType { get; set; } 
+    public OrderTypes? OrderType { get; set; }
     public OrderStates? OrderState { get; set; }
     public string? DeliveryCompany { get; set; }
     public int? TakerID { get; set; }
     public string? TakerName { get; set; }
     public string? TitleName { get; set; }
-    public int? CustomerID { get; set; }    
+    public int? CustomerID { get; set; }
     public string? CustomerName { get; set; }
     public string? Phone1 { get; set; }
     public string? Phone2 { get; set; }
@@ -80,4 +80,4 @@ public class Orders:BaseEntity
     public string? TakeawayCustomerName { get; set; }
     public string? TakeawayCustomerPhone { get; set; }
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
-}   
+}

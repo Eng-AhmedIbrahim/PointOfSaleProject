@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<KitchenType> KitchenTypes { get; set; }
+    public DbSet<KitchenPrinters> KitchenPrinters { get; set; }
     public DbSet<MenuSalesItems> MenuSalesItems { get; set; }
     public DbSet<OrderItemAttributes> OrderItemAttributes { get; set; }
     public DbSet<Orders> Orders { get; set; }

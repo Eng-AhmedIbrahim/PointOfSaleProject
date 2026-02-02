@@ -5,7 +5,6 @@
 @inject ICategoryServices _categoryServices
 @inject IJSRuntime JsRuntime
 @inject ICustomizationSettingsService CustomizationSettingsService
-@implements IDisposable
 @inject Section4ButtonsServices _section4ButtonsServices
 @inject CartService _cartService
 @inject AppDateService _appDate
@@ -14,6 +13,7 @@
 @inject BranchService _branchService
 @inject PrintOrderService _printOrderService
 @inject Section4ButtonsServices _services
+@implements IDisposable
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="overflow-hidden" tabindex="0">
     <!-- Section 1 -->
@@ -93,20 +93,3 @@
         </MudPaper>
     </MudItem>
 </MudGrid>
-
-@code {
-    private double _spacing = 4.0;
-
-    private DotNetObjectReference<POS>? _dotNetRef;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await CustomizationSettingsService.LoadMaxHeights();
-            _dotNetRef = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("listenToDoubleEnter", _dotNetRef);
-            StateHasChanged();
-        }
-    }
-}

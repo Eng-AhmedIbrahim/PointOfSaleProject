@@ -1,7 +1,3 @@
-using Pos.Repository.Data;
-using Pos.Repository.Data.DataSeed;
-using Pos.Repository.Identity;
-
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);

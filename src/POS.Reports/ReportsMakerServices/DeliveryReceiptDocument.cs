@@ -55,12 +55,16 @@ public class DeliveryReceiptDocument : IDocument
             .Bold()
             .FontSize(12);
 
-        column.Item()
-        .PaddingTop(5)
-        .AlignCenter()
-        .Width(_receipt.LogoWidth)
-        .Image(_receipt.LogoPath)
-        .FitWidth();
+        // 🖼️ Logo section
+        if (!string.IsNullOrEmpty(_receipt.LogoPath) && File.Exists(_receipt.LogoPath))
+        {
+            column.Item()
+            .PaddingTop(5)
+            .AlignCenter()
+            .Width(_receipt.LogoWidth)
+            .Image(_receipt.LogoPath)
+            .FitWidth();
+        }
 
         column.Item()
             .PaddingTop(5)

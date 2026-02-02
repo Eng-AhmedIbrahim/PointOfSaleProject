@@ -30,11 +30,45 @@ public class CartService : ICartService
         if (SelectedItem != null)
         {
             SelectedItem.Quantity = updateFunc(SelectedItem.Quantity);
-            SelectedItem.Total = SelectedItem.Quantity * SelectedItem.Price;
-            SelectedItem.TotalAmount = SelectedItem.Total;
+            RecalculateItemTotals(SelectedItem);
             UpdateAmount();
             CalculateSection4Table();
             NotifyStateChanged();
+        }
+    }
+
+    private void RecalculateItemTotals(TableItem item)
+    {
+        decimal originalTotal = item.Quantity * (item.Price ?? 0M);
+        
+        if (item.HasDiscount)
+        {
+            if (item.DiscountPercentage.HasValue && item.DiscountPercentage.Value > 0)
+            {
+                decimal discountAmount = originalTotal * (item.DiscountPercentage.Value / 100);
+                item.TotalDiscountPrice = discountAmount;
+                item.TotalAfterDiscount = originalTotal - discountAmount;
+            }
+            else if (item.DiscountAmount.HasValue && item.DiscountAmount.Value > 0)
+            {
+                item.TotalDiscountPrice = item.DiscountAmount.Value;
+                item.TotalAfterDiscount = originalTotal - item.DiscountAmount.Value;
+            }
+            else
+            {
+                item.TotalDiscountPrice = 0;
+                item.TotalAfterDiscount = originalTotal;
+            }
+            
+            item.TotalAmount = item.TotalAfterDiscount;
+            item.Total = item.TotalAfterDiscount;
+        }
+        else
+        {
+            item.TotalDiscountPrice = 0;
+            item.TotalAfterDiscount = originalTotal;
+            item.TotalAmount = originalTotal;
+            item.Total = originalTotal;
         }
     }
 
@@ -56,12 +90,21 @@ public class CartService : ICartService
 
     private void UpdateAmount()
     {
-       _commonProperties!._financeSettingsList![0].Value =
-       _commonProperties!.TableItems!.Sum(i => i.Total ?? 0) % 1 == 0
-       ? Math.Truncate(_commonProperties!.TableItems!.Sum(i => i.Total ?? 0))
-       : Math.Round(_commonProperties!.TableItems!.Sum(i => i.Total ?? 0), 2);
+        decimal grossTotal = _commonProperties!.TableItems?.Sum(i => i.Quantity * (i.Price ?? 0M)) ?? 0M;
+        decimal totalLineDiscount = _commonProperties.TableItems?.Sum(i => i.TotalDiscountPrice ?? 0M) ?? 0M;
+        
+        _commonProperties.TotalLineDiscount = totalLineDiscount;
+        
+        // Account (Index 0) will show Gross Total
+        if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 0)
+        {
+            _commonProperties._financeSettingsList[0].Value = grossTotal % 1 == 0
+                ? Math.Truncate(grossTotal)
+                : Math.Round(grossTotal, 2);
+        }
 
-        _commonProperties.TotalAmountAfterDiscount = _commonProperties._financeSettingsList[0].Value ?? 0M;
+        // We'll store the net-after-line price for Tax/Service calculation
+        _commonProperties.SubTotal = grossTotal - totalLineDiscount;
     }
 
     public void CalculateTotalAmountFromTableItems(List<TableItem> items)
@@ -133,49 +176,59 @@ public class CartService : ICartService
 
     public void CalculateTotalOrderPrice()
     {
+        // Net price after items discount but before order-level discount
+        decimal netAmountAfterLine = _commonProperties.SubTotal ?? 0M;
+
         switch (_commonProperties!.CurrentPosMode)
         {
             case "TakeAway":
-                {
-                    _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings<TakeAwaySettings>
-                        (_commonProperties!.TakeAwaySettings!, _commonProperties._financeSettingsList![0].Value ?? 0M);
-                    break;
-                }
+                _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings(_commonProperties.TakeAwaySettings!, netAmountAfterLine);
+                break;
             case "DineIn":
-                {
-                    _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings<DineInSettings>
-                        (_commonProperties!.DineInSettings!, _commonProperties._financeSettingsList![0].Value ?? 0M);
-                    break;
-                }
+                _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings(_commonProperties.DineInSettings!, netAmountAfterLine);
+                break;
             case "Delivery":
-                {
-                    _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings<DeliverySettings>
-                        (_commonProperties!.DeliverySettings!, _commonProperties._financeSettingsList![0].Value ?? 0M);
-                    break;
-                }
+                _commonProperties.TotalOrderPrice = CalculateAmountAfterOrderSettings(_commonProperties.DeliverySettings!, netAmountAfterLine);
+                break;
         }
 
         ApplyDiscountAfterTotal();
-        _commonProperties!._financeSettingsList![4].Value = _commonProperties.TotalAmountAfterDiscount;
+        if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4)
+        {
+            _commonProperties._financeSettingsList[4].Value = _commonProperties.TotalAmountAfterDiscount;
+        }
     }
 
     public void ApplyDiscountAfterTotal()
     {
-        decimal? amount = _commonProperties!.TotalOrderPrice;
+        // Apply order discount on the total (which includes tax/service on top of net item prices)
+        decimal originalTotalWithTax = _commonProperties!.TotalOrderPrice ?? 0M;
+        decimal amount = originalTotalWithTax;
 
         if (_commonProperties.OrderDiscount!.Percentage > 0)
         {
             amount -= (amount * _commonProperties.OrderDiscount.Percentage) / 100;
-            _commonProperties._financeSettingsList![1].Value = _commonProperties.OrderDiscount.Percentage;
         }
 
         if (_commonProperties.OrderDiscount.Value > 0)
         {
             amount -= _commonProperties.OrderDiscount.Value;
-            _commonProperties._financeSettingsList![1].Value = _commonProperties.OrderDiscount.Value;
         }
 
-        _commonProperties.TotalAmountAfterDiscount = amount ?? 0M;
+        decimal orderDiscountValue = originalTotalWithTax - amount;
+        
+        // TotalDiscount (Index 1) will show sum of Line + Order discounts
+        decimal totalCombinedDiscount = (_commonProperties.TotalLineDiscount ?? 0M) + orderDiscountValue;
+        
+        _commonProperties.TotalDiscount = totalCombinedDiscount;
+        if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 1)
+        {
+            _commonProperties._financeSettingsList[1].Value = totalCombinedDiscount % 1 == 0 
+                ? Math.Truncate(totalCombinedDiscount) 
+                : Math.Round(totalCombinedDiscount, 2);
+        }
+
+        _commonProperties.TotalAmountAfterDiscount = amount;
     }
 
     public void CalculateSection4Table()
@@ -223,6 +276,9 @@ public class CartService : ICartService
         _commonProperties!.CurrentDineInOrder = new();
         _commonProperties.DineInOrderValues = new();
         _commonProperties!.OrderDiscount = new();
+        _commonProperties.CustomerName = "";
+        _commonProperties.CustomerPhone = "";
+        _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
     }
 
     public void ClearTakeAwayOrderAttributes()
@@ -234,6 +290,9 @@ public class CartService : ICartService
         _commonProperties!.OrderDto = new();
         _commonProperties.OrderNote = string.Empty ;
         _commonProperties!.OrderDiscount = new();
+        _commonProperties.CustomerName = "";
+        _commonProperties.CustomerPhone = "";
+        _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
     }
 
     public void ResetDiscount()
@@ -246,6 +305,21 @@ public class CartService : ICartService
         {
             _commonProperties._financeSettingsList![1].Value = 0M;
         }
+        CalculateSection4Table();
+        NotifyStateChanged();
+    }
+
+    public void RemoveItemDiscount()
+    {
+        if (SelectedItem == null) return;
+        SelectedItem.HasDiscount = false;
+        SelectedItem.DiscountPercentage = null;
+        SelectedItem.DiscountAmount = null;
+        SelectedItem.TotalDiscountPrice = 0;
+        RecalculateItemTotals(SelectedItem);
+        UpdateAmount();
+        CalculateSection4Table();
+        NotifyStateChanged();
     }
 
     public string? AddItemComment(string comment)
@@ -312,30 +386,24 @@ public class CartService : ICartService
         return "success";
     }
 
-    public void AddItemDiscount(string discountType,decimal discountValue)
+    public void AddItemDiscount(string discountType, decimal discountValue)
     {
-        if (SelectedItem!.Id == 0)
+        if (SelectedItem == null || SelectedItem.Id == 0)
             return;
-            
+
+        SelectedItem.HasDiscount = true;
         if (discountType == "Percentage")
         {
-            SelectedItem!.HasDiscount = true;
-            SelectedItem!.DiscountPercentage = discountValue;
-            SelectedItem.TotalDiscountPrice = SelectedItem.Quantity * SelectedItem.Price - SelectedItem.Quantity * SelectedItem.Price * discountValue / 100;
-            SelectedItem.TotalAfterDiscount = SelectedItem.Quantity * SelectedItem.Price - SelectedItem.TotalDiscountPrice;
-            SelectedItem.TotalAmount = SelectedItem.TotalAfterDiscount;
-            SelectedItem.Total = SelectedItem.Quantity * SelectedItem.Price - SelectedItem.Quantity * SelectedItem.Price * discountValue / 100;
+            SelectedItem.DiscountPercentage = discountValue;
+            SelectedItem.DiscountAmount = null;
+        }
+        else if (discountType == "Value")
+        {
+            SelectedItem.DiscountAmount = discountValue;
+            SelectedItem.DiscountPercentage = null;
         }
 
-        if(discountType == "Value")
-        {
-            SelectedItem!.HasDiscount = true;
-            SelectedItem!.DiscountAmount = discountValue;
-            SelectedItem.TotalDiscountPrice = discountValue;
-            SelectedItem.TotalAfterDiscount = SelectedItem.Quantity * SelectedItem.Price - discountValue;
-            SelectedItem.TotalAmount = SelectedItem.TotalAfterDiscount;
-            SelectedItem.Total = SelectedItem.Quantity * SelectedItem.Price - discountValue;
-        }
+        RecalculateItemTotals(SelectedItem);
 
         UpdateAmount();
         CalculateSection4Table();

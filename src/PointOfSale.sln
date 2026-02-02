@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pos.Repository", "Pos.Repos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Authorization", "POS.Authorization\POS.Authorization.csproj", "{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POS.Desktop", "POS.Desktop\POS.Desktop.csproj", "{D8E9F123-4567-89AB-CDEF-123456789ABC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2ADD709-56DD-420A-91D7-CDE31E8DA8C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8E9F123-4567-89AB-CDEF-123456789ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E9F123-4567-89AB-CDEF-123456789ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E9F123-4567-89AB-CDEF-123456789ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8E9F123-4567-89AB-CDEF-123456789ABC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

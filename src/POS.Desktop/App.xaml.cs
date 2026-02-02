@@ -6,8 +6,8 @@ using System.IO;
 using System.Windows;
 using BlazorBase;
 using BlazorBase.ERPFrontServices.PrintOrderServices;
-using ERPFront.Auth;
-using ERPFront.Extensions;
+using POS.Desktop.Auth;
+using POS.Desktop.Extensions;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
 using System.Text.Json;
@@ -25,6 +25,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using POS.Authorization.Models;
 using POS.Desktop.Components;
+using System.Net.Http;
+using POS.Desktop.Services;
+using POS.Core.Services.Contract.PrinterServices;
+using Microsoft.Extensions.Localization;
 
 namespace POS.Desktop;
 
@@ -34,6 +38,7 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
         base.OnStartup(e);
 
         // Setup Serilog for file logging
@@ -51,7 +56,7 @@ public partial class App : Application
 
     private void SetupSerilog()
     {
-        var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+        var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "POS-Logs");
         Directory.CreateDirectory(logPath);
 
         Log.Logger = new LoggerConfiguration()
@@ -68,7 +73,7 @@ public partial class App : Application
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 
-        Log.Information("Application starting up");
+        Log.Information("Application starting up - Logs saved to: {LogPath}", logPath);
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -83,9 +88,25 @@ public partial class App : Application
         services.AddSingleton<MainWindow>();
 
         // Add Blazor services
-        services.AddBlazorWebView();
-        services.AddMudServices();
+        services.AddWpfBlazorWebView();
+        services.AddMudServices(config =>
+        {
+            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+            config.SnackbarConfiguration.PreventDuplicates = false;
+            config.SnackbarConfiguration.NewestOnTop = false;
+            config.SnackbarConfiguration.ShowCloseIcon = true;
+            config.SnackbarConfiguration.VisibleStateDuration = 3000;
+            config.SnackbarConfiguration.HideTransitionDuration = 500;
+            config.SnackbarConfiguration.ShowTransitionDuration = 500;
+            config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+        });
         services.AddBlazorBootstrap();
+        services.AddBlazoredLocalStorage();
+
+        // Localization
+        services.AddLocalization(options => options.ResourcesPath = "Resources");
+        services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+        services.AddScoped<BlazorBase.Services.LocalizationService>();
 
         // Configuration
         var configuration = new ConfigurationBuilder()
@@ -96,10 +117,15 @@ public partial class App : Application
 
         services.AddSingleton<IConfiguration>(configuration);
 
+        // Configure supported cultures
+        var culture = new System.Globalization.CultureInfo("ar");
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+
         // API Settings
-        services.Configure<ApiSettings>(configuration.GetSection("ApiSettings"));
-        services.AddSingleton<ApiSettings>(sp =>
-            sp.GetRequiredService<IOptions<ApiSettings>>().Value);
+        services.Configure<BlazorBase.API.ApiSettings>(configuration.GetSection("ApiSettings"));
+        services.AddSingleton<BlazorBase.API.ApiSettings>(sp =>
+            sp.GetRequiredService<IOptions<BlazorBase.API.ApiSettings>>().Value);
 
         // HTTP Client
         services.AddHttpClient(configuration["ApiSettings:ApiName"]!,
@@ -122,7 +148,7 @@ public partial class App : Application
         services.AddScoped<OrderSettingsService>();
         services.AddScoped<DeliveryServices>();
         services.AddScoped<BranchService>();
-        services.AddScoped<PrintOrderService>();
+        services.AddScoped<IPrintOrderService, DesktopPrintOrderService>();
 
         // Category services
         services.AddScoped<ICategoryServices, CategoryService>();
@@ -139,6 +165,8 @@ public partial class App : Application
             config.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
             config.JsonSerializerOptions.WriteIndented = false;
         });
+
+        services.AddScoped<IPrinterServices, DesktopPrinterService>();
 
         // Authentication & Authorization
         services.AddAuthenticationCore();

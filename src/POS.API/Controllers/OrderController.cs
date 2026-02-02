@@ -52,19 +52,20 @@ public class OrderController : BaseApiController
 
                 if (createdOrder!.Id != 0)
                 {
-                    List<string> branchDetails = await GetBranchDetails(orderDto);
-
-                    await printTakeAwayReceipts(orderDto, createdOrder, branchDetails);
-
-                    if (orderSettings!.FullKitchenReceiptCount > 0)
+                    if (orderDto.SkipPrintingOnServer != true)
                     {
-                        await PrintBackupReceipts( orderDto, createdOrder);
-                    }
+                        List<string> branchDetails = await GetBranchDetails(orderDto);
+                        await printTakeAwayReceipts(orderDto, createdOrder, branchDetails);
 
+                        if (orderSettings!.FullKitchenReceiptCount > 0)
+                        {
+                            await PrintBackupReceipts(orderDto, createdOrder);
+                        }
 
-                    if (orderSettings.SeparateReceiptCount > 0)
-                    {
-                        await PrintKitchenReceipts(orderDto, createdOrder);
+                        if (orderSettings.SeparateReceiptCount > 0)
+                        {
+                            await PrintKitchenReceipts(orderDto, createdOrder);
+                        }
                     }
 
                     return Ok(orderDto);
@@ -104,7 +105,7 @@ public class OrderController : BaseApiController
             OrderState = OrderStates.Completed,
             Discount = OrderDto.TotalOrderDiscount,
             DiscountByName = OrderDto.DiscountByName,
-            DiscountBy = OrderDto.DiscountBy,
+            //DiscountBy = OrderDto.DiscountBy,
             Paid = OrderDto.Paid,
             Subtotal = OrderDto.SubTotal,
             Service = OrderDto.Services,
@@ -143,7 +144,7 @@ public class OrderController : BaseApiController
     }
     private static void BackupDineInOrder(OrderDto OrderDto, Orders order)
     {
-        order.TakerID = OrderDto.TakerID;
+        //order.TakerID = OrderDto.TakerID;
         order.TakerName = OrderDto.TakerName;
         order.ReservationPaid = OrderDto.ReservationPaid;
         order.ReservationRemain = OrderDto.ReservationRemain;

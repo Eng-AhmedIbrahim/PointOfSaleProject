@@ -1,0 +1,123 @@
+@inject IJSRuntime Js
+@inject ICustomizationSettingsService CustomizationSettingsService
+@inject Section4ButtonsServices _section4ButtonsServices
+
+
+
+<MudButton OnClick="OnExpandCollapseClick"
+           Class="settings-section-btn"
+           EndIcon="@(_expanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)">
+    <MudText Class="section-btn-label">Section 4 (Order)</MudText>
+</MudButton>
+<MudCollapse Class="pa-4" Expanded="_expanded">
+    <MudStack Spacing="3">
+        <div>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-1">
+                <MudIcon Icon="@Icons.Material.Filled.TableChart" Size="Size.Small" Color="Color.Primary" />
+                <MudText Class="settings-group-title">Resize Table</MudText>
+            </MudStack>
+            <div class="settings-button-group">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),5)"
+                               Class="settings-control-btn" />
+                <MudDivider Vertical="true" FlexItem="true" />
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="async () => await CustomizationSettingsService.AdjustHeight(nameof(ICustomizationSettingsService.TableMaxHeight),-5)"
+                               Class="settings-control-btn" />
+            </div>
+        </div>
+
+        <div>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-1">
+                <MudIcon Icon="@Icons.Material.Filled.Label" Size="Size.Small" Color="Color.Primary" />
+                <MudText Class="settings-group-title">Resize Label Font</MudText>
+            </MudStack>
+            <div class="settings-button-group">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="() => IncreaseSize(FinanceLabelTextSize)"
+                               Class="settings-control-btn" />
+                <MudDivider Vertical="true" FlexItem="true" />
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="() => DecreaseSize(FinanceLabelTextSize)"
+                               Class="settings-control-btn" />
+            </div>
+        </div>
+
+        <div>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-1">
+                <MudIcon Icon="@Icons.Material.Filled.Input" Size="Size.Small" Color="Color.Primary" />
+                <MudText Class="settings-group-title">Resize Input Font</MudText>
+            </MudStack>
+            <div class="settings-button-group">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="() => IncreaseSize(FinanceInputTextSize)"
+                               Class="settings-control-btn" />
+                <MudDivider Vertical="true" FlexItem="true" />
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="() => DecreaseSize(FinanceInputTextSize)"
+                               Class="settings-control-btn" />
+            </div>
+        </div>
+
+        <MudButton StartIcon="@Icons.Material.Filled.RestartAlt"
+                   OnClick="Reset"
+                   Variant="Variant.Outlined"
+                   Class="settings-reset-btn">
+            إعادة ضبط الافتراضات
+        </MudButton>
+    </MudStack>
+</MudCollapse>
+
+@code {
+    bool _expanded = false;
+
+    private void OnExpandCollapseClick() => _expanded = !_expanded;
+
+    private const string UpdateFontSize = "updateFontSize";
+    private const string ClearSec4FontSizeStorage = "clearSec4FontSizeStorage";
+    private const string FinanceLabelTextSize = "finance-label-text-size";
+    private const string FinanceInputTextSize = "finance-input-text-size";
+    private const string ControlBtnSize = "special-sec4-button";
+
+    private async Task IncreaseSize(string className)
+    {
+        switch (className)
+        {
+            case FinanceLabelTextSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, FinanceLabelTextSize, 2);
+                break;
+            case FinanceInputTextSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, FinanceInputTextSize, 2);
+                break;
+            case ControlBtnSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, ControlBtnSize, 2);
+                break;
+            default:
+                return;
+        }
+    }
+
+    private async Task DecreaseSize(string className)
+    {
+        switch (className)
+        {
+            case FinanceLabelTextSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, FinanceLabelTextSize, -2);
+                break;
+            case FinanceInputTextSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, FinanceInputTextSize, -2);
+                break;
+            case ControlBtnSize:
+                await Js.InvokeVoidAsync(UpdateFontSize, ControlBtnSize, -2);
+                break;
+            default:
+                return;
+        }
+    }
+
+    private async Task Reset()
+    {
+        await Js.InvokeVoidAsync(ClearSec4FontSizeStorage);
+    }
+
+}

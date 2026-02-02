@@ -1,0 +1,101 @@
+@using BlazorBase.Services
+@using MudBlazor
+@using POS.Contract.Models
+@inject CommonProperties _commonProperties
+@inject LocalizationService Localizer
+
+<MudDialog Class="premium-payment-dialog">
+    <TitleContent>
+        <div class="d-flex align-center gap-3">
+            <MudIcon Icon="@Icons.Material.Filled.AccountBalanceWallet" Color="Color.Primary" Size="Size.Large" />
+            <MudText Typo="Typo.h5" Style="font-weight: 900; letter-spacing: 0.5px;">@Localizer["PaymentMethod"]</MudText>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="6" Class="pa-6">
+            <MudText Typo="Typo.subtitle1" Align="Align.Center" Style="font-weight: 700; color: #64748b;">@Localizer["SelectPaymentMethod"]</MudText>
+            
+            <div class="payment-grid">
+                <MudButton Variant="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.Cash ? Variant.Filled : Variant.Outlined)"
+                           Color="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.Cash ? Color.Primary : Color.Default)"
+                           OnClick="@(() => SelectPaymentMethod(PaymentMethod.Cash))"
+                           Class="payment-btn" FullWidth="true">
+                    <div class="d-flex flex-column align-center gap-2 py-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Payments" Size="Size.Large" />
+                        <MudText Style="font-weight: 800;">@Localizer["Cash"]</MudText>
+                    </div>
+                </MudButton>
+
+                <MudButton Variant="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.Visa ? Variant.Filled : Variant.Outlined)"
+                           Color="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.Visa ? Color.Primary : Color.Default)"
+                           OnClick="@(() => SelectPaymentMethod(PaymentMethod.Visa))"
+                           Class="payment-btn" FullWidth="true">
+                    <div class="d-flex flex-column align-center gap-2 py-2">
+                        <MudIcon Icon="@Icons.Material.Filled.CreditCard" Size="Size.Large" />
+                        <MudText Style="font-weight: 800;">@Localizer["Visa"]</MudText>
+                    </div>
+                </MudButton>
+
+                <MudButton Variant="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.InstaPay ? Variant.Filled : Variant.Outlined)"
+                           Color="@(_commonProperties.SelectedPaymentMethod == PaymentMethod.InstaPay ? Color.Primary : Color.Default)"
+                           OnClick="@(() => SelectPaymentMethod(PaymentMethod.InstaPay))"
+                           Class="payment-btn" FullWidth="true" Style="grid-column: span 2;">
+                    <div class="d-flex flex-column align-center gap-2 py-2">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Large" />
+                        <MudText Style="font-weight: 800;">@Localizer["InstaPay"]</MudText>
+                    </div>
+                </MudButton>
+            </div>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <div class="px-8 pb-8 w-100">
+            <MudButton OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" 
+                       Class="action-submit-btn" Style="height: 60px; font-weight: 900; border-radius: 18px; font-size: 1.1rem;">
+                @Localizer["ConfirmOperation"]
+            </MudButton>
+        </div>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .premium-payment-dialog {
+        border-radius: 32px !important;
+        max-width: 480px;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .payment-btn {
+        border-radius: 20px !important;
+        border-width: 2px !important;
+        text-transform: none !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .payment-btn:hover {
+        background-color: #f1f5f9;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    }
+
+    .action-submit-btn {
+        box-shadow: 0 10px 20px rgba(68, 124, 173, 0.3) !important;
+    }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private void SelectPaymentMethod(PaymentMethod method)
+    {
+        _commonProperties.SelectedPaymentMethod = method;
+        StateHasChanged();
+    }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}

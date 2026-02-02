@@ -2,6 +2,7 @@
 
 public interface IPrintOrderService
 {
-    public Task PrintDineInOrder(DineInOrderDetails orderId);
-    public Task<bool> PrintTakeAwayOrder(decimal paid = 0.00m, string customerName = "", string customerPhone = "");
+    public Task PrintInitialDineInOrder(DineInOrderDetails orderId);
+    public Task<bool> PrintTakeAwayOrder(decimal paid = 0, string customerName = "", string customerPhone = "", PaymentMethod paymentMethod = PaymentMethod.Cash);
+    //public Task<bool> PrintInitialDeliveryOrder();
 }

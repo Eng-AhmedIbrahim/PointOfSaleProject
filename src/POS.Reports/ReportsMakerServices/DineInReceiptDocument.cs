@@ -61,11 +61,14 @@ public class DineInReceiptDocument : IDocument
            });
 
         // 🖼️ Logo section
-        column.Item()
-        .AlignCenter()
-        .Width(receipt.LogoWidth)
-        .Image(receipt.LogoPath)
-        .FitWidth();
+        if (!string.IsNullOrEmpty(receipt.LogoPath) && File.Exists(receipt.LogoPath))
+        {
+            column.Item()
+            .AlignCenter()
+            .Width(receipt.LogoWidth)
+            .Image(receipt.LogoPath)
+            .FitWidth();
+        }
 
         /*Header * Id */
         column.Item()

@@ -48,11 +48,14 @@ public class ReceiptDocument : IDocument
     private void AddHeader(ref ColumnDescriptor column)
     {
         // 🖼️ Logo section
-        column.Item()
-        .AlignCenter()
-        .Width(receipt.LogoWidth) 
-        .Image(receipt.LogoPath)
-        .FitWidth();
+        if (!string.IsNullOrEmpty(receipt.LogoPath) && File.Exists(receipt.LogoPath))
+        {
+            column.Item()
+            .AlignCenter()
+            .Width(receipt.LogoWidth)
+            .Image(receipt.LogoPath)
+            .FitWidth();
+        }
 
         column.Item()
             .Text(text =>
@@ -185,10 +188,51 @@ public class ReceiptDocument : IDocument
 
                 }
 
+                if (receipt.Discount != 0)
+                {
+
+                    table.Cell()
+                       .ColumnSpan(2)
+                       .PaddingTop(8)
+                       .Text(receipt.Discount.ToString())
+                       .FontSize(14)
+                       .Bold()
+                       .AlignCenter();
+
+                    table.Cell()
+                        .ColumnSpan(2)
+                        .PaddingTop(8)
+                        .Text(ArabicConstStrings.Discount)
+                        .FontSize(12)
+                        .Bold()
+                        .AlignCenter();
+
+                }
+
+                if (receipt.Tax != 0)
+                {
+                    table.Cell()
+                       .ColumnSpan(2)
+                       .PaddingTop(8)
+                       .Text(receipt.Tax.HasValue && receipt.Tax.Value != 0 ? $"{receipt.Tax.Value.ToString("0.##")}%" : "")
+                       .FontSize(14)
+                       .Bold()
+                       .AlignCenter();
+
+                    table.Cell()
+                        .ColumnSpan(2)
+                        .PaddingTop(8)
+                        .Text(ArabicConstStrings.Tax)
+                        .FontSize(12)
+                        .Bold()
+                        .AlignCenter();
+
+                }
+
                 table.Cell()
                     .ColumnSpan(2)
                     .PaddingTop(8)
-                    .Text(receipt.TotalAmount.ToString())
+                    .Text((receipt.TotalAmount ?? 0).ToString("C"))
                     .FontSize(20)
                     .Bold()
                     .AlignCenter();
@@ -206,7 +250,7 @@ public class ReceiptDocument : IDocument
     private void BuildPaymentMethod(ref ColumnDescriptor column)
     {
         column.Item()
-            .PaddingTop(8)
+            .PaddingTop(13)
             .PaddingBottom(-2)
             .Text(receipt.PaymentMethod)
             .AlignCenter()
@@ -218,7 +262,7 @@ public class ReceiptDocument : IDocument
     private void BuildFooter(ref ColumnDescriptor column)
     {
         column.Item()
-            .PaddingTop(5)
+            .PaddingTop(8)
             .Text(receipt.FooterMessage)
             .Bold()
             .FontSize(15)

@@ -15,5 +15,6 @@ public class KitchenPrinters : BaseEntity
     public string? DeviceName { get; set; }
 
     public int? KitchenTypeId { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
     public KitchenType? KitchenType { get; set; }
 }
