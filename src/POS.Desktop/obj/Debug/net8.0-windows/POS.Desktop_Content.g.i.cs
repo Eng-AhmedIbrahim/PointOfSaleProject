@@ -70,15 +70,5 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/possettingscomponents/section3settingscomponent.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/routes.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/_imports.razor")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/authlayout.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/mainlayout.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/navbar.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/navmenu.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/posscreenlayout.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/dineinorderpages/dinein.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/login.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/notfound404.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/printorderpage.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/poscomponent/financecomponent.razor.css")]
 
 

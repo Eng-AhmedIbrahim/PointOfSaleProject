@@ -865,6 +865,11 @@
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+        },
+        "resources": {
+          "ar/BlazorBase.resources.dll": {
+            "locale": "ar"
+          }
         }
       },
       "POS.Contract/1.0.0": {

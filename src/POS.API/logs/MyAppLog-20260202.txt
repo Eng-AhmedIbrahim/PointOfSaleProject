@@ -5138,3 +5138,241 @@ FROM [AspNetUsers] AS [a]
 2026-02-02 05:36:51.392 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
 SELECT [a].[Id], [a].[AccessFailedCount], [a].[ArabicName], [a].[ConcurrencyStamp], [a].[DateOfBirth], [a].[DefaultLanguage], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[ImageUrl], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RegistrationDate], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedUserPosSetting], [a].[UserName]
 FROM [AspNetUsers] AS [a]
+2026-02-02 06:05:00.586 +02:00 [WRN] No store type was specified for the decimal property 'TotalOrdersCash' on entity type 'DeliveryCompanyInfo'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.624 +02:00 [WRN] No store type was specified for the decimal property 'AttributePrice' on entity type 'MenuSalesItems'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.625 +02:00 [WRN] No store type was specified for the decimal property 'Service' on entity type 'OrderSetting'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.626 +02:00 [WRN] No store type was specified for the decimal property 'Tax' on entity type 'OrderSetting'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.628 +02:00 [WRN] No store type was specified for the decimal property 'Tips' on entity type 'OrderSetting'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.629 +02:00 [WRN] No store type was specified for the decimal property 'Discount' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.629 +02:00 [WRN] No store type was specified for the decimal property 'DiscountPercentage' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.630 +02:00 [WRN] No store type was specified for the decimal property 'DiscountedItems' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.631 +02:00 [WRN] No store type was specified for the decimal property 'FreeItems' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.632 +02:00 [WRN] No store type was specified for the decimal property 'ReservationPaid' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.632 +02:00 [WRN] No store type was specified for the decimal property 'ReservationRemain' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.633 +02:00 [WRN] No store type was specified for the decimal property 'TotalDiscount' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.634 +02:00 [WRN] No store type was specified for the decimal property 'TotalVoid' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:00.634 +02:00 [WRN] No store type was specified for the decimal property 'ZoneBonus' on entity type 'Orders'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-02-02 06:05:01.551 +02:00 [INF] Executed DbCommand (24ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-02 06:05:01.595 +02:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-02-02 06:05:01.600 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-02 06:05:01.609 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-02-02 06:05:01.625 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-02-02 06:05:01.642 +02:00 [INF] No migrations were applied. The database is already up to date.
+2026-02-02 06:05:01.747 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-02 06:05:01.751 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-02-02 06:05:01.753 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-02-02 06:05:01.755 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-02-02 06:05:01.759 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-02-02 06:05:01.761 +02:00 [INF] No migrations were applied. The database is already up to date.
+2026-02-02 06:05:01.944 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Branches] AS [b]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:01.955 +02:00 [WRN] The query uses the 'First'/'FirstOrDefault' operator without 'OrderBy' and filter operators. This may lead to unpredictable results.
+2026-02-02 06:05:01.987 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [b].[Id], [b].[Active], [b].[Address], [b].[ApiUrl], [b].[CompanyId], [b].[CreationDate], [b].[Description], [b].[ImagePath], [b].[LogoHeight], [b].[LogoWidth], [b].[Name], [b].[NormalizedName], [b].[Phone1], [b].[Phone2], [b].[Suspend], [b].[UpdateDate]
+FROM [Branches] AS [b]
+2026-02-02 06:05:02.053 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [AppDates] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.058 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [KitchenTypes] AS [k]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.062 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [OrderSettings] AS [o]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.067 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [TableGroups] AS [t]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.071 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Tables] AS [t]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.075 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [DeliveryCustomerTitle] AS [d]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.082 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [AspNetRoles] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.085 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Permissions] AS [p]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.093 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [AspNetUsers] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.098 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [AspNetRoleClaims] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-02-02 06:05:02.645 +02:00 [INF] Now listening on: https://localhost:7142
+2026-02-02 06:05:02.646 +02:00 [INF] Now listening on: http://localhost:5095
+2026-02-02 06:05:02.715 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-02 06:05:02.716 +02:00 [INF] Hosting environment: Development
+2026-02-02 06:05:02.718 +02:00 [INF] Content root path: F:\PointOfSaleProject\src\POS.API
+2026-02-02 06:05:04.161 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccessFailedCount], [a].[ArabicName], [a].[ConcurrencyStamp], [a].[DateOfBirth], [a].[DefaultLanguage], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[ImageUrl], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RegistrationDate], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedUserPosSetting], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+2026-02-02 06:05:12.239 +02:00 [INF] Executed DbCommand (21ms) [Parameters=[@__normalizedUserName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[AccessFailedCount], [a].[ArabicName], [a].[ConcurrencyStamp], [a].[DateOfBirth], [a].[DefaultLanguage], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[ImageUrl], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RegistrationDate], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedUserPosSetting], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedUserName] = @__normalizedUserName_0
+2026-02-02 06:05:12.344 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__user_Id_0='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[ClaimType], [a].[ClaimValue], [a].[UserId]
+FROM [AspNetUserClaims] AS [a]
+WHERE [a].[UserId] = @__user_Id_0
+2026-02-02 06:05:12.365 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @__userId_0
+2026-02-02 06:05:12.375 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Discriminator], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @__normalizedName_0
+2026-02-02 06:05:12.393 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__role_Id_0='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[ClaimType], [a].[ClaimValue]
+FROM [AspNetRoleClaims] AS [a]
+WHERE [a].[RoleId] = @__role_Id_0
+2026-02-02 06:05:12.412 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @__userId_0
+2026-02-02 06:05:12.416 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Discriminator], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @__normalizedName_0
+2026-02-02 06:05:12.419 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[@__role_Id_0='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[ClaimType], [a].[ClaimValue]
+FROM [AspNetRoleClaims] AS [a]
+WHERE [a].[RoleId] = @__role_Id_0
+2026-02-02 06:05:12.521 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccessFailedCount], [a].[ArabicName], [a].[ConcurrencyStamp], [a].[DateOfBirth], [a].[DefaultLanguage], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[ImageUrl], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[RegistrationDate], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedUserPosSetting], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+2026-02-02 06:05:12.744 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate]
+FROM [Categories] AS [c]
+2026-02-02 06:05:12.946 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[Id], [a].[BranchId], [a].[CurrentOrderNumber], [a].[PosDate], [a].[StoreDate]
+FROM [AppDates] AS [a]
+2026-02-02 06:05:12.966 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [o].[Id], [o].[AddServiceToItemPrice], [o].[BranchID], [o].[ClosingReceiptCount], [o].[CustomerReceiptCount], [o].[FullKitchenReceiptCount], [o].[JobID], [o].[OrderStatment], [o].[OrderType], [o].[SeparateReceiptCount], [o].[Service], [o].[Tax], [o].[Tips]
+FROM [OrderSettings] AS [o]
+2026-02-02 06:05:13.103 +02:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [b].[Id], [b].[Active], [b].[Address], [b].[ApiUrl], [b].[CompanyId], [b].[CreationDate], [b].[Description], [b].[ImagePath], [b].[LogoHeight], [b].[LogoWidth], [b].[Name], [b].[NormalizedName], [b].[Phone1], [b].[Phone2], [b].[Suspend], [b].[UpdateDate]
+FROM [Branches] AS [b]
+2026-02-02 06:05:21.007 +02:00 [INF] Executed DbCommand (13ms) [Parameters=[@__catId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[ArabicName], [m].[AttributeId], [m].[AttributePrice], [m].[BackColor], [m].[Barcode], [m].[BranchId], [m].[CategoryId], [m].[CreationDate], [m].[Description], [m].[EnglishName], [m].[FifthPrice], [m].[FourthPrice], [m].[HasAttribute], [m].[ImagePath], [m].[Invisible], [m].[KitchenTypeId], [m].[MainCategoryId], [m].[NormalizedEnglishName], [m].[Price], [m].[PrintInBackupReceipt], [m].[SecondPrice], [m].[Tax], [m].[TextColor], [m].[TextSize], [m].[ThirdPrice], [m].[UpdatedDate], [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate], [a].[Id], [a].[ArabicName], [a].[EnglishName], [t].[Id], [t].[AppearanceIndex], [t].[AttributeId], [t].[RelatedMenuItemId], [t].[Id0], [t].[ArabicName], [t].[AttributeId0], [t].[AttributePrice], [t].[BackColor], [t].[Barcode], [t].[BranchId], [t].[CategoryId], [t].[CreationDate], [t].[Description], [t].[EnglishName], [t].[FifthPrice], [t].[FourthPrice], [t].[HasAttribute], [t].[ImagePath], [t].[Invisible], [t].[KitchenTypeId], [t].[MainCategoryId], [t].[NormalizedEnglishName], [t].[Price], [t].[PrintInBackupReceipt], [t].[SecondPrice], [t].[Tax], [t].[TextColor], [t].[TextSize], [t].[ThirdPrice], [t].[UpdatedDate]
+FROM [MenuSalesItems] AS [m]
+LEFT JOIN [Categories] AS [c] ON [m].[CategoryId] = [c].[Id]
+LEFT JOIN [Attributes] AS [a] ON [m].[AttributeId] = [a].[Id]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[AppearanceIndex], [a0].[AttributeId], [a0].[RelatedMenuItemId], [m0].[Id] AS [Id0], [m0].[ArabicName], [m0].[AttributeId] AS [AttributeId0], [m0].[AttributePrice], [m0].[BackColor], [m0].[Barcode], [m0].[BranchId], [m0].[CategoryId], [m0].[CreationDate], [m0].[Description], [m0].[EnglishName], [m0].[FifthPrice], [m0].[FourthPrice], [m0].[HasAttribute], [m0].[ImagePath], [m0].[Invisible], [m0].[KitchenTypeId], [m0].[MainCategoryId], [m0].[NormalizedEnglishName], [m0].[Price], [m0].[PrintInBackupReceipt], [m0].[SecondPrice], [m0].[Tax], [m0].[TextColor], [m0].[TextSize], [m0].[ThirdPrice], [m0].[UpdatedDate]
+    FROM [AttributeItems] AS [a0]
+    INNER JOIN [MenuSalesItems] AS [m0] ON [a0].[RelatedMenuItemId] = [m0].[Id]
+) AS [t] ON [a].[Id] = [t].[AttributeId]
+WHERE [m].[CategoryId] = @__catId_0
+ORDER BY [m].[Id], [c].[Id], [a].[Id], [t].[Id]
+2026-02-02 06:05:21.659 +02:00 [INF] Executed DbCommand (20ms) [Parameters=[@__catId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[ArabicName], [m].[AttributeId], [m].[AttributePrice], [m].[BackColor], [m].[Barcode], [m].[BranchId], [m].[CategoryId], [m].[CreationDate], [m].[Description], [m].[EnglishName], [m].[FifthPrice], [m].[FourthPrice], [m].[HasAttribute], [m].[ImagePath], [m].[Invisible], [m].[KitchenTypeId], [m].[MainCategoryId], [m].[NormalizedEnglishName], [m].[Price], [m].[PrintInBackupReceipt], [m].[SecondPrice], [m].[Tax], [m].[TextColor], [m].[TextSize], [m].[ThirdPrice], [m].[UpdatedDate], [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate], [a].[Id], [a].[ArabicName], [a].[EnglishName], [t].[Id], [t].[AppearanceIndex], [t].[AttributeId], [t].[RelatedMenuItemId], [t].[Id0], [t].[ArabicName], [t].[AttributeId0], [t].[AttributePrice], [t].[BackColor], [t].[Barcode], [t].[BranchId], [t].[CategoryId], [t].[CreationDate], [t].[Description], [t].[EnglishName], [t].[FifthPrice], [t].[FourthPrice], [t].[HasAttribute], [t].[ImagePath], [t].[Invisible], [t].[KitchenTypeId], [t].[MainCategoryId], [t].[NormalizedEnglishName], [t].[Price], [t].[PrintInBackupReceipt], [t].[SecondPrice], [t].[Tax], [t].[TextColor], [t].[TextSize], [t].[ThirdPrice], [t].[UpdatedDate]
+FROM [MenuSalesItems] AS [m]
+LEFT JOIN [Categories] AS [c] ON [m].[CategoryId] = [c].[Id]
+LEFT JOIN [Attributes] AS [a] ON [m].[AttributeId] = [a].[Id]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[AppearanceIndex], [a0].[AttributeId], [a0].[RelatedMenuItemId], [m0].[Id] AS [Id0], [m0].[ArabicName], [m0].[AttributeId] AS [AttributeId0], [m0].[AttributePrice], [m0].[BackColor], [m0].[Barcode], [m0].[BranchId], [m0].[CategoryId], [m0].[CreationDate], [m0].[Description], [m0].[EnglishName], [m0].[FifthPrice], [m0].[FourthPrice], [m0].[HasAttribute], [m0].[ImagePath], [m0].[Invisible], [m0].[KitchenTypeId], [m0].[MainCategoryId], [m0].[NormalizedEnglishName], [m0].[Price], [m0].[PrintInBackupReceipt], [m0].[SecondPrice], [m0].[Tax], [m0].[TextColor], [m0].[TextSize], [m0].[ThirdPrice], [m0].[UpdatedDate]
+    FROM [AttributeItems] AS [a0]
+    INNER JOIN [MenuSalesItems] AS [m0] ON [a0].[RelatedMenuItemId] = [m0].[Id]
+) AS [t] ON [a].[Id] = [t].[AttributeId]
+WHERE [m].[CategoryId] = @__catId_0
+ORDER BY [m].[Id], [c].[Id], [a].[Id], [t].[Id]
+2026-02-02 06:05:21.670 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[@__catId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[ArabicName], [m].[AttributeId], [m].[AttributePrice], [m].[BackColor], [m].[Barcode], [m].[BranchId], [m].[CategoryId], [m].[CreationDate], [m].[Description], [m].[EnglishName], [m].[FifthPrice], [m].[FourthPrice], [m].[HasAttribute], [m].[ImagePath], [m].[Invisible], [m].[KitchenTypeId], [m].[MainCategoryId], [m].[NormalizedEnglishName], [m].[Price], [m].[PrintInBackupReceipt], [m].[SecondPrice], [m].[Tax], [m].[TextColor], [m].[TextSize], [m].[ThirdPrice], [m].[UpdatedDate], [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate], [a].[Id], [a].[ArabicName], [a].[EnglishName], [t].[Id], [t].[AppearanceIndex], [t].[AttributeId], [t].[RelatedMenuItemId], [t].[Id0], [t].[ArabicName], [t].[AttributeId0], [t].[AttributePrice], [t].[BackColor], [t].[Barcode], [t].[BranchId], [t].[CategoryId], [t].[CreationDate], [t].[Description], [t].[EnglishName], [t].[FifthPrice], [t].[FourthPrice], [t].[HasAttribute], [t].[ImagePath], [t].[Invisible], [t].[KitchenTypeId], [t].[MainCategoryId], [t].[NormalizedEnglishName], [t].[Price], [t].[PrintInBackupReceipt], [t].[SecondPrice], [t].[Tax], [t].[TextColor], [t].[TextSize], [t].[ThirdPrice], [t].[UpdatedDate]
+FROM [MenuSalesItems] AS [m]
+LEFT JOIN [Categories] AS [c] ON [m].[CategoryId] = [c].[Id]
+LEFT JOIN [Attributes] AS [a] ON [m].[AttributeId] = [a].[Id]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[AppearanceIndex], [a0].[AttributeId], [a0].[RelatedMenuItemId], [m0].[Id] AS [Id0], [m0].[ArabicName], [m0].[AttributeId] AS [AttributeId0], [m0].[AttributePrice], [m0].[BackColor], [m0].[Barcode], [m0].[BranchId], [m0].[CategoryId], [m0].[CreationDate], [m0].[Description], [m0].[EnglishName], [m0].[FifthPrice], [m0].[FourthPrice], [m0].[HasAttribute], [m0].[ImagePath], [m0].[Invisible], [m0].[KitchenTypeId], [m0].[MainCategoryId], [m0].[NormalizedEnglishName], [m0].[Price], [m0].[PrintInBackupReceipt], [m0].[SecondPrice], [m0].[Tax], [m0].[TextColor], [m0].[TextSize], [m0].[ThirdPrice], [m0].[UpdatedDate]
+    FROM [AttributeItems] AS [a0]
+    INNER JOIN [MenuSalesItems] AS [m0] ON [a0].[RelatedMenuItemId] = [m0].[Id]
+) AS [t] ON [a].[Id] = [t].[AttributeId]
+WHERE [m].[CategoryId] = @__catId_0
+ORDER BY [m].[Id], [c].[Id], [a].[Id], [t].[Id]
+2026-02-02 06:05:25.168 +02:00 [INF] Executed DbCommand (8ms) [Parameters=[@__catId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[ArabicName], [m].[AttributeId], [m].[AttributePrice], [m].[BackColor], [m].[Barcode], [m].[BranchId], [m].[CategoryId], [m].[CreationDate], [m].[Description], [m].[EnglishName], [m].[FifthPrice], [m].[FourthPrice], [m].[HasAttribute], [m].[ImagePath], [m].[Invisible], [m].[KitchenTypeId], [m].[MainCategoryId], [m].[NormalizedEnglishName], [m].[Price], [m].[PrintInBackupReceipt], [m].[SecondPrice], [m].[Tax], [m].[TextColor], [m].[TextSize], [m].[ThirdPrice], [m].[UpdatedDate], [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate], [a].[Id], [a].[ArabicName], [a].[EnglishName], [t].[Id], [t].[AppearanceIndex], [t].[AttributeId], [t].[RelatedMenuItemId], [t].[Id0], [t].[ArabicName], [t].[AttributeId0], [t].[AttributePrice], [t].[BackColor], [t].[Barcode], [t].[BranchId], [t].[CategoryId], [t].[CreationDate], [t].[Description], [t].[EnglishName], [t].[FifthPrice], [t].[FourthPrice], [t].[HasAttribute], [t].[ImagePath], [t].[Invisible], [t].[KitchenTypeId], [t].[MainCategoryId], [t].[NormalizedEnglishName], [t].[Price], [t].[PrintInBackupReceipt], [t].[SecondPrice], [t].[Tax], [t].[TextColor], [t].[TextSize], [t].[ThirdPrice], [t].[UpdatedDate]
+FROM [MenuSalesItems] AS [m]
+LEFT JOIN [Categories] AS [c] ON [m].[CategoryId] = [c].[Id]
+LEFT JOIN [Attributes] AS [a] ON [m].[AttributeId] = [a].[Id]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[AppearanceIndex], [a0].[AttributeId], [a0].[RelatedMenuItemId], [m0].[Id] AS [Id0], [m0].[ArabicName], [m0].[AttributeId] AS [AttributeId0], [m0].[AttributePrice], [m0].[BackColor], [m0].[Barcode], [m0].[BranchId], [m0].[CategoryId], [m0].[CreationDate], [m0].[Description], [m0].[EnglishName], [m0].[FifthPrice], [m0].[FourthPrice], [m0].[HasAttribute], [m0].[ImagePath], [m0].[Invisible], [m0].[KitchenTypeId], [m0].[MainCategoryId], [m0].[NormalizedEnglishName], [m0].[Price], [m0].[PrintInBackupReceipt], [m0].[SecondPrice], [m0].[Tax], [m0].[TextColor], [m0].[TextSize], [m0].[ThirdPrice], [m0].[UpdatedDate]
+    FROM [AttributeItems] AS [a0]
+    INNER JOIN [MenuSalesItems] AS [m0] ON [a0].[RelatedMenuItemId] = [m0].[Id]
+) AS [t] ON [a].[Id] = [t].[AttributeId]
+WHERE [m].[CategoryId] = @__catId_0
+ORDER BY [m].[Id], [c].[Id], [a].[Id], [t].[Id]
+2026-02-02 06:05:25.183 +02:00 [INF] Executed DbCommand (8ms) [Parameters=[@__catId_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [m].[Id], [m].[ArabicName], [m].[AttributeId], [m].[AttributePrice], [m].[BackColor], [m].[Barcode], [m].[BranchId], [m].[CategoryId], [m].[CreationDate], [m].[Description], [m].[EnglishName], [m].[FifthPrice], [m].[FourthPrice], [m].[HasAttribute], [m].[ImagePath], [m].[Invisible], [m].[KitchenTypeId], [m].[MainCategoryId], [m].[NormalizedEnglishName], [m].[Price], [m].[PrintInBackupReceipt], [m].[SecondPrice], [m].[Tax], [m].[TextColor], [m].[TextSize], [m].[ThirdPrice], [m].[UpdatedDate], [c].[Id], [c].[ArabicName], [c].[BranchId], [c].[CreationDate], [c].[EnglishName], [c].[Invisible], [c].[ItemsFont], [c].[KitchenTypeId], [c].[NormalizedEnglishName], [c].[PrintInBackupReceipt], [c].[UpdateDate], [a].[Id], [a].[ArabicName], [a].[EnglishName], [t].[Id], [t].[AppearanceIndex], [t].[AttributeId], [t].[RelatedMenuItemId], [t].[Id0], [t].[ArabicName], [t].[AttributeId0], [t].[AttributePrice], [t].[BackColor], [t].[Barcode], [t].[BranchId], [t].[CategoryId], [t].[CreationDate], [t].[Description], [t].[EnglishName], [t].[FifthPrice], [t].[FourthPrice], [t].[HasAttribute], [t].[ImagePath], [t].[Invisible], [t].[KitchenTypeId], [t].[MainCategoryId], [t].[NormalizedEnglishName], [t].[Price], [t].[PrintInBackupReceipt], [t].[SecondPrice], [t].[Tax], [t].[TextColor], [t].[TextSize], [t].[ThirdPrice], [t].[UpdatedDate]
+FROM [MenuSalesItems] AS [m]
+LEFT JOIN [Categories] AS [c] ON [m].[CategoryId] = [c].[Id]
+LEFT JOIN [Attributes] AS [a] ON [m].[AttributeId] = [a].[Id]
+LEFT JOIN (
+    SELECT [a0].[Id], [a0].[AppearanceIndex], [a0].[AttributeId], [a0].[RelatedMenuItemId], [m0].[Id] AS [Id0], [m0].[ArabicName], [m0].[AttributeId] AS [AttributeId0], [m0].[AttributePrice], [m0].[BackColor], [m0].[Barcode], [m0].[BranchId], [m0].[CategoryId], [m0].[CreationDate], [m0].[Description], [m0].[EnglishName], [m0].[FifthPrice], [m0].[FourthPrice], [m0].[HasAttribute], [m0].[ImagePath], [m0].[Invisible], [m0].[KitchenTypeId], [m0].[MainCategoryId], [m0].[NormalizedEnglishName], [m0].[Price], [m0].[PrintInBackupReceipt], [m0].[SecondPrice], [m0].[Tax], [m0].[TextColor], [m0].[TextSize], [m0].[ThirdPrice], [m0].[UpdatedDate]
+    FROM [AttributeItems] AS [a0]
+    INNER JOIN [MenuSalesItems] AS [m0] ON [a0].[RelatedMenuItemId] = [m0].[Id]
+) AS [t] ON [a].[Id] = [t].[AttributeId]
+WHERE [m].[CategoryId] = @__catId_0
+ORDER BY [m].[Id], [c].[Id], [a].[Id], [t].[Id]
