@@ -3,4 +3,5 @@
 public interface IAppDateService
 {
     public Task<AppDateToReturnDto> GetAppDate();
+    public Task<AppDateToReturnDto> UpdateOrderCount();
 }

@@ -1,4 +1,9 @@
-﻿namespace BlazorBase.ERPFrontServices.OrderServices;
+﻿using BlazorBase.API;
+using BlazorBase.Helpers;
+using POS.Contract.Dtos.OrderDtos;
+using System.Net.Http.Json;
+
+namespace BlazorBase.ERPFrontServices.OrderServices;
 public class OrderSettingsService : IOrderSettingsService
 {
     private readonly HttpClient _httpClient;
@@ -28,6 +33,14 @@ public class OrderSettingsService : IOrderSettingsService
         return await GetApiResponseAsync<ICollection<OrderSettingToReturnDto>>(
             GetOrderSettingsRequest,
             "Failed to retrieve Order Settings from the API."
+        );
+    }
+
+    public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
+    {
+        return await GetApiResponseAsync<OrderDto>(
+            () => _httpClient.GetAsync($"{_apiSettings.Endpoints!.CreateOrder}/{orderId}"),
+            "Failed to retrieve order."
         );
     }
 

@@ -21,4 +21,24 @@ public record ApiEndpoints
     public string? CreateNewCustomer { get; set; }
     public string? AddNewCustomerAddress { get; set; }
     public string? CreateOrder { get; set; }
+    
+    // DineIn Order endpoints
+    public string? CreateDineInOrder { get; set; }
+    public string? UpdateDineInOrder { get; set; }
+    public string? GetDineInOrderByTableId { get; set; }
+    public string? GetOpenOrdersByTableId { get; set; }
+    public string? GetAllOpenDineInOrders { get; set; }
+    public string? CloseDineInOrder { get; set; }
+    public string? VoidDineInOrder { get; set; }
+    public string? AddItemsToDineInOrder { get; set; }
+    public string? UpdateDineInOrderDiscount { get; set; }
+    public string? TransferDineInOrder { get; set; }
+    public string? MergeDineInOrders { get; set; }
+    public string? SplitDineInOrder { get; set; }
+    public string? VoidDineInItems { get; set; }
+    
+    // Order Track endpoints
+    public string? TrackOrderAction { get; set; }
+    public string? GetOrderTrackingHistory { get; set; }
+    public string? GetOrderTrackingByDateRange { get; set; }
 }

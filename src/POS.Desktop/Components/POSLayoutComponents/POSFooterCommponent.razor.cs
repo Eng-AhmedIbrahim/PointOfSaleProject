@@ -12,15 +12,15 @@ public partial class POSFooterCommponent : IDisposable
     private bool canAccessSettings;
 
     [Inject] public required LocalizationService LocalizationService { get; set; }
-
     private bool _drawerOpen;
 
     protected override async Task OnInitializedAsync()
     {
         commonProperties.OnChange += StateHasChanged;
+        LocalizationService.OnLanguageChanged += StateHasChanged;
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
 
         if (user.Identity is not { IsAuthenticated: true })
         {
@@ -28,29 +28,26 @@ public partial class POSFooterCommponent : IDisposable
             canAccessMeals = false;
             canAccessWaiting = false;
             canAccessSettings = false;
-            LocalizationService.OnLanguageChanged += StateHasChanged;
             return;
         }
+
         canAccessDiscount = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDiscount")).Succeeded;
         canAccessMeals = (await AuthorizationService.AuthorizeAsync(user, "CanAccessMeals")).Succeeded;
         canAccessWaiting = (await AuthorizationService.AuthorizeAsync(user, "CanAccessWaiting")).Succeeded;
         canAccessSettings = (await AuthorizationService.AuthorizeAsync(user, "CanAccessSettings")).Succeeded;
-        LocalizationService.OnLanguageChanged += StateHasChanged;
     }
-
-
 
     private async Task OpenOrderDiscountDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        await DialogService.ShowAsync<OrderDiscountDialog>("Order Discount", options);
+        commonProperties.OrderDiscountDialogReference = await DialogService.ShowAsync<OrderDiscountDialog>(LocalizationService["OrderDiscount"], options);
     }
 
     private void GotoWaitingPage()
     {
-        if (commonProperties!.TableItems!.Count() > 0)
+        if (commonProperties!.TableItems!.Any())
         {
-            Snackbar.Add("Please Finish The Order First", Severity.Warning);
+            Snackbar.Add(LocalizationService["FinishOrderFirst"], Severity.Warning);
         }
         else
         {
@@ -58,24 +55,26 @@ public partial class POSFooterCommponent : IDisposable
         }
     }
 
-  
-
-
     private async Task OpenCustomerInfoDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        await DialogService.ShowAsync<CustomerInfoDialog>("Customer Info", options);
+        commonProperties.CustomerInfoDialogReference = await DialogService.ShowAsync<CustomerInfoDialog>(LocalizationService["CustomerData"], options);
     }
 
     private async Task OpenPaymentMethodDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        await DialogService.ShowAsync<PaymentModeDialog>("Payment Method", options);
+        commonProperties.PaymentMethodDialogReference = await DialogService.ShowAsync<PaymentModeDialog>(LocalizationService["PaymentMethod"], options);
+    }
+
+    private async Task OpenQuickPaymentDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+        commonProperties.QuickPaymentDialogReference = await DialogService.ShowAsync<QuickPaymentDialog>(LocalizationService["QuickPayment"], options);
     }
 
     private void ToggleDrawer()
         => _drawerOpen = !_drawerOpen;
-
 
     public void Dispose()
     {

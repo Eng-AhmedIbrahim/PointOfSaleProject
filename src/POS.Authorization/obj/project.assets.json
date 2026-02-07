@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+      "projectUniqueName": "f:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
       "projectName": "POS.Authorization",
-      "projectPath": "F:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+      "projectPath": "f:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
       "packagesPath": "C:\\Users\\roma2\\.nuget\\packages\\",
-      "outputPath": "F:\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
+      "outputPath": "f:\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -12,4 +12,7 @@ public class DineInSettings
     public int? SeparateReceiptCount { get; set; }
     public int? ClosingReceiptCount { get; set; }
     public bool? AddServiceToItemPrice { get; set; }
+    public bool? CanCloseWithoutPrint { get; set; }
+    public bool? DeductCaptainTips { get; set; }
+    public decimal? CaptainTipsAmount { get; set; }
 }

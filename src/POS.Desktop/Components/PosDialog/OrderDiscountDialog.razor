@@ -3,7 +3,7 @@
 @inject CartService _cartService
 @inject LocalizationService Localizer
 
-<MudDialog FullWidth="true" Class="premium-discount-dialog">
+<MudDialog FullWidth="true" MaxWidth="MaxWidth.Small" Class="premium-discount-dialog">
     <TitleContent>
         <div class="d-flex align-center gap-2">
             <MudIcon Icon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Primary" Size="Size.Large" />
@@ -32,13 +32,13 @@
                 {
                     <div class="text-center mb-4">
                         <MudText Typo="Typo.h2" Color="Color.Primary" Style="font-weight: 900;">@DiscountPercentage<span style="font-size: 1.5rem">%</span></MudText>
-                        <MudText Typo="Typo.caption" Class="grey-text">SLIDE TO REDUCE ORDER TOTAL</MudText>
+                        <MudText Typo="Typo.caption" Class="grey-text">@Localizer["SlideToReduceTotal"]</MudText>
                     </div>
                     <MudSlider Value="@DiscountPercentage" ValueChanged="@((decimal v) => DiscountPercentage = v)" Min="0" Max="100" Step="1" Color="Color.Primary" Class="custom-slider" />
                 }
                 else
                 {
-                    <MudTextField T="decimal" Label="Enter Discount Amount" 
+                    <MudTextField T="decimal" Label="@Localizer["EnterDiscountAmount"]" 
                                   Value="@DiscountValue" ValueChanged="@((decimal v) => DiscountValue = v)"
                                   Variant="Variant.Outlined" 
                                   Adornment="Adornment.Start" 
@@ -55,12 +55,12 @@
 
             <div class="reason-selector">
                 <MudText Typo="Typo.subtitle2" Class="mb-3 grey-text" Style="font-weight: 700; text-transform: uppercase;">@Localizer["DiscountReason"]</MudText>
-                <MudSelect T="DiscountReason" @bind-Value="SelectedReason" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Class="premium-select">
-                    @foreach (var reason in Enum.GetValues(typeof(DiscountReason)).Cast<DiscountReason>())
-                    {
-                        <MudSelectItem Value="@(reason)">@reason</MudSelectItem>
-                    }
-                </MudSelect>
+                <MudTextField T="string" @bind-Value="DiscountReasonText" 
+                              Label="@Localizer["DiscountReason"]" 
+                              Variant="Variant.Outlined" 
+                              Required="true"
+                              RequiredError="@Localizer["DiscountReasonRequired"]"
+                              Class="premium-field" />
             </div>
         </MudStack>
     </DialogContent>
@@ -80,7 +80,6 @@
 <style>
     .premium-discount-dialog {
         border-radius: 28px !important;
-        max-width: 500px;
     }
 
     .discount-input-card {

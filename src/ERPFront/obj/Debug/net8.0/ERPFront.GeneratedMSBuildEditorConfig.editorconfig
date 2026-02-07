@@ -55,6 +55,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXE1lcmdlVGFibGVzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[F:/PointOfSaleProject/src/ERPFront/Components/DineInComponents/MultipleOrdersDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXE11bHRpcGxlT3JkZXJzRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/PointOfSaleProject/src/ERPFront/Components/DineInComponents/SplitOrderDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFNwbGl0T3JkZXJEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [F:/PointOfSaleProject/src/ERPFront/Components/DineInComponents/TransferTable.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFRyYW5zZmVyVGFibGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

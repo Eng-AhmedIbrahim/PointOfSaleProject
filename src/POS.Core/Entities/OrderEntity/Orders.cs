@@ -56,7 +56,7 @@ public class Orders : BaseEntity
     public int? CustomerCount { get; set; }
     public string? DiscountType { get; set; }
     public decimal? DiscountPercentage { get; set; }
-    public int? DiscountBy { get; set; }
+    public string? DiscountBy { get; set; }
     public string? DiscountByName { get; set; }
     public DateTime? DiscountTime { get; set; }
     public string? DiscountReason { get; set; }
@@ -65,7 +65,7 @@ public class Orders : BaseEntity
     public bool? WithoutDeliveryFees { get; set; }
     public string? OrderNotice { get; set; }
     public decimal? VoidAmount { get; set; }
-    public int? VoidBy { get; set; }
+    public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
@@ -79,5 +79,7 @@ public class Orders : BaseEntity
     public TakeawayCustomer? TakeawayCustomer { get; set; }
     public string? TakeawayCustomerName { get; set; }
     public string? TakeawayCustomerPhone { get; set; }
+    public string? MachineName { get; set; }
+    public decimal? CaptainTipsDeduction { get; set; }
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
 }

@@ -1,4 +1,9 @@
-﻿namespace POS.API.Extensions;
+﻿using POS.Core.Services.Contract.DineInOrderServices;
+using POS.Core.Services.Contract.OrderTrackServices;
+using POS.Services.DineInOrderServices;
+using POS.Services.OrderTrackServices;
+
+namespace POS.API.Extensions;
 
 public static class ApplicationServicesExtensions
 {
@@ -22,6 +27,8 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(IPrinterServices), typeof(PrinterService));
         services.AddScoped(typeof(IKitchenServices), typeof(KitchenServices));
         services.AddScoped(typeof(IKitchenPrintersService), typeof(KitchenPrinterService));
+        services.AddScoped(typeof(IDineInOrderService), typeof(DineInOrderService));
+        services.AddScoped(typeof(IOrderTrackService), typeof(OrderTrackService));
 
 
         services.AddAutoMapper(typeof(MappingProfiles));

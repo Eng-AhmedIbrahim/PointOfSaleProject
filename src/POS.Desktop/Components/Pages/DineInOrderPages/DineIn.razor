@@ -1,4 +1,5 @@
 ﻿@page "/dineIn"
+@using BlazorBase.ERPFrontServices.DineInOrderServices
 @using BlazorBase.ERPFrontServices.DineInServices
 @using global::POS.Desktop.Components.DineInComponents
 @layout MainLayout
@@ -6,120 +7,146 @@
 @inject IHttpClientFactory _httpClientFactory
 @inject DineInService _DineInService
 @inject NavigationManager _navigationManager
-@inject Section4ButtonsServices _section4ButtonsServices
+@inject LocalizationService Localizer
+@inject IDineInOrderFrontService _dineInOrderService
 
-<MudGrid Spacing="0" Class="overflow-hidden">
-    <MudItem xs="6">
-        <MudText Typo="Typo.h6" Class="section-label">Tables</MudText>
-        <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden border-r border-b border-solid custom-border-color">
+<MudGrid Spacing="0" Class="overflow-hidden main-dinein-container">
+    <MudItem xs="6" Class="d-flex flex-column h-100">
+        <MudText Typo="Typo.h6" Class="section-label ">
+            <MudIcon Icon="@Icons.Material.Filled.TableRestaurant" Class="mr-2 mb-1" />
+            @Localizer["Tables"]
+        </MudText>
+        
+        <div class="dinein-content-area">
+            <!-- Floor Selection Section -->
+            <div class="floor-nav-section">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="pa-2 overflow-x-auto no-scrollbar">
+                    @foreach (var tableGroup in _tableGroups ?? [])
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Class="@GetFloorClass(tableGroup.Id)"
+                                   OnClick='async () => await GetTablesFromGroup(tableGroup.Id)'>
+                            @tableGroup.GroupName
+                        </MudButton>
+                    }
+                </MudStack>
+            </div>
 
-            <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.None"
-                      Spacing="1">
+            <!-- Tables Grid Section -->
+            <div class="tables-grid-section flex-grow-1">
+                <MudGrid Spacing="2" Class="pa-3">
+                    @foreach (var table in _tables ?? [])
+                    {
+                        <MudItem xs="3" sm="3" md="2">
+                            <button class="@GetTableModernClass(table)" 
+                                    @onclick="() => ToggleState(tableStates, table!.Id!.Value, table!.TableName!, UpdateState)">
+                                <div class="table-icon-box">
+                                    <MudIcon Icon="@Icons.Material.Filled.TableBar" Size="Size.Large" />
+                                </div>
+                                <span class="table-name">@table.TableName</span>
+                                @if (_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value))
+                                {
+                                    <span class="table-status">@Localizer["Order"]</span>
+                                }
+                            </button>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </div>
 
-                <MudItem xs="12" Class="tables-first-section">
-                    <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden tables-first-section">
-                        <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.None"
-                                  Spacing="1" Class="sales-items-container">
-                            @foreach (var tableGroup in _tableGroups ?? [])
-                            {
-                                <MudButton Size="Size.Large" Variant="Variant.Filled"
-                                           DisableElevation="true"
-                                           Class="same-width liner-grid-buttons item-button"
-                                           Style="@($"padding:{_commonProperties!.SalesItemsHorizontalSlider * 4}px;font-size:{_commonProperties!.SalesItemsVerticalSlider * 4}px; width:{_commonProperties!.SalesItemsHorizontalSlider * 20}px;font-weight: bolder;margin: 1px;")"
-                                           @onclick='async () => await GetTablesFromGroup(tableGroup.Id)'>
-                                    @tableGroup.GroupName
-                                </MudButton>
-                            }
-                        </MudStack>
-                    </MudPaper>
-                </MudItem>
+            <!-- Captain Selection Section -->
+            <div class="captain-selection-section">
+                <MudText Typo="Typo.subtitle2"
+                         Class="px-4 pt-2 font-weight-bold opacity-75">
+                    @Localizer["CaptainName"]
+                </MudText>
 
-                <MudItem xs="12" Class="tables-second-section">
-                    <MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Spacing="2">
-                        @foreach (var table in _tables ?? [])
-                        {
-                            <MudButton Size="Size.Large" Variant="Variant.Filled" DisableElevation="true"
-                                       Class="@GetTableClass(table)"
-                                       Color="_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value) ? Color.Error : Color.Default"
-                                       OnClick="() => ToggleState(tableStates, table!.Id!.Value,table!.TableName!, UpdateState)">
-                                <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                                    <MudIcon Icon="@( Icons.Material.Filled.TableBar )" Size="Size.Large" />
-                                    <MudText Typo="Typo.subtitle2">@table.TableName</MudText>
-                                </MudStack>
-                            </MudButton>
-                        }
-                    </MudStack>
-                </MudItem>
+                <div class="captain-scroll-container">
+                    @foreach (var captainOrder in _captainOrders ?? [])
+                    {
+                        <button class="@GetCaptainModernClass(captainOrder)"
+                                @onclick="() => ToggleState(buttonStates!, captainOrder.Id!, captainOrder.ArabicName!, UpdateState)"
+                                type="button">
 
-                <!-- Third Section -->
-                <MudItem xs="12" Class="tables-third-section">
-                    <MudStack Row="true" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Spacing="1">
-                        @foreach (var captainOrder in _captainOrders ?? [])
-                        {
-                            <MudButton Size="Size.Large" Variant="Variant.Filled" DisableElevation="true"
-                                       Class="@GetButtonClass(captainOrder)"
-                                       OnClick="() => ToggleState(buttonStates!, captainOrder.Id,captainOrder!.ArabicName!, UpdateState)">
-                                <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                                    <MudIcon Icon="@( Icons.Material.Filled.Person )" Size="Size.Large" />
-                                    <MudText Typo="Typo.subtitle2">@captainOrder.ArabicName</MudText>
-                                </MudStack>
-                            </MudButton>
-                        }
-                    </MudStack>
-                </MudItem>
-            
-            </MudStack>
-        </MudPaper>
+                            <div class="captain-popup">
+                                @captainOrder.ArabicName
+                            </div>
+
+                            <div class="captain-avatar">
+                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                            </div>
+
+                            <span class="captain-name-text">
+                                @captainOrder.ArabicName
+                            </span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+        </div>
     </MudItem>
 
     <!-- Section 2 -->
 
-    <MudItem xs="5" Class="full-height">
-        <MudText Typo="Typo.h6" Class="section-label">Order Details</MudText>
-        <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
+    <MudItem xs="5" Class="d-flex flex-column h-100 border-l border-solid custom-border-color">
+        <MudText Typo="Typo.h6" Class="section-label ">
+            <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Class="mr-2 mb-1" />
+            @Localizer["OrderDetails"]
+        </MudText>
+        
+        <div class="order-details-content flex-grow-1 d-flex flex-column">
+            <!-- Order Table -->
+            <div class="order-table-container flex-grow-1 overflow-y-auto">
+                <Section4Table Items="Items" Disabled="true" />
+            </div>
 
-            <MudStack Row="false" AlignItems="AlignItems.Start" Spacing="2" Class="full-width">
-                
-                <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden Section4-height border-b border-solid custom-border-color full-width">
-                    <Section4Table Items="Items" Disabled="true" />
-                </MudPaper>
+            <!-- Premium Summary Card -->
+            <div class="summary-card-wrapper pa-3">
+                <div class="premium-summary-card">
+                    <div class="card-glass-effect"></div>
+                    <div class="card-content">
+                        <div class="summary-header">
+                            <span class="order-number-badge">@Localizer["Order"] #@_commonProperties!.DineInOrderValues!.OrderID</span>
+                            <div class="time-box">
+                                <MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="Size.Small" />
+                                <span>@_commonProperties!.DineInOrderValues!.TableOpenTime</span>
+                            </div>
+                        </div>
 
-                <MudPaper Elevation="2" Class="order-summary full-width full-height-Section2">
-                    <MudStack Row="false" AlignItems="AlignItems.Stretch" Spacing="2" Height="100%">
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="summary-label">@Localizer["Tables"]</span>
+                                <span class="summary-value highlight">@_commonProperties!.DineInOrderValues!.TableName</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">@Localizer["CaptainName"]</span>
+                                <span class="summary-value">@_commonProperties!.DineInOrderValues!.CaptainName</span>
+                            </div>
+                        </div>
 
-                        <MudStack Row="true" Justify="Justify.Center" Spacing="2">
-                            <MudText Typo="Typo.h6" Class="order-id label-color">Order ID #@_commonProperties!.DineInOrderValues!.OrderID </MudText>
-                        </MudStack>
-                        
-                        <MudStack Row="true" JustifyContent="Justify.Start" Spacing="2">
-                            <MudText Typo="Typo.body1" Class="label label-color">Open Time : @_commonProperties!.DineInOrderValues!.TableOpenTime</MudText>
-                        </MudStack>
-
-                        <MudStack Row="true" JustifyContent="Justify.Start" Spacing="2">
-                            <MudText Typo="Typo.body1" Class="label label-color">Table : @_commonProperties!.DineInOrderValues!.TableName</MudText>
-                        </MudStack>
-
-                        <MudStack Row="true" JustifyContent="Justify.Start" Spacing="2">
-                            <MudText Typo="Typo.body1" Class="label label-color">Captain Name : @_commonProperties!.DineInOrderValues!.CaptainName</MudText>
-                        </MudStack>
-
-                        <MudStack AlignItems="AlignItems.Center" Row="true" Class="mt-4" Spacing="2">
-                            <MudText Typo="Typo.body1" Class="label label-color">ToTal :</MudText>
-                            <MudTextField FullWidth="true" @bind-Value="_commonProperties.DineInOrderValues.Total" Disabled="true" Class="input-field" />
-                        </MudStack>
-                    </MudStack>
-                </MudPaper>
-
-            </MudStack>
-        </MudPaper>
+                        <div class="grand-total-section mt-3">
+                            <span class="total-label">@Localizer["Total"]</span>
+                            <div class="total-amount-display">
+                                <span class="currency">@Localizer["EGP"]</span>
+                                <span class="amount">@_commonProperties.DineInOrderValues.Total</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </MudItem>
 
     <!-- Section 3 -->
-    <MudItem xs="1">
-        <MudText Typo="Typo.h6" Class="section-label">Actions</MudText>
-        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-hidden border-r border-b border-solid custom-border-color">
+    <MudItem xs="1" Class="d-flex flex-column h-100 border-l border-solid custom-border-color">
+        <MudText Typo="Typo.h6" Class="section-label ">
+            <MudIcon Icon="@Icons.Material.Filled.Bolt" Class="mr-2 mb-1" />
+            @Localizer["Actions"]
+        </MudText>
+        <div class="actions-content-area flex-grow-1">
             <MenuButtons />
-        </MudPaper>
+        </div>
     </MudItem>
 
 
@@ -127,116 +154,408 @@
 
 
 <style>
-    .full-height {
-        height: calc(100vh - 41.59px) !important;
-        max-height: calc(100vh - 41.59px) !important;
-        box-sizing: border-box;
+    .main-dinein-container {
+        height: 100vh;
+        background-color: #f8fafc;
+        overflow: hidden;
     }
 
-    .tables-first-section {
-        height: calc(30vh - 41.59px) !important;
-        max-height: calc(30vh - 41.59px) !important;
-        box-sizing: border-box;
-        overflow-y: hidden;
-        border-bottom: 1px solid rgb(58 59 59);
+    .premium-label {
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%) !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: 0.5px;
+        text-transform: capitalize !important;
     }
 
-    .tables-second-section {
-        height: calc(55vh - 41.59px) !important;
-        max-height: calc(55vh - 41.59px) !important;
-        box-sizing: border-box;
+    .dinein-content-area {
+        height: calc(100vh - 41.59px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .floor-nav-section {
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .floor-btn {
+        background: #f1f5f9 !important;
+        color: #64748b !important;
+        font-weight: 700 !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .floor-btn-active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        border: none !important;
+    }
+
+    .tables-grid-section {
         overflow-y: auto;
-        border-bottom: 1px solid rgb(58 59 59);
-        
+        padding-bottom: 20px;
     }
 
-    .tables-third-section {
-        height: calc(30vh - 41.59px) !important;
-        max-height: calc(30vh - 41.59px) !important;
-        box-sizing: border-box;
-        overflow-y: auto;
-    }
-
-    .same-width {
-        min-width: 140px;
-    }
-
-
-    .order-button {
-        background-color: rgba(66,66,66,1);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
+    /* Modern Table Cards */
+    .table-modern-card {
+        width: 100%;
+        background: white;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        transition: background-color 0.3s ease-in-out;
+        position: relative;
     }
 
-    .red-button {
-        background-color: #f87207 !important; /* Active button color */
+    .table-modern-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: #3b82f6;
     }
 
-    .table-button {
-        background-color: rgba(66,66,66,1);
+    .table-card-active {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .table-card-has-order {
+        background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+        border-color: #ef4444;
+    }
+
+    .table-card-has-order .table-icon-box {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .table-icon-box {
+        width: 48px;
+        height: 48px;
+        background: #f1f5f9;
+        color: #64748b;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .table-name {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #1e293b;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .table-status {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        background: #ef4444;
         color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s ease-in-out;
+        font-size: 0.65rem;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-weight: bold;
     }
 
-        .table-button.unavailable {
-            background-color: #f87207 !important; /* Color for unavailable tables */
+    /* Captain Section */
+    .captain-selection-section {
+        background: white;
+        border-top: 2px solid #3b82f6;
+        padding-bottom: 8px;
+    }
+
+    .captain-modern-btn {
+        min-width: 160px;
+        height: 58px;
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
+        border-radius: 16px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+    }
+
+        .captain-modern-btn:hover {
+            background: #f0f7ff;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(59,130,246,0.25);
         }
 
-    .full-width {
-        width: 100%;
+    .captain-avatar {
+        width: 38px;
+        height: 38px;
+        background: linear-gradient(135deg, #e2e8f0, #c7d2fe);
+        color: #1e293b;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
     }
 
-    .Section4-height {
-        height: calc(60vh - 41.59px) !important;
-        max-height: calc(60vh - 41.59px) !important;
-        box-sizing: border-box;
+    .captain-name-text {
+        font-weight: 700;
+        color: #334155;
+        font-family: 'Cairo', sans-serif;
     }
 
-    .Account-section {
-        height: calc(44vh - 41.59px) !important;
-        max-height: calc(44vh - 41.59px) !important;
-        box-sizing: border-box;
+    /* ===== Scroll ===== */
+    .captain-scroll-container {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 10px 14px;
     }
 
-    .order-summary {
-        background: #F8FAFC; /* Light blue/grayish background */
+        .captain-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+    /* ===== Button reset ===== */
+    .captain-modern-btn {
+        appearance: none;
+        border: 2px solid #cbd5e1;
+        background: #ffffff;
+        border-radius: 16px;
+        min-width: 160px;
+        height: 58px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        position: relative;
+        transition: all .25s ease;
+        flex-shrink: 0;
+    }
+
+        /* Hover */
+        .captain-modern-btn:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(59,130,246,.25);
+        }
+
+    /* ===== Avatar ===== */
+    .captain-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg,#e2e8f0,#c7d2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1e293b;
+        transition: all .25s ease;
+    }
+
+    /* ===== Name ===== */
+    .captain-name-text {
+        font-family: Cairo, sans-serif;
+        font-weight: 800;
+        font-size: .95rem;
+        color: #1e293b;
+        white-space: nowrap;
+    }
+
+    /* ===== Active ===== */
+    .captain-active {
+        background: linear-gradient(135deg,#1e3a8a,#2563eb);
+        border-color: #1e40af;
+        box-shadow: 0 16px 30px rgba(37,99,235,.45);
+    }
+
+        .captain-active .captain-name-text,
+        .captain-active .captain-avatar {
+            color: #fff;
+        }
+
+        .captain-active .captain-avatar {
+            background: rgba(255,255,255,.25);
+        }
+
+    /* ===== Popup ===== */
+    .captain-popup {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%) scale(.9);
+        background: #1e293b;
+        color: #fff;
+        padding: 6px 12px;
+        font-size: .75rem;
+        font-weight: 700;
         border-radius: 8px;
-        padding: 16px;
-        border: 1px solid #D1D5DB; /* Light gray border */
-        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        pointer-events: none;
+        transition: all .2s ease;
+        white-space: nowrap;
+        z-index: 10;
     }
 
-    .input-field {
-        background-color: #ffffff; /* White input fields */
-        border: 1px solid #D1D5DB; /* Light border */
-        border-radius: 4px;
-        padding: 8px;
+        .captain-popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #1e293b;
+        }
+
+    .captain-modern-btn:hover .captain-popup {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
     }
 
-    .total-field {
+    /* Show popup */
+    .captain-modern-btn:hover .captain-popup {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+
+    /* ===== Optional: Busy Indicator ===== */
+    .captain-modern-btn.busy::after {
+        content: "";
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+    }
+
+
+    /* Order Details Card */
+    .premium-summary-card {
+        position: relative;
+        background: #1e293b;
+        color: white;
+        border-radius: 16px;
+        padding: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-glass-effect {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .order-number-badge {
+        background: #3b82f6;
+        padding: 4px 12px;
+        border-radius: 20px;
         font-weight: bold;
-        color: #374151; /* Darker text for total */
-        background: #E5E7EB; /* Light gray background */
+        font-size: 0.9rem;
     }
 
-    .full-height-Section2 {
-        height: 100%;
-        overflow:hidden;
+    .time-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0.7;
+        font-size: 0.85rem;
     }
 
-    .label {
-        min-width: 100px; /* Adjust as needed to make labels uniform */
-        padding-right: 8px;
-        font-weight:bold;
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .summary-label {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        font-weight: 700;
         font-size: 1rem;
     }
 
+    .summary-value.highlight {
+        color: #3b82f6;
+        font-size: 1.25rem;
+    }
+
+    .grand-total-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-label {
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    .total-amount-display {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+
+    .currency {
+        font-size: 0.8rem;
+        opacity: 0.6;
+    }
+
+    .amount {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: #10b981;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 </style>

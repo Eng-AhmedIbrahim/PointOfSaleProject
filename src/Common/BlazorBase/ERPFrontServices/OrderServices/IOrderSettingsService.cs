@@ -8,4 +8,5 @@ public interface IOrderSettingsService
 
     public Task<ICollection<OrderSettingToReturnDto>?> GetOrderSettingsAsync();
     public Task<OrderDto?> CreateOrderAsync(OrderDto orderDto);
+    public Task<OrderDto?> GetOrderByIdAsync(int orderId);
 }

@@ -1,6 +1,3 @@
-F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.deps.json
-F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.dll
-F:\PointOfSaleProject\src\Common\BlazorBase\tmp_build_output\POS.Contract.pdb
 f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.deps.json
 f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.dll
 f:\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.pdb

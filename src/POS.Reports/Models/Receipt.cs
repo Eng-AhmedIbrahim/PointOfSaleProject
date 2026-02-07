@@ -19,6 +19,10 @@ public record Receipt
     public decimal? Tax { get; set; }
     public DateTimeOffset DateCreated { get; set; }
     public float LogoWidth { get; set; } = 120f;
+    public bool IsCopy { get; set; }
+    public int? TableId { get; set; }
+    public string? TableName { get; set; }
+    public string? WaiterName { get; set; }
 
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);

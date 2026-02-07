@@ -8,6 +8,8 @@ public class KitchenReceipt
     public string OrderType { get; set; } = string.Empty;
     public string CashierName { get; set; } = string.Empty;
     public List<TableItem>? Items { get; set; }
+    public int? TableId { get; set; }
+    public string? TableName { get; set; }
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
 
     private List<ReceiptItem> _items = [];

@@ -101,5 +101,6 @@ public class OrderDto
     public DateTime? KitchenOutTime { get; set; }
     public DateTime? PackingOutTime { get; set; }
     public bool? SkipPrintingOnServer { get; set; }
-
+    public string? MachineName { get; set; }
+    public decimal? CaptainTipsDeduction { get; set; }
 }

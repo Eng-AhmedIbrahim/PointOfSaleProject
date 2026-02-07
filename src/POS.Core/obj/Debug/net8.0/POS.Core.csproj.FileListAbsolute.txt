@@ -30,6 +30,7 @@ f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\POS.Reports.dll
 f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\BlazorBase.pdb
 f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\POS.Contract.pdb
 f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\POS.Reports.pdb
+f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\ar\BlazorBase.resources.dll
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\POS.Core.csproj.AssemblyReference.cache
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\POS.Core.GeneratedMSBuildEditorConfig.editorconfig
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\POS.Core.AssemblyInfoInputs.cache
@@ -41,4 +42,3 @@ f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\POS.Core.dll
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\refint\POS.Core.dll
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\POS.Core.pdb
 f:\PointOfSaleProject\src\POS.Core\obj\Debug\net8.0\ref\POS.Core.dll
-f:\PointOfSaleProject\src\POS.Core\bin\Debug\net8.0\ar\BlazorBase.resources.dll

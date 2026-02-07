@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using POS.Contract.Models;
 using BlazorBase.Models;
+using POS.Contract.Models;
+using BlazorBase.ERPFrontServices.CartServices;
+using BlazorBase.Services;
 
 namespace POS.Desktop.Components.PosDialog;
 
@@ -12,7 +14,7 @@ public partial class OrderDiscountDialog
     private string DiscountType { get; set; } = "Percentage";
     private decimal DiscountPercentage { get; set; } = 0;
     private decimal DiscountValue { get; set; } = 0;
-    private DiscountReason SelectedReason { get; set; } = DiscountReason.LoyaltyReward;
+    private string DiscountReasonText { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -21,10 +23,7 @@ public partial class OrderDiscountDialog
             DiscountType = _commonProperties.OrderDiscount.DiscountType.Equals("value", StringComparison.OrdinalIgnoreCase) ? "Value" : "Percentage";
             DiscountPercentage = _commonProperties.OrderDiscount.Percentage;
             DiscountValue = _commonProperties.OrderDiscount.Value;
-            if (Enum.TryParse<DiscountReason>(_commonProperties.OrderDiscount.DiscountReason, out var reason))
-            {
-                SelectedReason = reason;
-            }
+            DiscountReasonText = _commonProperties.OrderDiscount.DiscountReason ?? string.Empty;
         }
     }
 
@@ -36,21 +35,27 @@ public partial class OrderDiscountDialog
 
     private void ApplyDiscount()
     {
+        if (string.IsNullOrWhiteSpace(DiscountReasonText))
+        {
+            _snackbar.Add(Localizer["DiscountReasonRequired"], Severity.Error);
+            return;
+        }
+
         _commonProperties.OrderDiscount = new OrderDiscount()
         {
             DiscountType = DiscountType,
             Percentage = DiscountType == "Percentage" ? DiscountPercentage : 0M,
             Value = DiscountType == "Value" ? DiscountValue : 0M,
-            DiscountReason = SelectedReason.ToString()
+            DiscountReason = DiscountReasonText
         };
 
         _cartService.CalculateSection4Table();
-        MudDialog.Close(DialogResult.Ok(true));
+        _commonProperties.OrderDiscountDialogReference?.Close(DialogResult.Ok(true));
     }
 
     private void RemoveDiscount()
     {
         _cartService.ResetDiscount();
-        MudDialog.Close(DialogResult.Ok(true));
+        _commonProperties.OrderDiscountDialogReference?.Close(DialogResult.Ok(true));
     }
 }

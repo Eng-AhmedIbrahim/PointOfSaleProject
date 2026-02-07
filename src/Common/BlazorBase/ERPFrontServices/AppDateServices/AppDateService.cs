@@ -15,9 +15,9 @@ public class AppDateService : IAppDateService
         _httpClient = httpClientFactory.CreateClient(_apiSettings.ApiName!);
     }
 
-    public async Task<MessageResponseDto> UpdateOrderCount()
+    public async Task<AppDateToReturnDto> UpdateOrderCount()
     {
-        return await GetApiResponseAsync<MessageResponseDto>(
+        return await GetApiResponseAsync<AppDateToReturnDto>(
              UpdateOrderCountRequest,
             "Failed to update order count.");
     }

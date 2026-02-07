@@ -29,6 +29,14 @@ public partial class Login
 
     protected async override Task OnInitializedAsync()
     {
+        // Clear any existing items to avoid NavigationLock behavior on login
+        _commonProperties.TableItems = new List<TableItem>();
+        _commonProperties.AppendedTableItems = new List<TableItem>();
+        _commonProperties.CurrentDineInOrder = null;
+        _commonProperties.DineInOrdersDetails = new Dictionary<int, List<DineInOrderDetails>>();
+        _commonProperties.DineInOrderValues = new();
+        _commonProperties.UpdateDineInOrder = false;
+        
         try
         {
             client = _clientFactory.CreateClient(ConstantStrings.ApiUrlName);
@@ -87,6 +95,8 @@ public partial class Login
                     await customAuthStateProvider.NotifyUserAuthentication(token);
                 }
 
+                _commonProperties.TableItems = new List<TableItem>(); // Explicitly clear right before navigation to avoid NavLock
+                _commonProperties.NotifyStateChanged();
                 _navigationManager.NavigateTo("/pos", true);
             }
             else

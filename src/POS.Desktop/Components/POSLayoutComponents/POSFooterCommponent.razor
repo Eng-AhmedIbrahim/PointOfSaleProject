@@ -1,3 +1,5 @@
+@using BlazorBase.Services
+@using POS.Contract.Models
 @inject NavigationManager navigationManager
 @inject CommonProperties commonProperties
 @inject ISnackbar Snackbar
@@ -21,6 +23,30 @@
     </MudButton>
 
 
+
+    <MudButton Variant="Variant.Text"
+               Size="Size.Large"
+               StartIcon="@Icons.Material.Filled.Person"
+               Class="button-color-footer"
+               OnClick="OpenCustomerInfoDialog">
+        @Localizer["CustomerData"]
+    </MudButton>
+
+    <MudButton Variant="Variant.Text"
+               Size="Size.Large"
+               StartIcon="@Icons.Material.Filled.AccountBalanceWallet"
+               Class="button-color-footer"
+               OnClick="OpenPaymentMethodDialog">
+        @Localizer["PaymentMethod"]
+    </MudButton>
+
+    <MudButton Variant="Variant.Text"
+               Size="Size.Large"
+               StartIcon="@Icons.Material.Filled.Calculate"
+               Class="button-color-footer"
+               OnClick="OpenQuickPaymentDialog">
+        @Localizer["QuickPayment"]
+    </MudButton>
 
     @* @if (canAccessMeals) *@
     @* { *@
@@ -47,22 +73,6 @@
     @* { *@
     <MudButton Variant="Variant.Text"
                Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.PersonAdd"
-               Class="button-color-footer"
-               OnClick="OpenCustomerInfoDialog">
-        @Localizer["Customer"]
-    </MudButton>
-
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.Payments"
-               Class="button-color-footer"
-               OnClick="OpenPaymentMethodDialog">
-        @Localizer["Payment"] (@commonProperties.SelectedPaymentMethod)
-    </MudButton>
-
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
                OnClick="ToggleDrawer"
                StartIcon="@Icons.Material.Filled.Settings"
                Class="button-color-footer">
@@ -85,7 +95,7 @@
     }
 
     .button-color-footer {
-        color: #0f171f !important;
+        color: #114484 !important;
         font-family: 'Cairo', sans-serif !important;
         font-weight: 800 !important;
         font-size: 0.85rem !important;
@@ -101,82 +111,62 @@
         justify-content: center !important;
     }
 
-    .button-color-footer .mud-button-label {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
-    }
-
-    .button-color-footer:hover {
-        background-color: #f1f3f5 !important;
-        color: #447cad !important;
-    }
-
-    .button-color-footer .mud-icon-root {
-        font-size: 1.6rem !important;
-    }
-
-    .premium-drawer {
-        background-color: #f0f2f5 !important;
-    }
-
-    .drawer-header-premium {
-        background: linear-gradient(90deg, #1a252f 0%, #2c3e50 100%);
+    .drawer-header {
+        background: linear-gradient(45deg, #1E3A8A, #ebf0ea);
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         color: white;
-        padding: 20px 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .drawer-title-text {
-        font-weight: 800;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+    .drawer-title {
+        font-weight: bold;
+        font-size: 22px;
     }
 
-    .remove-discount-btn {
-        background-color: rgba(255,255,255,0.1) !important;
-        color: #ff5252 !important;
-        font-weight: 700;
-        border: 1px solid rgba(255,82,82,0.3);
+    .drawer-content {
+        text-align: center;
+        padding: 20px;
     }
 
-    .discount-card, .reason-card {
-        border-radius: 20px !important;
-        background: white !important;
+    .discount-btn {
+        min-width: 160px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
     }
 
-    .discount-tabs .mud-tabs-toolbar {
-        background-color: #f8f9fa !important;
-        border-radius: 12px;
-        padding: 4px;
+    .input-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
     }
 
-    .custom-slider .mud-slider-track-active {
-        background-color: #447cad !important;
+    .discount-input {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
     }
 
-    .discount-display {
-        border-top: 1px dashed #dee2e6;
-        padding-top: 15px;
+    .reason-select {
+        width: 100%;
+        max-width: 300px;
+        margin: auto;
     }
 
-    .premium-apply-btn {
-        height: 60px;
-        border-radius: 15px;
-        font-size: 1.2rem;
-        font-weight: 900;
-        background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%) !important;
-        color: white !important;
-        box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3) !important;
-        transition: transform 0.2s;
+    .apply-btn {
+        width: 100%;
+        max-width: 260px;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: 8px;
     }
 
-    .premium-apply-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 25px rgba(46, 125, 50, 0.4) !important;
-    }
-
-    .custom-reason-select .mud-input-control {
-        margin-top: 0;
+    .close-btn {
+        font-size: 14px;
+        font-weight: bold;
+        border-radius: 6px;
     }
 </style>

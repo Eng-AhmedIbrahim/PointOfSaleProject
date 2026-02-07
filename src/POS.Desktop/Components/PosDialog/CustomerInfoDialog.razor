@@ -1,27 +1,28 @@
+@inject LocalizationService Localizer
 @using MudBlazor
 @inject CommonProperties _commonProperties
 
-<MudDialog Class="premium-dialog">
+<MudDialog FullWidth="true" MaxWidth="MaxWidth.Small" Class="premium-dialog">
     <TitleContent>
         <div class="d-flex align-center gap-2">
             <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" />
-            <MudText Typo="Typo.h6" Style="font-weight: 800;">بيانات العميل</MudText>
+            <MudText Typo="Typo.h6" Style="font-weight: 800;">@Localizer["CustomerData"]</MudText>
         </div>
     </TitleContent>
     <DialogContent>
         <MudStack Spacing="4" Class="pa-4">
-            <MudTextField @bind-Value="_commonProperties.CustomerName" Label="اسم العميل" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Badge" />
-            <MudTextField @bind-Value="_commonProperties.CustomerPhone" Label="رقم الهاتف" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Phone" />
+            <MudTextField @bind-Value="_commonProperties.CustomerName" Label="@Localizer["CustomerName"]" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Badge" />
+            <MudTextField @bind-Value="_commonProperties.CustomerPhone" Label="@Localizer["PhoneNumber"]" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Phone" />
         </MudStack>
     </DialogContent>
     <DialogActions>
         <div class="px-8 pb-8 w-100">
-            <MudButton OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" Style="height: 50px; font-weight: 700; border-radius: 12px;">حفظ البيانات</MudButton>
+            <MudButton OnClick="Submit" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" Style="height: 50px; font-weight: 700; border-radius: 12px;">@Localizer["Save"]</MudButton>
         </div>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Submit() => _commonProperties.CustomerInfoDialogReference?.Close(DialogResult.Ok(true));
 }

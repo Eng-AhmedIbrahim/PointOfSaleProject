@@ -1,13 +1,16 @@
-﻿namespace ERPFront.Components.DineInComponents;
+﻿using BlazorBase.ERPFrontServices.DineInOrderServices;
+using BlazorBase.ERPFrontServices.PrintOrderServices;
+
+namespace ERPFront.Components.DineInComponents;
 
 public partial class MenuButtons
 {
     private void CreateDineInOrder()
     {
-        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(_commonProperties.TableId, out DineInOrderDetails? OrderDetails))
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
         {
-
-            UpdateCurrentDineInOrder(OrderDetails);
+            UpdateCurrentDineInOrder(orderDetails);
             _navigationManager.NavigateTo("/pos");
         }
         else
@@ -73,26 +76,25 @@ public partial class MenuButtons
         if (!_commonProperties.DineInOrdersDetails!.ContainsKey(primaryTableId) || mergingTableIds.Count == 0)
             return;
 
-        var primaryOrder = _commonProperties.DineInOrdersDetails[primaryTableId];
+        var primaryOrders = _commonProperties.DineInOrdersDetails[primaryTableId];
+        var primaryOrder = primaryOrders.FirstOrDefault();
+        if (primaryOrder == null) return;
 
         foreach (var tableId in mergingTableIds)
         {
-            if (_commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var mergingOrder))
+            if (_commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var mergingOrders))
             {
-                if (mergingOrder.BasicOrderDetails != null)
+                foreach (var mergingOrder in mergingOrders)
                 {
-                    primaryOrder.BasicOrderDetails ??= new BlazorBase.Models.OrderDetails();
-                    primaryOrder.BasicOrderDetails.Merge(mergingOrder.BasicOrderDetails);
+                    if (mergingOrder.BasicOrderDetails != null)
+                    {
+                        primaryOrder.BasicOrderDetails ??= new BlazorBase.Models.OrderDetails();
+                        primaryOrder.BasicOrderDetails.Merge(mergingOrder.BasicOrderDetails);
+                    }
                 }
-
-                primaryOrder.RelatedTableName += $"{mergingOrder.RelatedTableName}";
-
                 _commonProperties.DineInOrdersDetails.Remove(tableId);
             }
         }
-
-        // Update the dictionary with the merged order
-        _commonProperties.DineInOrdersDetails[primaryTableId] = primaryOrder;
     }
 
     private async Task OpenMergeTablesDialog()
@@ -100,4 +102,70 @@ public partial class MenuButtons
 
     private async Task TransferTable()
         => _commonProperties.DialogReference = await _dialogService.ShowAsync<TransferTable>("Transfer Table");
+
+    [Inject] private IDineInOrderFrontService _dineInOrderService { get; set; } = default!;
+
+    [Inject] private IPrintOrderService? _printOrderService { get; set; }
+
+    private async Task PrintReceipt()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            if (_printOrderService != null)
+            {
+                await _printOrderService.PrintInitialDineInOrder(orderDetails);
+                _snackbar.Add("Printing...", Severity.Info);
+            }
+            else
+            {
+                _snackbar.Add("Print service not available", Severity.Warning);
+            }
+        }
+    }
+
+    private async Task CloseTable()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            var result = await _dineInOrderService.CloseDineInOrderAsync(orderDetails.DatabaseId);
+            if (result)
+            {
+                var tableOrders = _commonProperties.DineInOrdersDetails![_commonProperties.TableId];
+                tableOrders.Remove(orderDetails);
+                if (!tableOrders.Any())
+                {
+                    _commonProperties.DineInOrdersDetails.Remove(_commonProperties.TableId);
+                }
+                
+                _commonProperties.CurrentDineInOrder = null;
+                _commonProperties.DineInOrderValues = new();
+                _commonProperties.TableItems?.Clear();
+                
+                _snackbar.Add("Table closed", Severity.Success);
+                _navigationManager.NavigateTo("/dineIn");
+            }
+        }
+    }
+
+    private async Task OpenSplitOrderDialog()
+    {
+        var activeOrder = _commonProperties.GetActiveOrder();
+        if (activeOrder == null)
+        {
+            _snackbar.Add("No active order to split", Severity.Warning);
+            return;
+        }
+
+        var parameters = new DialogParameters { ["OrderToSplit"] = activeOrder };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await _dialogService.ShowAsync<SplitOrderDialog>("Split Order", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            _navigationManager.NavigateTo("/dineIn", true);
+        }
+    }
 }

@@ -1,3 +1,4 @@
+@inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -18,7 +19,7 @@
                        StartIcon="@Icons.Material.Filled.TableRestaurant"
                        Class="@( _commonProperties.CurrentPosMode == "DineIn" ? "btn-active" : "btn-nav")"
                        OnClick='() => SetMode(PosModes.DineIn.ToString())'>
-                طاولات
+                @Localizer["Tables"]
             </MudButton>
         }
 
@@ -28,7 +29,7 @@
                        StartIcon="@Icons.Material.Filled.DeliveryDining"
                        Class="@( _commonProperties.CurrentPosMode == "Delivery" ? "btn-active" : "btn-nav")"
                        OnClick='() => SetMode(PosModes.Delivery.ToString())'>
-                توصيل للمنازل
+                @Localizer["Delivery"]
             </MudButton>
         }
 
@@ -38,7 +39,7 @@
                        StartIcon="@Icons.Material.Filled.DirectionsRun"
                        Class="@( _commonProperties.CurrentPosMode == "TakeAway" ? "btn-active" : "btn-nav")"
                        OnClick='() => SetMode(PosModes.TakeAway.ToString())'>
-                تيك أواي
+                @Localizer["TakeAway"]
             </MudButton>
         }
     </MudStack>
@@ -51,7 +52,7 @@
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AttachMoney"
                        Class="btn-nav">
-                الحسابات
+                @Localizer["Accounts"]
             </MudButton>
         }
 
@@ -60,7 +61,7 @@
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AreaChart"
                        Class="btn-nav">
-                ملخص
+                @Localizer["Summary"]
             </MudButton>
         }
 
@@ -69,7 +70,7 @@
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.PushPin"
                        Class="btn-nav">
-                توزيع
+                @Localizer["Distribution"]
             </MudButton>
         }
 
@@ -78,7 +79,7 @@
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.Checklist"
                        Class="btn-nav">
-                الطلبات
+                @Localizer["AllOrders"]
             </MudButton>
         }
 
@@ -86,7 +87,7 @@
                        Variant="Variant.Filled"
                        Class="btn-exit"
                        OnClick="ExitApp" 
-                       title="إغلاق البرنامج" />
+                       title="@Localizer["ExitApp"]" />
     </MudStack>
 </MudStack>
 

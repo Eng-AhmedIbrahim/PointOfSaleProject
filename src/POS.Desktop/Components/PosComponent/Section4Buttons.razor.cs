@@ -1,33 +1,80 @@
 ﻿namespace POS.Desktop.Components.PosComponent;
 
+using POS.Desktop.Components.PosDialog;
+using BlazorBase.Helpers;
+using Microsoft.Extensions.Logging;
+
 public partial class Section4Buttons
 {
+    [Inject] private ILogger<Section4Buttons> _logger { get; set; } = default!;
+
+    private bool _isProcessing = false;
+
     private async Task PrintOrder()
     {
-        if (_commonProperties!.TableItems!.Any())
+        if (_isProcessing) return;
+        
+        try
+        {
+            _isProcessing = true;
+            if (_commonProperties!.TableItems!.Any())
         {
             if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
             {
                 var result = await _printOrderService.PrintTakeAwayOrder(0, _commonProperties.CustomerName ?? "", _commonProperties.CustomerPhone ?? "", _commonProperties.SelectedPaymentMethod);
-                if (result is true)
-                {
-                    _cartService.ClearTakeAwayOrderAttributes();
-                    _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-                    _services.NotifyStateChanged();
-                }
+                if (result is false)
+                    return;
+
+                _cartService.ClearTakeAwayOrderAttributes();
+                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                _services.NotifyStateChanged();
             }
            
             if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
             {
-                var result = PrintDineInOrder();
+                var result = await PrintDineInOrder();
                 if (result is false)
-                    return;
-
-                if (_commonProperties.DineInOrdersDetails!.TryGetValue(_commonProperties.TableId, out var existingOrder))
                 {
-                    await _printOrderService.PrintInitialDineInOrder(existingOrder);
+                    if (_commonProperties.UpdateDineInOrder == true && (_commonProperties.AppendedTableItems?.Any() != true))
+                    {
+                         _cartService.ClearDineInOrderAttributes();
+                    }
+                    else return;
                 }
-
+                else
+                {
+                    var existingOrder = _commonProperties.GetActiveOrder();
+                    if (existingOrder != null)
+                    {
+                        // If this is an update (has appended items), print only the new items
+                        if (_commonProperties.UpdateDineInOrder && _commonProperties.AppendedTableItems?.Any() == true)
+                        {
+                            // Create a temporary order with only the appended items for printing
+                            var appendedOrder = new DineInOrderDetails
+                            {
+                                CaptainId = existingOrder.CaptainId,
+                                CaptainName = existingOrder.CaptainName,
+                                RelatedTableId = existingOrder.RelatedTableId,
+                                RelatedTableName = existingOrder.RelatedTableName,
+                                BasicOrderDetails = new BlazorBase.Models.OrderDetails
+                                {
+                                    OrderId = existingOrder.BasicOrderDetails!.OrderId,
+                                    CashierName = existingOrder.BasicOrderDetails.CashierName,
+                                    Items = _commonProperties.AppendedTableItems.ToList(),
+                                    Total = existingOrder.BasicOrderDetails.Total,
+                                    Service = existingOrder.BasicOrderDetails.Service,
+                                    Tax = existingOrder.BasicOrderDetails.Tax
+                                }
+                            };
+                            await _printOrderService.PrintInitialDineInOrder(appendedOrder);
+                        }
+                        else
+                        {
+                            // This is a new order, print everything
+                            await _printOrderService.PrintInitialDineInOrder(existingOrder);
+                        }
+                    }
+                }
                 _cartService.ClearDineInOrderAttributes();
             }
 
@@ -38,13 +85,26 @@ public partial class Section4Buttons
 
             _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
 
-            //_services.NotifyStateChanged();
             _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            await _appDateService.UpdateOrderCount();
-            await GetCurrentDayAndTime();
+            
+            // Refresh app date to stay in sync
+            var appDate = await _appDateService.GetAppDate();
+            if (appDate != null)
+            {
+                _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
+                _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber + 1;
+            }
+
+            _navigationManager.NavigateTo("/pos");
+            _services.NotifyStateChanged();
         }
         else
             _snackbar.Add("No Order to print", Severity.Info);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
     private async Task GetCurrentDayAndTime()
@@ -60,31 +120,187 @@ public partial class Section4Buttons
 
    
 
-    private bool PrintDineInOrder()
+    private async Task<bool> PrintDineInOrder()
     {
         List<TableItem>? appendedOrder = _commonProperties.AppendedTableItems;
-        if (_commonProperties.TableItems?.Any() == true
-            && appendedOrder?.Any() == false
-            && _commonProperties.UpdateDineInOrder == true
-            && _commonProperties.OrderDiscount is null)
+        
+        // Logical Exit: If viewing existing table with no additions/discounts
+        if (_commonProperties.UpdateDineInOrder == true 
+            && (appendedOrder == null || !appendedOrder.Any())
+            && _commonProperties.OrderDiscount?.DiscountType == null)
         {
-            _snackbar.Add("No Order Updated to print", Severity.Info);
-            return false;
+            return false; // Silently exit via special handling in PrintOrder
         }
 
-        if (_commonProperties.OrderDiscount!.DiscountType is not null ||
-            appendedOrder != null
-            && appendedOrder.Any()
-            )
+        if (_commonProperties.UpdateDineInOrder)
         {
-            UpdateExistingOrderItems(appendedOrder!);
-            appendedOrder!.Clear();
+            // If we have additions or discount changes
+            if ((appendedOrder != null && appendedOrder.Any()) || _commonProperties.OrderDiscount?.DiscountType != null)
+            {
+                await UpdateExistingDineInOrderInDatabase(appendedOrder!);
+                return true;
+            }
         }
         else
-            CreateTableOrder();
+        {
+            // Brand new order
+            if (_commonProperties.TableItems?.Any() == true)
+            {
+                await CreateNewDineInOrderInDatabase();
+                return true;
+            }
+        }
 
-        return true;
+        return false;
     }
+
+    private async Task CreateNewDineInOrderInDatabase()
+    {
+        try
+        {
+            var orderDetails = FullTableOrderDetails();
+            
+            // Map to database entity
+            var dineInOrder = DineInOrderMapper.MapToDineInOrderDto(
+                orderDetails,
+                _commonProperties.CurrentOrderId,
+                _commonProperties.BranchDetails?.Id ?? 1,
+                _commonProperties.BranchDetails?.Name
+            );
+
+            dineInOrder.CashierId = _commonProperties.CurrentUserId;
+            
+            // Save to database
+            var createdOrder = await _dineInOrderService.CreateDineInOrderAsync(dineInOrder);
+            
+            if (createdOrder != null)
+            {
+                _commonProperties.CurrentOrderId = createdOrder.OrderId + 1;
+                _commonProperties.PosDate = DateOnly.FromDateTime(createdOrder.OrderDateTime);
+                
+                // Update the orderDetails object that will be used for printing
+                if (orderDetails.BasicOrderDetails != null)
+                {
+                    orderDetails.BasicOrderDetails.OrderId = createdOrder.OrderId;
+                }
+
+                orderDetails.DatabaseId = createdOrder.Id;
+                
+                // Update the UI card display
+                if (_commonProperties.DineInOrderValues != null)
+                {
+                    _commonProperties.DineInOrderValues.OrderID = createdOrder.OrderId;
+                }
+                // Update the in-memory dictionary for UI purposes
+                if(!_commonProperties.DineInOrdersDetails!.ContainsKey(_commonProperties.TableId))
+                    _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
+                
+                _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(orderDetails);
+                
+                // Clear items from current order
+                RemoveItemsIfTableHasItems();
+                
+                _snackbar.Add("Order created successfully", Severity.Success);
+            }
+            else
+            {
+                _snackbar.Add("Failed to create order", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Error creating order: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task UpdateExistingDineInOrderInDatabase(List<TableItem> appendedOrder)
+    {
+        try
+        {
+            var currentActiveOrder = _commonProperties.GetActiveOrder();
+            if (currentActiveOrder == null) return;
+
+            // Get existing order from database using DatabaseId
+            // var existingDbOrder = await _dineInOrderService.GetDineInOrderByTableIdAsync(_commonProperties.TableId, "Open");
+            // Better to use DatabaseId if available
+            int orderDatabaseId = currentActiveOrder.DatabaseId;
+            
+            // For now assuming existingDbOrder is still needed for mapping OR use currentActiveOrder
+            // ... (rest of the logic)
+            // Actually, existingDbOrder in the original code was used to get the ID.
+            // But we have DatabaseId in currentActiveOrder now (if it was loaded correctly).
+
+            // Let's keep it simple and just use the ID we have.
+            
+            // حفظ نسخة من الأصناف الجديدة قبل تحديث الأوردر الأساسي
+            List<TableItem> newItemsToPrint = appendedOrder!.Select(item => item.Clone()).ToList();
+            
+            // Update in-memory order for UI
+            DineInOrderDetails? existingOrder = CheckIfThereAreDineOrderAndReturnItIfExists();
+            UpdateDineInOrderAppendNewItems(appendedOrder!, existingOrder);
+            UpdateOrderTotal(existingOrder);
+            AddDineInOrderDiscountIfExists(existingOrder);
+            
+            // Map and update in database
+            var updatedOrder = DineInOrderMapper.MapToDineInOrderDto(
+                existingOrder,
+                existingOrder.BasicOrderDetails!.OrderId,
+                _commonProperties.BranchDetails?.Id ?? 1,
+                _commonProperties.BranchDetails?.Name
+            );
+            
+            updatedOrder.Id = existingOrder.DatabaseId;
+            updatedOrder.CashierId = _commonProperties.CurrentUserId;
+            
+            // Update order in database
+            var result = await _dineInOrderService.UpdateDineInOrderAsync(updatedOrder);
+            
+            if (result != null)
+            {
+                // Add new items to database
+                if (newItemsToPrint.Any())
+                {
+                    var newOrderItems = DineInOrderMapper.MapToOrderItemsDetailsDto(newItemsToPrint);
+                    await _dineInOrderService.AddItemsToDineInOrderAsync(existingOrder.DatabaseId, newOrderItems);
+                }
+                
+                // Update discount if changed
+                if (_commonProperties.OrderDiscount?.DiscountType != null)
+                {
+                    await _dineInOrderService.UpdateDineInOrderDiscountAsync(
+                        existingOrder.DatabaseId,
+                        _commonProperties.OrderDiscount.Value,
+                        _commonProperties.OrderDiscount.Percentage,
+                        _commonProperties.OrderDiscount.DiscountType,
+                        _commonProperties.OrderDiscount.DiscountReason
+                    );
+                }
+                
+                // تحديث AppendedTableItems لاستخدامها في الطباعة
+                appendedOrder!.Clear();
+                foreach (var item in newItemsToPrint)
+                {
+                    appendedOrder.Add(item);
+                }
+                
+                CheckIsTableExist(existingOrder);
+                RemoveItemsIfTableHasItems();
+                ClearAppendData();
+                
+                _snackbar.Add("Order updated successfully", Severity.Success);
+            }
+            else
+            {
+                _snackbar.Add("Failed to update order", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating order");
+            _snackbar.Add($"Error updating order: {ex.Message}", Severity.Error);
+        }
+    }
+
 
     private void UpdateExistingOrderItems(List<TableItem> appendedOrder)
     {
@@ -109,10 +325,14 @@ public partial class Section4Buttons
 
     private DineInOrderDetails CheckIfThereAreDineOrderAndReturnItIfExists()
     {
-        if (!_commonProperties.DineInOrdersDetails!.TryGetValue(_commonProperties.TableId, out var existingOrder))
+        var existingOrder = _commonProperties.GetActiveOrder();
+        if (existingOrder == null)
         {
             existingOrder = FullTableOrderDetails();
-            _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = existingOrder;
+            if(!_commonProperties.DineInOrdersDetails!.ContainsKey(_commonProperties.TableId))
+                _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
+            
+            _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(existingOrder);
         }
 
         return existingOrder;
@@ -158,7 +378,10 @@ public partial class Section4Buttons
     {
         var clonedOrder = FullTableOrderDetails();
 
-        _commonProperties!.DineInOrdersDetails![_commonProperties.TableId] = clonedOrder;
+        if(!_commonProperties.DineInOrdersDetails!.ContainsKey(_commonProperties.TableId))
+            _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
+        
+        _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(clonedOrder);
 
         CheckIsTableExist(clonedOrder);
         RemoveItemsIfTableHasItems();
@@ -175,7 +398,7 @@ public partial class Section4Buttons
         if (clonedOrder.RelatedTableId != _commonProperties.TableId &&
                     !_commonProperties!.DineInOrdersDetails!.ContainsKey(clonedOrder.RelatedTableId ?? 0))
         {
-            _commonProperties!.DineInOrdersDetails!.Add(clonedOrder.RelatedTableId ?? 0, clonedOrder);
+            _commonProperties!.DineInOrdersDetails!.Add(clonedOrder.RelatedTableId ?? 0, new List<DineInOrderDetails> { clonedOrder });
         }
     }
 
@@ -204,7 +427,8 @@ public partial class Section4Buttons
                 OrderDiscount = _commonProperties!.OrderDiscount!,
                 CustomerName = _commonProperties.CustomerName,
                 CustomerPhone = _commonProperties.CustomerPhone,
-                PaymentMethod = _commonProperties.SelectedPaymentMethod
+                PaymentMethod = _commonProperties.SelectedPaymentMethod,
+                MachineName = Environment.MachineName
             }
         };
 
@@ -221,4 +445,50 @@ public partial class Section4Buttons
     }
 
     
+    private void OpenVoidDialog()
+    {
+        if (_commonProperties.TableItems == null || !_commonProperties.TableItems.Any())
+        {
+            _snackbar.Add(Localizer["NoItemsToVoid"], Severity.Info);
+            return;
+        }
+
+        var parameters = new DialogParameters 
+        { 
+            ["Items"] = _commonProperties.TableItems,
+            ["IsDineIn"] = false 
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        // Assuming VoidOrderDialog is accessible or fully qualified
+        _dialogService.Show<POS.Desktop.Components.DineInComponents.VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+    }
+
+    private async Task ReprintOrder()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await _dialogService.ShowAsync<ReprintOrderDialog>(Localizer["Reprint Order"], options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data is int orderId && orderId > 0)
+        {
+            _isProcessing = true;
+            try
+            {
+                var success = await _printOrderService.ReprintOrderAsync(orderId);
+                if (success)
+                    _snackbar.Add(Localizer["Order reprinted successfully"], Severity.Success);
+                else
+                    _snackbar.Add(Localizer["Order not found or print failed"], Severity.Error);
+            }
+            catch (Exception ex)
+            {
+                _snackbar.Add("Error reprinting order", Severity.Error);
+                _logger.LogError(ex, "Reprint fail");
+            }
+            finally
+            {
+                _isProcessing = false;
+            }
+        }
+    }
 }

@@ -1,4 +1,8 @@
+@inject LocalizationService Localizer
+@using BlazorBase.ERPFrontServices.DineInOrderServices
+@using BlazorBase.ERPFrontServices.OrderTrackServices
 @using BlazorBase.ERPFrontServices.PrintOrderServices
+@using POS.Desktop.Components.PosDialog
 @inject CommonProperties _commonProperties
 @inject Section4ButtonsServices _services
 @inject NavigationManager _navigationManager
@@ -7,6 +11,8 @@
 @inject AppDateService _appDateService
 @inject IPrintOrderService _printOrderService
 @inject IDialogService _dialogService
+@inject IDineInOrderFrontService _dineInOrderService
+@inject IOrderTrackFrontService _orderTrackService
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="action-buttons-grid">
     <MudItem xs="4">
@@ -15,8 +21,8 @@
                    Class="action-btn cancel-btn special-sec4-button"
                    Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.Cancel"
-                   OnClick="()=>_services.RemoveAllItems(_commonProperties?.TableItems??[])" >
-            CANCEL
+                   OnClick="()=>_services.RemoveAllItems(_commonProperties?.TableItems??[])">
+            @Localizer["Cancel"]
         </MudButton>
     </MudItem>
     <MudItem xs="4">
@@ -26,7 +32,7 @@
                    Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.HourglassTop"
                    OnClick="AddOrderToWaitingQueue">
-            WAITING
+            @Localizer["Waiting"]
         </MudButton>
     </MudItem>
     <MudItem xs="4">
@@ -36,7 +42,17 @@
                    Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.Print"
                    OnClick="PrintOrder">
-            PRINT
+            @Localizer["Print"]
         </MudButton>
     </MudItem>
+    @* <MudItem xs="3">
+        <MudButton Variant="Variant.Filled"
+                   FullWidth="true"
+                   Class="action-btn print-btn special-sec4-button"
+                   Size="Size.Small"
+                   StartIcon="@Icons.Material.Filled.History"
+                   OnClick="ReprintOrder">
+            @Localizer["Reprint"]
+        </MudButton>
+    </MudItem> *@
 </MudGrid>

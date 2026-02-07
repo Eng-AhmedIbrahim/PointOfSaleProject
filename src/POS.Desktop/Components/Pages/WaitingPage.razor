@@ -1,4 +1,5 @@
-﻿@page "/waitingPage"
+﻿@inject LocalizationService Localizer
+@page "/waitingPage"
 @layout WaitingLayout
 @inject CommonProperties _commonProperties
 @inject NavigationManager _navigationManager
@@ -8,7 +9,7 @@
 <MudGrid Spacing="0" Justify="Justify.Center" Class="overflow-hidden">
     <!-- Section 1 -->
     <MudItem xs="3">
-        <MudText Typo="Typo.h6" Class="section-label">Waiting Orders</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["WaitingOrders"]</MudText>
         <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
             <MudGrid Spacing="0">
                 <MudPaper Width="100%" Elevation="0">
@@ -18,7 +19,7 @@
                             <MudNavLink Icon="@Icons.Material.Filled.HourglassEmpty" IconColor="Color.Primary"
                                         Class="waiting-order-link"
                                         OnClick='()=>ShowWaitingOrder(order.Id)'>
-                                <MudText Class="order-text">Waiting Order @order.Id</MudText>
+                                <MudText Class="order-text">@Localizer["WaitingOrder"] @order.Id</MudText>
                             </MudNavLink>
                         }
 
@@ -31,7 +32,7 @@
     <!-- Section 2 -->
 
     <MudItem xs="5" Class="full-height">
-        <MudText Typo="Typo.h6" Class="section-label">Order Details</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["OrderDetails"]</MudText>
         <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
             <MudStack Row="true" AlignItems="AlignItems.Start" Wrap="Wrap.Wrap" StretchItems="StretchItems.All"
                       Spacing="0">
@@ -42,23 +43,23 @@
 
     <!-- Section 3 -->
     <MudItem xs="4" Class="h-100">
-        <MudText Typo="Typo.h6" Class="section-label">Actions</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["Actions"]</MudText>
         <MudPaper Elevation="1" Height="100%" Width="100%"
                   Class="rounded-0 overflow-hidden full-height border-r border-b border-solid custom-border-color d-flex flex-column justify-center align-center gap-3">
 
             <MudButton Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary" class="w-75 button-height"
                        OnClick="()=>CompleteWaitingOrder()">
-                <MudIcon Icon="@Icons.Material.Filled.AddShoppingCart" class="me-2" /> Complete Order
+                <MudIcon Icon="@Icons.Material.Filled.AddShoppingCart" class="me-2" /> @Localizer["CompleteOrder"]
             </MudButton>
 
             <MudButton Size="Size.Large" Variant="Variant.Filled" Color="Color.Secondary" class="w-75 button-height"
                        OnClick="()=>RemoveWaitingOrder()">
-                <MudIcon Icon="@Icons.Material.Filled.Delete" class="me-2" /> Remove Order
+                <MudIcon Icon="@Icons.Material.Filled.Delete" class="me-2" /> @Localizer["RemoveOrder"]
             </MudButton>
 
             <MudButton Size="Size.Large" Variant="Variant.Filled" Color="Color.Tertiary" class="w-75 button-height"
                        OnClick='()=>_navigationManager.NavigateTo("/pos")'>
-                <MudIcon Icon="@Icons.Material.Filled.ArrowBack" class="me-2" /> Back To POS
+                <MudIcon Icon="@Icons.Material.Filled.ArrowBack" class="me-2" /> @Localizer["BackToPOS"]
             </MudButton>
         </MudPaper>
     </MudItem>

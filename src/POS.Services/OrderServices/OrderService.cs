@@ -1,16 +1,19 @@
 ﻿using POS.Core.Entities.Customer;
 using POS.Core.Services.Contract.OrderServices;
 using POS.Core.Specifications.OrderSpecs;
+using POS.Core.Services.Contract.AppDateServices;
 
 namespace POS.Services.OrderServices;
 
 public class OrderService : IOrderService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDateService _appDateService;
 
-    public OrderService(IUnitOfWork unitOfWork)
+    public OrderService(IUnitOfWork unitOfWork, IAppDateService appDateService)
     {
         _unitOfWork = unitOfWork;
+        _appDateService = appDateService;
     }
     public async Task<Orders?> CreateOrderAsync(Orders order)
     {
@@ -21,6 +24,10 @@ public class OrderService : IOrderService
         {
             try
             {
+                var appDate = await _appDateService.UpdateOrderNumber();
+                order.OrderID = appDate.CurrentOrderNumber;
+                order.OrderDate = appDate.PosDate.Date.Add(DateTime.Now.TimeOfDay);
+
                 if (order.OrderType == OrderTypes.TakeAway)
                 {
                     if (order.TakeawayCustomer is not null)
@@ -43,6 +50,11 @@ public class OrderService : IOrderService
                     {
                         order.TakeawayCustomerId = null;
                     }
+                }
+                
+                if (string.IsNullOrEmpty(order.MachineName))
+                {
+                    order.MachineName = Environment.MachineName;
                 }
 
                 await _unitOfWork.Repository<Orders>().AddAsync(order);
@@ -107,5 +119,11 @@ public class OrderService : IOrderService
         _unitOfWork.Repository<OrderSetting>().Update(oldOrderSetting);
         await _unitOfWork.CompleteAsync();
         return oldOrderSetting;
+    }
+
+    public async Task<Orders?> GetOrderByOrderIdAsync(int orderId)
+    {
+        var spec = new OrdersByOrderIdSpecs(orderId);
+        return await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
     }
 }

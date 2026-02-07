@@ -3,12 +3,16 @@
 public class TableItem
 {
     public int Id { get; set; }
+    public int DatabaseId { get; set; }
     public int Quantity { get; set; }
     public string? Name { get; set; }
     public decimal? Price { get; set; }
     public decimal? Total { get; set; }
     public decimal? AttributePrice { get; set; }
     public string? LineComment { get; set; }
+    public string? NameAr { get; set; }
+    public int? CategoryId { get; set; }
+    public string? CategoryName { get; set; }
     public bool? PrintInBackupReceiptFromItem { get; set; }
     public bool? PrintInBackupReceiptFromCategory { get; set; }
     public int? ItemKitchenTypeId { get; set; }
@@ -32,8 +36,12 @@ public class TableItem
         return new TableItem
         {
             Id = this.Id,
+            DatabaseId = this.DatabaseId,
             Quantity = this.Quantity,
             Name = this.Name,
+            NameAr = this.NameAr,
+            CategoryId = this.CategoryId,
+            CategoryName = this.CategoryName,
             Price = this.Price,
             Total = this.Total,
             LineComment = this.LineComment,
@@ -41,7 +49,6 @@ public class TableItem
             PrintInBackupReceiptFromCategory = this.PrintInBackupReceiptFromCategory,
             ItemKitchenTypeId = this.ItemKitchenTypeId,
             CategoryKitchenTypeId = this.CategoryKitchenTypeId,
-
             Attributes = this.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>(),
             HasDiscount = this.HasDiscount,
             DiscountPercentage = this.DiscountPercentage,

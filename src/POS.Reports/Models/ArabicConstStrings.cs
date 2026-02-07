@@ -9,4 +9,5 @@ public abstract class ArabicConstStrings
     public const string Discount = "الاجمالي";
     public const string Tax = "الضريبة";
     public const string From = "الكاشير";
+    public const string Table = "طاولة";
 }

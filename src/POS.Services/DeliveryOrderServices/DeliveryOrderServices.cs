@@ -1,13 +1,16 @@
 ﻿namespace POS.Services.DeliveryOrderServices;
+using POS.Core.Services.Contract.AppDateServices;
 
 internal class DeliveryOrderServices : IDeliveryOrderServices
 {
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAppDateService _appDateService;
 
-    public DeliveryOrderServices(IUnitOfWork unitOfWork)
+    public DeliveryOrderServices(IUnitOfWork unitOfWork, IAppDateService appDateService)
     {
         _unitOfWork = unitOfWork;
+        _appDateService = appDateService;
     }
 
     public async Task<Orders?> CreateDeliveryOrderAsync(Orders order)
@@ -19,6 +22,15 @@ internal class DeliveryOrderServices : IDeliveryOrderServices
         {
             try
             {
+                var appDate = await _appDateService.UpdateOrderNumber();
+                order.OrderID = appDate.CurrentOrderNumber;
+                order.OrderDate = appDate.PosDate.Date.Add(DateTime.Now.TimeOfDay);
+
+                if (string.IsNullOrEmpty(order.MachineName))
+                {
+                    order.MachineName = Environment.MachineName;
+                }
+
                 await _unitOfWork.Repository<Orders>().AddAsync(order);
 
                 if (order.OrderDetails != null && order.OrderDetails.Any())

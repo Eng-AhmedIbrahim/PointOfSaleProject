@@ -1,3 +1,4 @@
+@using BlazorBase.Services
 @inject NavigationManager navigationManager
 @inject CommonProperties commonProperties
 @inject ISnackbar Snackbar
@@ -6,6 +7,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject CartService _cartService
+@inject LocalizationService Localizer
 
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
 
@@ -16,7 +18,7 @@
                StartIcon="@Icons.Material.Filled.Discount"
                class="button-color-footer"
                OnClick="@(() => OpenDrawer(Anchor.Bottom))">
-        خصم
+        @Localizer["Discount"]
     </MudButton>
     @* } *@
     <MudDrawer @bind-Open="@_open" MaxWidth="100%" MaxHeight="100vh" Anchor="@_anchor" Elevation="3" Variant="@DrawerVariant.Temporary">
@@ -26,12 +28,12 @@
 
             <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseDrawer"
                        StartIcon="@Icons.Material.Filled.Close" Class="close-btn">
-                Close
+                @Localizer["Close"]
             </MudButton>
 
             <MudButton Variant="Variant.Filled" Color="Color.Surface" OnClick='()=>_cartService.ResetDiscount()'
                        StartIcon="@Icons.Material.Filled.Close" Class="close-btn">
-                Remove Discount
+                @Localizer["RemoveDiscount"]
             </MudButton>
         </MudDrawerHeader>
 
@@ -48,14 +50,14 @@
                            OnClick='() => discountType = "percentage"'
                            StartIcon="@Icons.Material.Filled.Percent"
                            Class="discount-btn">
-                    Percentage
+                    @Localizer["Percentage"]
                 </MudButton>
                 <MudButton Variant="Variant.Filled"
                            Color="@(discountType == "value" ? Color.Primary : Color.Secondary)"
                            OnClick='() => discountType = "value"'
                            StartIcon="@Icons.Material.Filled.AttachMoney"
                            Class="discount-btn">
-                    Fixed Value
+                    @Localizer["FixedAmount"]
                 </MudButton>
             </MudStack>
 

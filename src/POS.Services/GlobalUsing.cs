@@ -53,3 +53,7 @@ global using System.Drawing.Printing;
 global using POS.Core.Services.Contract.KitchenServices;
 global using POS.Core.Specifications.KitchenSpecs;
 global using POS.Core.Services.Contract.DeliveryOrderServices;
+global using POS.Contract.Dtos.DineIn;
+global using POS.Core.Services.Contract.DineInOrderServices;
+global using POS.Core.Services.Contract.OrderTrackServices;
+global using POS.Core.Specifications.DineInSpecs;

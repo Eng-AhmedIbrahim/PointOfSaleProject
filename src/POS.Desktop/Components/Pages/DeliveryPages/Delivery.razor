@@ -8,216 +8,273 @@
 @inject ISnackbar _snackbar
 @inject IDialogService _dialogService
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
+@inject LocalizationService Localizer
+@inject Section4ButtonsServices _section4ButtonsServices
 
-<MudGrid Spacing="0" Class="overflow-hidden">
+<MudGrid Spacing="0" Class="overflow-hidden main-delivery-container">
+    <!-- Left Section: Customer Details -->
     <MudItem xs="6" Class="d-flex flex-column h-100">
-        <MudText Typo="Typo.h6" Class="section-label">Customer Details</MudText>
-        <MudPaper Elevation="2" Class="rounded-md p-4 overflow-y-auto overflow-x-hidden flex-grow-1" Style="height: 100%;">
-            <MudGrid Spacing="3" GutterSize="3" Class="h-100">
-                <!-- Row 1: Phone Numbers -->
-                <MudItem xs="6">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FirstPhoneNumber"
-                    Label="Primary Phone"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Phone"
-                    Immediate="true"
-                    FullWidth="true"
-                    @onkeydown="HandleKeyDown" />
-                </MudItem>
-                <MudItem xs="6">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.SecondPhoneNumber"
-                    Label="Secondary Phone"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Smartphone"
-                    Immediate="true"
-                    FullWidth="true" />
-                </MudItem>
-                <MudItem xs="6">
-                    <MudAutocomplete T="string"
-                    Label="Title"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.PersonAddAlt"
-                    Placeholder="Client Title"
-                    FullWidth="true"
-                    @bind-Value="_commonProperties!.CustomerDetails!.ClientTitle"
-                    SearchFunc="SearchTitles"
-                    Immediate="true"
-                    ResetValueOnEmptyText="true"
-                    Required="true"
-                    Strict="true" />
-                </MudItem>
+        <MudText Typo="Typo.h6" Class="section-label premium-label">
+            <MudIcon Icon="@Icons.Material.Filled.PersonPin" Class="mr-2 mb-1" />
+            @Localizer["CustomerDetails"]
+        </MudText>
+        
+        <div class="delivery-content-area pa-4">
+            <div class="premium-customer-card">
+                <div class="card-glass-effect"></div>
+                <div class="card-content">
+                    <MudGrid Spacing="3" GutterSize="3">
+                        <!-- Phones -->
+                        <MudItem xs="6">
+                            <div class="input-group-modern">
+                                <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FirstPhoneNumber"
+                                             Label="@Localizer["PrimaryPhone"]"
+                                             Variant="Variant.Outlined"
+                                             Adornment="Adornment.Start"
+                                             AdornmentIcon="@Icons.Material.Filled.Phone"
+                                             Immediate="true"
+                                             FullWidth="true"
+                                             @onkeydown="HandleKeyDown"
+                                             Class="modern-field" />
+                            </div>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <div class="input-group-modern">
+                                <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.SecondPhoneNumber"
+                                             Label="@Localizer["SecondaryPhone"]"
+                                             Variant="Variant.Outlined"
+                                             Adornment="Adornment.Start"
+                                             AdornmentIcon="@Icons.Material.Filled.Smartphone"
+                                             Immediate="true"
+                                             FullWidth="true"
+                                             Class="modern-field" />
+                            </div>
+                        </MudItem>
 
-                <MudItem xs="6">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.CustomerName"
-                    Label="Name"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Person"
-                    Immediate="true"
-                    FullWidth="true" />
-                </MudItem>
+                        <!-- Identity -->
+                        <MudItem xs="6">
+                            <MudAutocomplete T="string"
+                                            Label="@Localizer["ClientTitle"]"
+                                            Variant="Variant.Outlined"
+                                            Adornment="Adornment.Start"
+                                            AdornmentIcon="@Icons.Material.Filled.PersonAddAlt"
+                                            Placeholder="@Localizer["ClientTitle"]"
+                                            FullWidth="true"
+                                            @bind-Value="_commonProperties!.CustomerDetails!.ClientTitle"
+                                            SearchFunc="SearchTitles"
+                                            Immediate="true"
+                                            ResetValueOnEmptyText="true"
+                                            Required="true"
+                                            Strict="true"
+                                            Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.CustomerName"
+                                         Label="@Localizer["CustomerName"]"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.Person"
+                                         Immediate="true"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
 
-                <!-- Row 3: Branch & Zone -->
+                        <!-- Location -->
+                        <MudItem xs="6">
+                            <MudSelect T="string"
+                                      Label="@Localizer["Branch"]"
+                                      Variant="Variant.Outlined"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Store"
+                                      Placeholder="@Localizer["Branch"]"
+                                      FullWidth="true"
+                                      Value="_commonProperties.CustomerDetails!.BranchName"
+                                      ValueChanged="OnValueChanged"
+                                      ValueExpression="@(() => _commonProperties.CustomerDetails.BranchName)"
+                                      Class="modern-field">
+                                @foreach (var branch in Branches ?? [])
+                                {
+                                    <MudSelectItem Value="@branch.Name">@branch.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudAutocomplete T="string"
+                                            Label="@Localizer["Zone"]"
+                                            Variant="Variant.Outlined"
+                                            Adornment="Adornment.Start"
+                                            AdornmentIcon="@Icons.Material.Filled.Map"
+                                            Placeholder="@Localizer["Zone"]"
+                                            FullWidth="true"
+                                            @bind-Value="_commonProperties.CustomerDetails!.ZoneName"
+                                            SearchFunc="SearchZones"
+                                            Immediate="true"
+                                            ResetValueOnEmptyText="true"
+                                            Required="true"
+                                            Strict="true"
+                                            Disabled="!IsBranchSelected"
+                                            Class="modern-field" />
+                        </MudItem>
 
-                <MudItem xs="6">
-                    <MudSelect T="string"
-                    Label="Branch"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Store"
-                    Placeholder="Select Branch"
-                    FullWidth="true"
-                    Value="_commonProperties.CustomerDetails!.BranchName"
-                    ValueChanged="OnValueChanged"
-                    ValueExpression="@(() => _commonProperties.CustomerDetails.BranchName)">
-                        @foreach (var branch in Branches ?? [])
-                        {
-                            <MudSelectItem Value="@branch.Name">@branch.Name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
+                        <!-- Address -->
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.ClientAddress"
+                                         Label="@Localizer["Address"]"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.LocationCity"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
 
+                        <!-- Building Info -->
+                        <MudItem xs="3">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.HomeNumber"
+                                         Label="@Localizer["HomeNumber"]"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.Home"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FloorNumber"
+                                         Label="@Localizer["FloorNumber"]"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.Stairs"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FlatNumber"
+                                         Label="@Localizer["FlatNumber"]"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.Apartment"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.OrderDiscount"
+                                          Label="@($"{Localizer["Discount"]} %")"
+                                          Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.Discount"
+                                         FullWidth="true"
+                                         Disabled="true"
+                                         Class="modern-field" />
+                        </MudItem>
 
-                <MudItem xs="6">
-                    <MudAutocomplete T="string"
-                    Label="Zone"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Map"
-                    Placeholder="Select Zone"
-                    FullWidth="true"
-                    @bind-Value="_commonProperties.CustomerDetails!.ZoneName"
-                    SearchFunc="SearchZones"
-                    Immediate="true"
-                    ResetValueOnEmptyText="true"
-                    Required="true"
-                    Strict="true"
-                    Disabled="!IsBranchSelected" />
-                </MudItem>
-
-                <!-- Row 4: Address -->
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.ClientAddress"
-                    Label="Address"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.LocationCity"
-                    FullWidth="true"
-                    Lines="1">
-                    </MudTextField>
-                </MudItem>
-
-                <!-- Row 5: Home, Floor, Flat, and Discount -->
-                <MudItem xs="3">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.HomeNumber"
-                    Label="Home Number"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Home"
-                    FullWidth="true" />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FloorNumber"
-                    Label="Floor Number"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Stairs"
-                    FullWidth="true" />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.FlatNumber"
-                    Label="Flat Number"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Apartment"
-                    FullWidth="true" />
-                </MudItem>
-                <MudItem xs="3">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.OrderDiscount"
-                    Label="Discount %"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Discount"
-                    FullWidth="true" 
-                    Disabled="true"/>
-                </MudItem>
-
-                <!-- Row 6: Notes -->
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.AddressNote"
-                    Label="Address Note"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.LocationCity"
-                    FullWidth="true"
-                    Lines="2">
-                    </MudTextField>
-                </MudItem>
-                <MudItem xs="6">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.KitchenNote"
-                    Label="Kitchen Note"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.Kitchen"
-                    FullWidth="true"
-                    Lines="2">
-                    </MudTextField>
-                </MudItem>
-                <MudItem xs="6">
-                    <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.ClientNote"
-                    Label="Client Note"
-                    Variant="Variant.Outlined"
-                    Adornment="Adornment.Start"
-                    AdornmentIcon="@Icons.Material.Filled.NoteAdd"
-                    FullWidth="true"
-                    Lines="2">
-                    </MudTextField>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
+                        <!-- Notes -->
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.AddressNote"
+                                         Label="@Localizer["AddressNote"]"
+                                         Variant="Variant.Outlined"
+                                         Lines="1"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.KitchenNote"
+                                         Label="@Localizer["KitchenNote"]"
+                                         Variant="Variant.Outlined"
+                                         Lines="1"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.ClientNote"
+                                         Label="@Localizer["ClientNote"]"
+                                         Variant="Variant.Outlined"
+                                         Lines="1"
+                                         FullWidth="true"
+                                         Class="modern-field" />
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </div>
+        </div>
     </MudItem>
 
 
     <!-- Section 2 -->
 
-    <MudItem xs="5" Class="full-height">
-        <MudText Typo="Typo.h6" Class="section-label">Last 10 Orders</MudText>
-        <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden full-height border-r border-b border-solid custom-border-color">
-            <MudStack Row="false" AlignItems="AlignItems.Start" Spacing="2" Class="full-width">
-                <MudPaper Elevation="1" Class="rounded-0 overflow-y-auto overflow-x-hidden border-b border-solid custom-border-color full-width">
+    <!-- Right Section: Last 10 Orders + Order Summary -->
+    <MudItem xs="5" Class="d-flex flex-column h-100 border-l border-solid custom-border-color">
+        <MudText Typo="Typo.h6" Class="section-label premium-label">
+            <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2 mb-1" />
+            @Localizer["Last10Orders"]
+        </MudText>
+        
+        <div class="delivery-details-content flex-grow-1 d-flex flex-column">
+            <!-- Orders History Table -->
+            <div class="history-table-container flex-grow-1 overflow-y-auto pa-2">
+                <MudTable T="OrderModel" Items="_orders" MultiSelection="true" SelectionChangeable="_selectionChangeable" 
+                          Hover="true" Dense="true" Class="premium-table">
+                    <HeaderContent>
+                        <MudTh>@Localizer["Id"]</MudTh>
+                        <MudTh>@Localizer["Date"]</MudTh>
+                        <MudTh>@Localizer["Total"]</MudTh>
+                        <MudTh>@Localizer["Actions"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="order">
+                        <MudTd>@order.Id</MudTd>
+                        <MudTd>@DateTime.Now.ToShortDateString()</MudTd>
+                        <MudTd>@order.MolarMass @Localizer["EGP"]</MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info" Title="@Localizer["ViewDetails"]" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
 
-                    <MudTable T="OrderModel" Items="_orders" MultiSelection="true" SelectionChangeable="_selectionChangeable" Hover="true" Dense="true">
-                        <HeaderContent>
-                            <MudTh Style="width: 50px;">Id</MudTh>
-                            <MudTh Style="width: 100px;">Sign</MudTh>
-                            <MudTh Style="width: 200px;">Name</MudTh>
-                            <MudTh Style="width: 100px;">Position</MudTh>
-                            <MudTh Style="width: 150px;">Molar Mass</MudTh>
-                        </HeaderContent>
+            <!-- Premium Order Summary Card (similar to Dine-in) -->
+            <div class="summary-card-wrapper pa-3">
+                <div class="premium-summary-card glass-premium">
+                    <div class="card-glass-effect"></div>
+                    <div class="card-content">
+                        <div class="summary-header">
+                            <span class="order-number-badge">@Localizer["CurrentOrder"]</span>
+                            <div class="time-box">
+                                <MudIcon Icon="@Icons.Material.Filled.DeliveryDining" Size="Size.Small" />
+                                <span>@Localizer["Delivery"]</span>
+                            </div>
+                        </div>
 
-                        <RowTemplate Context="order">
-                            <MudTd>@order.Id</MudTd>
-                            <MudTd>@order.Sign</MudTd>
-                            <MudTd>@order.Name</MudTd>
-                            <MudTd>@order.Position</MudTd>
-                            <MudTd>@order.MolarMass</MudTd>
-                        </RowTemplate>
-                    </MudTable>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="summary-label">@Localizer["CustomerName"]</span>
+                                <span class="summary-value highlight">@(_commonProperties!.CustomerDetails!.CustomerName ?? Localizer["WalkIn"])</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">@Localizer["Zone"]</span>
+                                <span class="summary-value">@(_commonProperties!.CustomerDetails!.ZoneName ?? "---")</span>
+                            </div>
+                        </div>
 
-                </MudPaper>
-            </MudStack>
-        </MudPaper>
+                        <div class="grand-total-section mt-3">
+                            <span class="total-label">@Localizer["Total"]</span>
+                            <div class="total-amount-display">
+                                <span class="currency">@Localizer["EGP"]</span>
+                                <span class="amount">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </MudItem>
 
-    <!-- Section 3 -->
-    <MudItem xs="1">
-        <MudText Typo="Typo.h6" Class="section-label">Actions</MudText>
-        <MudPaper Elevation="1" Height="100%" Class="rounded-0 overflow-hidden border-r border-b border-solid custom-border-color">
+    <!-- Section 3: Actions -->
+    <MudItem xs="1" Class="d-flex flex-column h-100 border-l border-solid custom-border-color">
+        <MudText Typo="Typo.h6" Class="section-label premium-label">
+            <MudIcon Icon="@Icons.Material.Filled.Bolt" Class="mr-2 mb-1" />
+            @Localizer["Actions"]
+        </MudText>
+        <div class="actions-content-area flex-grow-1">
             <DeliveryButtons />
-        </MudPaper>
+        </div>
     </MudItem>
 
 
@@ -225,34 +282,163 @@
 
 
 <style>
-    .full-height {
-    height: calc(100vh - 41.59px) !important;
-    max-height: calc(100vh - 41.59px) !important;
-    box-sizing: border-box;
+    .main-delivery-container {
+        height: 100vh;
+        background-color: #f8fafc;
+        overflow: hidden;
     }
 
-    .full-width {
-    width: 100%;
+    .premium-label {
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%) !important;
+        font-family: 'Cairo', sans-serif !important;
+        letter-spacing: 0.5px;
+        text-transform: capitalize !important;
     }
 
-
-    .total-field {
-    font-weight: bold;
-    color: #374151;
-    background: #E5E7EB;
+    .delivery-content-area {
+        height: calc(100vh - 41.59px);
+        overflow-y: auto;
     }
 
-    .full-height-Section2 {
-    height: 100%;
-    overflow: hidden;
+    .premium-customer-card {
+        position: relative;
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     }
 
-
-    .mud-input-label {
-    font-size: 17px !important;
-    font-weight: bold !important;
+    .modern-field {
+        margin-bottom: 8px;
     }
 
+    .delivery-details-content {
+        height: calc(100vh - 41.59px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .premium-table {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .premium-table ::deep .mud-table-head {
+        background: #f1f5f9;
+    }
+
+    .premium-table ::deep .mud-table-head .mud-th {
+        font-weight: 800;
+        font-family: 'Cairo', sans-serif;
+        color: #475569;
+    }
+
+    /* Summary Card Styling (Consistent with Dine-in) */
+    .premium-summary-card {
+        position: relative;
+        background: #1e293b;
+        color: white;
+        border-radius: 16px;
+        padding: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-premium {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+
+    .card-glass-effect {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .order-number-badge {
+        background: #3b82f6;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .time-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0.7;
+        font-size: 0.85rem;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .summary-label {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .summary-value.highlight {
+        color: #3b82f6;
+        font-size: 1.25rem;
+    }
+
+    .grand-total-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-label {
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    .total-amount-display {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+
+    .amount {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: #10b981;
+    }
 </style>
 
 

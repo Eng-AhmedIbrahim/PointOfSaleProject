@@ -38,7 +38,11 @@ public class DesktopPrintOrderService : IPrintOrderService
                     OrderType = "DineIn",
                     OrderDetails = order.BasicOrderDetails.Items,
                     OrderNotice = _commonProperties.OrderNote,
-                    OrderSettings = _commonProperties.OrderSettings
+                    OrderSettings = _commonProperties.OrderSettings,
+                    DiscountReason = _commonProperties.OrderDiscount?.DiscountReason,
+                    DiscountType = _commonProperties.OrderDiscount?.DiscountType,
+                    DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0,
+                    TotalOrderDiscount = _commonProperties.TotalDiscount
                 };
 
                 if (orderSettings.FullKitchenReceiptCount > 0)
@@ -66,7 +70,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             CashierName = order.BasicOrderDetails.CashierName ?? "Cashier",
             CaptainName = order.CaptainName ?? "Captain",
             ReceiptType = "DineIn",
-            DateCreated = DateTime.Now,
+            DateCreated = order.BasicOrderDetails?.OrderDataTime ?? DateTime.Now,
             PaymentMethod = "Cash",
             FooterMessage = _commonProperties.DineInSettings?.OrderStatment ?? "",
             LogoPath = "", 
@@ -119,6 +123,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         if (result is null)
             return false;
 
+        _commonProperties.CurrentOrderId = result.OrderId + 1;
+        if (result.OrderDate.HasValue)
+        {
+            _commonProperties.PosDate = DateOnly.FromDateTime(result.OrderDate.Value);
+        }
+
         try
         {
             await PrintTakeAwayLocally(_commonProperties.OrderDto!, result);
@@ -141,6 +151,60 @@ public class DesktopPrintOrderService : IPrintOrderService
         return true;
     }
 
+    public async Task<bool> ReprintOrderAsync(int orderId)
+    {
+        var order = await _orderSettingsService.GetOrderByIdAsync(orderId);
+        if (order == null) return false;
+
+        if (order.OrderSettings == null || !order.OrderSettings.Any())
+        {
+             order.OrderSettings = _commonProperties.OrderSettings;
+        }
+
+        if (order.OrderType == "DineIn")
+        {
+            var dineInOrderDetails = new DineInOrderDetails
+            {
+                BasicOrderDetails = new BlazorBase.Models.OrderDetails
+                {
+                    OrderId = order.OrderId,
+                    CashierName = order.CashierName,
+                    Items = order.OrderDetails ?? new List<TableItem>(),
+                    OrderDataTime = order.OrderDate ?? DateTime.Now,
+                    Total = order.GrandTotal ?? 0,
+                    Service = order.Services ?? 0,
+                    Tax = order.Tax ?? 0,
+                    OrderDiscount = new OrderDiscount
+                    {
+                        Value = order.TotalDiscount ?? 0, 
+                        Percentage = order.DiscountPercentage ?? 0
+                    }
+                },
+                CaptainName = order.WaiterName ?? "Unknown", 
+                RelatedTableId = order.TableId,
+                RelatedTableName = order.TableName
+            };
+            
+            await PrintInitialDineInOrder(dineInOrderDetails);
+        }
+        else 
+        {
+            await PrintTakeAwayLocally(order, order);
+            
+            var orderSettings = order.OrderSettings?.FirstOrDefault(o => o.OrderType == order.OrderType);
+            if (orderSettings != null)
+            {
+                if (orderSettings.FullKitchenReceiptCount > 0)
+                    await PrintBackupReceiptsLocally(order, order);
+
+                if (orderSettings.SeparateReceiptCount > 0)
+                    await PrintKitchenReceiptsLocally(order, order);
+            }
+        }
+        
+        return true;
+    }
+
     private void BackupMainOrderDtoDetails(string customerName, string customerPhone, decimal paid = 0, PaymentMethod paymentMethod = PaymentMethod.Cash)
     {
         _commonProperties.OrderDto!.OrderId = _commonProperties.CurrentOrderId;
@@ -157,6 +221,8 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.Tax = _commonProperties.TakeAwaySettings!.Tax;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0;
+        _commonProperties.OrderDto.DiscountReason = _commonProperties.OrderDiscount?.DiscountReason;
+        _commonProperties.OrderDto.DiscountType = _commonProperties.OrderDiscount?.DiscountType;
         _commonProperties.OrderDto.GrandTotal = _commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0;
         _commonProperties.OrderDto.OrderDate = DateTime.Now;
         _commonProperties.OrderDto.OrderState = "Completed";
@@ -167,6 +233,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.CustomerName = customerName;
         _commonProperties.OrderDto.CustomerPhone = customerPhone;
         _commonProperties.OrderDto.OrderSettings = _commonProperties.OrderSettings;
+        _commonProperties.OrderDto.MachineName = Environment.MachineName;
     }
 
     private async Task PrintTakeAwayLocally(OrderDto orderDto, OrderDto createdOrder)
@@ -179,8 +246,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             Id = createdOrder.OrderId,
             StoreName = orderDto.BranchName ?? "Store",
             CashierName = orderDto.CashierName ?? "Cashier",
-            ReceiptType = "TakeAway",
-            DateCreated = orderDto.OrderDate ?? DateTime.Now,
+            ReceiptType = orderDto.OrderType ?? "TakeAway",
+            DateCreated = createdOrder.OrderDate ?? DateTime.Now,
             PaymentMethod = orderDto.PaymentMethod.ToString() ?? "Cash",
             FooterMessage = orderDto.FooterMessage ?? "",
             LogoPath = "",
@@ -242,7 +309,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             Id = createdOrder.OrderId,
             CashierName = order.CashierName!,
             OrderType = order.OrderType ?? "TakeAway",
-            DateCreated = DateTimeOffset.Now,
+            DateCreated = createdOrder.OrderDate.HasValue ? new DateTimeOffset(createdOrder.OrderDate.Value) : DateTimeOffset.Now,
             Items = filteredItems,
             KitchenNote = order.OrderNotice!,
             KitchenType = "Backup"
@@ -310,7 +377,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                 Id = createdOrder.OrderId,
                 CashierName = order.CashierName!,
                 OrderType = order.OrderType ?? "TakeAway",
-                DateCreated = DateTimeOffset.Now,
+                DateCreated = createdOrder.OrderDate.HasValue ? new DateTimeOffset(createdOrder.OrderDate.Value) : DateTimeOffset.Now,
                 Items = kitchenGroup.Items,
                 KitchenNote = order.OrderNotice!,
                 KitchenType = kitchenGroup.KitchenName

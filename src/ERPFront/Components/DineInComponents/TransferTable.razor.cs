@@ -14,6 +14,7 @@ public partial class TransferTable
             var allTables = await _dineInService.GetTables();
 
             OccupiedTables = _commonProperties.DineInOrdersDetails.Values
+                .SelectMany(x => x)
                 .Where(x => !string.IsNullOrEmpty(x.RelatedTableName))
                 .ToList();
 
@@ -52,13 +53,19 @@ public partial class TransferTable
     {
         if (oldTableId == null || newTableId == null) return;
 
-        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(oldTableId ?? 0, out var orderDetail) && orderDetail != null)
+        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(oldTableId ?? 0, out var orderDetails) && orderDetails != null && orderDetails.Any())
         {
-            orderDetail.RelatedTableId = newTableId;
-            orderDetail.RelatedTableName = newTableName;
+            foreach (var orderDetail in orderDetails.ToList())
+            {
+                orderDetail.RelatedTableId = newTableId;
+                orderDetail.RelatedTableName = newTableName;
 
+                if (!_commonProperties.DineInOrdersDetails.ContainsKey(newTableId.Value))
+                    _commonProperties.DineInOrdersDetails[newTableId.Value] = new List<DineInOrderDetails>();
+                
+                _commonProperties.DineInOrdersDetails[newTableId.Value].Add(orderDetail);
+            }
             _commonProperties.DineInOrdersDetails.Remove(oldTableId ?? 0);
-            _commonProperties.DineInOrdersDetails[newTableId.Value] = orderDetail;
         }
     }
 

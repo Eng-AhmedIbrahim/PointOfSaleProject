@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime Js
+﻿@inject LocalizationService Localizer
+@inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
 @inject CartService _cartService
@@ -16,10 +17,10 @@
           RowClass="liner-grid-buttons">
 
     <HeaderContent>
-        <MudTh Style="width: min-content; white-space: nowrap;font-weight:bold;color: #143155">Qty</MudTh>
-        <MudTh Style="font-weight:bold;color: #143155">Name</MudTh>
-        <MudTh Style="font-weight:bold;color: #143155">Price</MudTh>
-        <MudTh Style="font-weight:bold;color: #143155">Total</MudTh>
+        <MudTh Style="width: min-content; white-space: nowrap;font-weight:bold;color: #143155">@Localizer["Qty"]</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">@Localizer["Name"]</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">@Localizer["Price"]</MudTh>
+        <MudTh Style="font-weight:bold;color: #143155">@Localizer["Total"]</MudTh>
     </HeaderContent>
 
     <RowTemplate>

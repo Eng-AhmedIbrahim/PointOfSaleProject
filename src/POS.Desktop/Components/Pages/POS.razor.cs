@@ -22,6 +22,7 @@ public partial class POS
         _commonProperties.OnChange += StateHasChanged;
         CustomizationSettingsService.OnChanged += StateHasChanged;
         _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
+        Localizer.OnLanguageChanged += StateHasChanged;
 
         if (string.IsNullOrEmpty(_commonProperties.CustomerDetails!.FirstPhoneNumber))
             _handelDeliveryInvocation.DeliveryDetails = string.Empty;
@@ -37,7 +38,6 @@ public partial class POS
 
         if (_commonProperties!.TableItems!.Any())
         {
-            CalculateTotalAmount();
             _cartService.CalculateSection4Table();
         }
         else
@@ -133,7 +133,11 @@ public partial class POS
     {
         TableItem newItem = new TableItem
         {
+            Id = existingCashedItem.Id,
             Name = existingCashedItem.Name,
+            NameAr = existingCashedItem.NameAr,
+            CategoryId = existingCashedItem.CategoryId,
+            CategoryName = existingCashedItem.CategoryName,
             Price = existingCashedItem.Price,
             Quantity = 1,
             Total = existingCashedItem.Price,
@@ -235,11 +239,6 @@ public partial class POS
 
     private void UpdateOrderTotal()
     {
-        _commonProperties!.TotalOrderPrice = _commonProperties!.TableItems!
-            .Where(item => !item.IsReadOnly)
-            .Sum(item => item.Total);
-
-        _cartService.CalculateTotalAmountFromTableItems(_commonProperties!.TableItems!);
         _cartService.CalculateSection4Table();
     }
 
@@ -300,7 +299,9 @@ public partial class POS
         TableItem? newTableItem = new TableItem
         {
             Id = menuItem.Id,
-            Name = menuItem.ArabicName,
+            Name = menuItem.EnglishName ?? menuItem.ArabicName,
+            NameAr = menuItem.ArabicName,
+            CategoryId = menuItem.CategoryId,
             Price = menuItem.Price ?? 0,
             Quantity = 1,
             Total = menuItem.Price ?? 0,
@@ -316,8 +317,6 @@ public partial class POS
 
         if (_commonProperties!.UpdateDineInOrder)
             _commonProperties!.AppendedTableItems!.Add(newTableItem);
-
-        CalculateTotalAmount();
 
         _cartService.CalculateSection4Table();
 
@@ -338,21 +337,13 @@ public partial class POS
     public void ClearTableItems()
     {
         _commonProperties?.TableItems?.Clear();
-        CalculateTotalAmount();
+        _cartService.CalculateSection4Table();
         StateHasChanged();
     }
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
         => _commonProperties?.TableItems?.Where(c => c!.Attributes!.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
 
-    public void CalculateTotalAmount()
-    {
-        if (_commonProperties?.TableItems != null)
-        {
-            _commonProperties._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
-            StateHasChanged();
-        }
-    }
     private async Task GetCurrentDayAndTime()
     {
         var appDate = await _appDate.GetAppDate();
@@ -382,7 +373,10 @@ public partial class POS
                         AddServiceToItemPrice = item.AddServiceToItemPrice,
                         ClosingReceiptCount = item.ClosingReceiptCount,
                         CustomerReceiptCount = item.CustomerReceiptCount,
-                        FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                        FullKitchenReceiptCount = item.FullKitchenReceiptCount,
+                        CanCloseWithoutPrint = item.CanCloseWithoutPrint,
+                        DeductCaptainTips = item.DeductCaptainTips,
+                        CaptainTipsAmount = item.CaptainTipsAmount
                     };
                     break;
                 case "TakeAway":
@@ -425,6 +419,7 @@ public partial class POS
         _commonProperties.OnChange -= StateHasChanged;
         CustomizationSettingsService.OnChanged -= StateHasChanged;
         _section4ButtonsServices.OnChanged -= StateHasChanged;
+        Localizer.OnLanguageChanged -= StateHasChanged;
     }
 
     [JSInvokable]
@@ -465,8 +460,15 @@ public partial class POS
         {
             _cartService.ClearTakeAwayOrderAttributes();
             _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            await _appDate.UpdateOrderCount();
-            await GetCurrentDayAndTime();
+            
+            // Atomically update order count and get next number
+            var appDateResult = await _appDate.UpdateOrderCount();
+            if (appDateResult != null)
+            {
+                _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
+                _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
+            }
+            
             _services.NotifyStateChanged();
         }
     }

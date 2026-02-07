@@ -17,6 +17,18 @@ public class ReceiptDocument : IDocument
         container.Page(page =>
         {
             ConfigurePage(ref page);
+            
+            if (receipt.IsCopy)
+            {
+                page.Foreground()
+                    .AlignCenter()
+                    .AlignMiddle()
+                    .Rotate(-45)
+                    .Text("COPY")
+                    .FontSize(60)
+                    .FontColor(Colors.Grey.Lighten3);
+            }
+
             page.Content()
                 .Column(column =>
                 {

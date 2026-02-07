@@ -86,11 +86,13 @@
 
 @code {
     [Inject] private LocalizationService _localizationService { get; set; } = default!;
+    [Inject] private DesktopFontSizeService _fontSizeService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         _commonProperties.OnChange += StateHasChanged;
         await _localizationService.InitializeAsync();
+        await _fontSizeService.LoadStoredFontSizes();
     }
 
     public void Dispose()

@@ -20,16 +20,19 @@ public class AppDbContext : DbContext
     public DbSet<OrderItemAttributes> OrderItemAttributes { get; set; }
     public DbSet<Orders> Orders { get; set; }
     public DbSet<OrderItemsDetails> OrdersDetails { get; set; }
+    public DbSet<OrderItemComment> OrderItemComments { get; set; }
     public DbSet<OrderSetting> OrderSettings { get; set; }
     public DbSet<PrintingSettings> PrintingSettings { get; set; }
     public DbSet<TakeawayCustomer> TakeawayCustomers { get; set; }
     public DbSet<TableGroup> TableGroups { get; set; }
     public DbSet<Table> Tables { get; set; }
+    public DbSet<DineInOrder> DineInOrders { get; set; }
     public DbSet<AppDate> AppDate { get; set; }
     public DbSet<ShiftHandover> ShiftHandovers { get; set; }
     public DbSet<DeliveryCompanyInfo> DeliveryCompanyInfo { get; set; }
     public DbSet<DeliveryCustomerTitle> DeliveryCustomerTitle { get; set; }
     public DbSet<DeliveryZone> DeliveryZones { get; set; }
     public DbSet<CustomerAddress> CustomerAddress { get; set; }
+    public DbSet<OrderTrack> OrderTracks { get; set; }
 
 }

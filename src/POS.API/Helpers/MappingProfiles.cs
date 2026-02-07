@@ -1,4 +1,11 @@
-﻿using POS.Contract.Dtos.KitchenDtos;
+﻿using AutoMapper;
+using POS.Core.Entities;
+using POS.Core.Entities.DineIn;
+using POS.Core.Entities.OrderEntity;
+using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.OrderDtos;
+using POS.Contract.Dtos.KitchenDtos;
+using BlazorBase.Models;
 
 namespace POS.API.Helpers;
 
@@ -195,8 +202,54 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.ToString()))
             .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.ToString()))
             .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)) // هنعمل مابنج تاني للجوه
-            .ForAllMembers(opts => opts.Ignore());
+            .ForMember(dest => dest.MachineName, opt => opt.MapFrom(src => src.MachineName))
+            .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate));
 
         CreateMap<OrderItemsDetails, TableItem>();
+
+        // New mappings for DineInOrder and OrderTrack
+        CreateMap<OrderItemsDetails, OrderItemsDetailsDto>()
+            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.ItemName ?? (src.MenuSalesItem != null ? src.MenuSalesItem.ArabicName : "")))
+            .ForMember(dest => dest.ItemNameAr, opt => opt.MapFrom(src => src.ItemNameAr ?? (src.MenuSalesItem != null ? src.MenuSalesItem.ArabicName : "")))
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId ?? (src.MenuSalesItem != null ? src.MenuSalesItem.CategoryId : null)))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName ?? (src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.ArabicName : "")))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.UnitPrice ?? (src.MenuSalesItem != null ? src.MenuSalesItem.Price : 0)))
+            .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments))
+            .ReverseMap()
+            .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments));
+
+        CreateMap<OrderItemComment, OrderItemCommentDto>().ReverseMap();
+        CreateMap<OrderItemAttributes, OrderItemAttributesDto>().ReverseMap();
+        CreateMap<OrderTrack, OrderTrackDto>().ReverseMap();
+
+        CreateMap<Orders, DineInOrderDto>()
+            .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderID))
+            .ForMember(dest => dest.BranchId, opt => opt.MapFrom(src => src.BranchID))
+            .ForMember(dest => dest.OrderDateTime, opt => opt.MapFrom(src => src.OrderDate))
+            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.HasValue ? src.OrderState.Value.ToString() : "Open"))
+            .ForMember(dest => dest.DiscountAmount, opt => opt.MapFrom(src => src.Discount))
+            .ForMember(dest => dest.TotalDiscount, opt => opt.MapFrom(src => src.TotalDiscount))
+            .ForMember(dest => dest.Subtotal, opt => opt.MapFrom(src => src.Subtotal))
+            .ForMember(dest => dest.GrandTotal, opt => opt.MapFrom(src => src.GrandTotal))
+            .ForMember(dest => dest.Tax, opt => opt.MapFrom(src => src.Tax))
+            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service))
+            .ForMember(dest => dest.TableId, opt => opt.MapFrom(src => src.TableID))
+            .ForMember(dest => dest.TableName, opt => opt.MapFrom(src => src.TableName))
+            .ForMember(dest => dest.CaptainName, opt => opt.MapFrom(src => src.WaiterName))
+            .ForMember(dest => dest.CaptainId, opt => opt.MapFrom(src => src.WaiterID.HasValue ? src.WaiterID.Value.ToString() : null))
+            .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails))
+            .ForMember(dest => dest.MachineName, opt => opt.MapFrom(src => src.MachineName))
+            .ReverseMap()
+            .ForMember(dest => dest.OrderID, opt => opt.MapFrom(src => src.OrderId))
+            .ForMember(dest => dest.BranchID, opt => opt.MapFrom(src => src.BranchId))
+            .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDateTime))
+            .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.DiscountAmount))
+            .ForMember(dest => dest.TableID, opt => opt.MapFrom(src => src.TableId))
+            .ForMember(dest => dest.TableName, opt => opt.MapFrom(src => src.TableName))
+            .ForMember(dest => dest.WaiterName, opt => opt.MapFrom(src => src.CaptainName))
+            .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => OrderTypes.DineIn))
+            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState == "Open" ? OrderStates.Pending : OrderStates.Completed));
+
     }
 }

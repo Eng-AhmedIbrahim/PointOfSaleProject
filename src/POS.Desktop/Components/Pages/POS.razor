@@ -1,4 +1,4 @@
-﻿@page "/pos"
+@page "/pos"
 @using BlazorBase.ERPFrontServices.PrintOrderServices
 @layout PosScreenLayout
 @inject CommonProperties _commonProperties
@@ -13,18 +13,19 @@
 @inject BranchService _branchService
 @inject IPrintOrderService _printOrderService
 @inject Section4ButtonsServices _services
+@inject LocalizationService Localizer
 @implements IDisposable
 
 <link href="section4-footer.css" rel="stylesheet" />
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="overflow-hidden" Style="height: 100%;" tabindex="0">
     <MudItem xs="2" Class="section-container border-r border-solid custom-border-color">
-        <MudText Typo="Typo.h6" Class="section-label">Categories</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["Categories"]</MudText>
         <div class="full-height overflow-y-auto pa-0 ma-0">
             @foreach (var category in _categories ?? [])
             {
                 <button class="category-btn" @onclick="async () => await InvokeItems(category.Id)">
-                    @category.ArabicName
+                    @(Localizer.GetCurrentLanguage() == "ar" ? category.ArabicName : (category.EnglishName ?? category.ArabicName))
                 </button>
             }
         </div>
@@ -32,12 +33,12 @@
     <!-- Section 2 -->
 
     <MudItem xs="4" Class="section-container border-r border-solid custom-border-color">
-        <MudText Typo="Typo.h6" Class="section-label">Sales Items</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["SalesItems"]</MudText>
         <div class="full-height overflow-y-auto pa-0 ma-0 sales-grid-container">
             @foreach (var item in _itemByCatId)
             {
                 <button class="item-button" @onclick="@(() => AddItemToSection4(item))">
-                    <span class="item-text">@item.ArabicName</span>
+                    <span class="item-text">@(Localizer.GetCurrentLanguage() == "ar" ? item.ArabicName : (item.EnglishName ?? item.ArabicName))</span>
                 </button>
             }
         </div>
@@ -46,7 +47,7 @@
 
     <!-- Section 3 -->
     <MudItem xs="1" Class="section-container border-r border-solid custom-border-color" Style="max-width: 8.33%; flex: 0 0 8.33%;">
-        <MudText Typo="Typo.h6" Class="section-label">Actions</MudText>
+        <MudText Typo="Typo.h6" Class="section-label">@Localizer["Actions"]</MudText>
         <div class="full-height">
             <Section3 />
         </div>
@@ -54,7 +55,7 @@
 
     <!-- Section 4 -->
     <MudItem xs="5" Class="section-container border-l border-solid custom-border-color">
-        <MudText Typo="Typo.h6" Class="section4-label">@_commonProperties.CurrentPosMode Order @_handelDeliveryInvocation.DeliveryDetails </MudText>
+        <MudText Typo="Typo.h6" Class="section4-label">@_commonProperties.CurrentPosMode @Localizer["Order"] @_handelDeliveryInvocation.DeliveryDetails </MudText>
         <div class="full-height d-flex flex-column">
             <!-- Order Table - Fills remaining space -->
             <div class="flex-grow-1 overflow-y-auto">
@@ -69,7 +70,7 @@
                                Immediate="true"
                                Lines="1"
                                Margin="Margin.Dense"
-                               Placeholder="Notes"
+                               Placeholder="@Localizer["Notes"]"
                                Variant="Variant.Outlined"
                                Class="notes-field" />
 

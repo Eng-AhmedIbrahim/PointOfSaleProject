@@ -18,6 +18,8 @@ public class OrderDetails
     public string? CustomerName { get; set; }
     public string? CustomerPhone { get; set; }
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
+    public string? MachineName { get; set; }
+    public decimal? CaptainTipsDeduction { get; set; }
 
     public OrderDetails Clone()
     {
@@ -36,6 +38,8 @@ public class OrderDetails
             CustomerName = this.CustomerName,
             CustomerPhone = this.CustomerPhone,
             PaymentMethod = this.PaymentMethod,
+            MachineName = this.MachineName,
+            CaptainTipsDeduction = this.CaptainTipsDeduction,
             Items = this.Items.Select(item => item.Clone()).ToList() // Deep copy items
         };
     }

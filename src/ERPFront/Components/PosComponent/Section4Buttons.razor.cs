@@ -102,10 +102,14 @@ public partial class Section4Buttons
 
     private DineInOrderDetails CheckIfThereAreDineOrderAndReturnItIfExists()
     {
-        if (!_commonProperties.DineInOrdersDetails!.TryGetValue(_commonProperties.TableId, out var existingOrder))
+        var existingOrder = _commonProperties.GetActiveOrder();
+        if (existingOrder == null)
         {
             existingOrder = FullTableOrderDetails();
-            _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = existingOrder;
+            if(!_commonProperties.DineInOrdersDetails!.ContainsKey(_commonProperties.TableId))
+                _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
+            
+            _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(existingOrder);
         }
 
         return existingOrder;
@@ -151,7 +155,10 @@ public partial class Section4Buttons
     {
         var clonedOrder = FullTableOrderDetails();
 
-        _commonProperties!.DineInOrdersDetails![_commonProperties.TableId] = clonedOrder;
+        if(!_commonProperties.DineInOrdersDetails!.ContainsKey(_commonProperties.TableId))
+            _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
+        
+        _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(clonedOrder);
 
         CheckIsTableExist(clonedOrder);
         RemoveItemsIfTableHasItems();
@@ -168,7 +175,7 @@ public partial class Section4Buttons
         if (clonedOrder.RelatedTableId != _commonProperties.TableId &&
                     !_commonProperties!.DineInOrdersDetails!.ContainsKey(clonedOrder.RelatedTableId ?? 0))
         {
-            _commonProperties!.DineInOrdersDetails!.Add(clonedOrder.RelatedTableId ?? 0, clonedOrder);
+            _commonProperties!.DineInOrdersDetails!.Add(clonedOrder.RelatedTableId ?? 0, new List<DineInOrderDetails> { clonedOrder });
         }
     }
 

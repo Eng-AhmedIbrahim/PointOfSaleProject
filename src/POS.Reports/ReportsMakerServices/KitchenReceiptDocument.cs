@@ -71,6 +71,19 @@ public class KitchenReceiptDocument : IDocument
                     .FontSize(15);
                 text.AlignCenter();
             });
+
+        if (!string.IsNullOrEmpty(receipt.TableName))
+        {
+            column.Item()
+                .PaddingTop(6)
+                .Text(text =>
+                {
+                    text.Span($"{receipt.TableName} : {ArabicConstStrings.Table}")
+                        .Bold()
+                        .FontSize(18);
+                    text.AlignCenter();
+                });
+        }
     }
 
     private void BuildDateAndCashierInfo(ref ColumnDescriptor column)

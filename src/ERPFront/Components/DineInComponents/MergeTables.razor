@@ -55,6 +55,7 @@
         if (_commonProperties.DineInOrdersDetails != null)
         {
             _tables = _commonProperties.DineInOrdersDetails.Values
+                .SelectMany(x => x)
                 .Where(x => !string.IsNullOrEmpty(x.RelatedTableName))
                 .ToList();
         }

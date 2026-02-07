@@ -2,8 +2,9 @@
 @inject ISnackbar _snackbar
 @inject CommonProperties _commonProperties
 @inject IDialogService _dialogService
+@inject NavigationManager _navigationManager
 
-<MudDialog FullWidth="true" MaxWidth="MaxWidth.Medium">
+<MudDialog FullWidth="true" MaxWidth="MaxWidth.Small">
     <TitleContent>
         <MudText Typo="Typo.h6">Merge Tables</MudText>
     </TitleContent>
@@ -46,6 +47,7 @@
 </MudDialog>
 
 @code {
+    [Inject] private IDineInOrderFrontService _dineInOrderServiceFront { get; set; }
     private List<DineInOrderDetails> _tables = new();
     private HashSet<int> SelectedTableIds = new();
     public List<DineInOrderDetails> TablesToMigrates = new();
@@ -55,6 +57,7 @@
         if (_commonProperties.DineInOrdersDetails != null)
         {
             _tables = _commonProperties.DineInOrdersDetails.Values
+                .SelectMany(x => x)
                 .Where(x => !string.IsNullOrEmpty(x.RelatedTableName))
                 .ToList();
         }
@@ -63,33 +66,17 @@
 
     private void ToggleTableSelection(DineInOrderDetails table)
     {
-        if (table?.RelatedTableId == null) return;
+        if (table == null) return;
 
-        if (SelectedTableIds.Contains(table.RelatedTableId.Value))
+        if (SelectedTableIds.Contains(table.DatabaseId))
         {
-            SelectedTableIds.Remove(table.RelatedTableId.Value);
+            SelectedTableIds.Remove(table.DatabaseId);
             TablesToMigrates.Remove(table);
             table.IsMigrated = false;
-            table.MergedTableIds.Clear();
         }
         else
         {
-            if (!TablesToMigrates.Any())
-                table.MergedTableIds.Add(table.RelatedTableId.Value);
-            else
-            {
-                var mergeGroup = TablesToMigrates.SelectMany(t => t.MergedTableIds).Distinct().ToList();
-                mergeGroup.Add(table.RelatedTableId.Value);
-
-                foreach (var t in TablesToMigrates)
-                {
-                    t.MergedTableIds = new List<int>(mergeGroup);
-                }
-
-                table.MergedTableIds = new List<int>(mergeGroup);
-            }
-
-            SelectedTableIds.Add(table.RelatedTableId.Value);
+            SelectedTableIds.Add(table.DatabaseId);
             TablesToMigrates.Add(table);
             table.IsMigrated = true;
         }
@@ -97,7 +84,7 @@
         StateHasChanged();
     }
 
-    private void MergeSelectedTables()
+    private async Task MergeSelectedTables()
     {
         if (TablesToMigrates.Count < 2)
         {
@@ -105,26 +92,35 @@
             return;
         }
 
-        var mergedTableIds = TablesToMigrates.Select(t => t.RelatedTableId ?? 0).ToList();
+        // Primary is the one with the lowest DatabaseId (oldest)
+        var primaryOrder = TablesToMigrates.OrderBy(o => o.DatabaseId).First();
+        var secondaryOrders = TablesToMigrates.Where(o => o.DatabaseId != primaryOrder.DatabaseId).ToList();
+        var secondaryOrderIds = secondaryOrders.Select(o => o.DatabaseId).ToList();
 
+        var success = await _dineInOrderServiceFront.MergeDineInOrdersAsync(primaryOrder.DatabaseId, secondaryOrderIds);
 
-
-        foreach (var table in TablesToMigrates)
+        if (success)
         {
-            table.IsMigrated = true;
-            table.MergedTableIds = new List<int>(mergedTableIds); 
+            _snackbar.Add("Tables merged successfully!", Severity.Success);
+            
+            // Clear in-memory state to force refresh
+            _commonProperties.CurrentDineInOrder = null;
+            _commonProperties.TableId = 0;
+            
+            CloseDialog();
+            _navigationManager.NavigateTo("/dineIn", true);
         }
-
-        _snackbar.Add("Tables merged successfully!", Severity.Success);
-        CloseDialog();
-        StateHasChanged();
+        else
+        {
+            _snackbar.Add("Failed to merge tables.", Severity.Error);
+        }
     }
 
     private bool IsMergeDisabled => SelectedTableIds.Count < 2;
 
     private string GetTableClass(DineInOrderDetails table)
     {
-        if (table == null || table.RelatedTableId == null)
+        if (table == null)
             return "order-button";
 
         if (table.IsMigrated)

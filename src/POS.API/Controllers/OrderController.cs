@@ -1,4 +1,6 @@
-﻿namespace POS.API.Controllers;
+﻿using POS.Core.Services.Contract.DineInOrderServices;
+
+namespace POS.API.Controllers;
 
 public class OrderController : BaseApiController
 {
@@ -8,13 +10,15 @@ public class OrderController : BaseApiController
     private readonly IPrinterServices _printerServices;
     private readonly IKitchenServices _kitchenServices;
     private readonly IMapper _mapper;
+    private readonly IDineInOrderService _dineInOrderService;
     private readonly string _reportsFolder;
     public OrderController(IOrderService orderService,
         IWebHostEnvironment webHostEnvironment,
         IBranchService branchService,
         IPrinterServices printerServices,
         IKitchenServices kitchenServices,
-        IMapper mapper)
+        IMapper mapper,
+        IDineInOrderService dineInOrderService)
     {
         _orderService = orderService;
         _webHostEnvironment = webHostEnvironment;
@@ -22,6 +26,7 @@ public class OrderController : BaseApiController
         _printerServices = printerServices;
         _kitchenServices = kitchenServices;
         _mapper = mapper;
+        _dineInOrderService = dineInOrderService;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
         Directory.CreateDirectory(_reportsFolder);
     }
@@ -68,7 +73,7 @@ public class OrderController : BaseApiController
                         }
                     }
 
-                    return Ok(orderDto);
+                    return Ok(_mapper.Map<OrderDto>(createdOrder));
                 }
                 else
                 {
@@ -76,12 +81,141 @@ public class OrderController : BaseApiController
                 }
             }
             else if (orderType == OrderTypes.Delivery)
+            {
                 BackupDeliveryOrder(orderDto, order);
+                var createdOrder = await _orderService.CreateOrderAsync(order);
+
+                if (createdOrder is null)
+                    return BadRequest(new ApiResponse(404, "Order Not Created"));
+
+                if (createdOrder!.Id != 0)
+                {
+                    if (orderDto.SkipPrintingOnServer != true)
+                    {
+                        List<string> branchDetails = await GetBranchDetails(orderDto);
+                        // Currently reusing TakeAway printing logic for Delivery if it fits, 
+                        // or we can add specialized delivery printing later.
+                        await printTakeAwayReceipts(orderDto, createdOrder, branchDetails);
+
+                        if (orderSettings!.FullKitchenReceiptCount > 0)
+                        {
+                            await PrintBackupReceipts(orderDto, createdOrder);
+                        }
+
+                        if (orderSettings.SeparateReceiptCount > 0)
+                        {
+                            await PrintKitchenReceipts(orderDto, createdOrder);
+                        }
+                    }
+
+                    return Ok(_mapper.Map<OrderDto>(createdOrder));
+                }
+                else
+                {
+                    return BadRequest(new ApiResponse(404, "Order Not Created"));
+                }
+            }
             else if (orderType == OrderTypes.DineIn)
+            {
                 BackupDineInOrder(orderDto, order);
+                
+                if (orderDto.SkipPrintingOnServer != true)
+                {
+                    List<string> branchDetails = await GetBranchDetails(orderDto);
+                    await printDineInReceipts(orderDto, branchDetails);
+
+                    if (orderSettings!.FullKitchenReceiptCount > 0)
+                    {
+                        await PrintBackupReceipts(orderDto, order, "Backup");
+                    }
+
+                    if (orderSettings.SeparateReceiptCount > 0)
+                    {
+                        await PrintKitchenReceipts(orderDto, order);
+                    }
+                }
+                return Ok(orderDto);
+            }
         }
 
         return Ok();
+    }
+
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<OrderDto>> GetOrderByIdAsync(int orderId)
+    {
+        var order = await _orderService.GetOrderByOrderIdAsync(orderId);
+        if (order == null) return NotFound();
+        return Ok(_mapper.Map<OrderDto>(order));
+    }
+
+    private async Task printDineInReceipts(OrderDto dineInOrder, List<string> branchDetails)
+    {
+        // Try to find the order to check print count
+        var currentPrintCount = await _dineInOrderService.IncrementPrintCountAsync(dineInOrder.OrderId);
+        bool isCopy = currentPrintCount > 0;
+
+        var receipt = new Receipt()
+        {
+            Id = dineInOrder.OrderId,
+            StoreName = dineInOrder.BranchName!,
+            CashierName = dineInOrder.CashierName!,
+            ReceiptType = OrderTypes.DineIn.ToString(),
+            DateCreated = DateTime.Now,
+            PaymentMethod = dineInOrder.PaymentMethod?.ToString() ?? "N/A",
+            FooterMessage = dineInOrder.FooterMessage ?? "",
+            LogoPath = branchDetails[0],
+            LogoWidth = int.Parse(branchDetails[1]),
+            TotalAmount = dineInOrder.GrandTotal,
+            Discount = dineInOrder.TotalOrderDiscount,
+            Tax = dineInOrder.Tax,
+            Services = dineInOrder.Services,
+            SubTotal = dineInOrder.SubTotal,
+            Items = dineInOrder.OrderDetails!,
+            TableId = dineInOrder.TableId,
+            TableName = dineInOrder.TableName,
+            WaiterName = dineInOrder.WaiterName,
+            IsCopy = isCopy
+        };
+
+        var outputPath = await CreateCashReceiptLayOut(receipt, receipt.Items);
+        await PrintDineInReceipt(dineInOrder, outputPath);
+    }
+
+    private async Task PrintDineInReceipt(OrderDto dineInOrder, string reportPath)
+    {
+        var kitchenTypeSpecs = new KitchenTypeSpecs("Customer");
+        var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
+        
+        if (printer == null)
+        {
+            // If Customer printer not found, fallback to Cash as per user's table
+            kitchenTypeSpecs = new KitchenTypeSpecs("Cash");
+            printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
+        }
+
+        var receiptCount = dineInOrder.OrderSettings!
+                .Where(o => o.OrderType == OrderTypes.DineIn.ToString())
+                .Select(o => o.CustomerReceiptCount)
+                .FirstOrDefault();
+
+        if (printer == null || receiptCount <= 0)
+            return;
+
+        var printers = printer!.KitchenPrinters;
+        var printerNamesToUse = new List<string>();
+
+        for (int i = 1; i <= receiptCount; i++)
+        {
+            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+            if (!string.IsNullOrEmpty(printerName))
+            {
+                printerNamesToUse.Add(printerName);
+            }
+        }
+
+        foreach (var printerName in printerNamesToUse)
+            await _printerServices.PrintPdfAsync(reportPath, printerName);
     }
     private async Task<List<string>> GetBranchDetails(OrderDto orderDto)
     {
@@ -93,6 +227,8 @@ public class OrderController : BaseApiController
     }
     private static Orders BackupMainOrderDetails(OrderDto OrderDto)
     {
+        Enum.TryParse<OrderTypes>(OrderDto.OrderType ?? "TakeAway", out var orderType);
+        
         return new Orders
         {
             OrderID = OrderDto.OrderId,
@@ -102,7 +238,7 @@ public class OrderController : BaseApiController
             CashierName = OrderDto.CashierName,
             OrderDate = OrderDto.OrderDate,
             PaymentMethod = OrderDto.PaymentMethod,
-            OrderState = OrderStates.Completed,
+            OrderState = orderType == OrderTypes.DineIn ? OrderStates.Pending : OrderStates.Completed,
             Discount = OrderDto.TotalOrderDiscount,
             DiscountByName = OrderDto.DiscountByName,
             //DiscountBy = OrderDto.DiscountBy,
@@ -112,6 +248,10 @@ public class OrderController : BaseApiController
             Tax = OrderDto.Tax,
             GrandTotal = OrderDto.GrandTotal,
             OrderNotice = OrderDto.OrderNotice,
+            MachineName = OrderDto.MachineName,
+            TableID = OrderDto.TableId,
+            TableName = OrderDto.TableName,
+            OrderType = orderType,
             OrderDetails = OrderDto.OrderDetails?.Select(detail => new OrderItemsDetails
             {
                 MenuSalesItemId = detail.Id,
@@ -120,7 +260,13 @@ public class OrderController : BaseApiController
                 Discount = detail.HasDiscount,
                 TotalDiscountPercentage = detail.DiscountPercentage ?? 0M,
                 TotalDiscountAmount = detail.DiscountAmount ?? 0M,
-                OrderType = OrderTypes.TakeAway,
+                OrderType = orderType,
+                ItemName = detail.Name,
+                ItemNameAr = detail.NameAr,
+                ItemKitchenTypeId = detail.ItemKitchenTypeId,
+                CategoryKitchenTypeId = detail.CategoryKitchenTypeId,
+                PrintInBackupReceiptFromCategory = detail.PrintInBackupReceiptFromCategory,
+                PrintInBackupReceiptFromItem = detail.PrintInBackupReceiptFromItem,
                 TotalDiscountPrice = detail.TotalDiscountPrice ?? 0M,
                 TotalAfterDiscount = detail.TotalAfterDiscount,
                 IsVoided = false,
@@ -234,12 +380,11 @@ public class OrderController : BaseApiController
     private async Task PrintCashReceipt(OrderDto takeawayOrder, string reportPath)
     {
 
-        var kitchenTypeSpecs = new KitchenTypeSpecs("Customer");
-
+        var kitchenTypeSpecs = new KitchenTypeSpecs("Cash");
         var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
 
         var receiptCount = takeawayOrder.OrderSettings!
-                .Where(o => o.OrderType == OrderTypes.TakeAway.ToString())
+                .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
                 .Select(o => o.CustomerReceiptCount)
                 .FirstOrDefault();
 
@@ -287,11 +432,13 @@ public class OrderController : BaseApiController
         {
             Id = createdOrder.OrderID,
             CashierName = Order.CashierName!,
-            OrderType = OrderTypes.TakeAway.ToString(),
+            OrderType = Order.OrderType ?? OrderTypes.TakeAway.ToString(),
             DateCreated = DateTimeOffset.Now,
             Items = filteredItems,
             KitchenNote = Order.OrderNotice!,
-            KitchenType = KitchenType
+            KitchenType = KitchenType,
+            TableId = Order.TableId,
+            TableName = Order.TableName
         };
 
         if (filteredItems.Count == 0)
@@ -309,7 +456,7 @@ public class OrderController : BaseApiController
         var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
 
         var receiptCount = takeawayOrder.OrderSettings!
-                .Where(o => o.OrderType == OrderTypes.TakeAway.ToString())
+                .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
                 .Select(o => o.FullKitchenReceiptCount)
                 .FirstOrDefault();
 
@@ -336,7 +483,7 @@ public class OrderController : BaseApiController
     private async Task PrintKitchenReceipts( OrderDto takeawayOrder, Orders createdOrder)
     {
         var receiptCount = takeawayOrder.OrderSettings!
-            .Where(o => o.OrderType == OrderTypes.TakeAway.ToString())
+            .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
             .Select(o => o.SeparateReceiptCount)
             .FirstOrDefault();
 
@@ -374,11 +521,13 @@ public class OrderController : BaseApiController
             {
                 Id = createdOrder.OrderID,
                 CashierName = takeawayOrder.CashierName!,
-                OrderType = OrderTypes.TakeAway.ToString(),
+                OrderType = takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString(),
                 DateCreated = DateTimeOffset.Now,
                 Items = kitchenItems,
                 KitchenNote = takeawayOrder.OrderNotice!,
-                KitchenType = kitchenName
+                KitchenType = kitchenName,
+                TableId = takeawayOrder.TableId,
+                TableName = takeawayOrder.TableName
             };
 
             var outputPath = await CreateKitchenReceiptLayOut(receipt, kitchenItems);

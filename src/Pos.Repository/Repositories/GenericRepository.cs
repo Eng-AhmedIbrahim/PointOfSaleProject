@@ -36,7 +36,16 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     }
 
     public void Update(T entity)
-        => _dbContext.Update(entity);
+    {
+        var local = _dbContext.Set<T>()
+            .Local
+            .FirstOrDefault(entry => entry.Id.Equals(entity.Id));
+
+        if (local is not null)
+            _dbContext.Entry(local).State = EntityState.Detached;
+
+        _dbContext.Update(entity);
+    }
 
     public async Task AddRangeAsync(IEnumerable<T> entities)
         => await _dbContext.Set<T>().AddRangeAsync(entities);

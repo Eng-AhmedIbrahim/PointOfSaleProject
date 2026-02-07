@@ -19,10 +19,16 @@
             builder.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
             builder.Property(o => o.MenuSalesItemId).HasColumnType("int");
             builder.Property(o => o.VoidAmount).HasColumnType("int");
+            
+            builder.Property(o => o.ItemName).HasMaxLength(200);
+            builder.Property(o => o.ItemNameAr).HasMaxLength(200);
+            builder.Property(o => o.CategoryName).HasMaxLength(150);
+            builder.Property(o => o.UnitPrice).HasColumnType("decimal(18,2)");
 
             builder.HasOne(o => o.Order)
                .WithMany(o => o.OrderDetails)
                .HasForeignKey(o => o.OrderId)
+               .IsRequired(false)
                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(o => o.MenuSalesItem)
@@ -33,6 +39,11 @@
             builder.HasMany(o => o.OrderItemAttributes)
                    .WithOne(a => a.OrderItem)
                    .HasForeignKey(a => a.OrderItemId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasMany(o => o.OrderItemComments)
+                   .WithOne(c => c.OrderItemDetail)
+                   .HasForeignKey(c => c.OrderItemDetailId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

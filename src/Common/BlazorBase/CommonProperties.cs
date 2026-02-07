@@ -80,10 +80,28 @@ public class CommonProperties
 
     // <DineIn>
     public DineInOrderDetails? CurrentDineInOrder { get; set; } = new();
-    public Dictionary<int, DineInOrderDetails>? DineInOrdersDetails { get; set; } = new();
+    public Dictionary<int, List<DineInOrderDetails>>? DineInOrdersDetails { get; set; } = new();
     public DineInOrderValues? DineInOrderValues { get; set; } = new();
     public int TableId { get; set; }
     public bool UpdateDineInOrder { get; set; } = false;
+
+    public DineInOrderDetails? GetActiveOrder()
+    {
+        if (DineInOrdersDetails == null || !DineInOrdersDetails.ContainsKey(TableId))
+            return null;
+
+        var tableOrders = DineInOrdersDetails[TableId];
+        if (tableOrders == null || !tableOrders.Any())
+            return null;
+
+        if (DineInOrderValues?.OrderID > 0)
+        {
+            var order = tableOrders.FirstOrDefault(o => o.BasicOrderDetails?.OrderId == DineInOrderValues.OrderID);
+            if (order != null) return order;
+        }
+
+        return tableOrders.FirstOrDefault();
+    }
     /////////
 
 
@@ -101,6 +119,10 @@ public class CommonProperties
     public IDialogReference? DialogReference { get; set; }
     public IDialogReference? ItemCommentDialogReference { get; set; }
     public IDialogReference? ItemDiscountDialogReference { get; set; }
+    public IDialogReference? OrderDiscountDialogReference { get; set; }
+    public IDialogReference? CustomerInfoDialogReference { get; set; }
+    public IDialogReference? PaymentMethodDialogReference { get; set; }
+    public IDialogReference? QuickPaymentDialogReference { get; set; }
 
     public OrderDto? OrderDto { get; set; } = new();
     public BranchToReturnDto? BranchDetails { get; set; } = new();
@@ -108,7 +130,7 @@ public class CommonProperties
     public string? OrderNote { get; set; }
 
     #region Localization & Layout
-    private string _language = "ar"; // Default to Arabic
+    private string _language = "ar";
     public string Language
     {
         get => _language;
@@ -122,7 +144,7 @@ public class CommonProperties
         }
     }
 
-    private bool _isRtl = true; // Default to RTL for Arabic
+    private bool _isRtl = false;
     public bool IsRtl
     {
         get => _isRtl;
@@ -135,5 +157,6 @@ public class CommonProperties
             }
         }
     }
+    public void NotifyStateChanged() => OnChange?.Invoke();
     #endregion
 }

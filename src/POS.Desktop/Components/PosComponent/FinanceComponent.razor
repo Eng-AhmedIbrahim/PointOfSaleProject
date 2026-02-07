@@ -1,3 +1,4 @@
+@inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
 @inject Section4ButtonsServices _section4ButtonsServices
 @inject CartService _cartService
@@ -8,7 +9,7 @@
     {
         <MudItem xs="12" Class="finance-row">
             <div class="finance-row-content">
-                <MudText Class="finance-label-vertical finance-label-text-size" Typo="Typo.subtitle2">@setting.Label</MudText>
+                <MudText Class="finance-label-vertical finance-label-text-size" Typo="Typo.subtitle2">@Localizer[setting.Label]</MudText>
                 <MudNumericField Variant="Variant.Outlined"
                                  Margin="Margin.Dense"
                                  Class="@($"finance-input-vertical finance-input-text-size {(setting.IsTotal ? "finance-total" : "")}")"

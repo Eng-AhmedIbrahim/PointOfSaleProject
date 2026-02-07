@@ -1,4 +1,6 @@
-﻿namespace BlazorBase.ERPFrontServices.CartServices;
+﻿using POS.Contract.Models;
+
+namespace BlazorBase.ERPFrontServices.CartServices;
 public interface ICartService
 {
     public void SetSelectedItem(TableItem item);
@@ -17,6 +19,7 @@ public interface ICartService
     public string? EditItemComment(string oldComment, string newComment);
     public string? DeleteItemComment(string comment);
     public void AddItemDiscount(string discountType, decimal discountValue);
+    public void ApplyOrderDiscount(decimal discountValue, bool isPercentage, DiscountReason reason);
    
     //public void AppendSpecialNumberToQuantity(string number);
 }

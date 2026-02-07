@@ -4,10 +4,10 @@ public partial class MenuButtons
 {
     private void CreateDineInOrder()
     {
-        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(_commonProperties.TableId, out DineInOrderDetails? OrderDetails))
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
         {
-
-            UpdateCurrentDineInOrder(OrderDetails);
+            UpdateCurrentDineInOrder(orderDetails);
             _navigationManager.NavigateTo("/pos");
         }
         else
@@ -45,7 +45,13 @@ public partial class MenuButtons
     {
         _navigationManager.NavigateTo("/pos");
         _commonProperties.AppendedTableItems!.Clear();
+        _commonProperties.TableItems!.Clear();
+        _commonProperties.CurrentDineInOrder = null;
+        _commonProperties.DineInOrderValues = new();
+        _commonProperties.UpdateDineInOrder = false;
+        _commonProperties.OrderDiscount = new();
         _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+        _cartService.UpdateFinanceSettingsByMode("TakeAway");
     }
     private void UpdateCurrentDineInOrder(DineInOrderDetails dineInOrderDetails)
     {
@@ -73,26 +79,27 @@ public partial class MenuButtons
         if (!_commonProperties.DineInOrdersDetails!.ContainsKey(primaryTableId) || mergingTableIds.Count == 0)
             return;
 
-        var primaryOrder = _commonProperties.DineInOrdersDetails[primaryTableId];
+        var primaryOrders = _commonProperties.DineInOrdersDetails[primaryTableId];
+        var primaryOrder = primaryOrders.FirstOrDefault(); // Assuming first one for merge
+        if (primaryOrder == null) return;
 
         foreach (var tableId in mergingTableIds)
         {
-            if (_commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var mergingOrder))
+            if (_commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var mergingOrders))
             {
-                if (mergingOrder.BasicOrderDetails != null)
+                foreach (var mergingOrder in mergingOrders)
                 {
-                    primaryOrder.BasicOrderDetails ??= new BlazorBase.Models.OrderDetails();
-                    primaryOrder.BasicOrderDetails.Merge(mergingOrder.BasicOrderDetails);
+                    if (mergingOrder.BasicOrderDetails != null)
+                    {
+                        primaryOrder.BasicOrderDetails ??= new BlazorBase.Models.OrderDetails();
+                        primaryOrder.BasicOrderDetails.Merge(mergingOrder.BasicOrderDetails);
+                    }
                 }
 
-                primaryOrder.RelatedTableName += $"{mergingOrder.RelatedTableName}";
-
+                primaryOrder.RelatedTableName += $" & {tableId}"; // Simplified
                 _commonProperties.DineInOrdersDetails.Remove(tableId);
             }
         }
-
-        // Update the dictionary with the merged order
-        _commonProperties.DineInOrdersDetails[primaryTableId] = primaryOrder;
     }
 
     private async Task OpenMergeTablesDialog()
@@ -100,4 +107,141 @@ public partial class MenuButtons
 
     private async Task TransferTable()
         => _commonProperties.DialogReference = await _dialogService.ShowAsync<TransferTable>("Transfer Table");
+
+    [Inject] private Section4ButtonsServices _section4ButtonsServices { get; set; } = default!;
+    [Inject] private IPrintOrderService _printOrderService { get; set; } = default!;
+
+    private async Task PrintReceipt()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            await _printOrderService.PrintInitialDineInOrder(orderDetails);
+            
+            var newCount = await _dineInOrderService.IncrementPrintCountAsync(orderDetails.DatabaseId);
+            // Update the in-memory PrintCount to reflect the database change
+            orderDetails.PrintCount = newCount + 1; // newCount returns the OLD count, so we add 1
+            StateHasChanged();
+
+            _snackbar.Add(Localizer["PrintingReceipt"], Severity.Info);
+        }
+        else
+        {
+            _snackbar.Add(Localizer["NoOrderForTable"], Severity.Warning);
+        }
+    }
+
+    private async Task OpenSplitOrderDialog()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            var parameters = new DialogParameters { ["OrderToSplit"] = orderDetails };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialog = await _dialogService.ShowAsync<SplitOrderDialog>("Split Order", parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled)
+            {
+                // Clear active table state to force a clean refresh
+                _commonProperties.CurrentDineInOrder = null;
+                _commonProperties.DineInOrderValues = new();
+                _commonProperties.TableItems = new List<TableItem>(); // Reset to empty list
+                _commonProperties.AppendedTableItems?.Clear();
+                
+                _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout
+                _section4ButtonsServices.NotifyStateChanged();
+                // Navigate without forceLoad to avoid "Leave site" browser prompt
+                _navigationManager.NavigateTo("/dineIn");
+            }
+        }
+        else
+        {
+            _snackbar.Add(Localizer["NoOrderForTable"], Severity.Warning);
+        }
+    }
+
+    private async Task OpenVoidDialog()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            var parameters = new DialogParameters { ["OrderToVoid"] = orderDetails };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled)
+            {
+                _commonProperties.CurrentDineInOrder = null;
+                _commonProperties.DineInOrderValues = new();
+                _commonProperties.TableItems = new List<TableItem>(); // Reset to avoid NaveLock warning
+                
+                _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout
+                _section4ButtonsServices.NotifyStateChanged();
+                _navigationManager.NavigateTo("/dineIn");
+            }
+        }
+        else
+        {
+            _snackbar.Add(Localizer["NoOrderForTable"], Severity.Warning);
+        }
+    }
+
+    private async Task CloseTable()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            // Check setting: Must print before close?
+            var mustPrint = _commonProperties.DineInSettings?.CanCloseWithoutPrint == false;
+            
+            // Fetch latest order from DB to check PrintCount
+            var dbOrder = await _dineInOrderService.GetDineInOrderByIdAsync(orderDetails.DatabaseId);
+            
+            if (mustPrint && (dbOrder?.PrintCount ?? 0) == 0)
+            {
+                _snackbar.Add(Localizer["MustPrintBeforeClose"], Severity.Warning);
+                return;
+            }
+
+            var result = await _dineInOrderService.CloseDineInOrderAsync(orderDetails.DatabaseId);
+            if (result)
+            {
+                var tableOrders = _commonProperties.DineInOrdersDetails![_commonProperties.TableId];
+                tableOrders.Remove(orderDetails);
+                if (!tableOrders.Any())
+                {
+                    _commonProperties.DineInOrdersDetails.Remove(_commonProperties.TableId);
+                }
+                
+                _commonProperties.CurrentDineInOrder = null;
+                _commonProperties.DineInOrderValues = new();
+                _commonProperties.TableItems = new List<TableItem>(); // Reset to avoid NaveLock warning
+                
+                _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout
+                _section4ButtonsServices.NotifyStateChanged();
+
+                _snackbar.Add(Localizer["TableClosed"], Severity.Success);
+                StateHasChanged();
+                _navigationManager.NavigateTo("/dineIn");
+            }
+            else
+            {
+                _snackbar.Add(Localizer["FailedToCloseTable"], Severity.Error);
+            }
+        }
+    }
+
+    private bool IsCloseDisabled()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails == null) return true;
+        
+        var mustPrint = _commonProperties.DineInSettings?.CanCloseWithoutPrint == false;
+        if (!mustPrint) return false;
+        
+        // Use the in-memory PrintCount which should be updated after printing
+        return (orderDetails?.PrintCount ?? 0) == 0;
+    }
 }

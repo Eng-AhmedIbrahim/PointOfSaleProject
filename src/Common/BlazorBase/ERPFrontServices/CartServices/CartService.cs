@@ -1,4 +1,6 @@
-﻿namespace BlazorBase.ERPFrontServices.CartServices;
+﻿using POS.Contract.Models;
+
+namespace BlazorBase.ERPFrontServices.CartServices;
 
 public class CartService : ICartService
 {
@@ -98,13 +100,16 @@ public class CartService : ICartService
         // Account (Index 0) will show Gross Total
         if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 0)
         {
-            _commonProperties._financeSettingsList[0].Value = grossTotal % 1 == 0
-                ? Math.Truncate(grossTotal)
-                : Math.Round(grossTotal, 2);
+            _commonProperties._financeSettingsList[0].Value = FormatValue(grossTotal);
         }
 
         // We'll store the net-after-line price for Tax/Service calculation
         _commonProperties.SubTotal = grossTotal - totalLineDiscount;
+    }
+
+    private decimal FormatValue(decimal value)
+    {
+        return value % 1 == 0 ? Math.Truncate(value) : Math.Round(value, 2);
     }
 
     public void CalculateTotalAmountFromTableItems(List<TableItem> items)
@@ -115,7 +120,7 @@ public class CartService : ICartService
 
     public void UpdateFinanceSettingsByMode(string posMode)
     {
-        if (_commonProperties == null || _commonProperties._financeSettingsList == null)
+        if (_commonProperties == null || _commonProperties.OrderSettings == null)
             return;
 
         var orderType = posMode switch
@@ -135,48 +140,21 @@ public class CartService : ICartService
 
         _commonProperties._financeSettingsList = new()
         {
-            new FinanceSettings
-            {
-                Label = "Account",
-                Value = 0M
-            },
-            new FinanceSettings
-            {
-                Label = "Discount",
-                Value = _commonProperties.TotalDiscount % 1 == 0
-                    ? Math.Truncate(_commonProperties.TotalDiscount ?? 0M)
-                    : Math.Round(_commonProperties.TotalDiscount ?? 0M, 2)
-            },
-            new FinanceSettings
-            {
-                Label = "Tax",
-                Value = orderSettings.Tax % 1 == 0
-                    ? Math.Truncate(orderSettings.Tax ?? 0M)
-                    : Math.Round(orderSettings.Tax ?? 0M, 2)
-            },
-            new FinanceSettings
-            {
-                Label = "Service",
-                Value = orderSettings.Service % 1 == 0
-                    ? Math.Truncate(orderSettings.Service ?? 0M)
-                    : Math.Round(orderSettings.Service ?? 0M, 2)
-            },
-            new FinanceSettings
-            {
-                Label = "Total",
-                Value = _commonProperties.TableItems?.Sum(i => i.Total ?? 0M) % 1 == 0
-                    ? Math.Truncate(_commonProperties.TableItems?.Sum(i => i.Total ?? 0M) ?? 0M)
-                    : Math.Round(_commonProperties.TableItems?.Sum(i => i.Total ?? 0M) ?? 0M, 2)
-            }
+            new FinanceSettings { Label = "Account", Value = 0M },
+            new FinanceSettings { Label = "Discount", Value = 0M },
+            new FinanceSettings { Label = "Tax", Value = 0M },
+            new FinanceSettings { Label = "Service", Value = 0M },
+            new FinanceSettings { Label = "Total", Value = 0M }
         };
 
+        UpdateAmount();
+        CalculateSection4Table();
         NotifyStateChanged();
     }
 
 
     public void CalculateTotalOrderPrice()
     {
-        // Net price after items discount but before order-level discount
         decimal netAmountAfterLine = _commonProperties.SubTotal ?? 0M;
 
         switch (_commonProperties!.CurrentPosMode)
@@ -193,39 +171,41 @@ public class CartService : ICartService
         }
 
         ApplyDiscountAfterTotal();
+        
         if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4)
         {
-            _commonProperties._financeSettingsList[4].Value = _commonProperties.TotalAmountAfterDiscount;
+            decimal finalTotal = _commonProperties.TotalAmountAfterDiscount;
+            _commonProperties._financeSettingsList[4].Value = FormatValue(finalTotal);
         }
     }
 
     public void ApplyDiscountAfterTotal()
     {
-        // Apply order discount on the total (which includes tax/service on top of net item prices)
         decimal originalTotalWithTax = _commonProperties!.TotalOrderPrice ?? 0M;
         decimal amount = originalTotalWithTax;
 
-        if (_commonProperties.OrderDiscount!.Percentage > 0)
+        if (_commonProperties.OrderDiscount != null)
         {
-            amount -= (amount * _commonProperties.OrderDiscount.Percentage) / 100;
+            if (_commonProperties.OrderDiscount.Percentage > 0)
+            {
+                amount -= (amount * _commonProperties.OrderDiscount.Percentage) / 100;
+            }
+
+            if (_commonProperties.OrderDiscount.Value > 0)
+            {
+                amount -= _commonProperties.OrderDiscount.Value;
+            }
         }
 
-        if (_commonProperties.OrderDiscount.Value > 0)
-        {
-            amount -= _commonProperties.OrderDiscount.Value;
-        }
+        if (amount < 0) amount = 0;
 
         decimal orderDiscountValue = originalTotalWithTax - amount;
-        
-        // TotalDiscount (Index 1) will show sum of Line + Order discounts
         decimal totalCombinedDiscount = (_commonProperties.TotalLineDiscount ?? 0M) + orderDiscountValue;
         
         _commonProperties.TotalDiscount = totalCombinedDiscount;
         if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 1)
         {
-            _commonProperties._financeSettingsList[1].Value = totalCombinedDiscount % 1 == 0 
-                ? Math.Truncate(totalCombinedDiscount) 
-                : Math.Round(totalCombinedDiscount, 2);
+            _commonProperties._financeSettingsList[1].Value = FormatValue(totalCombinedDiscount);
         }
 
         _commonProperties.TotalAmountAfterDiscount = amount;
@@ -233,6 +213,7 @@ public class CartService : ICartService
 
     public void CalculateSection4Table()
     {
+        UpdateAmount();
         CalculateTotalOrderPrice();
         NotifyStateChanged();
     }
@@ -259,9 +240,22 @@ public class CartService : ICartService
 
     private decimal CalculateTotalAmountHelper(dynamic settings, decimal Amount)
     {
-        var totalOrderSetting = settings.Tax + settings.Service ;
+        decimal taxRate = settings.Tax ?? 0M;
+        decimal serviceRate = settings.Service ?? 0M;
 
-        var amount = Amount + (totalOrderSetting * Amount) / 100;
+        decimal taxAmount = (taxRate * Amount) / 100;
+        decimal serviceAmount = (serviceRate * Amount) / 100;
+
+        // Store these in finance settings if they exist
+        if (_commonProperties._financeSettingsList != null)
+        {
+            if (_commonProperties._financeSettingsList.Count > 2)
+                _commonProperties._financeSettingsList[2].Value = FormatValue(taxAmount);
+            if (_commonProperties._financeSettingsList.Count > 3)
+                _commonProperties._financeSettingsList[3].Value = FormatValue(serviceAmount);
+        }
+
+        var amount = Amount + taxAmount + serviceAmount;
         return Math.Round(amount * 2, MidpointRounding.AwayFromZero) / 2;
     }
     public async void NotifyStateChanged()
@@ -293,20 +287,6 @@ public class CartService : ICartService
         _commonProperties.CustomerName = "";
         _commonProperties.CustomerPhone = "";
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
-    }
-
-    public void ResetDiscount()
-    {
-        _commonProperties!.DiscountPercentage = 0M;
-        _commonProperties!.DiscountValue = 0M;
-        _commonProperties.TotalDiscount = 0M;
-        _commonProperties.OrderDiscount = new();
-        if(_commonProperties._financeSettingsList is not null && _commonProperties._financeSettingsList.Count > 1)
-        {
-            _commonProperties._financeSettingsList![1].Value = 0M;
-        }
-        CalculateSection4Table();
-        NotifyStateChanged();
     }
 
     public void RemoveItemDiscount()
@@ -406,6 +386,44 @@ public class CartService : ICartService
         RecalculateItemTotals(SelectedItem);
 
         UpdateAmount();
+        CalculateSection4Table();
+        NotifyStateChanged();
+    }
+
+    public void ApplyOrderDiscount(decimal discountValue, bool isPercentage, DiscountReason reason)
+    {
+        if (_commonProperties!.OrderDiscount == null)
+            _commonProperties.OrderDiscount = new();
+
+        if (isPercentage)
+        {
+            _commonProperties.OrderDiscount.Percentage = discountValue;
+            _commonProperties.OrderDiscount.Value = 0;
+            _commonProperties.OrderDiscount.DiscountType = "Percentage";
+        }
+        else
+        {
+            _commonProperties.OrderDiscount.Value = discountValue;
+            _commonProperties.OrderDiscount.Percentage = 0;
+            _commonProperties.OrderDiscount.DiscountType = "Value";
+        }
+
+        _commonProperties.OrderDiscount.DiscountReason = reason.ToString();
+
+        CalculateSection4Table();
+        NotifyStateChanged();
+    }
+
+    public void ResetDiscount()
+    {
+        if (_commonProperties!.OrderDiscount != null)
+        {
+            _commonProperties.OrderDiscount.Percentage = 0;
+            _commonProperties.OrderDiscount.Value = 0;
+            _commonProperties.OrderDiscount.DiscountType = null;
+            _commonProperties.OrderDiscount.DiscountReason = null;
+        }
+
         CalculateSection4Table();
         NotifyStateChanged();
     }

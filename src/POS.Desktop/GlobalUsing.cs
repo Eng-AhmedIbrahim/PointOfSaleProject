@@ -27,6 +27,8 @@ global using POS.Contract.Models;
 global using BlazorBase.ERPFrontServices;
 global using BlazorBase.ERPFrontServices.CategoryServices;
 global using POS.Contract.Dtos.DineInDtos;
+global using POS.Contract.Dtos.DineIn;
+global using BlazorBase.ERPFrontServices.DineInOrderServices;
 global using Microsoft.AspNetCore.Components.Web;
 global using POS.Contract.Enums;
 global using POS.Core.Entities.OrderEntity;

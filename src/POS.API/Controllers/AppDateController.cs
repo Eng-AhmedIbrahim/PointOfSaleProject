@@ -30,9 +30,10 @@ public class AppDateController : BaseApiController
     }
 
     [HttpPut("update-order-numbers")]
-    public async Task<ActionResult<object>> UpdateCurrentOrderNumber()
+    public async Task<ActionResult<AppDateToReturnDto>> UpdateCurrentOrderNumber()
     {
-        await _appSettingService.UpdateOrderNumber();
-        return Ok(new { message = "Current Order Number Updated Successfully" });
+        var appDate = await _appSettingService.UpdateOrderNumber();
+        var mapped = _mapper.Map<AppDate, AppDateToReturnDto>(appDate);
+        return Ok(mapped);
     }
 }

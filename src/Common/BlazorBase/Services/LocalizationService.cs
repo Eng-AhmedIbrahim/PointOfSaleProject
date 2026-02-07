@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.Extensions.Localization;
-using BlazorBase;
+
+
 
 namespace BlazorBase.Services;
 
@@ -19,16 +20,25 @@ public class LocalizationService
         _localStorage = localStorage;
     }
 
-    public string this[string key] => _localizer[key];
+    public string this[string key] 
+    {
+        get
+        {
+            var culture = new CultureInfo(_commonProperties.Language ?? "ar");
+            var translated = AppResources.ResourceManager.GetString(key, culture);
+            return translated ?? _localizer[key];
+        }
+    }
 
     public async Task SetLanguage(string culture)
     {
         var cultureInfo = new CultureInfo(culture);
+        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
         CultureInfo.CurrentCulture = cultureInfo;
         CultureInfo.CurrentUICulture = cultureInfo;
         
         _commonProperties.Language = culture;
-        _commonProperties.IsRtl = culture == "ar";
         
         await _localStorage.SetItemAsync("culture", culture);
 
@@ -37,11 +47,9 @@ public class LocalizationService
 
     public async Task InitializeAsync()
     {
-        var culture = await _localStorage.GetItemAsync<string>("culture");
-        if (string.IsNullOrEmpty(culture))
-        {
-            culture = "ar"; // Default
-        }
+        var culture = "ar";
+        _commonProperties.IsRtl = false;
+        
         await SetLanguage(culture);
     }
     
@@ -49,5 +57,3 @@ public class LocalizationService
     
     public bool IsRtl() => _commonProperties.IsRtl;
 }
-
-// Dummy class for resource generation

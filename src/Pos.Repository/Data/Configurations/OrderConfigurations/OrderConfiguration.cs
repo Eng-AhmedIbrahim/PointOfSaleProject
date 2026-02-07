@@ -58,6 +58,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.Remain).HasColumnType("decimal(18,2)");
         builder.Property(o => o.VoidAmount).HasColumnType("decimal(18,2)");
         builder.Property(o => o.DiscountBy).HasColumnType("nvarchar").HasMaxLength(100);
+        builder.Property(o => o.MachineName).HasMaxLength(100);
+        builder.Property(o => o.CaptainTipsDeduction).HasColumnType("decimal(18,2)");
 
         builder.HasMany(o => o.OrderDetails)
                .WithOne(od => od.Order)

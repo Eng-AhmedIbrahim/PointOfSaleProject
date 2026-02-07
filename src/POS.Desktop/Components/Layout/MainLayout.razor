@@ -9,6 +9,42 @@
 
 @* Needed for snackbars *@
 <MudSnackbarProvider />
+
+@using BlazorBase
+@inject CommonProperties _commonProperties
+@inject ISnackbar _snackbar
+@inject BlazorBase.Services.LocalizationService Localizer
+
+<NavigationLock ConfirmExternalNavigation='_commonProperties.TableItems?.Any() == true' 
+                OnBeforeInternalNavigation="HandleInternalNavigation" />
+
+@implements IDisposable
+
+@code {
+    protected override void OnInitialized()
+    {
+        _commonProperties.OnChange += StateHasChanged;
+    }
+
+    private void HandleInternalNavigation(LocationChangingContext context)
+    {
+        if (context.TargetLocation.Contains("/pos", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (_commonProperties.TableItems?.Any() == true)
+        {
+            _snackbar.Add(Localizer["PleaseCompleteOrder"], Severity.Warning);
+            context.PreventNavigation();
+        }
+    }
+
+    public void Dispose()
+    {
+        _commonProperties.OnChange -= StateHasChanged;
+    }
+}
 <div class="page">
     @* <main> *@
         @* <NavBar /> *@

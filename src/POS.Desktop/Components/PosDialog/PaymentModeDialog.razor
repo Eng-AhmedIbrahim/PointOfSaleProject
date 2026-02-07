@@ -97,5 +97,5 @@
         StateHasChanged();
     }
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Submit() => _commonProperties.PaymentMethodDialogReference?.Close(DialogResult.Ok(true));
 }

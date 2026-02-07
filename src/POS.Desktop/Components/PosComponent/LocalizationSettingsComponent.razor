@@ -65,6 +65,7 @@
     private async Task ChangeLanguage(string language)
     {
         await Localizer.SetLanguage(language);
+        _commonProperties.Language = language;
         StateHasChanged();
     }
 

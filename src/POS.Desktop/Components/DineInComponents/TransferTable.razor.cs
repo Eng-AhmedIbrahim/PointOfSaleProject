@@ -14,6 +14,7 @@ public partial class TransferTable
             var allTables = await _dineInService.GetTables();
 
             OccupiedTables = _commonProperties.DineInOrdersDetails.Values
+                .SelectMany(x => x)
                 .Where(x => !string.IsNullOrEmpty(x.RelatedTableName))
                 .ToList();
 
@@ -35,7 +36,10 @@ public partial class TransferTable
         StateHasChanged();
     }
 
-    private void TransferTables()
+    [Inject] private IDineInOrderFrontService _dineInOrderServiceFront { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; } = default!;
+
+    private async Task TransferTables()
     {
         if (SelectedCurrentTable == null || SelectedAvailableTable == null)
         {
@@ -43,23 +47,59 @@ public partial class TransferTable
             return;
         }
 
-        ChangeTableDetails(SelectedCurrentTable, SelectedAvailableTable, AvailableTables.First(t => t.Id == SelectedAvailableTable).TableName ?? string.Empty);
+        var success = await ChangeTableDetails(SelectedCurrentTable, SelectedAvailableTable, AvailableTables.First(t => t.Id == SelectedAvailableTable).TableName ?? string.Empty);
 
-        CloseDialog();
+        if (success)
+        {
+            _snackbar.Add("Table transferred successfully!", Severity.Success);
+            
+            _commonProperties.CurrentDineInOrder = null;
+            _commonProperties.TableId = 0;
+            
+            CloseDialog();
+            _navigationManager.NavigateTo("/dineIn", true);
+        }
+        else
+        {
+            _snackbar.Add("Failed to transfer table.", Severity.Error);
+        }
     }
 
-    private void ChangeTableDetails(int? oldTableId, int? newTableId, string newTableName)
+    private async Task<bool> ChangeTableDetails(int? oldTableId, int? newTableId, string newTableName)
     {
-        if (oldTableId == null || newTableId == null) return;
+        if (oldTableId == null || newTableId == null) return false;
 
-        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(oldTableId ?? 0, out var orderDetail) && orderDetail != null)
+        // Since we are transferring a WHOLE table in this dialog (usually), 
+        // we might move ALL orders for that table or just one?
+        // The original logic seemed to assume one order per table.
+        // Let's move all of them.
+        
+        if (_commonProperties!.DineInOrdersDetails!.TryGetValue(oldTableId ?? 0, out var orderDetails) && orderDetails != null && orderDetails.Any())
         {
-            orderDetail.RelatedTableId = newTableId;
-            orderDetail.RelatedTableName = newTableName;
+            bool allSuccess = true;
+            foreach (var orderDetail in orderDetails.ToList())
+            {
+                var result = await _dineInOrderServiceFront.TransferDineInOrderAsync(orderDetail.DatabaseId, newTableId.Value, newTableName);
+                if (result)
+                {
+                    orderDetail.RelatedTableId = newTableId;
+                    orderDetail.RelatedTableName = newTableName;
+                    
+                    if (!_commonProperties.DineInOrdersDetails.ContainsKey(newTableId.Value))
+                        _commonProperties.DineInOrdersDetails[newTableId.Value] = new List<DineInOrderDetails>();
+                    
+                    _commonProperties.DineInOrdersDetails[newTableId.Value].Add(orderDetail);
+                    orderDetails.Remove(orderDetail);
+                }
+                else allSuccess = false;
+            }
 
-            _commonProperties.DineInOrdersDetails.Remove(oldTableId ?? 0);
-            _commonProperties.DineInOrdersDetails[newTableId.Value] = orderDetail;
+            if (orderDetails.Count == 0)
+                _commonProperties.DineInOrdersDetails.Remove(oldTableId ?? 0);
+            
+            return allSuccess;
         }
+        return false;
     }
 
     private bool IsTransferDisabled => SelectedCurrentTable == null || SelectedAvailableTable == null;

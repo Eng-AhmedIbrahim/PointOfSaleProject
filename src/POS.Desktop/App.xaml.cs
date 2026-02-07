@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Wpf;
+using Microsoft.AspNetCore.Components.WebView.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -19,6 +19,8 @@ using BlazorBase.ERPFrontServices.DineInServices;
 using BlazorBase.ERPFrontServices.OrderServices;
 using BlazorBase.ERPFrontServices.DeliveryServices;
 using BlazorBase.ERPFrontServices.BranchServices;
+using BlazorBase.ERPFrontServices.DineInOrderServices;
+using BlazorBase.ERPFrontServices.OrderTrackServices;
 using BlazorBase.API;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -104,9 +106,9 @@ public partial class App : Application
         services.AddBlazoredLocalStorage();
 
         // Localization
-        services.AddLocalization(options => options.ResourcesPath = "Resources");
-        services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
-        services.AddScoped<BlazorBase.Services.LocalizationService>();
+        services.AddLocalization();
+
+        services.AddScoped<BlazorBase.Services.LocalizationService, DesktopLocalizationService>();
 
         // Configuration
         var configuration = new ConfigurationBuilder()
@@ -152,7 +154,18 @@ public partial class App : Application
 
         // Category services
         services.AddScoped<ICategoryServices, CategoryService>();
-        services.AddScoped<ICustomizationSettingsService, CustomizationSettingsService>();
+        services.AddScoped<IDineInOrderFrontService, DineInOrderFrontService>();
+        services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
+        
+        // Desktop-specific services (file-based storage instead of localStorage)
+        services.AddSingleton<DesktopFileStorageService>();
+        services.AddScoped<DesktopFileStorageWrapper>(sp =>
+        {
+            var fileStorage = sp.GetRequiredService<DesktopFileStorageService>();
+            return new DesktopFileStorageWrapper(fileStorage);
+        });
+        services.AddScoped<ICustomizationSettingsService, DesktopCustomizationSettingsService>();
+        services.AddScoped<DesktopFontSizeService>();
 
         // Local Storage
         services.AddBlazoredLocalStorage(config =>

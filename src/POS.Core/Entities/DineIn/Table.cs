@@ -1,4 +1,6 @@
-﻿namespace POS.Core.Entities.DineIn;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace POS.Core.Entities.DineIn;
 
 public class Table :BaseEntity
 {
@@ -18,5 +20,7 @@ public class Table :BaseEntity
     public string? TimeStamp { get; set; }
     public string? ImageUrl { get; set; }
     public int? GroupID { get; set; }
+    
+    [ForeignKey(nameof(GroupID))]
     public TableGroup? TableGroup { get; set; }
 }
