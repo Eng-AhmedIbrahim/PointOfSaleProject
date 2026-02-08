@@ -222,7 +222,7 @@
                 var activeOrder = _commonProperties.GetActiveOrder();
                 if (activeOrder != null)
                 {
-                    await _printOrderService.PrintInitialDineInOrder(activeOrder);
+                    await _printOrderService.PrintInitialDineInOrder(activeOrder, true, false);
                 }
                 _cartService.ClearDineInOrderAttributes();
             }

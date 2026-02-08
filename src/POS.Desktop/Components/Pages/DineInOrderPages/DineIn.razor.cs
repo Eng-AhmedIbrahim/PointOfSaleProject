@@ -52,6 +52,17 @@ public partial class DineIn : IDisposable
     private async void HandleStateChanged()
     {
         await LoadOpenOrdersFromDatabase();
+        
+        // Sync items with common properties state
+        if (_commonProperties.CurrentDineInOrder == null)
+        {
+            Items = new List<TableItem>();
+        }
+        else
+        {
+            Items = _commonProperties.TableItems ?? new List<TableItem>();
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -66,11 +77,11 @@ public partial class DineIn : IDisposable
         {
             var openOrders = await _dineInOrderService.GetAllOpenDineInOrdersAsync();
             
+            // Clear existing in-memory orders first to ensure synchronization
+            _commonProperties.DineInOrdersDetails?.Clear();
+
             if (openOrders != null && openOrders.Any())
             {
-                // Clear existing in-memory orders
-                _commonProperties.DineInOrdersDetails?.Clear();
-                
                 // Convert database orders to in-memory format
                 foreach (var dbOrder in openOrders)
                 {
@@ -140,6 +151,8 @@ public partial class DineIn : IDisposable
                 Items.Clear();
                 _commonProperties!.DineInOrderValues = new();
                 _commonProperties.TableItems?.Clear();
+                _commonProperties.AppendedTableItems?.Clear();
+                _commonProperties.UpdateDineInOrder = false;
             }
 
         }

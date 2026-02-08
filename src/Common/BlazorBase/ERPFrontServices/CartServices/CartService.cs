@@ -267,6 +267,8 @@ public class CartService : ICartService
         _commonProperties._financeSettingsList![0].Value = 0M;
         _commonProperties.TotalOrderPrice = 0M;
         _commonProperties.TableItems!.Clear();
+        _commonProperties.AppendedTableItems!.Clear();
+        _commonProperties.UpdateDineInOrder = false;
         _commonProperties!.CurrentDineInOrder = new();
         _commonProperties.DineInOrderValues = new();
         _commonProperties!.OrderDiscount = new();

@@ -184,15 +184,8 @@ public class OrderController : BaseApiController
 
     private async Task PrintDineInReceipt(OrderDto dineInOrder, string reportPath)
     {
-        var kitchenTypeSpecs = new KitchenTypeSpecs("Customer");
-        var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
-        
-        if (printer == null)
-        {
-            // If Customer printer not found, fallback to Cash as per user's table
-            kitchenTypeSpecs = new KitchenTypeSpecs("Cash");
-            printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
-        }
+        var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
+        var printer = kitchens?.ElementAtOrDefault(0);
 
         var receiptCount = dineInOrder.OrderSettings!
                 .Where(o => o.OrderType == OrderTypes.DineIn.ToString())
@@ -380,8 +373,8 @@ public class OrderController : BaseApiController
     private async Task PrintCashReceipt(OrderDto takeawayOrder, string reportPath)
     {
 
-        var kitchenTypeSpecs = new KitchenTypeSpecs("Cash");
-        var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
+        var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
+        var printer = kitchens?.ElementAtOrDefault(0);
 
         var receiptCount = takeawayOrder.OrderSettings!
                 .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
@@ -451,9 +444,8 @@ public class OrderController : BaseApiController
     private async Task PrintBackupReceipt(OrderDto takeawayOrder, string reportPath)
     {
 
-        var kitchenTypeSpecs = new KitchenTypeSpecs("Backup");
-
-        var printer = await _kitchenServices.GetKitchenWithSpecificationAsync(kitchenTypeSpecs);
+        var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
+        var printer = kitchens?.ElementAtOrDefault(1);
 
         var receiptCount = takeawayOrder.OrderSettings!
                 .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))

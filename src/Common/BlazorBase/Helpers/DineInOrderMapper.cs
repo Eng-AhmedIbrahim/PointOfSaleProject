@@ -65,9 +65,14 @@ public static class DineInOrderMapper
                 Price = item.Price,
                 Quantity = item.Quantity,
                 TotalAmount = item.Total,
-                TotalAfterDiscount = item.TotalAmount,
+            TotalAfterDiscount = item.TotalAmount,
                 OrderType = "DineIn",
-                OrderItemAttributes = MapToOrderItemAttributesDto(item.Attributes)
+                OrderItemAttributes = MapToOrderItemAttributesDto(item.Attributes),
+                // Map printing properties
+                ItemKitchenTypeId = item.ItemKitchenTypeId,
+                CategoryKitchenTypeId = item.CategoryKitchenTypeId,
+                PrintInBackupReceiptFromItem = item.PrintInBackupReceiptFromItem,
+                PrintInBackupReceiptFromCategory = item.PrintInBackupReceiptFromCategory
             };
 
             if (!string.IsNullOrEmpty(item.LineComment))
@@ -153,7 +158,12 @@ public static class DineInOrderMapper
             TotalAmount = item.TotalAfterDiscount ?? item.TotalAmount ?? 0,
             Attributes = MapToAttributeDtos(item.OrderItemAttributes),
             LineComment = item.OrderItemComments?.FirstOrDefault()?.Comment,
-            IsReadOnly = true
+            IsReadOnly = true,
+            // Map printing properties back
+            ItemKitchenTypeId = item.ItemKitchenTypeId,
+            CategoryKitchenTypeId = item.CategoryKitchenTypeId,
+            PrintInBackupReceiptFromItem = item.PrintInBackupReceiptFromItem,
+            PrintInBackupReceiptFromCategory = item.PrintInBackupReceiptFromCategory
         }).ToList();
     }
 

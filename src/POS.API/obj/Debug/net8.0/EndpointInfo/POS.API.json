@@ -8247,6 +8247,24 @@
               "$ref": "#/components/schemas/OrderItemCommentDto"
             },
             "nullable": true
+          },
+          "itemKitchenTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "categoryKitchenTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "printInBackupReceiptFromItem": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "printInBackupReceiptFromCategory": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -8837,7 +8855,8 @@
         "enum": [
           0,
           1,
-          2
+          2,
+          3
         ],
         "type": "integer",
         "format": "int32"

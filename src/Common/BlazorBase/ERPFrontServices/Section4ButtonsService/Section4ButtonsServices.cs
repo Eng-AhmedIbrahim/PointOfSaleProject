@@ -34,6 +34,7 @@ public class Section4ButtonsServices : ISection4ButtonsServices
     public void RemoveAllItems(List<TableItem> tableItems)
     {
         tableItems.Clear();
+        
         _commonProperties!._financeSettingsList![1].Value = 0M;
         _commonProperties.OrderDiscount = new();
         _commonProperties.TotalDiscount = 0M;

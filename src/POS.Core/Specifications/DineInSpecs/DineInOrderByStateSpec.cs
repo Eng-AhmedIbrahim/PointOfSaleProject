@@ -13,6 +13,8 @@ public class DineInOrderByStateSpec : BaseSpecifications<Orders>
         Includes.Add(o => o.OrderDetails!);
         AddThenInclude("OrderDetails.OrderItemAttributes");
         AddThenInclude("OrderDetails.MenuSalesItem");
+        AddThenInclude("OrderDetails.MenuSalesItem.Category");
         AddOrderByDesc(o => o.OrderDate);
+        EnableSplitQuery(); // Use split queries for better performance with multiple collections
     }
 }

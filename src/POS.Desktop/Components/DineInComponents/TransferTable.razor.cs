@@ -36,8 +36,8 @@ public partial class TransferTable
         StateHasChanged();
     }
 
-    [Inject] private IDineInOrderFrontService _dineInOrderServiceFront { get; set; }
-    [Inject] private NavigationManager _navigationManager { get; set; } = default!;
+    [Inject] private IDineInOrderFrontService _dineInOrderServiceFront { get; set; } = default!;
+    [Inject] private Section4ButtonsServices _section4ButtonsServices { get; set; } = default!; // Inject service
 
     private async Task TransferTables()
     {
@@ -47,7 +47,10 @@ public partial class TransferTable
             return;
         }
 
-        var success = await ChangeTableDetails(SelectedCurrentTable, SelectedAvailableTable, AvailableTables.First(t => t.Id == SelectedAvailableTable).TableName ?? string.Empty);
+        // Logic to construct new table name if available
+        string newTableName = AvailableTables.FirstOrDefault(t => t.Id == SelectedAvailableTable)?.TableName ?? string.Empty;
+
+        var success = await ChangeTableDetails(SelectedCurrentTable, SelectedAvailableTable, newTableName);
 
         if (success)
         {
@@ -57,7 +60,7 @@ public partial class TransferTable
             _commonProperties.TableId = 0;
             
             CloseDialog();
-            _navigationManager.NavigateTo("/dineIn", true);
+            _section4ButtonsServices.NotifyStateChanged(); // Refresh UI without reload
         }
         else
         {

@@ -22,14 +22,20 @@ public class DesktopPrintOrderService : IPrintOrderService
         _configuration = configuration;
     }
 
-    public async Task PrintInitialDineInOrder(DineInOrderDetails order)
+    public async Task PrintDineInClosingReceipt(DineInOrderDetails order)
+    {
+        await PrintDineInLocally(order, isClosing: true);
+    }
+
+    public async Task PrintInitialDineInOrder(DineInOrderDetails order, bool printCustomer = true, bool printKitchen = true, bool isClosing = false)
     {
         try
         {
-            await PrintDineInLocally(order);
+            if (printCustomer)
+                await PrintDineInLocally(order, isClosing);
 
             var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == "DineIn");
-            if (orderSettings != null)
+            if (orderSettings != null && printKitchen)
             {
                 var orderDto = new OrderDto
                 {
@@ -37,6 +43,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                     CashierName = order.BasicOrderDetails.CashierName,
                     OrderType = "DineIn",
                     OrderDetails = order.BasicOrderDetails.Items,
+                    TableName = order.RelatedTableName, // Populated TableName
                     OrderNotice = _commonProperties.OrderNote,
                     OrderSettings = _commonProperties.OrderSettings,
                     DiscountReason = _commonProperties.OrderDiscount?.DiscountReason,
@@ -58,7 +65,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
-    private async Task PrintDineInLocally(DineInOrderDetails order)
+    private async Task PrintDineInLocally(DineInOrderDetails order, bool isClosing = false)
     {
         var branch = await _branchService.GetBranches();
         var currentBranch = branch.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
@@ -75,7 +82,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             FooterMessage = _commonProperties.DineInSettings?.OrderStatment ?? "",
             LogoPath = "", 
             LogoWidth = currentBranch?.LogoWidth ?? 100,
-            TotalAmount = order.BasicOrderDetails.Total,
+            TotalAmount = order.BasicOrderDetails!.Account,
             ServiceAmount = order.BasicOrderDetails.Service.ToString() ?? string.Empty,
             TotalOrder = order.BasicOrderDetails.Total.ToString() ?? string.Empty,
         };
@@ -90,17 +97,27 @@ public class DesktopPrintOrderService : IPrintOrderService
         document.GeneratePdf(outputPath);
 
         var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == "DineIn");
-        if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)
+        
+        // Decide which count to use
+        int countToPrint = 0;
+        if (orderSettings != null)
+        {
+             countToPrint = isClosing 
+                 ? (orderSettings.ClosingReceiptCount ?? 0) 
+                 : (orderSettings.CustomerReceiptCount ?? 0);
+        }
+
+        if (countToPrint > 0)
         {
             var kitchens = await _printerServices.GetKitchenTypesAsync();
-            var customerKitchen = kitchens?.FirstOrDefault();
+            var customerKitchen = kitchens?.ElementAtOrDefault(0);
             
             if (customerKitchen != null)
             {
                 var printers = customerKitchen.KitchenPrinters;
                 if (printers != null)
                 {
-                    for (int i = 1; i <= orderSettings.CustomerReceiptCount; i++)
+                    for (int i = 1; i <= countToPrint; i++)
                     {
                         var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
                         if (!string.IsNullOrEmpty(printerName))
@@ -174,6 +191,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                     Total = order.GrandTotal ?? 0,
                     Service = order.Services ?? 0,
                     Tax = order.Tax ?? 0,
+                    Account = order.SubTotal ?? 0,
                     OrderDiscount = new OrderDiscount
                     {
                         Value = order.TotalDiscount ?? 0, 
@@ -185,7 +203,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                 RelatedTableName = order.TableName
             };
             
-            await PrintInitialDineInOrder(dineInOrderDetails);
+            await PrintInitialDineInOrder(dineInOrderDetails, true, false);
         }
         else 
         {
@@ -271,7 +289,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)
         {
             var kitchens = await _printerServices.GetKitchenTypesAsync();
-            var customerKitchen = kitchens?.FirstOrDefault();
+            var customerKitchen = kitchens?.ElementAtOrDefault(0);
             
             if (customerKitchen != null)
             {
@@ -312,7 +330,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             DateCreated = createdOrder.OrderDate.HasValue ? new DateTimeOffset(createdOrder.OrderDate.Value) : DateTimeOffset.Now,
             Items = filteredItems,
             KitchenNote = order.OrderNotice!,
-            KitchenType = "Backup"
+            KitchenType = "Backup",
+            TableName = order.TableName // Mapped TableName
         };
 
         var document = new KitchenReceiptDocument(receipt, filteredItems);
@@ -328,7 +347,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         if (receiptCount > 0)
         {
             var kitchens = await _printerServices.GetKitchenTypesAsync();
-            var backupKitchen = kitchens?.FirstOrDefault(k => k.KitchenName == "Backup");
+            var backupKitchen = kitchens?.ElementAtOrDefault(1);
 
             if (backupKitchen?.KitchenPrinters != null)
             {
@@ -380,7 +399,8 @@ public class DesktopPrintOrderService : IPrintOrderService
                 DateCreated = createdOrder.OrderDate.HasValue ? new DateTimeOffset(createdOrder.OrderDate.Value) : DateTimeOffset.Now,
                 Items = kitchenGroup.Items,
                 KitchenNote = order.OrderNotice!,
-                KitchenType = kitchenGroup.KitchenName
+                KitchenType = kitchenGroup.KitchenName,
+                TableName = order.TableName // Mapped TableName
             };
 
             var document = new KitchenReceiptDocument(receipt, kitchenGroup.Items);

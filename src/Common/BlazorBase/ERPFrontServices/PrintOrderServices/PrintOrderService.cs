@@ -12,7 +12,7 @@ public class PrintOrderService : IPrintOrderService
         _orderSettingsService = orderSettingsService;
     }
 
-    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId)
+    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId, bool printCustomer = true, bool printKitchen = true, bool isClosing = false)
     {
         BackupMainOrderDtoDetails(null!, null!, null!);
         BackupDineInDate(orderId);
@@ -115,5 +115,10 @@ public class PrintOrderService : IPrintOrderService
         // Currently just returning true to satisfy interface.
         // Logic can be expanded if needed for non-desktop scenarios.
         return await Task.FromResult(true);
+    }
+
+    public Task PrintDineInClosingReceipt(DineInOrderDetails orderId)
+    {
+        return Task.CompletedTask;
     }
 }

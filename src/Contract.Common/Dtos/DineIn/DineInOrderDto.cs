@@ -57,6 +57,12 @@ public class OrderItemsDetailsDto
     public string? CategoryName { get; set; }
     public List<OrderItemAttributesDto>? OrderItemAttributes { get; set; } = new();
     public List<OrderItemCommentDto>? OrderItemComments { get; set; } = new();
+    
+    // Printing properties
+    public int? ItemKitchenTypeId { get; set; }
+    public int? CategoryKitchenTypeId { get; set; }
+    public bool? PrintInBackupReceiptFromItem { get; set; }
+    public bool? PrintInBackupReceiptFromCategory { get; set; }
 }
 
 public class OrderItemCommentDto

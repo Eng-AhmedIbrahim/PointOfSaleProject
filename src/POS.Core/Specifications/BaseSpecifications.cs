@@ -14,6 +14,7 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : BaseEntity
     public int Skip { get; protected set; }
     public int Take { get; protected set; }
     public bool IsPaginationEnabled { get; protected set; }
+    public bool AsSplitQuery { get; protected set; }
 
     public BaseSpecifications()
     {
@@ -38,5 +39,10 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : BaseEntity
     protected void AddThenInclude(string thenIncludeString)
     {
         ThenIncludes.Add(thenIncludeString);
+    }
+
+    protected void EnableSplitQuery()
+    {
+        AsSplitQuery = true;
     }
 }

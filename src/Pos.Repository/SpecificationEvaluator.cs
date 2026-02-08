@@ -31,6 +31,10 @@ public static class SpecificationEvaluator<T> where T : BaseEntity
             query = query.Include(thenInclude);
         }
 
+        // Apply split query if specified for better performance with multiple collections
+        if (specification.AsSplitQuery)
+            query = query.AsSplitQuery();
+
         return query;
     }
 }

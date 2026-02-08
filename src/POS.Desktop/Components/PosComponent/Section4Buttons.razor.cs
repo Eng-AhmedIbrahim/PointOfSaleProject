@@ -66,12 +66,12 @@ public partial class Section4Buttons
                                     Tax = existingOrder.BasicOrderDetails.Tax
                                 }
                             };
-                            await _printOrderService.PrintInitialDineInOrder(appendedOrder);
+                            await _printOrderService.PrintInitialDineInOrder(appendedOrder, false, true);
                         }
                         else
                         {
                             // This is a new order, print everything
-                            await _printOrderService.PrintInitialDineInOrder(existingOrder);
+                            await _printOrderService.PrintInitialDineInOrder(existingOrder, false, true);
                         }
                     }
                 }
@@ -95,7 +95,6 @@ public partial class Section4Buttons
                 _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber + 1;
             }
 
-            _navigationManager.NavigateTo("/pos");
             _services.NotifyStateChanged();
         }
         else
@@ -113,6 +112,19 @@ public partial class Section4Buttons
         _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
         _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber;
     }
+
+    private void CancelOrder()
+    {
+        if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+        {
+            _cartService.ClearDineInOrderAttributes();
+        }
+        else
+        {
+            _cartService.ClearTakeAwayOrderAttributes();
+        }
+        _services.NotifyStateChanged();
+    }
     private void PrintDeliveryOrder()
     {
         throw new NotImplementedException();
@@ -124,18 +136,22 @@ public partial class Section4Buttons
     {
         List<TableItem>? appendedOrder = _commonProperties.AppendedTableItems;
         
-        // Logical Exit: If viewing existing table with no additions/discounts
-        if (_commonProperties.UpdateDineInOrder == true 
-            && (appendedOrder == null || !appendedOrder.Any())
-            && _commonProperties.OrderDiscount?.DiscountType == null)
-        {
-            return false; // Silently exit via special handling in PrintOrder
-        }
-
+        // Check if this is an existing order being updated
         if (_commonProperties.UpdateDineInOrder)
         {
-            // If we have additions or discount changes
-            if ((appendedOrder != null && appendedOrder.Any()) || _commonProperties.OrderDiscount?.DiscountType != null)
+            bool hasNewItems = appendedOrder != null && appendedOrder.Any();
+            bool hasDiscountChange = _commonProperties.OrderDiscount?.DiscountType != null;
+            
+            // If no new items added (only metadata changes like discount, name, phone)
+            if (!hasNewItems)
+            {
+                // Save metadata changes to database without printing
+                await UpdateOrderMetadataOnly();
+                return false; // Return false to skip printing
+            }
+            
+            // If we have new items, update database and prepare for printing
+            if (hasNewItems || hasDiscountChange)
             {
                 await UpdateExistingDineInOrderInDatabase(appendedOrder!);
                 return true;
@@ -152,6 +168,61 @@ public partial class Section4Buttons
         }
 
         return false;
+    }
+
+    private async Task UpdateOrderMetadataOnly()
+    {
+        try
+        {
+            var currentActiveOrder = _commonProperties.GetActiveOrder();
+            if (currentActiveOrder == null) return;
+
+            DineInOrderDetails? existingOrder = CheckIfThereAreDineOrderAndReturnItIfExists();
+            if (existingOrder == null) return;
+
+            // Update in-memory order for UI (discount, customer info, etc.)
+            AddDineInOrderDiscountIfExists(existingOrder);
+            
+            // Map and update in database
+            var updatedOrder = DineInOrderMapper.MapToDineInOrderDto(
+                existingOrder,
+                existingOrder.BasicOrderDetails!.OrderId,
+                _commonProperties.BranchDetails?.Id ?? 1,
+                _commonProperties.BranchDetails?.Name
+            );
+            
+            updatedOrder.Id = existingOrder.DatabaseId;
+            updatedOrder.CashierId = _commonProperties.CurrentUserId;
+            
+            // Update order metadata in database
+            var result = await _dineInOrderService.UpdateDineInOrderAsync(updatedOrder);
+            
+            if (result != null)
+            {
+                // Update discount if changed
+                if (_commonProperties.OrderDiscount?.DiscountType != null)
+                {
+                    await _dineInOrderService.UpdateDineInOrderDiscountAsync(
+                        existingOrder.DatabaseId,
+                        _commonProperties.OrderDiscount.Value,
+                        _commonProperties.OrderDiscount.Percentage,
+                        _commonProperties.OrderDiscount.DiscountType,
+                        _commonProperties.OrderDiscount.DiscountReason
+                    );
+                }
+                
+                _snackbar.Add("Order updated successfully", Severity.Success);
+            }
+            else
+            {
+                _snackbar.Add("Failed to update order", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating order metadata");
+            _snackbar.Add($"Error updating order: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task CreateNewDineInOrderInDatabase()
@@ -196,9 +267,6 @@ public partial class Section4Buttons
                     _commonProperties.DineInOrdersDetails[_commonProperties.TableId] = new List<DineInOrderDetails>();
                 
                 _commonProperties.DineInOrdersDetails[_commonProperties.TableId].Add(orderDetails);
-                
-                // Clear items from current order
-                RemoveItemsIfTableHasItems();
                 
                 _snackbar.Add("Order created successfully", Severity.Success);
             }
@@ -284,8 +352,6 @@ public partial class Section4Buttons
                 }
                 
                 CheckIsTableExist(existingOrder);
-                RemoveItemsIfTableHasItems();
-                ClearAppendData();
                 
                 _snackbar.Add("Order updated successfully", Severity.Success);
             }
@@ -343,7 +409,7 @@ public partial class Section4Buttons
         foreach (var newItem in appendedOrder)
         {
             TableItem? existingItem = existingOrder!.BasicOrderDetails!.Items
-                .FirstOrDefault(item => item.Name == newItem.Name && AreAttributesEqual(item, newItem));
+                .FirstOrDefault(item => (item.Id == newItem.Id || (item.Id == 0 && item.Name == newItem.Name)) && AreAttributesEqual(item, newItem));
 
             if (existingItem != null)
             {
@@ -363,14 +429,14 @@ public partial class Section4Buttons
 
     private bool AreAttributesEqual(TableItem item1, TableItem item2)
     {
-        if (item1.Attributes == null || item2.Attributes == null)
-            return item1.Attributes == item2.Attributes;
+        var attrs1 = item1.Attributes ?? new List<AttributeDto>();
+        var attrs2 = item2.Attributes ?? new List<AttributeDto>();
 
-        if (item1.Attributes.Count != item2.Attributes.Count)
+        if (attrs1.Count != attrs2.Count)
             return false;
 
-        return item1.Attributes.OrderBy(a => a.Id).ThenBy(a => a.Name)
-               .SequenceEqual(item2.Attributes.OrderBy(a => a.Id).ThenBy(a => a.Name),
+        return attrs1.OrderBy(a => a.Id).ThenBy(a => a.Name)
+               .SequenceEqual(attrs2.OrderBy(a => a.Id).ThenBy(a => a.Name),
                               new AttributeDtoComparer());
     }
 

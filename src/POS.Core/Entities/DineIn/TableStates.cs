@@ -3,6 +3,7 @@
 public enum TableState : byte
 {
     Available = 0,
+    OnTable,
     Reserved,
     Closed
 }

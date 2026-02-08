@@ -131,20 +131,12 @@ public partial class POS
     /// </summary>
     private void AddNewEditableItem(TableItem existingCashedItem)
     {
-        TableItem newItem = new TableItem
-        {
-            Id = existingCashedItem.Id,
-            Name = existingCashedItem.Name,
-            NameAr = existingCashedItem.NameAr,
-            CategoryId = existingCashedItem.CategoryId,
-            CategoryName = existingCashedItem.CategoryName,
-            Price = existingCashedItem.Price,
-            Quantity = 1,
-            Total = existingCashedItem.Price,
-            IsReadOnly = false,
-            Attributes = existingCashedItem.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>(),
-            TotalAmount = existingCashedItem.Price
-        };
+        TableItem newItem = existingCashedItem.Clone();
+        newItem.DatabaseId = 0; // Important: reset DatabaseId so it's treated as a new line in DB
+        newItem.Quantity = 1;
+        newItem.Total = existingCashedItem.Price;
+        newItem.TotalAmount = existingCashedItem.Price;
+        newItem.IsReadOnly = false;
 
         if (_commonProperties!.UpdateDineInOrder)
             _commonProperties.AppendedTableItems!.Add(newItem);

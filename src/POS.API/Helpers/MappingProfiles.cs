@@ -215,6 +215,11 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName ?? (src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.ArabicName : "")))
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.UnitPrice ?? (src.MenuSalesItem != null ? src.MenuSalesItem.Price : 0)))
             .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments))
+            // Map Kitchen Printing Properties
+            .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.MenuSalesItem != null ? src.MenuSalesItem.KitchenTypeId : null))
+            .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.KitchenTypeId : null))
+            .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.MenuSalesItem != null ? src.MenuSalesItem.PrintInBackupReceipt : null))
+            .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.PrintInBackupReceipt : null))
             .ReverseMap()
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments));

@@ -199,23 +199,34 @@ public class DineInOrderService : IDineInOrderService
         {
             try
             {
-                var existingOrder = await _unitOfWork.Repository<Orders>().GetByIdAsync(order.Id);
+                // Load existing order with OrderDetails to recalculate totals correctly
+                var spec = new DineInOrderByIdSpec(order.Id);
+                var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                var existingOrder = orders.FirstOrDefault();
+                
                 if (existingOrder is null)
                     return null;
 
+                // Clear navigation properties to avoid tracking conflicts
+                if (existingOrder.OrderDetails != null)
+                {
+                    foreach (var item in existingOrder.OrderDetails)
+                    {
+                        if (item.MenuSalesItem != null)
+                        {
+                            item.MenuSalesItem.Category = null;
+                            item.MenuSalesItem = null;
+                        }
+                    }
+                }
+
                 // Update order properties
-                existingOrder.Subtotal = order.Subtotal;
-                existingOrder.Tax = order.Tax;
-                existingOrder.Service = order.Service;
                 existingOrder.Discount = order.Discount;
                 existingOrder.DiscountPercentage = order.DiscountPercentage;
                 existingOrder.DiscountType = order.DiscountType;
                 existingOrder.DiscountReason = order.DiscountReason;
-                existingOrder.TotalDiscount = order.TotalDiscount;
                 
-                // Recalculate based on updated properties if needed, 
-                // but usually UpdateDineInOrderAsync is called with full calculated object from UI.
-                // To be safe, let's ensure GrandTotal is updated if Subtotal changed.
+                // Recalculate totals based on OrderDetails and new discount
                 await RecalculateOrderTotalsAsync(existingOrder);
 
                 existingOrder.OrderNotice = order.OrderNotice;
@@ -243,7 +254,7 @@ public class DineInOrderService : IDineInOrderService
                     MachineName = Environment.MachineName,
                     TableId = order.TableID,
                     TableName = order.TableName,
-                    Details = $"Order updated. Total: {order.GrandTotal}",
+                    Details = $"Order updated. Total: {existingOrder.GrandTotal}",
                     ActionDateTime = DateTime.Now
                 });
 
@@ -291,10 +302,7 @@ public class DineInOrderService : IDineInOrderService
         {
             try
             {
-                var orders = await _unitOfWork.Repository<Orders>()
-                    .GetAllWithSpecificationAsync(new DineInOrderByIdSpec(orderId));
-                
-                var order = orders.FirstOrDefault();
+                var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
                 if (order is null)
                     return false;
 
@@ -325,6 +333,28 @@ public class DineInOrderService : IDineInOrderService
                     ActionDateTime = DateTime.Now
                 });
 
+                if (order.TableID != null && order.TableID > 0)
+                {
+                    // Check if there are other OPEN orders for this table
+                    var openOrdersSpec = new BaseSpecifications<Orders>(o => 
+                        o.TableID == order.TableID && 
+                        o.OrderState == OrderStates.Pending && 
+                        o.OrderID != orderId); // Exclude current order
+                    
+                    var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
+                    
+                    if (otherOpenOrdersCount == 0)
+                    {
+                        var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
+                        if (table != null && table.TableState != TableState.Available)
+                        {
+                            table.TableState = TableState.Available;
+                            _unitOfWork.Repository<Table>().Update(table);
+                        }
+                    }
+                }
+
+                await _unitOfWork.CompleteAsync(); // Save table changes
                 transaction.Commit();
                 return true;
             }
@@ -409,6 +439,19 @@ public class DineInOrderService : IDineInOrderService
                 if (order is null)
                     return false;
 
+                // Clear navigation properties on all existing items to prevent tracking conflicts
+                if (order.OrderDetails != null)
+                {
+                    foreach (var existingOrderItem in order.OrderDetails)
+                    {
+                        if (existingOrderItem.MenuSalesItem != null)
+                        {
+                            existingOrderItem.MenuSalesItem.Category = null;
+                            existingOrderItem.MenuSalesItem = null;
+                        }
+                    }
+                }
+
                 foreach (var newItem in items)
                 {
                     newItem.OrderType = OrderTypes.DineIn;
@@ -437,14 +480,14 @@ public class DineInOrderService : IDineInOrderService
                         existingItem.ItemNameAr ??= newItem.ItemNameAr;
                         existingItem.UnitPrice ??= newItem.UnitPrice;
                         
-                        existingItem.MenuSalesItem = null;
                         _unitOfWork.Repository<OrderItemsDetails>().Update(existingItem);
                     }
                     else
                     {
-                        newItem.Order = order; // Link via navigation property
-                        newItem.OrderId = order.Id;
+                        // Clear navigation properties on new item to prevent tracking conflicts
                         newItem.MenuSalesItem = null;
+                        newItem.Order = null; // Don't link via navigation - use OrderId instead
+                        newItem.OrderId = order.Id;
                         await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(newItem);
                         
                         order.OrderDetails ??= new List<OrderItemsDetails>();
@@ -501,9 +544,26 @@ public class DineInOrderService : IDineInOrderService
         {
             try
             {
-                var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
+                // Load order with OrderDetails to recalculate totals correctly
+                var spec = new DineInOrderByIdSpec(orderId);
+                var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                var order = orders.FirstOrDefault();
+                
                 if (order is null)
                     return false;
+
+                // Clear navigation properties to avoid tracking conflicts
+                if (order.OrderDetails != null)
+                {
+                    foreach (var item in order.OrderDetails)
+                    {
+                        if (item.MenuSalesItem != null)
+                        {
+                            item.MenuSalesItem.Category = null;
+                            item.MenuSalesItem = null;
+                        }
+                    }
+                }
 
                 order.Discount = discountAmount;
                 order.DiscountPercentage = discountPercentage;
@@ -620,42 +680,141 @@ public class DineInOrderService : IDineInOrderService
                     // Move items or merge if same
                     if (secOrder.OrderDetails != null)
                     {
-                        foreach (var secItem in secOrder.OrderDetails)
+                        foreach (var secItem in secOrder.OrderDetails.ToList())
                         {
                             // Clear navigation property to avoid identity conflict in EF tracking
                             secItem.MenuSalesItem = null;
 
                             var primaryItem = primaryOrder.OrderDetails?.FirstOrDefault(i => AreItemsSame(i, secItem));
+                            
                             if (primaryItem != null)
                             {
-                                primaryItem.MenuSalesItem = null;
-                                primaryItem.Quantity += secItem.Quantity;
-                                primaryItem.TotalAmount += secItem.TotalAmount;
+                                // Update existing item in primary order
+                                primaryItem.Quantity = (primaryItem.Quantity ?? 0) + (secItem.Quantity ?? 0);
+                                primaryItem.TotalAmount = (primaryItem.TotalAmount ?? 0) + (secItem.TotalAmount ?? 0);
+                                
+                                // Merge other financial fields
+                                primaryItem.TotalAfterDiscount = (primaryItem.TotalAfterDiscount ?? primaryItem.TotalAmount) + (secItem.TotalAfterDiscount ?? secItem.TotalAmount);
+                                primaryItem.TotalDiscountAmount = (primaryItem.TotalDiscountAmount ?? 0) + (secItem.TotalDiscountAmount ?? 0);
+                                primaryItem.TotalDiscountPrice = (primaryItem.TotalDiscountPrice ?? 0) + (secItem.TotalDiscountPrice ?? 0);
+                                primaryItem.VoidAmount = (primaryItem.VoidAmount ?? 0) + (secItem.VoidAmount ?? 0); // Void quantity
+                                
+                                // Avoid re-attaching graph if possible
+                                if (primaryItem.MenuSalesItem != null) primaryItem.MenuSalesItem = null;
+                                
                                 _unitOfWork.Repository<OrderItemsDetails>().Update(primaryItem);
-                                _unitOfWork.Repository<OrderItemsDetails>().Delete(secItem);
                             }
                             else
                             {
-                                secItem.OrderId = primaryOrderId;
-                                secItem.MenuSalesItem = null;
-                                if (primaryOrder.OrderDetails != null && !primaryOrder.OrderDetails.Any(i => i.Id == secItem.Id))
+                                // Create a NEW item for the primary order (Deep Copy)
+                                var newItem = new OrderItemsDetails
                                 {
-                                    primaryOrder.OrderDetails.Add(secItem);
+                                    OrderId = primaryOrderId,
+                                    OrderType = OrderTypes.DineIn,
+                                    MenuSalesItemId = secItem.MenuSalesItemId,
+                                    // Do NOT set MenuSalesItem navigation property to avoid tracking conflict
+                                    MenuSalesItem = null, 
+                                    
+                                    ItemName = secItem.ItemName,
+                                    ItemNameAr = secItem.ItemNameAr,
+                                    CategoryId = secItem.CategoryId,
+                                    CategoryName = secItem.CategoryName,
+                                    UnitPrice = secItem.UnitPrice,
+                                    Quantity = secItem.Quantity,
+                                    
+                                    TotalAmount = secItem.TotalAmount,
+                                    // Ensure TotalAfterDiscount is not null
+                                    TotalAfterDiscount = secItem.TotalAfterDiscount ?? secItem.TotalAmount,
+                                    
+                                    Discount = secItem.Discount,
+                                    TotalDiscountPrice = secItem.TotalDiscountPrice ?? 0,
+                                    TotalDiscountPercentage = secItem.TotalDiscountPercentage,
+                                    TotalDiscountAmount = secItem.TotalDiscountAmount ?? 0,
+                                    
+                                    IsVoided = secItem.IsVoided,
+                                    VoidAmount = secItem.VoidAmount ?? 0,
+                                    
+                                    OrderItemAttributes = new List<OrderItemAttributes>(),
+                                    OrderItemComments = new List<OrderItemComment>()
+                                };
+
+                                // Deep copy Attributes
+                                if (secItem.OrderItemAttributes != null)
+                                {
+                                    foreach (var attr in secItem.OrderItemAttributes)
+                                    {
+                                        newItem.OrderItemAttributes.Add(new OrderItemAttributes
+                                        {
+                                            AttributeItemId = attr.AttributeItemId,
+                                            AttributeName = attr.AttributeName
+                                            // Price removed as per user change
+                                        });
+                                    }
                                 }
+
+                                // Deep copy Comments
+                                if (secItem.OrderItemComments != null)
+                                {
+                                    foreach (var comment in secItem.OrderItemComments)
+                                    {
+                                        newItem.OrderItemComments.Add(new OrderItemComment
+                                        {
+                                            Comment = comment.Comment
+                                        });
+                                    }
+                                }
+
+                                // Add the NEW item to the repository
+                                await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(newItem);
+                                
+                                if (primaryOrder.OrderDetails == null) primaryOrder.OrderDetails = new List<OrderItemsDetails>();
+                                primaryOrder.OrderDetails.Add(newItem);
                             }
                         }
                     }
 
-                    // Void secondary order
-                    secOrder.OrderState = OrderStates.Voided;
-                    secOrder.VoidReason = $"Merged into Order ID: {primaryOrder.OrderID}";
-                    secOrder.VoidTime = DateTime.Now;
-                    secOrder.VoidByName = primaryOrder.CashierName;
-                    _unitOfWork.Repository<Orders>().Update(secOrder);
+                    // Check if we need to free the table (if it's different from primary)
+                    if (secOrder.TableID != null && secOrder.TableID > 0 && secOrder.TableID != primaryOrder.TableID)
+                    {
+                        var openOrdersSpec = new BaseSpecifications<Orders>(o => 
+                            o.TableID == secOrder.TableID && 
+                            o.OrderState == OrderStates.Pending && 
+                            o.OrderID != secOrder.OrderID); 
+                        
+                        var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
+                        
+                        if (otherOpenOrdersCount == 0)
+                        {
+                            var table = await _unitOfWork.Repository<Table>().GetByIdAsync(secOrder.TableID.Value);
+                            if (table != null && table.TableState != TableState.Available)
+                            {
+                                table.TableState = TableState.Available;
+                                _unitOfWork.Repository<Table>().Update(table);
+                            }
+                        }
+                    }
+
+                    // Track the deletion of the secondary order
+                    await _orderTrackService.TrackOrderActionAsync(new OrderTrack
+                    {
+                        OrderId = secOrder.OrderID,
+                        OrderType = "DineIn",
+                        Action = "MergedAndDeleted",
+                        UserName = primaryOrder.CashierName,
+                        UserId = primaryOrder.CashierID,
+                        MachineName = Environment.MachineName,
+                        TableId = secOrder.TableID,
+                        TableName = secOrder.TableName,
+                        Details = $"Order merged into Order ID {primaryOrder.OrderID} and deleted.",
+                        ActionDateTime = DateTime.Now
+                    });
+
+                    // Remove secondary order completely (Cascade delete will handle old items)
+                    _unitOfWork.Repository<Orders>().Delete(secOrder);
                 }
 
                 await RecalculateOrderTotalsAsync(primaryOrder);
-                _unitOfWork.Repository<Orders>().Update(primaryOrder);
+                // _unitOfWork.Repository<Orders>().Update(primaryOrder); // REMOVED to avoid identity conflict
                 await _unitOfWork.CompleteAsync();
 
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
@@ -746,6 +905,14 @@ public class DineInOrderService : IDineInOrderService
                         var item = sourceOrder.OrderDetails?.FirstOrDefault(i => i.Id == splitRequest.OrderItemDetailId);
                         if (item == null || (item.Quantity ?? 0) < splitRequest.QuantityToMove) continue;
 
+                        // Clear navigation properties on source item to prevent tracking conflicts
+                        if (item.MenuSalesItem != null)
+                        {
+                            item.MenuSalesItem.Category = null;
+                            item.MenuSalesItem = null;
+                        }
+                        item.Order = null;
+
                         var unitPrice = (item.TotalAmount ?? 0) / (item.Quantity ?? 1);
                         var valueToMove = unitPrice * splitRequest.QuantityToMove;
 
@@ -753,7 +920,6 @@ public class DineInOrderService : IDineInOrderService
                         item.Quantity -= splitRequest.QuantityToMove;
                         item.TotalAmount -= valueToMove;
                         
-                        item.MenuSalesItem = null;
                         if (item.Quantity <= 0)
                             _unitOfWork.Repository<OrderItemsDetails>().Delete(item);
                         else
@@ -816,13 +982,18 @@ public class DineInOrderService : IDineInOrderService
                 // Update source order totals
                 await RecalculateOrderTotalsAsync(sourceOrder);
 
-                if (sourceOrder.Subtotal <= 0 || !sourceOrder.OrderDetails!.Any(i => i.Quantity > 0))
+                bool shouldVoid = sourceOrder.Subtotal <= 0 || (sourceOrder.OrderDetails != null && !sourceOrder.OrderDetails.Any(i => i.Quantity > 0));
+
+                if (shouldVoid)
                 {
                     sourceOrder.OrderState = OrderStates.Voided;
                     sourceOrder.VoidReason = "Completely split into other orders";
                     sourceOrder.VoidTime = DateTime.Now;
                     sourceOrder.VoidByName = sourceOrder.CashierName;
                 }
+
+                // Clear navigation property to prevent graph traversal issues during update
+                sourceOrder.OrderDetails = null;
 
                 _unitOfWork.Repository<Orders>().Update(sourceOrder);
                 await _unitOfWork.CompleteAsync();
@@ -943,15 +1114,22 @@ public class DineInOrderService : IDineInOrderService
     {
         try
         {
-            var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(new DineInOrderByIdSpec(orderId));
-            var order = orders.FirstOrDefault();
+            var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
             
             if (order == null)
             {
                 // Fallback: search by display OrderID if PK search fails
                 var spec = new DineInOrderByOrderIdSpec(orderId);
-                orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                // Use a local var for the list to avoid conflict
+                var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
                 order = orders.FirstOrDefault();
+                
+                if (order != null)
+                {
+                    // Clear navigation properties to prevent Identity Resolution conflicts during Update
+                    // We only want to update the PrintCount on the Order entity itself
+                    order.OrderDetails = null;
+                }
             }
 
             if (order == null) return 0;

@@ -13,5 +13,7 @@ public class DineInOrderByIdSpec : BaseSpecifications<Orders>
         Includes.Add(o => o.OrderDetails!);
         AddThenInclude("OrderDetails.OrderItemAttributes");
         AddThenInclude("OrderDetails.MenuSalesItem");
+        AddThenInclude("OrderDetails.MenuSalesItem.Category");
+        EnableSplitQuery(); // Use split queries for better performance with multiple collections
     }
 }

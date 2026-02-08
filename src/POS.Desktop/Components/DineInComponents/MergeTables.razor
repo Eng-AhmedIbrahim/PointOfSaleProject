@@ -3,6 +3,7 @@
 @inject CommonProperties _commonProperties
 @inject IDialogService _dialogService
 @inject NavigationManager _navigationManager
+@inject Section4ButtonsServices _section4ButtonsServices
 
 <MudDialog FullWidth="true" MaxWidth="MaxWidth.Small">
     <TitleContent>
@@ -108,7 +109,8 @@
             _commonProperties.TableId = 0;
             
             CloseDialog();
-            _navigationManager.NavigateTo("/dineIn", true);
+            _section4ButtonsServices.NotifyStateChanged();
+            _navigationManager.NavigateTo("/dineIn");
         }
         else
         {

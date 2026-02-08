@@ -12,6 +12,8 @@ public partial class MenuButtons
         }
         else
         {
+            _commonProperties.UpdateDineInOrder = false;
+            _commonProperties.AppendedTableItems?.Clear();
             BackUpDineInOrder();
 
             if (_commonProperties!.CurrentDineInOrder!.CaptainName is null || _commonProperties.CurrentDineInOrder.RelatedTableName is null)
@@ -74,34 +76,6 @@ public partial class MenuButtons
         _commonProperties._financeSettingsList[4].Value = dineInOrderDetails.BasicOrderDetails.Total;
     }
  
-    public void MergeTables(int primaryTableId, List<int> mergingTableIds)
-    {
-        if (!_commonProperties.DineInOrdersDetails!.ContainsKey(primaryTableId) || mergingTableIds.Count == 0)
-            return;
-
-        var primaryOrders = _commonProperties.DineInOrdersDetails[primaryTableId];
-        var primaryOrder = primaryOrders.FirstOrDefault(); // Assuming first one for merge
-        if (primaryOrder == null) return;
-
-        foreach (var tableId in mergingTableIds)
-        {
-            if (_commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var mergingOrders))
-            {
-                foreach (var mergingOrder in mergingOrders)
-                {
-                    if (mergingOrder.BasicOrderDetails != null)
-                    {
-                        primaryOrder.BasicOrderDetails ??= new BlazorBase.Models.OrderDetails();
-                        primaryOrder.BasicOrderDetails.Merge(mergingOrder.BasicOrderDetails);
-                    }
-                }
-
-                primaryOrder.RelatedTableName += $" & {tableId}"; // Simplified
-                _commonProperties.DineInOrdersDetails.Remove(tableId);
-            }
-        }
-    }
-
     private async Task OpenMergeTablesDialog()
         => _commonProperties.DialogReference = await _dialogService.ShowAsync<MergeTables>("Merge Tables");
 
@@ -116,11 +90,11 @@ public partial class MenuButtons
         var orderDetails = _commonProperties.GetActiveOrder();
         if (orderDetails != null)
         {
-            await _printOrderService.PrintInitialDineInOrder(orderDetails);
+            await _printOrderService.PrintInitialDineInOrder(orderDetails, true, false);
             
             var newCount = await _dineInOrderService.IncrementPrintCountAsync(orderDetails.DatabaseId);
-            // Update the in-memory PrintCount to reflect the database change
-            orderDetails.PrintCount = newCount + 1; // newCount returns the OLD count, so we add 1
+            // Update the in-memory PrintCount to reflect the database change (newCount is the updated value)
+            orderDetails.PrintCount = newCount; 
             StateHasChanged();
 
             _snackbar.Add(Localizer["PrintingReceipt"], Severity.Info);
@@ -208,6 +182,8 @@ public partial class MenuButtons
             var result = await _dineInOrderService.CloseDineInOrderAsync(orderDetails.DatabaseId);
             if (result)
             {
+                await _printOrderService.PrintDineInClosingReceipt(orderDetails);
+
                 var tableOrders = _commonProperties.DineInOrdersDetails![_commonProperties.TableId];
                 tableOrders.Remove(orderDetails);
                 if (!tableOrders.Any())

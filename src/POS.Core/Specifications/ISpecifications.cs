@@ -12,4 +12,5 @@ public interface ISpecifications<T> where T : BaseEntity
     public int Skip { get; }
     public int Take { get; }
     public bool IsPaginationEnabled { get; }
+    public bool AsSplitQuery { get; }
 }
