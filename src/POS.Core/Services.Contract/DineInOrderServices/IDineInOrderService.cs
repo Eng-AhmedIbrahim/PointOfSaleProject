@@ -74,4 +74,6 @@ public interface IDineInOrderService
     /// </summary>
     Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy);
     Task<int> IncrementPrintCountAsync(int orderId);
+    Task<bool> ReserveTableAsync(Orders reservationOrder);
+    Task<bool> CancelReservationAsync(int orderId);
 }

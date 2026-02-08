@@ -1,0 +1,3865 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "4.14.0.0",
+        "fileVersion": "4.14.0-3.25413.5 (b828a8df)",
+        "semanticVersion": "4.14.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Auth/CustomAuthenticationStateProvider.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 23,
+                  "endLine": 47,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Auth/CustomAuthenticationStateProvider.cs",
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 23,
+                  "endLine": 104,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Dereference of a possibly null reference.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section1.razor.cs",
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 30,
+                  "endLine": 34,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8601",
+          "level": "warning",
+          "message": "Possible null reference assignment.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/GuestCountDialog.razor.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 21,
+                  "endLine": 22,
+                  "endColumn": 83
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Order' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/GuestCountDialog.razor.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 28,
+                  "endLine": 14,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/GuestCountDialog.razor.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 28,
+                  "endLine": 14,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Auth/TokenInitializer.razor",
+                "region": {
+                  "startLine": 5,
+                  "startColumn": 35,
+                  "endLine": 5,
+                  "endColumn": 53
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1061",
+          "level": "error",
+          "message": "'CommonProperties' does not contain a definition for 'UserId' and no accessible extension method 'UserId' accepting a first argument of type 'CommonProperties' could be found (are you missing a using directive or an assembly reference?)",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 243,
+                  "startColumn": 55,
+                  "endLine": 243,
+                  "endColumn": 61
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Dereference of a possibly null reference.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 235,
+                  "startColumn": 19,
+                  "endLine": 235,
+                  "endColumn": 56
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0168",
+          "level": "warning",
+          "message": "The variable 'ex' is declared but never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor.cs",
+                "region": {
+                  "startLine": 53,
+                  "startColumn": 26,
+                  "endLine": 53,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 24,
+                  "endLine": 80,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0168",
+          "level": "warning",
+          "message": "The variable 'ex' is declared but never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor.cs",
+                "region": {
+                  "startLine": 110,
+                  "startColumn": 26,
+                  "endLine": 110,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 24,
+                  "endLine": 151,
+                  "endColumn": 46
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0618",
+          "level": "warning",
+          "message": "'IDialogService.Show<TComponent>(string?, DialogParameters, DialogOptions?)' is obsolete: 'Use ShowAsync instead. This will be removed in future major version.'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MenuButtons.razor.cs",
+                "region": {
+                  "startLine": 145,
+                  "startColumn": 26,
+                  "endLine": 145,
+                  "endColumn": 107
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 2
+          }
+        },
+        {
+          "ruleId": "CS0618",
+          "level": "warning",
+          "message": "'IDialogService.Show<TComponent>(string?, DialogParameters, DialogOptions?)' is obsolete: 'Use ShowAsync instead. This will be removed in future major version.'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MenuButtons.razor.cs",
+                "region": {
+                  "startLine": 172,
+                  "startColumn": 26,
+                  "endLine": 172,
+                  "endColumn": 99
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 2
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'TableName' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 31,
+                  "endLine": 14,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 31,
+                  "endLine": 14,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'CurrentUser' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 31,
+                  "endLine": 15,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 31,
+                  "endLine": 15,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'CurrentUserId' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 31,
+                  "endLine": 16,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 31,
+                  "endLine": 16,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'CustomerName' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 20,
+                  "endLine": 18,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 20,
+                  "endLine": 18,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'CustomerPhone' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 20,
+                  "endLine": 19,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 20,
+                  "endLine": 19,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'SpecialRequests' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 20,
+                  "endLine": 24,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 20,
+                  "endLine": 24,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 435,
+                  "startColumn": 24,
+                  "endLine": 435,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 440,
+                  "startColumn": 24,
+                  "endLine": 440,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property '_dineInOrderServiceFront' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 47,
+                  "endLine": 51,
+                  "endColumn": 71
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 47,
+                  "endLine": 51,
+                  "endColumn": 71
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1998",
+          "level": "warning",
+          "message": "This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 28,
+                  "endLine": 34,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8601",
+          "level": "warning",
+          "message": "Possible null reference assignment.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 21,
+                  "endLine": 29,
+                  "endColumn": 83
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8601",
+          "level": "warning",
+          "message": "Possible null reference assignment.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 32,
+                  "endLine": 39,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8601",
+          "level": "warning",
+          "message": "Possible null reference assignment.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 24,
+                  "endLine": 47,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Dereference of a possibly null reference.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 23,
+                  "endLine": 48,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1061",
+          "level": "error",
+          "message": "'DineInOrderDto' does not contain a definition for 'CashierID' and no accessible extension method 'CashierID' accepting a first argument of type 'DineInOrderDto' could be found (are you missing a using directive or an assembly reference?)",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 144,
+                  "startColumn": 35,
+                  "endLine": 144,
+                  "endColumn": 44
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Dereference of a possibly null reference.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopPrinterService.cs",
+                "region": {
+                  "startLine": 133,
+                  "startColumn": 25,
+                  "endLine": 133,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'OriginalItem' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 164,
+                  "startColumn": 37,
+                  "endLine": 164,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 164,
+                  "startColumn": 37,
+                  "endLine": 164,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'ItemName' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 165,
+                  "startColumn": 23,
+                  "endLine": 165,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 165,
+                  "startColumn": 23,
+                  "endLine": 165,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0618",
+          "level": "warning",
+          "message": "'IDialogService.Show<TComponent>(string?, DialogParameters, DialogOptions?)' is obsolete: 'Use ShowAsync instead. This will be removed in future major version.'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 529,
+                  "startColumn": 9,
+                  "endLine": 529,
+                  "endColumn": 130
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 2
+          }
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argument 2: cannot convert from 'method group' to 'Microsoft.AspNetCore.Components.EventCallback'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 73,
+                  "endLine": 15,
+                  "endColumn": 83
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Order' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 28,
+                  "endLine": 17,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 28,
+                  "endLine": 17,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'SelectedItem' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 27,
+                  "endLine": 19,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 27,
+                  "endLine": 19,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Reason' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 20,
+                  "endLine": 21,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 20,
+                  "endLine": 21,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Sign' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 452,
+                  "startColumn": 23,
+                  "endLine": 452,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 452,
+                  "startColumn": 23,
+                  "endLine": 452,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Name' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 453,
+                  "startColumn": 23,
+                  "endLine": 453,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 453,
+                  "startColumn": 23,
+                  "endLine": 453,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Position' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 454,
+                  "startColumn": 23,
+                  "endLine": 454,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 454,
+                  "startColumn": 23,
+                  "endLine": 454,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0067",
+          "level": "warning",
+          "message": "The event 'DesktopFileStorageWrapper.Changed' is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopLocalizationService.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 50,
+                  "endLine": 32,
+                  "endColumn": 57
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0067",
+          "level": "warning",
+          "message": "The event 'DesktopFileStorageWrapper.Changing' is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopLocalizationService.cs",
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 51,
+                  "endLine": 31,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0414",
+          "level": "warning",
+          "message": "The field 'Sliders._salesItemsHorizontalSider' is assigned but its value is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 24,
+                  "endLine": 8,
+                  "endColumn": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0414",
+          "level": "warning",
+          "message": "The field 'ItemDiscountDialog.DiscountValue' is assigned but its value is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemDiscountDialog.razor.cs",
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 20,
+                  "endLine": 7,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0414",
+          "level": "warning",
+          "message": "The field 'Sliders._salesItemsVerticalSlider' is assigned but its value is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 24,
+                  "endLine": 9,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0414",
+          "level": "warning",
+          "message": "The field 'ItemDiscountDialog.DiscountPercentage' is assigned but its value is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemDiscountDialog.razor.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 20,
+                  "endLine": 6,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0414",
+          "level": "warning",
+          "message": "The field 'POS._spacing' is assigned but its value is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 20,
+                  "endLine": 14,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(201,12)-(201,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 202,
+                  "startColumn": 13,
+                  "endLine": 202,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(202,12)-(202,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 203,
+                  "startColumn": 13,
+                  "endLine": 203,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'GutterSize' on 'MudGrid' using pattern 'LowerCase' source location '(253,16)-(253,71)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 254,
+                  "startColumn": 17,
+                  "endLine": 254,
+                  "endColumn": 72
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'Dense' on 'MudText' using pattern 'LowerCase' source location '(381,32)-(381,85)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 382,
+                  "startColumn": 33,
+                  "endLine": 382,
+                  "endColumn": 86
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'Dense' on 'MudText' using pattern 'LowerCase' source location '(397,32)-(397,85)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 398,
+                  "startColumn": 33,
+                  "endLine": 398,
+                  "endColumn": 86
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'Dense' on 'MudText' using pattern 'LowerCase' source location '(413,32)-(413,85)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_SelectAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 414,
+                  "startColumn": 33,
+                  "endLine": 414,
+                  "endColumn": 86
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.SelectAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(195,12)-(195,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/SplitOrderDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_SplitOrderDialog_razor.g.cs",
+                "region": {
+                  "startLine": 196,
+                  "startColumn": 13,
+                  "endLine": 196,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.SplitOrderDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(196,12)-(196,81)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/SplitOrderDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_SplitOrderDialog_razor.g.cs",
+                "region": {
+                  "startLine": 197,
+                  "startColumn": 13,
+                  "endLine": 197,
+                  "endColumn": 82
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.SplitOrderDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'ParseClaimsFromJwt' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Auth/CustomAuthenticationStateProvider.cs",
+                "region": {
+                  "startLine": 67,
+                  "startColumn": 29,
+                  "endLine": 67,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/MainWindow.xaml.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 82,
+                  "endLine": 25,
+                  "endColumn": 116
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section1.razor.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 14,
+                  "endLine": 24,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section1.razor.cs",
+                "region": {
+                  "startLine": 37,
+                  "startColumn": 15,
+                  "endLine": 37,
+                  "endColumn": 79
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'SetupSerilog' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/App.xaml.cs",
+                "region": {
+                  "startLine": 59,
+                  "startColumn": 18,
+                  "endLine": 59,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'ConfigureServices' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/App.xaml.cs",
+                "region": {
+                  "startLine": 81,
+                  "startColumn": 18,
+                  "endLine": 81,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopPrintOrderService.cs",
+                "region": {
+                  "startLine": 176,
+                  "startColumn": 45,
+                  "endLine": 176,
+                  "endColumn": 70
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1816",
+          "level": "note",
+          "message": "Change Delivery.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor.cs",
+                "region": {
+                  "startLine": 27,
+                  "startColumn": 17,
+                  "endLine": 27,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1816",
+          "level": "note",
+          "message": "Change DineIn.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 69,
+                  "startColumn": 17,
+                  "endLine": 69,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 138,
+                  "startColumn": 173,
+                  "endLine": 138,
+                  "endColumn": 185
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 183,
+                  "startColumn": 44,
+                  "endLine": 183,
+                  "endColumn": 57
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor.cs",
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 21,
+                  "endLine": 48,
+                  "endColumn": 85
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'UpdateHeight' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopCustomizationSettingsService.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 20,
+                  "endLine": 46,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(195,12)-(195,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MultipleOrdersDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MultipleOrdersDialog_razor.g.cs",
+                "region": {
+                  "startLine": 196,
+                  "startColumn": 13,
+                  "endLine": 196,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MultipleOrdersDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(196,12)-(196,77)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MultipleOrdersDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MultipleOrdersDialog_razor.g.cs",
+                "region": {
+                  "startLine": 197,
+                  "startColumn": 13,
+                  "endLine": 197,
+                  "endColumn": 78
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MultipleOrdersDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'Clickable' on 'MudList' using pattern 'LowerCase' source location '(313,24)-(313,81)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MultipleOrdersDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MultipleOrdersDialog_razor.g.cs",
+                "region": {
+                  "startLine": 314,
+                  "startColumn": 25,
+                  "endLine": 314,
+                  "endColumn": 82
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MultipleOrdersDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(195,12)-(195,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/PaymentDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosComponent_PaymentDialog_razor.g.cs",
+                "region": {
+                  "startLine": 196,
+                  "startColumn": 13,
+                  "endLine": 196,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosComponent.PaymentDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(196,12)-(196,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/PaymentDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosComponent_PaymentDialog_razor.g.cs",
+                "region": {
+                  "startLine": 197,
+                  "startColumn": 13,
+                  "endLine": 197,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosComponent.PaymentDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 153,
+                  "startColumn": 14,
+                  "endLine": 153,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 193,
+                  "startColumn": 41,
+                  "endLine": 193,
+                  "endColumn": 74
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 13,
+                  "endLine": 39,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Prefer a 'TryGetValue' call over a Dictionary indexer access guarded by a 'ContainsKey' check to avoid double lookup",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 89,
+                  "startColumn": 26,
+                  "endLine": 89,
+                  "endColumn": 93
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 93,
+                  "startColumn": 21,
+                  "endLine": 93,
+                  "endColumn": 75
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 91,
+                  "startColumn": 25,
+                  "endLine": 91,
+                  "endColumn": 113
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA2012",
+          "level": "note",
+          "message": "ValueTask instances returned from method calls should always be used, typically awaited. Not doing so often represents a functional bug, but even if it doesn't, it can result in degraded performance if the target method pools objects for use with ValueTasks.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 326,
+                  "startColumn": 9,
+                  "endLine": 326,
+                  "endColumn": 62
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MenuButtons.razor.cs",
+                "region": {
+                  "startLine": 211,
+                  "startColumn": 22,
+                  "endLine": 211,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TransferTable.razor.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 131,
+                  "endLine": 80,
+                  "endColumn": 149
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'OnValueChanged' on 'MudAutocomplete' using pattern 'LowerCase' source location '(1613,32)-(1613,109)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/PrintOrderPage.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_Pages_PrintOrderPage_razor.g.cs",
+                "region": {
+                  "startLine": 1614,
+                  "startColumn": 33,
+                  "endLine": 1614,
+                  "endColumn": 110
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.Pages.PrintOrderPage"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MergeTables_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MergeTables"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(190,12)-(190,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MergeTables_razor.g.cs",
+                "region": {
+                  "startLine": 191,
+                  "startColumn": 13,
+                  "endLine": 191,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MergeTables"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'DisableElevation' on 'MudButton' using pattern 'LowerCase' source location '(361,28)-(361,92)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_MergeTables_razor.g.cs",
+                "region": {
+                  "startLine": 362,
+                  "startColumn": 29,
+                  "endLine": 362,
+                  "endColumn": 93
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.MergeTables"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(214,12)-(214,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/AddNewAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_AddNewAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 215,
+                  "startColumn": 13,
+                  "endLine": 215,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.AddNewAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(215,12)-(215,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/AddNewAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_AddNewAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 216,
+                  "startColumn": 13,
+                  "endLine": 216,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.AddNewAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'ValueExpression' on 'MudSelect' using pattern 'LowerCase' source location '(497,32)-(505,33)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/AddNewAddressDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DeliveryComponent_AddNewAddressDialog_razor.g.cs",
+                "region": {
+                  "startLine": 498,
+                  "startColumn": 33,
+                  "endLine": 506,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DeliveryComponent.AddNewAddressDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 20,
+                  "startColumn": 17,
+                  "endLine": 20,
+                  "endColumn": 53
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 38,
+                  "startColumn": 110,
+                  "endLine": 38,
+                  "endColumn": 116
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 105,
+                  "endLine": 50,
+                  "endColumn": 111
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1816",
+          "level": "note",
+          "message": "Change POS.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 409,
+                  "startColumn": 17,
+                  "endLine": 409,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'ExitApp' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor.cs",
+                "region": {
+                  "startLine": 145,
+                  "startColumn": 18,
+                  "endLine": 145,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1829",
+          "level": "note",
+          "message": "Use the \"Count\" property instead of Enumerable.Count()",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 153,
+                  "startColumn": 51,
+                  "endLine": 153,
+                  "endColumn": 74
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "PropertyNameKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 142,
+                  "startColumn": 57,
+                  "endLine": 142,
+                  "endColumn": 76
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 163,
+                  "startColumn": 46,
+                  "endLine": 163,
+                  "endColumn": 52
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 23,
+                  "endLine": 22,
+                  "endColumn": 87
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 23,
+                  "endLine": 30,
+                  "endColumn": 87
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 329,
+                  "startColumn": 21,
+                  "endLine": 329,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSFooterCommponent.razor.cs",
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 13,
+                  "endLine": 48,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor.cs",
+                "region": {
+                  "startLine": 126,
+                  "startColumn": 14,
+                  "endLine": 126,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'IsCashedItem' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 99,
+                  "startColumn": 18,
+                  "endLine": 99,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'IncrementExistingNewItem' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor.cs",
+                "region": {
+                  "startLine": 122,
+                  "startColumn": 18,
+                  "endLine": 122,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 13,
+                  "endLine": 46,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor.cs",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 67,
+                  "endLine": 50,
+                  "endColumn": 109
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1816",
+          "level": "note",
+          "message": "Change POSFooterCommponent.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSFooterCommponent.razor.cs",
+                "region": {
+                  "startLine": 79,
+                  "startColumn": 17,
+                  "endLine": 79,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1869",
+          "level": "note",
+          "message": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopFileStorageService.cs",
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 60,
+                  "endLine": 46,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 458,
+                  "startColumn": 42,
+                  "endLine": 458,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TransferTable.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_TransferTable_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.TransferTable"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(190,12)-(190,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TransferTable.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_TransferTable_razor.g.cs",
+                "region": {
+                  "startLine": 191,
+                  "startColumn": 13,
+                  "endLine": 191,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.TransferTable"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'RowEditTrigger' on 'MudTable' using pattern 'LowerCase' source location '(894,8)-(894,73)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Table.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosComponent_Section4Table_razor.g.cs",
+                "region": {
+                  "startLine": 895,
+                  "startColumn": 9,
+                  "endLine": 895,
+                  "endColumn": 74
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosComponent.Section4Table"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 516,
+                  "startColumn": 54,
+                  "endLine": 516,
+                  "endColumn": 88
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'ColSpan' on 'MudTd' using pattern 'LowerCase' source location '(645,20)-(645,72)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Table.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosComponent_Section4Table_razor.g.cs",
+                "region": {
+                  "startLine": 646,
+                  "startColumn": 21,
+                  "endLine": 646,
+                  "endColumn": 73
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosComponent.Section4Table"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1816",
+          "level": "note",
+          "message": "Change POSNavbarCommponent.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor.cs",
+                "region": {
+                  "startLine": 113,
+                  "startColumn": 17,
+                  "endLine": 113,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor.cs",
+                "region": {
+                  "startLine": 95,
+                  "startColumn": 13,
+                  "endLine": 95,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor.cs",
+                "region": {
+                  "startLine": 99,
+                  "startColumn": 67,
+                  "endLine": 99,
+                  "endColumn": 109
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetCssVariableName' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Services/DesktopFontSizeService.cs",
+                "region": {
+                  "startLine": 105,
+                  "startColumn": 20,
+                  "endLine": 105,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerInfoDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_CustomerInfoDialog_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.CustomerInfoDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(190,12)-(190,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerInfoDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_CustomerInfoDialog_razor.g.cs",
+                "region": {
+                  "startLine": 191,
+                  "startColumn": 13,
+                  "endLine": 191,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.CustomerInfoDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemCommentDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_ItemCommentDialog_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.ItemCommentDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(190,12)-(190,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemCommentDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_ItemCommentDialog_razor.g.cs",
+                "region": {
+                  "startLine": 191,
+                  "startColumn": 13,
+                  "endLine": 191,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.ItemCommentDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'AreAttributesEqual' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor.cs",
+                "region": {
+                  "startLine": 430,
+                  "startColumn": 18,
+                  "endLine": 430,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemDiscountDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_ItemDiscountDialog_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.ItemDiscountDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'UpdateState' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor.cs",
+                "region": {
+                  "startLine": 171,
+                  "startColumn": 18,
+                  "endLine": 171,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'DisableSidePadding' on 'MudDialog' using pattern 'LowerCase' source location '(195,12)-(195,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/VoidOrderDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_DineInComponents_VoidOrderDialog_razor.g.cs",
+                "region": {
+                  "startLine": 196,
+                  "startColumn": 13,
+                  "endLine": 196,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.DineInComponents.VoidOrderDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'GutterSize' on 'MudGrid' using pattern 'LowerCase' source location '(357,20)-(357,75)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_Pages_DeliveryPages_Delivery_razor.g.cs",
+                "region": {
+                  "startLine": 358,
+                  "startColumn": 21,
+                  "endLine": 358,
+                  "endColumn": 76
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.Pages.DeliveryPages.Delivery"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'SaveChanges' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor.cs",
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 28,
+                  "endLine": 34,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'FullWidth' on 'MudDialog' using pattern 'LowerCase' source location '(189,12)-(189,67)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/OrderDiscountDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_OrderDiscountDialog_razor.g.cs",
+                "region": {
+                  "startLine": 190,
+                  "startColumn": 13,
+                  "endLine": 190,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.OrderDiscountDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'MaxWidth' on 'MudDialog' using pattern 'LowerCase' source location '(190,12)-(190,76)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/OrderDiscountDialog.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_PosDialog_OrderDiscountDialog_razor.g.cs",
+                "region": {
+                  "startLine": 191,
+                  "startColumn": 13,
+                  "endLine": 191,
+                  "endColumn": 77
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.PosDialog.OrderDiscountDialog"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'ValueExpression' on 'MudSelect' using pattern 'LowerCase' source location '(1008,28)-(1016,29)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_Pages_DeliveryPages_Delivery_razor.g.cs",
+                "region": {
+                  "startLine": 1009,
+                  "startColumn": 29,
+                  "endLine": 1017,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.Pages.DeliveryPages.Delivery"
+            }
+          }
+        },
+        {
+          "ruleId": "MUD0002",
+          "level": "warning",
+          "message": "Illegal Attribute 'Title' on 'MudIconButton' using pattern 'LowerCase' source location '(2263,28)-(2271,29)'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor",
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///F:/PointOfSaleProject/src/POS.Desktop/obj/Debug/net8.0-windows/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Components_Pages_DeliveryPages_Delivery_razor.g.cs",
+                "region": {
+                  "startLine": 2264,
+                  "startColumn": 29,
+                  "endLine": 2272,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ClassName": "POS.Desktop.Components.Pages.DeliveryPages.Delivery"
+            }
+          }
+        }
+      ],
+      "rules": {
+        "CA1816": {
+          "id": "CA1816",
+          "shortDescription": "Dispose methods should call SuppressFinalize",
+          "fullDescription": "A method that is an implementation of Dispose does not call GC.SuppressFinalize; or a method that is not an implementation of Dispose calls GC.SuppressFinalize; or a method calls GC.SuppressFinalize and passes something other than this (Me in Visual Basic).",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1816",
+          "properties": {
+            "category": "Usage",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1822": {
+          "id": "CA1822",
+          "shortDescription": "Mark members as static",
+          "fullDescription": "Members that do not access instance data or call instance methods can be marked as static. After you mark the methods as static, the compiler will emit nonvirtual call sites to these members. This can give you a measurable performance gain for performance-sensitive code.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1829": {
+          "id": "CA1829",
+          "shortDescription": "Use Length/Count property instead of Count() when available",
+          "fullDescription": "Enumerable.Count() potentially enumerates the sequence while a Length/Count property is a direct access.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1829",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1854": {
+          "id": "CA1854",
+          "shortDescription": "Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method",
+          "fullDescription": "Prefer a 'TryGetValue' call over a Dictionary indexer access guarded by a 'ContainsKey' check. 'ContainsKey' and the indexer both would lookup the key under the hood, so using 'TryGetValue' removes the extra lookup.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1860": {
+          "id": "CA1860",
+          "shortDescription": "Avoid using 'Enumerable.Any()' extension method",
+          "fullDescription": "Prefer using 'IsEmpty', 'Count' or 'Length' properties whichever available, rather than calling 'Enumerable.Any()'. The intent is clearer and it is more performant than using 'Enumerable.Any()' extension method.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1869": {
+          "id": "CA1869",
+          "shortDescription": "Cache and reuse 'JsonSerializerOptions' instances",
+          "fullDescription": "Avoid creating a new 'JsonSerializerOptions' instance for every serialization operation. Cache and reuse instances instead. Single use 'JsonSerializerOptions' instances can substantially degrade the performance of your application.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA2012": {
+          "id": "CA2012",
+          "shortDescription": "Use ValueTasks correctly",
+          "fullDescription": "ValueTasks returned from member invocations are intended to be directly awaited.  Attempts to consume a ValueTask multiple times or to directly access one's result before it's known to be completed may result in an exception or corruption.  Ignoring such a ValueTask is likely an indication of a functional bug and may degrade performance.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2012",
+          "properties": {
+            "category": "Reliability",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS0067": {
+          "id": "CS0067",
+          "shortDescription": "Event is never used",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0067)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS0168": {
+          "id": "CS0168",
+          "shortDescription": "Variable is declared but never used",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0168)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS0414": {
+          "id": "CS0414",
+          "shortDescription": "Field is assigned but its value is never used",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0414)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS0618": {
+          "id": "CS0618",
+          "shortDescription": "Type or member is obsolete",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0618)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS1061": {
+          "id": "CS1061",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1061)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS1503": {
+          "id": "CS1503",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS1998": {
+          "id": "CS1998",
+          "shortDescription": "Async method lacks 'await' operators and will run synchronously",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1998)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8601": {
+          "id": "CS8601",
+          "shortDescription": "Possible null reference assignment.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8601)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8602": {
+          "id": "CS8602",
+          "shortDescription": "Dereference of a possibly null reference.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8602)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8618": {
+          "id": "CS8618",
+          "shortDescription": "Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8618)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "MUD0002": {
+          "id": "MUD0002",
+          "shortDescription": "Unknown MudBlazor attribute/parameter",
+          "fullDescription": "This is not a component parameter, it could be an attribute.",
+          "defaultLevel": "warning",
+          "helpUri": "https://mudblazor.com/features/analyzers",
+          "properties": {
+            "category": "Attributes/Parameters",
+            "isEnabledByDefault": true
+          }
+        }
+      }
+    }
+  ]
+}

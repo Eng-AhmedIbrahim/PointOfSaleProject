@@ -1,104 +1,173 @@
-namespace POS.Desktop.Components.DineInComponents;
-
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using BlazorBase;
-using BlazorBase.Models;
+using POS.Contract.Dtos.DineIn; // Assuming namespace based on previous checks
 using BlazorBase.ERPFrontServices.DineInOrderServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
-public partial class VoidOrderDialog : ComponentBase
+namespace POS.Desktop.Components.DineInComponents;
+
+public partial class VoidOrderDialog
 {
-    [CascadingParameter] MudBlazor.IMudDialogInstance MudDialog { get; set; }
-    [Parameter] public DineInOrderDetails? OrderToVoid { get; set; }
-    [Parameter] public List<TableItem>? Items { get; set; }
-    [Parameter] public bool IsDineIn { get; set; } = true;
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public int OrderId { get; set; }
 
-    private string VoidReason = string.Empty;
-    private Dictionary<int, int> VoidQuantities = new();
+    private DineInOrderDto Order { get; set; }
+    private List<VoidItemModel> Items { get; set; } = new();
+    private VoidItemModel SelectedItem { get; set; }
+    private string NumpadInput { get; set; } = "0";
+    private string Reason { get; set; }
 
-    protected override void OnInitialized()
+    private decimal TotalVoidAmount => Items.Sum(i => i.QuantityToVoid * i.UnitPrice);
+
+    protected override async Task OnInitializedAsync()
     {
-        var targetItems = IsDineIn ? OrderToVoid?.BasicOrderDetails?.Items : Items;
-
-        if (targetItems != null)
+        if (OrderId > 0)
         {
-            foreach (var item in targetItems)
+            Order = await DineInOrderFrontService.GetDineInOrderByIdAsync(OrderId);
+            
+            if (Order?.OrderDetails != null)
             {
-                int key = IsDineIn ? item.DatabaseId : item.Id;
-                VoidQuantities[key] = 0;
+                Items = Order.OrderDetails.Select(x => new VoidItemModel
+                {
+                    OriginalItem = x,
+                    OriginalQuantity = x.Quantity ?? 0,
+                    QuantityToVoid = 0,
+                    UnitPrice = x.Price ?? 0,
+                    ItemName = x.ItemName
+                }).ToList();
             }
         }
     }
 
-    public int GetVoidKey(TableItem item) => IsDineIn ? item.DatabaseId : item.Id;
-
-    private int GetVoidQuantity(int key) => VoidQuantities.ContainsKey(key) ? VoidQuantities[key] : 0;
-
-    private void SetVoidQuantity(int key, int quantity)
+    public async Task OnRowClick(TableRowClickEventArgs<VoidItemModel> args)
     {
-        VoidQuantities[key] = quantity;
+        SelectedItem = args.Item;
+        NumpadInput = SelectedItem.QuantityToVoid.ToString();
+        await Task.CompletedTask;
     }
 
-    private bool CanVoid => !string.IsNullOrWhiteSpace(VoidReason) && VoidQuantities.Values.Any(v => v > 0);
-
-    public List<TableItem>? TargetItems => IsDineIn ? OrderToVoid?.BasicOrderDetails?.Items : Items;
-
-    private async Task PerformVoid()
+    private void OnNumpadClick(string key)
     {
-        if (!CanVoid) return;
-
-        if (IsDineIn && OrderToVoid != null)
+        if (SelectedItem == null)
         {
-            var itemsToVoid = VoidQuantities
-                .Where(kvp => kvp.Value > 0)
-                .Select(kvp => new OrderItemVoidDto(kvp.Key, kvp.Value))
-                .ToList();
+            Snackbar.Add("Please select an item first.", Severity.Warning);
+            return;
+        }
 
-            var success = await _dineInOrderService.VoidDineInItemsAsync(
-                OrderToVoid.DatabaseId, 
-                itemsToVoid, 
-                VoidReason, 
-                _commonProperties.CurrentUser ?? "System");
+        if (key == ".")
+        {
+            // Project uses int quantities, decimal points not needed
+            return;
+        }
 
-            if (success)
+        if (NumpadInput == "0")
+        {
+            NumpadInput = key;
+        }
+        else
+        {
+            NumpadInput += key;
+        }
+
+        if (int.TryParse(NumpadInput, out int qty))
+        {
+            if (qty > SelectedItem.OriginalQuantity)
             {
-                _snackbar.Add("Items voided successfully!", MudBlazor.Severity.Success);
-                _commonProperties.NotifyStateChanged();
-                MudDialog.Close(MudBlazor.DialogResult.Ok(true));
+                Snackbar.Add($"Cannot void more than order quantity ({SelectedItem.OriginalQuantity})", Severity.Warning);
+                NumpadInput = SelectedItem.OriginalQuantity.ToString();
+                SelectedItem.QuantityToVoid = SelectedItem.OriginalQuantity;
             }
             else
             {
-                _snackbar.Add("Failed to void items.", MudBlazor.Severity.Error);
+                SelectedItem.QuantityToVoid = qty;
             }
-        }
-        else if (!IsDineIn && Items != null)
-        {
-             var itemsToRemove = VoidQuantities.Where(k => k.Value > 0).ToList();
-             foreach (var kvp in itemsToRemove)
-             {
-                 var item = Items.FirstOrDefault(i => i.Id == kvp.Key);
-                 if (item != null)
-                 {
-                     if (kvp.Value >= item.Quantity)
-                     {
-                         Items.Remove(item);
-                     }
-                     else
-                     {
-                         item.Quantity -= kvp.Value;
-                         item.Total = item.Quantity * item.Price; 
-                     }
-                 }
-             }
-             
-             _snackbar.Add("Items voided locally!", MudBlazor.Severity.Success);
-             _commonProperties.NotifyStateChanged();
-             MudDialog.Close(MudBlazor.DialogResult.Ok(true));
         }
     }
 
-    private void CloseDialog() => MudDialog.Cancel();
+    private void Backspace()
+    {
+        if (SelectedItem == null) return;
+
+        if (NumpadInput.Length > 1)
+        {
+            NumpadInput = NumpadInput.Substring(0, NumpadInput.Length - 1);
+        }
+        else
+        {
+            NumpadInput = "0";
+        }
+
+        if (int.TryParse(NumpadInput, out int qty))
+        {
+            SelectedItem.QuantityToVoid = qty;
+        }
+    }
+
+    private void VoidAll()
+    {
+        foreach (var item in Items)
+        {
+            item.QuantityToVoid = item.OriginalQuantity;
+        }
+        Snackbar.Add("All items selected for voiding.", Severity.Info);
+    }
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(Reason))
+        {
+            Snackbar.Add("Void Reason is required.", Severity.Error);
+            return;
+        }
+
+        var itemsToVoid = Items.Where(i => i.QuantityToVoid > 0).ToList();
+        if (!itemsToVoid.Any())
+        {
+            Snackbar.Add("No items selected to void.", Severity.Warning);
+            return;
+        }
+
+        bool result;
+
+        bool isFullVoid = itemsToVoid.Count == Items.Count && itemsToVoid.All(i => i.QuantityToVoid == i.OriginalQuantity);
+
+        if (isFullVoid)
+        {
+            result = await DineInOrderFrontService.VoidDineInOrderAsync(Order.Id);
+        }
+        else
+        {
+            var voidDtos = itemsToVoid.Select(i => new OrderItemVoidDto(i.OriginalItem.Id, i.QuantityToVoid)).ToList();
+            
+            string voidBy = Order.CashierId ?? "Unknown"; 
+
+            result = await DineInOrderFrontService.VoidDineInItemsAsync(Order.Id, voidDtos, Reason, voidBy);
+        }
+
+        if (result)
+        {
+            Snackbar.Add("Void operation successful.", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Failed to void order/items.", Severity.Error);
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
 }
+
+public class VoidItemModel
+{
+    public OrderItemsDetailsDto OriginalItem { get; set; }
+    public string ItemName { get; set; }
+    public decimal UnitPrice { get; set; }
+    public int OriginalQuantity { get; set; }
+    public int QuantityToVoid { get; set; }
+    public decimal TotalAmount => QuantityToVoid * UnitPrice;
+}
+

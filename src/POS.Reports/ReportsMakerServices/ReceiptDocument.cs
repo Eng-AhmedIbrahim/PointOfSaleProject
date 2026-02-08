@@ -179,10 +179,26 @@ public class ReceiptDocument : IDocument
 
                 foreach (TableItem item in _items)
                 {
-                    table.Cell().Element(CellStyle).Text(item.Total?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("N2")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("N2")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+
+                    // Add Discount if available
+                    if (item.HasDiscount)
+                    {
+                        var discountText = item.DiscountPercentage > 0 
+                            ? $"{item.DiscountPercentage}%" 
+                            : item.TotalDiscountPrice?.ToString("N2");
+
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(45)
+                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("N2")})")
+                            .FontSize(10)
+                            .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
+                            .AlignEnd();
+                    }
 
                     // Add attributes if available
                     if (item.Attributes?.Any() == true)
@@ -200,51 +216,34 @@ public class ReceiptDocument : IDocument
 
                 }
 
-                if (receipt.Discount != 0)
+                if (receipt.SubTotal != 0 && receipt.SubTotal.HasValue)
                 {
-
-                    table.Cell()
-                       .ColumnSpan(2)
-                       .PaddingTop(8)
-                       .Text(receipt.Discount.ToString())
-                       .FontSize(14)
-                       .Bold()
-                       .AlignCenter();
-
-                    table.Cell()
-                        .ColumnSpan(2)
-                        .PaddingTop(8)
-                        .Text(ArabicConstStrings.Discount)
-                        .FontSize(12)
-                        .Bold()
-                        .AlignCenter();
-
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(receipt.SubTotal.Value.ToString("N2")).FontSize(12).Bold().AlignCenter();
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(ArabicConstStrings.SubTotal).FontSize(12).Bold().AlignCenter();
                 }
 
-                if (receipt.Tax != 0)
+                if (receipt.Services != 0 && receipt.Services.HasValue)
                 {
-                    table.Cell()
-                       .ColumnSpan(2)
-                       .PaddingTop(8)
-                       .Text(receipt.Tax.HasValue && receipt.Tax.Value != 0 ? $"{receipt.Tax.Value.ToString("0.##")}%" : "")
-                       .FontSize(14)
-                       .Bold()
-                       .AlignCenter();
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(receipt.Services.Value.ToString("N2")).FontSize(12).Bold().AlignCenter();
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(ArabicConstStrings.Service).FontSize(12).Bold().AlignCenter();
+                }
 
-                    table.Cell()
-                        .ColumnSpan(2)
-                        .PaddingTop(8)
-                        .Text(ArabicConstStrings.Tax)
-                        .FontSize(12)
-                        .Bold()
-                        .AlignCenter();
+                if (receipt.Tax != 0 && receipt.Tax.HasValue)
+                {
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(receipt.Tax.Value.ToString("N2")).FontSize(12).Bold().AlignCenter();
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(ArabicConstStrings.Tax).FontSize(12).Bold().AlignCenter();
+                }
 
+                if (receipt.Discount != 0 && receipt.Discount.HasValue)
+                {
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(receipt.Discount.Value.ToString("N2")).FontSize(14).Bold().AlignCenter();
+                    table.Cell().ColumnSpan(2).PaddingTop(8).Text(ArabicConstStrings.Discount).FontSize(12).Bold().AlignCenter();
                 }
 
                 table.Cell()
                     .ColumnSpan(2)
                     .PaddingTop(8)
-                    .Text((receipt.TotalAmount ?? 0).ToString("C"))
+                    .Text((receipt.TotalAmount ?? 0).ToString("N2"))
                     .FontSize(20)
                     .Bold()
                     .AlignCenter();

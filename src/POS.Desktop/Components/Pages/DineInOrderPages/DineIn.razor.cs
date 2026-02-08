@@ -193,11 +193,65 @@ public partial class DineIn : IDisposable
 
         if (_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id.Value))
             classes.Add("table-card-has-order");
+        else if (table.TableState == "Reserved")
+            classes.Add("table-card-reserved");
 
         if (tableStates.TryGetValue(table.Id.Value, out bool isActive) && isActive)
             classes.Add("table-card-active");
 
         return string.Join(" ", classes);
+    }
+
+    private async Task OnTableRightClick(MouseEventArgs e, TableToReturnDto table)
+    {
+        if (table == null || table.Id == null) return;
+
+        // Check if table is reserved
+        var reservation = await _dineInOrderService.GetDineInOrderByTableIdAsync(table.Id.Value, "Reserved");
+        
+        if (reservation != null)
+        {
+            // Table is reserved - show cancel option
+            bool? cancelConfirm = await _dialogService.ShowMessageBox(
+                "Cancel Reservation",
+                $"Are you sure you want to cancel the reservation for {table.TableName}?",
+                yesText: "Yes", cancelText: "No");
+            
+            if (cancelConfirm == true)
+            {
+                var result = await _dineInOrderService.CancelReservationAsync(table.Id.Value);
+                if (result)
+                {
+                    _snackbar.Add($"Reservation for {table.TableName} canceled", Severity.Success);
+                    await GetTablesFromGroup(_tables?.FirstOrDefault()?.GroupID ?? 0);
+                    StateHasChanged();
+                }
+                else
+                {
+                    _snackbar.Add("Failed to cancel reservation", Severity.Error);
+                }
+            }
+        }
+        else if (!_commonProperties.DineInOrdersDetails!.ContainsKey(table.Id.Value))
+        {
+            // Table is available - show reserve option
+            var parameters = new DialogParameters 
+            { 
+                ["TableId"] = table.Id.Value,
+                ["TableName"] = table.TableName,
+                ["CurrentUser"] = _commonProperties.CurrentUser,
+                ["CurrentUserId"] = _commonProperties.CurrentUserId
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+            var dialog = await _dialogService.ShowAsync<TableReservationDialog>("Reserve Table", parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled)
+            {
+                await GetTablesFromGroup(_tables?.FirstOrDefault()?.GroupID ?? 0);
+                StateHasChanged();
+            }
+        }
     }
 
     private void SetSelectedOrder(DineInOrderDetails orderDetails)
@@ -210,7 +264,11 @@ public partial class DineIn : IDisposable
             CaptainName = orderDetails.CaptainName,
             Total = orderDetails.BasicOrderDetails.Total > 0
                     ? orderDetails.BasicOrderDetails.Total
-                    : (orderDetails.BasicOrderDetails.Items?.Sum(i => i.Total) ?? 0)
+                    : (orderDetails.BasicOrderDetails.Items?.Sum(i => i.Total) ?? 0),
+            Discount = (orderDetails.BasicOrderDetails.Account ?? 0) + 
+                       (orderDetails.BasicOrderDetails.Service ?? 0) + 
+                       (orderDetails.BasicOrderDetails.Tax ?? 0) - 
+                       (orderDetails.BasicOrderDetails.Total ?? 0)
         };
         
         _commonProperties.TableItems = new List<TableItem>(

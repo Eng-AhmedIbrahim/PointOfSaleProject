@@ -1,13 +1,3 @@
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.AssemblyReference.cache
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\rpswa.dswa.cache.json
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.TakeAwayReport.resources
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.GenerateResource.cache
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.GeneratedMSBuildEditorConfig.editorconfig
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.AssemblyInfoInputs.cache
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.AssemblyInfo.cs
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.CoreCompileInputs.cache
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.MvcApplicationPartsAssemblyInfo.cache
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.sourcelink.json
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\tmp_build_output\POS.Contract.deps.json
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\tmp_build_output\POS.Reports.deps.json
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\BlazorBase.staticwebassets.runtime.json
@@ -245,6 +235,17 @@ F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\POS.Authorization.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\POS.Core.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\Pos.Repository.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\ar\BlazorBase.resources.dll
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.AssemblyReference.cache
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\rpswa.dswa.cache.json
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.TakeAwayReport.resources
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.GenerateResource.cache
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.GeneratedMSBuildEditorConfig.editorconfig
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.AssemblyInfoInputs.cache
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.AssemblyInfo.cs
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.CoreCompileInputs.cache
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.MvcApplicationPartsAssemblyInfo.cs
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.MvcApplicationPartsAssemblyInfo.cache
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.sourcelink.json
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\rjimswa.dswa.cache.json
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -259,5 +260,4 @@ F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\refint\POS.API.dll
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.pdb
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.genruntimeconfig.cache
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\ref\POS.API.dll
-f:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.MvcApplicationPartsAssemblyInfo.cs
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

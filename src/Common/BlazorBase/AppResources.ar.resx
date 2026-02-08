@@ -225,9 +225,6 @@
   <data name="Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
-  <data name="Section3" xml:space="preserve">
-    <value>الإجراءات</value>
-  </data>
   <data name="Section4" xml:space="preserve">
     <value>الطلب</value>
   </data>
@@ -480,9 +477,6 @@
   <data name="Branches" xml:space="preserve">
     <value>الفروع</value>
   </data>
-  <data name="Distribution" xml:space="preserve">
-    <value>توزيع</value>
-  </data>
   <data name="Back" xml:space="preserve">
     <value>رجوع</value>
   </data>
@@ -503,5 +497,14 @@
   </data>
   <data name="OrderBtn" xml:space="preserve">
     <value>طلب</value>
+  </data>
+  <data name="SplitOrder" xml:space="preserve">
+    <value>تقسم الطلب</value>
+  </data>
+  <data name="Section3" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="Guests" xml:space="preserve">
+    <value>الافراد</value>
   </data>
 </root>

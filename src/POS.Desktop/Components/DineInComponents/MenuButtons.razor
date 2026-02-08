@@ -21,20 +21,7 @@
         </MudButton>
     </MudItem>
 
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large"
-                   OnClick="OpenMergeTablesDialog">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["MergeTables"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-
-    <MudItem xs="12">
+      <MudItem xs="12">
         <MudButton Variant="Variant.Filled"
                    Class="full-height-button special-keypad-button"
                    Size="Size.Large"
@@ -50,10 +37,24 @@
         <MudButton Variant="Variant.Filled"
                    Class="full-height-button special-keypad-button"
                    Size="Size.Large"
+                   OnClick="CloseTable"
+                   Disabled="@IsCloseDisabled()">
+            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                <MudIcon Icon="@Icons.Material.Filled.TableBar" Class="button-icon" />
+                <MudText Typo="Typo.subtitle2">@Localizer["CloseTable"]</MudText>
+            </MudStack>
+        </MudButton>
+    </MudItem>
+
+
+    <MudItem xs="12">
+        <MudButton Variant="Variant.Filled"
+                   Class="full-height-button special-keypad-button"
+                   Size="Size.Large"
                    OnClick="OpenSplitOrderDialog">
             <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
                 <MudIcon Icon="@Icons.Material.Filled.CallSplit" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">Split Order</MudText>
+                <MudText Typo="Typo.subtitle2">@Localizer["SplitOrder"]</MudText>
             </MudStack>
         </MudButton>
     </MudItem>
@@ -62,11 +63,22 @@
         <MudButton Variant="Variant.Filled"
                    Class="full-height-button special-keypad-button"
                    Size="Size.Large"
-                   OnClick="CloseTable"
-                   Disabled="@IsCloseDisabled()">
+                   OnClick="OpenMergeTablesDialog">
             <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.TableBar" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["CloseTable"]</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="button-icon" />
+                <MudText Typo="Typo.subtitle2">@Localizer["MergeTables"]</MudText>
+            </MudStack>
+        </MudButton>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudButton Variant="Variant.Filled"
+                   Class="full-height-button special-keypad-button"
+                   Size="Size.Large"
+                   OnClick="TransferTable">
+            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="button-icon" />
+                <MudText Typo="Typo.subtitle2">@Localizer["Transfer"]</MudText>
             </MudStack>
         </MudButton>
     </MudItem>
@@ -87,10 +99,10 @@
         <MudButton Variant="Variant.Filled"
                    Class="full-height-button special-keypad-button"
                    Size="Size.Large"
-                    OnClick="TransferTable">
+                   OnClick="OpenGuestCountDialog">
             <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Transfer"]</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.People" Class="button-icon" />
+                <MudText Typo="Typo.subtitle2">@Localizer["Guests"]</MudText>
             </MudStack>
         </MudButton>
     </MudItem>

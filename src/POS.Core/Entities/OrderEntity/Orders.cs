@@ -1,4 +1,6 @@
-﻿namespace POS.Core.Entities.OrderEntity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace POS.Core.Entities.OrderEntity;
 
 public class Orders : BaseEntity
 {
@@ -54,6 +56,8 @@ public class Orders : BaseEntity
     public decimal? ReservationRemain { get; set; }
     public DateTime? ScheduleDateTime { get; set; }
     public int? CustomerCount { get; set; }
+    public int? MaleCount { get; set; }
+    public int? FemaleCount { get; set; }
     public string? DiscountType { get; set; }
     public decimal? DiscountPercentage { get; set; }
     public string? DiscountBy { get; set; }
@@ -82,4 +86,8 @@ public class Orders : BaseEntity
     public string? MachineName { get; set; }
     public decimal? CaptainTipsDeduction { get; set; }
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
+    
+    // Reservation link
+    public int? ReservationId { get; set; }
+    public POS.Core.Entities.ReservationEntity.Reservation? Reservation { get; set; }
 }

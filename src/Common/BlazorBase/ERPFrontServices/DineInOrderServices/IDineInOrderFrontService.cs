@@ -21,4 +21,6 @@ public interface IDineInOrderFrontService
     Task<bool> SplitDineInOrderAsync(int sourceOrderId, List<SplitTargetDto> targets);
     Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy);
     Task<int> IncrementPrintCountAsync(int orderId);
+    Task<bool> ReserveTableAsync(int tableId, DineInOrderDto reservationDetails);
+    Task<bool> CancelReservationAsync(int tableId);
 }

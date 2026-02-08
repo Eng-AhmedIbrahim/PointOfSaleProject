@@ -34,5 +34,6 @@ public class AppDbContext : DbContext
     public DbSet<DeliveryZone> DeliveryZones { get; set; }
     public DbSet<CustomerAddress> CustomerAddress { get; set; }
     public DbSet<OrderTrack> OrderTracks { get; set; }
+    public DbSet<POS.Core.Entities.ReservationEntity.Reservation> Reservations { get; set; }
 
 }

@@ -125,11 +125,22 @@
                             </div>
                         </div>
 
+                        @if (_commonProperties.DineInOrderValues.Discount > 0)
+                        {
+                            <div class="grand-total-section mt-2" style="background: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.3);">
+                                <span class="total-label" style="font-size: 0.9rem; color: #fca5a5;">@Localizer["Discount"]</span>
+                                <div class="total-amount-display">
+                                    <span class="currency" style="color: #fca5a5;">- @Localizer["EGP"]</span>
+                                    <span class="amount" style="font-size: 1.25rem; color: #f87171;">@_commonProperties.DineInOrderValues.Discount?.ToString("N2")</span>
+                                </div>
+                            </div>
+                        }
+
                         <div class="grand-total-section mt-3">
                             <span class="total-label">@Localizer["Total"]</span>
                             <div class="total-amount-display">
                                 <span class="currency">@Localizer["EGP"]</span>
-                                <span class="amount">@_commonProperties.DineInOrderValues.Total</span>
+                                <span class="amount">@_commonProperties.DineInOrderValues.Total?.ToString("N2")</span>
                             </div>
                         </div>
                     </div>
@@ -267,6 +278,20 @@
         border-radius: 4px;
         font-weight: bold;
     }
+
+    .table-status-reserved {
+        background: #f59e0b;
+    }
+
+    .table-card-reserved {
+        background: linear-gradient(135deg, #fffbeb 0%, #fff 100%);
+        border-color: #f59e0b;
+    }
+
+        .table-card-reserved .table-icon-box {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
 
     /* Captain Section */
     .captain-selection-section {

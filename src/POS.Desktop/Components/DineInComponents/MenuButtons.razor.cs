@@ -140,8 +140,8 @@ public partial class MenuButtons
         var orderDetails = _commonProperties.GetActiveOrder();
         if (orderDetails != null)
         {
-            var parameters = new DialogParameters { ["OrderToVoid"] = orderDetails };
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var parameters = new DialogParameters { ["OrderId"] = orderDetails.DatabaseId };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true }; // Increased size slightly
             var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
             var result = await dialog.Result;
 
@@ -149,9 +149,9 @@ public partial class MenuButtons
             {
                 _commonProperties.CurrentDineInOrder = null;
                 _commonProperties.DineInOrderValues = new();
-                _commonProperties.TableItems = new List<TableItem>(); // Reset to avoid NaveLock warning
+                _commonProperties.TableItems = new List<TableItem>();
                 
-                _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout
+                _commonProperties.NotifyStateChanged();
                 _section4ButtonsServices.NotifyStateChanged();
                 _navigationManager.NavigateTo("/dineIn");
             }
@@ -159,6 +159,28 @@ public partial class MenuButtons
         else
         {
             _snackbar.Add(Localizer["NoOrderForTable"], Severity.Warning);
+        }
+    }
+
+    private async Task OpenGuestCountDialog()
+    {
+        var orderDetails = _commonProperties.GetActiveOrder();
+        if (orderDetails != null)
+        {
+            var parameters = new DialogParameters { ["OrderId"] = orderDetails.DatabaseId };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = false };
+            var dialog = _dialogService.Show<GuestCountDialog>("Guest Count", parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled)
+            {
+                // Optional: refresh order details if needed, but not strictly required for guest count unless UI shows it
+                _snackbar.Add("Guests updated", Severity.Success);
+            }
+        }
+        else
+        {
+             _snackbar.Add(Localizer["NoOrderForTable"], Severity.Warning);
         }
     }
 

@@ -11,6 +11,10 @@ public static class DineInOrderMapper
 {
     public static DineInOrderDto MapToDineInOrderDto(DineInOrderDetails orderDetails, int orderId, int branchId, string? branchName)
     {
+        var items = orderDetails.BasicOrderDetails?.Items ?? new();
+        decimal lineDiscountSum = items.Sum(i => i.TotalDiscountPrice ?? 0M);
+        decimal orderDiscountValue = orderDetails.BasicOrderDetails?.OrderDiscount?.Value ?? 0M;
+
         var dineInOrder = new DineInOrderDto
         {
             OrderId = orderId,
@@ -24,14 +28,15 @@ public static class DineInOrderMapper
             TableName = orderDetails.RelatedTableName,
             OrderDateTime = orderDetails.BasicOrderDetails?.OrderDataTime ?? DateTime.Now,
             OrderState = "Open",
-            Subtotal = orderDetails.BasicOrderDetails?.Account,
+            Subtotal = orderDetails.BasicOrderDetails?.Account, // This is Gross from _financeSettingsList[0]
             Tax = orderDetails.BasicOrderDetails?.Tax,
             Service = orderDetails.BasicOrderDetails?.Service,
             DiscountAmount = orderDetails.BasicOrderDetails?.OrderDiscount?.Value,
             DiscountPercentage = orderDetails.BasicOrderDetails?.OrderDiscount?.Percentage,
             DiscountType = orderDetails.BasicOrderDetails?.OrderDiscount?.DiscountType,
             DiscountReason = orderDetails.BasicOrderDetails?.OrderDiscount?.DiscountReason,
-            TotalDiscount = orderDetails.BasicOrderDetails?.OrderDiscount?.Value,
+            DiscountedItems = lineDiscountSum,
+            TotalDiscount = orderDiscountValue + lineDiscountSum,
             GrandTotal = orderDetails.BasicOrderDetails?.Total,
             PaymentMethod = orderDetails.BasicOrderDetails?.PaymentMethod ?? global::POS.Contract.Models.PaymentMethod.Cash,
             OrderNotice = orderDetails.BasicOrderDetails?.OrderNote,
@@ -64,8 +69,12 @@ public static class DineInOrderMapper
                 CategoryName = item.CategoryName,
                 Price = item.Price,
                 Quantity = item.Quantity,
-                TotalAmount = item.Total,
-            TotalAfterDiscount = item.TotalAmount,
+                TotalAmount = item.Total, // Gross
+                TotalAfterDiscount = item.TotalAmount, // Net
+                Discount = item.HasDiscount,
+                TotalDiscountPrice = item.TotalDiscountPrice,
+                TotalDiscountPercentage = item.DiscountPercentage,
+                TotalDiscountAmount = item.DiscountAmount,
                 OrderType = "DineIn",
                 OrderItemAttributes = MapToOrderItemAttributesDto(item.Attributes),
                 // Map printing properties
@@ -154,8 +163,12 @@ public static class DineInOrderMapper
             CategoryName = item.CategoryName,
             Price = item.Price ?? 0,
             Quantity = item.Quantity ?? 0,
-            Total = item.TotalAmount ?? 0,
-            TotalAmount = item.TotalAfterDiscount ?? item.TotalAmount ?? 0,
+            Total = item.TotalAmount ?? 0, // Gross on server
+            TotalAmount = item.TotalAfterDiscount ?? item.TotalAmount ?? 0, // Net on server
+            HasDiscount = item.Discount ?? false,
+            DiscountPercentage = item.TotalDiscountPercentage,
+            DiscountAmount = item.TotalDiscountAmount,
+            TotalDiscountPrice = item.TotalDiscountPrice,
             Attributes = MapToAttributeDtos(item.OrderItemAttributes),
             LineComment = item.OrderItemComments?.FirstOrDefault()?.Comment,
             IsReadOnly = true,

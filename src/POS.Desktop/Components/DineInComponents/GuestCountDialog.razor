@@ -1,0 +1,26 @@
+@using MudBlazor
+@using BlazorBase.ERPFrontServices.DineInOrderServices
+@using POS.Contract.Dtos.DineIn
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IDineInOrderFrontService DineInOrderFrontService
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid Class="pa-4">
+            <MudItem xs="12">
+                <MudNumericField @bind-Value="MenCount" Label="Number of Men" Variant="Variant.Outlined" Min="0" Immediate="true" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudNumericField @bind-Value="WomenCount" Label="Number of Women" Variant="Variant.Outlined" Min="0" Immediate="true" />
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-center align-center py-4">
+                 <MudText Typo="Typo.h5">Total Guests: <b>@(MenCount + WomenCount)</b></MudText>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+    </DialogActions>
+</MudDialog>

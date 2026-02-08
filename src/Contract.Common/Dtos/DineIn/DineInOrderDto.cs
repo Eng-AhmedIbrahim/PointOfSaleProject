@@ -26,6 +26,7 @@ public class DineInOrderDto
     public decimal? DiscountPercentage { get; set; }
     public string? DiscountType { get; set; }
     public string? DiscountReason { get; set; }
+    public decimal? DiscountedItems { get; set; }
     public decimal? TotalDiscount { get; set; }
     public decimal? GrandTotal { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
@@ -38,6 +39,12 @@ public class DineInOrderDto
     public int PrintCount { get; set; }
     public string? MachineName { get; set; }
     public decimal? CaptainTipsDeduction { get; set; }
+    
+    public int? CustomerCount { get; set; }
+    public int? MaleCount { get; set; }
+    public int? FemaleCount { get; set; }
+    public DateTime? ScheduleDateTime { get; set; }
+    public decimal? ReservationPaid { get; set; }
     
     public List<OrderItemsDetailsDto>? OrderDetails { get; set; } = new();
 }
@@ -58,6 +65,12 @@ public class OrderItemsDetailsDto
     public List<OrderItemAttributesDto>? OrderItemAttributes { get; set; } = new();
     public List<OrderItemCommentDto>? OrderItemComments { get; set; } = new();
     
+    // Discount properties
+    public bool? Discount { get; set; }
+    public decimal? TotalDiscountPrice { get; set; }
+    public decimal? TotalDiscountPercentage { get; set; }
+    public decimal? TotalDiscountAmount { get; set; }
+
     // Printing properties
     public int? ItemKitchenTypeId { get; set; }
     public int? CategoryKitchenTypeId { get; set; }

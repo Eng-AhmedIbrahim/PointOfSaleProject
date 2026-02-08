@@ -304,4 +304,40 @@ public class DineInOrderFrontService : IDineInOrderFrontService
             return 0;
         }
     }
+
+    public async Task<bool> ReserveTableAsync(int tableId, DineInOrderDto reservationDetails)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/DineInOrder/reserve", reservationDetails);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error reserving table {TableId}", tableId);
+            return false;
+        }
+    }
+
+    public async Task<bool> CancelReservationAsync(int tableId)
+    {
+        try
+        {
+            // Find the reservation order for this table
+            var reservation = await GetDineInOrderByTableIdAsync(tableId, "Reserved");
+            if (reservation == null)
+            {
+                _logger.LogWarning("No reservation found for table {TableId}", tableId);
+                return false;
+            }
+
+            var response = await _httpClient.DeleteAsync($"api/DineInOrder/cancel-reservation/{reservation.Id}");
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error canceling reservation for table {TableId}", tableId);
+            return false;
+        }
+    }
 }

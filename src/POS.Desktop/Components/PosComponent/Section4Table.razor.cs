@@ -61,8 +61,9 @@ public partial class Section4Table
 
     private void ItemHasBeenCommitted(object element)
     {
-        ((TableItem)element).Total =
-            ((TableItem)element).Quantity * ((TableItem)element).Price;
+        var item = (TableItem)element;
+        _cartService.RecalculateItemTotals(item);
+        _cartService.CalculateSection4Table();
 
         Snackbar.Add("Item Has Been Committed Handler Invoked");
     }
@@ -70,9 +71,7 @@ public partial class Section4Table
     private void UpdateQuantity(TableItem item, int newQuantity)
     {
         item.Quantity = newQuantity;
-        item.Total = item.Quantity * item.Price;
-        item.TotalAmount = item.Quantity * item.Price;
-        _cartService.CalculateTotalAmountFromTableItems(CommonProperties!.TableItems ?? []);
+        _cartService.RecalculateItemTotals(item);
         _cartService.CalculateSection4Table();
     }
 

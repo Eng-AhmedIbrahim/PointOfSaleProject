@@ -9,7 +9,9 @@ public class DineInOrderByTableIdSpec : BaseSpecifications<Orders>
     public DineInOrderByTableIdSpec(int tableId, string state = "Open")
         : base(o => o.TableID == tableId && 
                    o.OrderType == OrderTypes.DineIn && 
-                   (state == "Open" ? o.OrderState == OrderStates.Pending : o.OrderState == OrderStates.Completed))
+                   (state == "Open" ? o.OrderState == OrderStates.Pending : 
+                    state == "Reserved" ? o.OrderState == OrderStates.Reserved : 
+                    o.OrderState == OrderStates.Completed))
     {
         Includes.Add(o => o.OrderDetails!);
         AddThenInclude("OrderDetails.OrderItemAttributes");

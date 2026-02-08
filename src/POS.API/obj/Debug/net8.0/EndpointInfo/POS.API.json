@@ -4335,6 +4335,94 @@
         }
       }
     },
+    "/api/DineInOrder/reserve": {
+      "post": {
+        "tags": [
+          "DineInOrder"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DineInOrderDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DineInOrderDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DineInOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/DineInOrder/cancel-reservation/{orderId}": {
+      "delete": {
+        "tags": [
+          "DineInOrder"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Item": {
       "post": {
         "tags": [
@@ -7292,6 +7380,11 @@
             "type": "string",
             "nullable": true
           },
+          "discountedItems": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "totalDiscount": {
             "type": "number",
             "format": "double",
@@ -7341,6 +7434,31 @@
             "nullable": true
           },
           "captainTipsDeduction": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "customerCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "maleCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "femaleCount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "scheduleDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reservationPaid": {
             "type": "number",
             "format": "double",
             "nullable": true
@@ -8246,6 +8364,25 @@
             "items": {
               "$ref": "#/components/schemas/OrderItemCommentDto"
             },
+            "nullable": true
+          },
+          "discount": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "totalDiscountPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalDiscountPercentage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalDiscountAmount": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "itemKitchenTypeId": {

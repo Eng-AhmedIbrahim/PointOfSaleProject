@@ -39,9 +39,10 @@ public class CartService : ICartService
         }
     }
 
-    private void RecalculateItemTotals(TableItem item)
+    public void RecalculateItemTotals(TableItem item)
     {
         decimal originalTotal = item.Quantity * (item.Price ?? 0M);
+        item.Total = originalTotal; // Keep original gross total in .Total
         
         if (item.HasDiscount)
         {
@@ -61,17 +62,14 @@ public class CartService : ICartService
                 item.TotalDiscountPrice = 0;
                 item.TotalAfterDiscount = originalTotal;
             }
-            
-            item.TotalAmount = item.TotalAfterDiscount;
-            item.Total = item.TotalAfterDiscount;
         }
         else
         {
             item.TotalDiscountPrice = 0;
             item.TotalAfterDiscount = originalTotal;
-            item.TotalAmount = originalTotal;
-            item.Total = originalTotal;
         }
+
+        item.TotalAmount = item.TotalAfterDiscount;
     }
 
     public void RemoveItem(List<TableItem> items)
@@ -200,9 +198,32 @@ public class CartService : ICartService
         if (amount < 0) amount = 0;
 
         decimal orderDiscountValue = originalTotalWithTax - amount;
-        decimal totalCombinedDiscount = (_commonProperties.TotalLineDiscount ?? 0M) + orderDiscountValue;
+        decimal totalLineDiscount = _commonProperties.TotalLineDiscount ?? 0M;
+        decimal totalCombinedDiscount = totalLineDiscount + orderDiscountValue;
         
         _commonProperties.TotalDiscount = totalCombinedDiscount;
+
+        // Update Discount Reason as indicator
+        string lineDiscountIndicator = "[خصم أصناف]";
+        if (_commonProperties.OrderDiscount != null)
+        {
+            if (totalLineDiscount > 0)
+            {
+                if (string.IsNullOrEmpty(_commonProperties.OrderDiscount.DiscountReason))
+                {
+                    _commonProperties.OrderDiscount.DiscountReason = lineDiscountIndicator;
+                }
+                else if (!_commonProperties.OrderDiscount.DiscountReason.Contains(lineDiscountIndicator))
+                {
+                    _commonProperties.OrderDiscount.DiscountReason = $"{lineDiscountIndicator} {_commonProperties.OrderDiscount.DiscountReason}";
+                }
+            }
+            else if (!string.IsNullOrEmpty(_commonProperties.OrderDiscount.DiscountReason))
+            {
+                _commonProperties.OrderDiscount.DiscountReason = _commonProperties.OrderDiscount.DiscountReason.Replace(lineDiscountIndicator, "").Trim();
+            }
+        }
+
         if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 1)
         {
             _commonProperties._financeSettingsList[1].Value = FormatValue(totalCombinedDiscount);

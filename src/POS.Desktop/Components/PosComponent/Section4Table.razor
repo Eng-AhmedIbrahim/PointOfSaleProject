@@ -32,17 +32,24 @@
         </MudTd>
         <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
         <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
-        <MudTd DataLabel="Total" Class="table-style">@context.Total</MudTd>
+        <MudTd DataLabel="Total" Class="table-style">@context.TotalAmount?.ToString("N2")</MudTd>
     </RowTemplate>
 
     <ChildRowContent>
-        @if (context.Attributes?.Any() == true)
+        @if (context.Attributes?.Any() == true || context.HasDiscount)
         {
             <MudTr Class="attribute-row">
                 <MudTd></MudTd>
                 <MudTd ColSpan="3" Style="padding-top: 6px;padding-bottom: 0px;">
                     <div style="font-size: 12px; color:black;">
-                        @foreach (var attr in context.Attributes)
+                        @if (context.HasDiscount)
+                        {
+                            <p class="discount-name" style="margin-right: 0px; margin-bottom: 5px; color: darkred; font-weight: bold;">
+                                ➤ @Localizer["Discount"]: @(context.DiscountPercentage > 0 ? $"{context.DiscountPercentage}%" : context.TotalDiscountPrice?.ToString("N2")) 
+                                (-@(context.TotalDiscountPrice?.ToString("N2")))
+                            </p>
+                        }
+                        @foreach (var attr in context.Attributes ?? new())
                         {
                             <p class="attribute-name" style="margin-right: 0px; margin-bottom: 5px;font-weight:bold">➤ @attr.Name</p>
                         }

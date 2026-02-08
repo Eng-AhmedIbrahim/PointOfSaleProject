@@ -270,6 +270,37 @@ public class DineInOrderController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    
+    [HttpPost("reserve")]
+    public async Task<ActionResult<bool>> ReserveTable([FromBody] DineInOrderDto reservationDto)
+    {
+        try
+        {
+            var reservationOrder = _mapper.Map<Orders>(reservationDto);
+            var result = await _dineInOrderService.ReserveTableAsync(reservationOrder);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error reserving table");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("cancel-reservation/{orderId}")]
+    public async Task<ActionResult<bool>> CancelReservation(int orderId)
+    {
+        try
+        {
+            var result = await _dineInOrderService.CancelReservationAsync(orderId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error canceling reservation for order {OrderId}", orderId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }
 
 public class VoidItemsRequest

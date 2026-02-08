@@ -83,8 +83,13 @@ public class DesktopPrintOrderService : IPrintOrderService
             LogoPath = "", 
             LogoWidth = currentBranch?.LogoWidth ?? 100,
             TotalAmount = order.BasicOrderDetails!.Account,
-            ServiceAmount = order.BasicOrderDetails.Service.ToString() ?? string.Empty,
-            TotalOrder = order.BasicOrderDetails.Total.ToString() ?? string.Empty,
+            ServiceAmount = order.BasicOrderDetails.Service?.ToString("N2") ?? "0.00",
+            TaxAmount = order.BasicOrderDetails.Tax?.ToString("N2") ?? "0.00",
+            Discount = (order.BasicOrderDetails.Account ?? 0) + 
+                       (order.BasicOrderDetails.Service ?? 0) + 
+                       (order.BasicOrderDetails.Tax ?? 0) - 
+                       (order.BasicOrderDetails.Total ?? 0),
+            TotalOrder = order.BasicOrderDetails.Total?.ToString("N2") ?? "0.00",
         };
 
         var items = order.BasicOrderDetails.Items ?? new List<TableItem>();

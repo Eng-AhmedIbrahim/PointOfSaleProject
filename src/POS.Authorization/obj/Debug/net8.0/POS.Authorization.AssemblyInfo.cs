@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+309bfce752a8fbb656c446f111d4d057d19a210d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7381bd706f050ab2447bd1ecb91d55504025178")]
 [assembly: System.Reflection.AssemblyProductAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyTitleAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

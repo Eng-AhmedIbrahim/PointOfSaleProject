@@ -180,10 +180,26 @@ public class DineInReceiptDocument : IDocument
 
                 foreach (TableItem item in _items)
                 {
-                    table.Cell().Element(CellStyle).Text(item.Total?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("N2")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("N2")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+
+                    // Add Discount if available
+                    if (item.HasDiscount)
+                    {
+                        var discountText = item.DiscountPercentage > 0 
+                            ? $"{item.DiscountPercentage}%" 
+                            : item.TotalDiscountPrice?.ToString("N2");
+
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(45)
+                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("N2")})")
+                            .FontSize(10)
+                            .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
+                            .AlignEnd();
+                    }
 
                     // Add attributes if available
                     if (item.Attributes?.Any() == true)
@@ -213,14 +229,29 @@ public class DineInReceiptDocument : IDocument
                 columns.RelativeColumn();
             });
 
-            table.Cell().Text(receipt.TotalAmount.ToString()).FontSize(13).Bold().AlignCenter();
-            table.Cell().Text("حساب الاصناف").Bold().FontSize(15).Bold().AlignCenter();
+            table.Cell().Text(receipt.TotalAmount?.ToString("N2")).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text(ArabicConstStrings.SubTotal).Bold().FontSize(15).Bold().AlignCenter();
 
-            table.Cell().Text(receipt.ServiceAmount.ToString()).FontSize(13).Bold().AlignCenter();
-            table.Cell().Text("خدمة الصالة").Bold().FontSize(15).Bold().AlignCenter();
+            if (!string.IsNullOrEmpty(receipt.ServiceAmount) && receipt.ServiceAmount != "0" && receipt.ServiceAmount != "0.00")
+            {
+                table.Cell().Text(receipt.ServiceAmount).FontSize(13).Bold().AlignCenter();
+                table.Cell().Text(ArabicConstStrings.Service).Bold().FontSize(15).Bold().AlignCenter();
+            }
 
-            table.Cell().Text(receipt.TotalOrder.ToString()).FontSize(13).Bold().AlignCenter();
-            table.Cell().Text("الإجمالي").FontSize(15).Bold().AlignCenter();
+            if (!string.IsNullOrEmpty(receipt.TaxAmount) && receipt.TaxAmount != "0" && receipt.TaxAmount != "0.00")
+            {
+                table.Cell().Text(receipt.TaxAmount).FontSize(13).Bold().AlignCenter();
+                table.Cell().Text(ArabicConstStrings.Tax).Bold().FontSize(15).Bold().AlignCenter();
+            }
+
+            if (receipt.Discount.HasValue && Math.Abs(receipt.Discount.Value) > 0.001m)
+            {
+                table.Cell().Text(receipt.Discount.Value.ToString("N2")).FontSize(13).Bold().AlignCenter();
+                table.Cell().Text(ArabicConstStrings.Discount).Bold().FontSize(15).Bold().AlignCenter();
+            }
+
+            table.Cell().Text(receipt.TotalOrder).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text(ArabicConstStrings.Total).FontSize(15).Bold().AlignCenter();
         });
     }
 

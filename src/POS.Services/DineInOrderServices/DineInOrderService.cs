@@ -24,31 +24,34 @@ public class DineInOrderService : IDineInOrderService
 
         if (order.OrderDetails == null) return;
 
-        // 1. Calculate Subtotal from active items
-        // Use ReferenceEqualityComparer to ensure we don't sum the same object twice even if it's in the list multiple times
+        // 1. Filter active items
         var activeItems = order.OrderDetails
             .Where(i => i.Quantity > 0 && (i.IsVoided == null || i.IsVoided == false))
             .Distinct(ReferenceEqualityComparer.Instance)
-            .Cast<OrderItemsDetails>();
+            .Cast<OrderItemsDetails>()
+            .ToList();
 
-        decimal subtotal = activeItems.Sum(i => i.TotalAmount ?? 0);
+        // 2. Calculate Gross Subtotal and Line Discounts
+        decimal grossSubtotal = activeItems.Sum(i => (i.Quantity ?? 0) * (i.UnitPrice ?? 0));
+        decimal netSubtotal = activeItems.Sum(i => i.TotalAfterDiscount ?? i.TotalAmount ?? 0);
+        decimal totalLineDiscount = grossSubtotal - netSubtotal;
         
-        order.Subtotal = subtotal;
+        order.Subtotal = grossSubtotal; // Set Subtotal to Gross for reporting
 
-        // 2. Calculate Service and Tax
+        // 3. Calculate Service and Tax based on Net Subtotal (Price after line discounts)
         decimal serviceRate = settings?.Service ?? 0;
         decimal taxRate = settings?.Tax ?? 0;
 
-        decimal serviceAmount = (subtotal * serviceRate) / 100;
-        decimal taxAmount = (subtotal * taxRate) / 100;
+        decimal serviceAmount = (netSubtotal * serviceRate) / 100;
+        decimal taxAmount = (netSubtotal * taxRate) / 100;
 
         order.Service = serviceAmount;
         order.Tax = taxAmount;
 
-        // 3. Interim Total (After Tax and Service)
-        decimal interimTotal = subtotal + serviceAmount + taxAmount;
+        // 4. Interim Total (After Tax and Service)
+        decimal interimTotal = netSubtotal + serviceAmount + taxAmount;
 
-        // 4. Calculate Order Discount
+        // 5. Calculate Order Level Discount
         decimal orderDiscountAmount = 0;
         if (order.DiscountPercentage > 0)
         {
@@ -60,9 +63,29 @@ public class DineInOrderService : IDineInOrderService
             orderDiscountAmount = order.Discount ?? 0;
         }
 
-        order.TotalDiscount = orderDiscountAmount; 
+        // 6. Combine Discounts for reporting/indicator
+        order.TotalDiscount = orderDiscountAmount + totalLineDiscount;
+        order.DiscountedItems = totalLineDiscount; // Track line discounts separately
 
-        // 5. Grand Total
+        // 7. Update Discount Reason as an indicator
+        string lineDiscountIndicator = "[خصم أصناف]";
+        if (totalLineDiscount > 0)
+        {
+            if (string.IsNullOrEmpty(order.DiscountReason))
+            {
+                order.DiscountReason = lineDiscountIndicator;
+            }
+            else if (!order.DiscountReason.Contains(lineDiscountIndicator))
+            {
+                order.DiscountReason = $"{lineDiscountIndicator} {order.DiscountReason}";
+            }
+        }
+        else if (!string.IsNullOrEmpty(order.DiscountReason))
+        {
+            order.DiscountReason = order.DiscountReason.Replace(lineDiscountIndicator, "").Trim();
+        }
+
+        // 8. Grand Total
         decimal grandTotal = interimTotal - orderDiscountAmount;
         
         // Round to 0.5 as per CartService logic
@@ -233,6 +256,9 @@ public class DineInOrderService : IDineInOrderService
                 existingOrder.CustomerName = order.CustomerName;
                 existingOrder.Phone1 = order.Phone1;
                 existingOrder.PaymentMethod = order.PaymentMethod;
+                existingOrder.CustomerCount = order.CustomerCount;
+                existingOrder.MaleCount = order.MaleCount;
+                existingOrder.FemaleCount = order.FemaleCount;
 
                 _unitOfWork.Repository<Orders>().Update(existingOrder);
 
@@ -472,8 +498,15 @@ public class DineInOrderService : IDineInOrderService
                     var existingItem = order.OrderDetails?.FirstOrDefault(i => AreItemsSame(i, newItem));
                     if (existingItem != null)
                     {
-                        existingItem.Quantity = (existingItem.Quantity ?? 0) + (newItem.Quantity ?? 0);
+                        var oldQty = existingItem.Quantity ?? 0;
+                        var newQty = oldQty + (newItem.Quantity ?? 0);
+                        
+                        existingItem.Quantity = newQty;
                         existingItem.TotalAmount = (existingItem.TotalAmount ?? 0) + (newItem.TotalAmount ?? 0);
+                        existingItem.TotalAfterDiscount = (existingItem.TotalAfterDiscount ?? existingItem.TotalAmount ?? 0) + (newItem.TotalAfterDiscount ?? newItem.TotalAmount ?? 0);
+                        
+                        existingItem.TotalDiscountPrice = (existingItem.TotalDiscountPrice ?? 0) + (newItem.TotalDiscountPrice ?? 0);
+                        existingItem.TotalDiscountAmount = (existingItem.TotalDiscountAmount ?? 0) + (newItem.TotalDiscountAmount ?? 0);
                         
                         // Update denormalized data on existing item if missing
                         existingItem.ItemName ??= newItem.ItemName;
@@ -677,6 +710,16 @@ public class DineInOrderService : IDineInOrderService
                     
                     if (secOrder == null) continue;
 
+                    // Merge Order-Level Discount if primary doesn't have one
+                    if ((primaryOrder.DiscountPercentage == null || primaryOrder.DiscountPercentage == 0) &&
+                        (primaryOrder.Discount == null || primaryOrder.Discount == 0))
+                    {
+                        primaryOrder.Discount = secOrder.Discount;
+                        primaryOrder.DiscountPercentage = secOrder.DiscountPercentage;
+                        primaryOrder.DiscountType = secOrder.DiscountType;
+                        primaryOrder.DiscountReason = secOrder.DiscountReason;
+                    }
+
                     // Move items or merge if same
                     if (secOrder.OrderDetails != null)
                     {
@@ -691,10 +734,12 @@ public class DineInOrderService : IDineInOrderService
                             {
                                 // Update existing item in primary order
                                 primaryItem.Quantity = (primaryItem.Quantity ?? 0) + (secItem.Quantity ?? 0);
-                                primaryItem.TotalAmount = (primaryItem.TotalAmount ?? 0) + (secItem.TotalAmount ?? 0);
                                 
-                                // Merge other financial fields
+                                // Merge financial fields
+                                // TotalAmount = Gross, TotalAfterDiscount = Net
+                                primaryItem.TotalAmount = (primaryItem.TotalAmount ?? 0) + (secItem.TotalAmount ?? 0);
                                 primaryItem.TotalAfterDiscount = (primaryItem.TotalAfterDiscount ?? primaryItem.TotalAmount) + (secItem.TotalAfterDiscount ?? secItem.TotalAmount);
+                                
                                 primaryItem.TotalDiscountAmount = (primaryItem.TotalDiscountAmount ?? 0) + (secItem.TotalDiscountAmount ?? 0);
                                 primaryItem.TotalDiscountPrice = (primaryItem.TotalDiscountPrice ?? 0) + (secItem.TotalDiscountPrice ?? 0);
                                 primaryItem.VoidAmount = (primaryItem.VoidAmount ?? 0) + (secItem.VoidAmount ?? 0); // Void quantity
@@ -747,7 +792,6 @@ public class DineInOrderService : IDineInOrderService
                                         {
                                             AttributeItemId = attr.AttributeItemId,
                                             AttributeName = attr.AttributeName
-                                            // Price removed as per user change
                                         });
                                     }
                                 }
@@ -813,8 +857,10 @@ public class DineInOrderService : IDineInOrderService
                     _unitOfWork.Repository<Orders>().Delete(secOrder);
                 }
 
+                // Recalculate totals ONCE for the primary order after all secondary orders are merged
                 await RecalculateOrderTotalsAsync(primaryOrder);
-                // _unitOfWork.Repository<Orders>().Update(primaryOrder); // REMOVED to avoid identity conflict
+                _unitOfWork.Repository<Orders>().Update(primaryOrder);
+                
                 await _unitOfWork.CompleteAsync();
 
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
@@ -827,7 +873,7 @@ public class DineInOrderService : IDineInOrderService
                     MachineName = Environment.MachineName,
                     TableId = primaryOrder.TableID,
                     TableName = primaryOrder.TableName,
-                    Details = $"Orders {string.Join(", ", secondaryOrderIds)} merged into this order. New GrandTotal: {primaryOrder.GrandTotal}",
+                    Details = $"Orders {string.Join(", ", secondaryOrderIds)} merged into this order. Final GrandTotal: {primaryOrder.GrandTotal}",
                     ActionDateTime = DateTime.Now
                 });
 
@@ -914,11 +960,18 @@ public class DineInOrderService : IDineInOrderService
                         item.Order = null;
 
                         var unitPrice = (item.TotalAmount ?? 0) / (item.Quantity ?? 1);
+                        var unitPriceAfterDiscount = (item.TotalAfterDiscount ?? item.TotalAmount ?? 0) / (item.Quantity ?? 1);
+                        
                         var valueToMove = unitPrice * splitRequest.QuantityToMove;
+                        var valueToMoveAfterDiscount = unitPriceAfterDiscount * splitRequest.QuantityToMove;
 
                         // Update source item
                         item.Quantity -= splitRequest.QuantityToMove;
                         item.TotalAmount -= valueToMove;
+                        item.TotalAfterDiscount = (item.TotalAfterDiscount ?? 0) - valueToMoveAfterDiscount;
+                        
+                        // Prevent negative values if rounding errors occur
+                        if (item.TotalAfterDiscount < 0) item.TotalAfterDiscount = 0;
                         
                         if (item.Quantity <= 0)
                             _unitOfWork.Repository<OrderItemsDetails>().Delete(item);
@@ -937,6 +990,10 @@ public class DineInOrderService : IDineInOrderService
                             UnitPrice = item.UnitPrice,
                             Quantity = splitRequest.QuantityToMove,
                             TotalAmount = valueToMove,
+                            TotalAfterDiscount = valueToMoveAfterDiscount,
+                            Discount = item.Discount,
+                            TotalDiscountPrice = (item.TotalDiscountPrice ?? 0) * ((decimal)splitRequest.QuantityToMove / (item.Quantity + splitRequest.QuantityToMove)),
+                            TotalDiscountPercentage = item.TotalDiscountPercentage,
                             OrderItemAttributes = item.OrderItemAttributes?.Select(a => new OrderItemAttributes
                             {
                                 AttributeItemId = a.AttributeItemId,
@@ -1144,6 +1201,168 @@ public class DineInOrderService : IDineInOrderService
         {
             Log.Error(ex, "Error incrementing print count for order {OrderId}", orderId);
             return 0;
+        }
+    }
+
+    public async Task<bool> ReserveTableAsync(Orders reservationOrder)
+    {
+        using (var transaction = _unitOfWork.BeginTransaction())
+        {
+            try
+            {
+                if (reservationOrder == null || reservationOrder.TableID == null)
+                    return false;
+
+                // Check if table already has a reservation or active order
+                var existingOrder = await GetDineInOrderByTableIdAsync(reservationOrder.TableID.Value, "Open");
+                if (existingOrder != null)
+                {
+                    Log.Warning("Cannot reserve table {TableId} - already has an active order", reservationOrder.TableID);
+                    return false;
+                }
+
+                var existingReservation = await GetDineInOrderByTableIdAsync(reservationOrder.TableID.Value, "Reserved");
+                if (existingReservation != null)
+                {
+                    Log.Warning("Cannot reserve table {TableId} - already reserved", reservationOrder.TableID);
+                    return false;
+                }
+
+                // Get app date for order number
+                var appDate = await _appDateService.UpdateOrderNumber();
+                reservationOrder.OrderID = appDate.CurrentOrderNumber;
+                reservationOrder.OrderDate = appDate.PosDate.Date.Add(DateTime.Now.TimeOfDay);
+                reservationOrder.OrderType = OrderTypes.DineIn;
+                reservationOrder.OrderState = OrderStates.Reserved;
+                
+                if (string.IsNullOrEmpty(reservationOrder.MachineName))
+                {
+                    reservationOrder.MachineName = Environment.MachineName;
+                }
+
+                // No items for reservation, just the booking
+                reservationOrder.OrderDetails = new List<OrderItemsDetails>();
+                reservationOrder.Subtotal = 0;
+                reservationOrder.Tax = 0;
+                reservationOrder.Service = 0;
+                reservationOrder.GrandTotal = reservationOrder.ReservationPaid ?? 0;
+
+                await _unitOfWork.Repository<Orders>().AddAsync(reservationOrder);
+                
+                var result = await _unitOfWork.CompleteAsync();
+                if (result <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                // Update table state to Reserved
+                var table = await _unitOfWork.Repository<Table>().GetByIdAsync(reservationOrder.TableID.Value);
+                if (table != null)
+                {
+                    table.TableState = TableState.Reserved;
+                    _unitOfWork.Repository<Table>().Update(table);
+                    await _unitOfWork.CompleteAsync();
+                }
+
+                // Track the reservation
+                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
+                {
+                    OrderId = reservationOrder.OrderID,
+                    OrderType = "DineIn",
+                    Action = "Reserved",
+                    UserName = reservationOrder.CashierName,
+                    UserId = reservationOrder.CashierID,
+                    MachineName = Environment.MachineName,
+                    TableId = reservationOrder.TableID,
+                    TableName = reservationOrder.TableName,
+                    Details = $"Table reserved for {reservationOrder.CustomerName} ({reservationOrder.Phone1}). " +
+                              $"Scheduled: {reservationOrder.ScheduleDateTime}. Guests: {reservationOrder.CustomerCount}. " +
+                              $"Deposit: {reservationOrder.ReservationPaid}",
+                    ActionDateTime = DateTime.Now
+                });
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(ex, "Error creating table reservation");
+                return false;
+            }
+        }
+    }
+
+    public async Task<bool> CancelReservationAsync(int orderId)
+    {
+        using (var transaction = _unitOfWork.BeginTransaction())
+        {
+            try
+            {
+                var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
+                if (order == null)
+                {
+                    // Try by OrderID (display number)
+                    var spec = new DineInOrderByOrderIdSpec(orderId);
+                    var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                    order = orders.FirstOrDefault();
+                }
+
+                if (order == null || order.OrderState != OrderStates.Reserved)
+                {
+                    Log.Warning("Cannot cancel reservation - order {OrderId} not found or not reserved", orderId);
+                    return false;
+                }
+
+                // Mark order as canceled
+                order.OrderState = OrderStates.Canceled;
+                order.ClosingTime = DateTime.Now;
+                _unitOfWork.Repository<Orders>().Update(order);
+                
+                var result = await _unitOfWork.CompleteAsync();
+                if (result <= 0)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+                // Update table state to Available
+                if (order.TableID.HasValue)
+                {
+                    var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
+                    if (table != null)
+                    {
+                        table.TableState = TableState.Available;
+                        _unitOfWork.Repository<Table>().Update(table);
+                        await _unitOfWork.CompleteAsync();
+                    }
+                }
+
+                // Track the cancellation
+                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
+                {
+                    OrderId = order.OrderID,
+                    OrderType = "DineIn",
+                    Action = "ReservationCanceled",
+                    UserName = order.CashierName,
+                    UserId = order.CashierID,
+                    MachineName = Environment.MachineName,
+                    TableId = order.TableID,
+                    TableName = order.TableName,
+                    Details = $"Reservation canceled for {order.CustomerName}. Original schedule: {order.ScheduleDateTime}",
+                    ActionDateTime = DateTime.Now
+                });
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(ex, "Error canceling reservation for order {OrderId}", orderId);
+                return false;
+            }
         }
     }
 }

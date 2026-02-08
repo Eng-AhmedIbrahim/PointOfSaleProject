@@ -2251,6 +2251,32 @@
   },
   {
     "ContainingType": "POS.API.Controllers.DineInOrderController",
+    "Method": "CancelReservation",
+    "RelativePath": "api/DineInOrder/cancel-reservation/{orderId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DineInOrderController",
     "Method": "CloseDineInOrder",
     "RelativePath": "api/DineInOrder/close/{orderId}",
     "HttpMethod": "PUT",
@@ -2338,6 +2364,32 @@
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.IReadOnlyList\u00601[[POS.Contract.Dtos.DineIn.DineInOrderDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DineInOrderController",
+    "Method": "ReserveTable",
+    "RelativePath": "api/DineInOrder/reserve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reservationDto",
+        "Type": "POS.Contract.Dtos.DineIn.DineInOrderDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
         "MediaTypes": [
           "text/plain",
           "application/json",

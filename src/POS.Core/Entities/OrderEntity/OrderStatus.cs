@@ -5,5 +5,6 @@ public enum OrderStates : byte
     Pending = 1,
     Canceled ,
     Completed,
-    Voided
+    Voided,
+    Reserved
 }

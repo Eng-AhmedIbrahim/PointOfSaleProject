@@ -15,6 +15,8 @@ public class DineInReceipt
     public IReadOnlyList<ReceiptItem> Items => _items;
     public decimal? TotalAmount { get; set; } = 100;
     public string ServiceAmount { get; set; } = string.Empty;
+    public string TaxAmount { get; set; } = string.Empty;
+    public decimal? Discount { get; set; }
     public string TotalOrder { get; set; } = string.Empty;
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
     public float LogoWidth { get; set; } = 120f;

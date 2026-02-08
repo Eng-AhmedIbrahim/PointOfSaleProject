@@ -1,0 +1,55 @@
+@using MudBlazor
+@using BlazorBase.ERPFrontServices.DineInOrderServices
+@using POS.Contract.Dtos.DineIn
+@inject ISnackbar Snackbar
+@inject IDineInOrderFrontService DineInOrderFrontService
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid Class="pa-4" Spacing="3">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6" Color="Color.Primary">Reserve Table</MudText>
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="CustomerName" Label="Customer Name *" Variant="Variant.Outlined" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="CustomerPhone" Label="Phone Number *" Variant="Variant.Outlined" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudDatePicker @bind-Date="ReservationDate" Label="Reservation Date *" Variant="Variant.Outlined" MinDate="DateTime.Today" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTimePicker @bind-Time="ReservationTime" Label="Reservation Time *" Variant="Variant.Outlined" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudNumericField @bind-Value="GuestCount" Label="Number of Guests *" Variant="Variant.Outlined" Min="1" Required="true" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudNumericField @bind-Value="DepositAmount" Label="Deposit Amount (Optional)" Variant="Variant.Outlined" Min="0" Format="F2" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField @bind-Value="SpecialRequests" Label="Special Requests / Notes" Variant="Variant.Outlined" Lines="3" />
+            </MudItem>
+
+            <MudItem xs="12" Class="mt-2">
+                <MudAlert Severity="Severity.Info" Dense="true">
+                    Table <b>@TableName</b> will be reserved for <b>@GuestCount</b> guests on <b>@ReservationDate?.ToString("dd MMM yyyy")</b> at <b>@ReservationTime?.ToString(@"hh\:mm tt")</b>
+                </MudAlert>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Reserve" StartIcon="@Icons.Material.Filled.EventAvailable">
+            Confirm Reservation
+        </MudButton>
+    </DialogActions>
+</MudDialog>
