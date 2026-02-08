@@ -38,17 +38,49 @@
                     @foreach (var table in _tables ?? [])
                     {
                         <MudItem xs="3" sm="3" md="2">
-                            <button class="@GetTableModernClass(table)" 
-                                    @onclick="() => ToggleState(tableStates, table!.Id!.Value, table!.TableName!, UpdateState)">
-                                <div class="table-icon-box">
-                                    <MudIcon Icon="@Icons.Material.Filled.TableBar" Size="Size.Large" />
+                            <div class="table-card-container">
+                                <button class="@GetTableModernClass(table)" 
+                                        @onclick="() => ToggleState(tableStates, table!.Id!.Value, table!.TableName!, UpdateState)"
+                                        @oncontextmenu:preventDefault 
+                                        @oncontextmenu="@(e => OnTableRightClick(e, table))">
+                                    <div class="table-icon-box">
+                                        <MudIcon Icon="@Icons.Material.Filled.TableBar" Size="Size.Large" />
+                                    </div>
+                                    <span class="table-name">@table.TableName</span>
+                                    
+                                    @if (_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value))
+                                    {
+                                        <span class="table-status">@Localizer["Order"]</span>
+                                    }
+                                    else if (table.TableState == "Reserved")
+                                    {
+                                        <span class="table-status table-status-reserved">@Localizer["Waiting"]</span>
+                                    }
+                                </button>
+                                
+                                <div class="table-action-icons">
+                                    @if (!_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value) && table.TableState != "Reserved")
+                                    {
+                                        <MudTooltip Text="@Localizer["ReserveTable"]">
+                                            <MudIconButton Icon="@Icons.Material.Filled.EventNote" 
+                                                           Size="Size.Small" 
+                                                           Color="Color.Success" 
+                                                           OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
+                                                           Class="reserve-icon-btn" />
+                                        </MudTooltip>
+                                    }
+                                    else if (table.TableState == "Reserved")
+                                    {
+                                        <MudTooltip Text="@Localizer["Cancel"]">
+                                            <MudIconButton Icon="@Icons.Material.Filled.EventBusy" 
+                                                           Size="Size.Small" 
+                                                           Color="Color.Error" 
+                                                           OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
+                                                           Class="reserve-icon-btn" />
+                                        </MudTooltip>
+                                    }
                                 </div>
-                                <span class="table-name">@table.TableName</span>
-                                @if (_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value))
-                                {
-                                    <span class="table-status">@Localizer["Order"]</span>
-                                }
-                            </button>
+                            </div>
                         </MudItem>
                     }
                 </MudGrid>
@@ -582,5 +614,32 @@
     .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+
+    .table-card-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .table-action-icons {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        display: flex;
+        gap: 2px;
+        z-index: 5;
+    }
+
+    .reserve-icon-btn {
+        padding: 4px !important;
+        background: rgba(255, 255, 255, 0.8) !important;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 6px !important;
+    }
+
+    .reserve-icon-btn:hover {
+        background: white !important;
+        transform: scale(1.1);
     }
 </style>

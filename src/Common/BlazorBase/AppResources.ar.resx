@@ -507,4 +507,76 @@
   <data name="Guests" xml:space="preserve">
     <value>الافراد</value>
   </data>
+  <data name="GuestCountDetails" xml:space="preserve">
+    <value>تفاصيل عدد الضيوف</value>
+  </data>
+  <data name="MenCount" xml:space="preserve">
+    <value>عدد الرجال</value>
+  </data>
+  <data name="WomenCount" xml:space="preserve">
+    <value>عدد النساء</value>
+  </data>
+  <data name="TotalGuest" xml:space="preserve">
+    <value>إجمالي الضيوف</value>
+  </data>
+  <data name="AdjustGuestCountDescription" xml:space="preserve">
+    <value>عدل عدد الضيوف لهذا الطلب</value>
+  </data>
+  <data name="SumOfAllGuests" xml:space="preserve">
+    <value>مجموع كل الضيوف</value>
+  </data>
+  <data name="ConfirmSelection" xml:space="preserve">
+    <value>تأكيد الاختيار</value>
+  </data>
+  <data name="ChoiceOrder" xml:space="preserve">
+    <value>إختر أوردر لعرض الآيتمز</value>
+  </data>
+  <data name="MainOrder" xml:space="preserve">
+    <value>الأوردر الرئيسي</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>رقم الطلب</value>
+  </data>
+  <data name="ReserveTable" xml:space="preserve">
+    <value>حجز طاولة</value>
+  </data>
+  <data name="ReservationDate" xml:space="preserve">
+    <value>تاريخ الحجز</value>
+  </data>
+  <data name="ReservationTime" xml:space="preserve">
+    <value>وقت الحجز</value>
+  </data>
+  <data name="DepositAmount" xml:space="preserve">
+    <value>مبلغ العربون</value>
+  </data>
+  <data name="SpecialRequests" xml:space="preserve">
+    <value>طلبات خاصة / ملاحظات</value>
+  </data>
+  <data name="ConfirmReservation" xml:space="preserve">
+    <value>تأكيد الحجز</value>
+  </data>
+  <data name="CustomerNameRequired" xml:space="preserve">
+    <value>اسم العميل مطلوب</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>رقم الهاتف مطلوب</value>
+  </data>
+  <data name="ReservationDateTimeRequired" xml:space="preserve">
+    <value>تاريخ ووقت الحجز مطلوبين</value>
+  </data>
+  <data name="GuestCountAtLeastOne" xml:space="preserve">
+    <value>عدد الضيوف يجب أن يكون 1 على الأقل</value>
+  </data>
+  <data name="ReservationInPast" xml:space="preserve">
+    <value>لا يمكن أن يكون موعد الحجز في الماضي</value>
+  </data>
+  <data name="ReservationSuccess" xml:space="preserve">
+    <value>تم حجز طاولة {0} بنجاح لـ {1}</value>
+  </data>
+  <data name="ReservationFailed" xml:space="preserve">
+    <value>فشل الحجز. قد تكون الطاولة محجوزة بالفعل.</value>
+  </data>
+  <data name="TableReservationSummary" xml:space="preserve">
+    <value>سيتم حجز الطاولة &lt;b&gt;{0}&lt;/b&gt; لـ &lt;b&gt;{1}&lt;/b&gt; أفراد بتاريخ &lt;b&gt;{2}&lt;/b&gt; الساعة &lt;b&gt;{3}&lt;/b&gt;</value>
+  </data>
 </root>

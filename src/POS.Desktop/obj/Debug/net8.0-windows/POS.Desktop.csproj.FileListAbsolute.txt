@@ -179,3 +179,4 @@ F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.pdb
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.genruntimeconfig.cache
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\ref\POS.Desktop.dll
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\scopedcss\Components\DineInComponents\GuestCountDialog.razor.rz.scp.css

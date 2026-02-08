@@ -31,6 +31,18 @@ public partial class GuestCountDialog
 
     private void Cancel() => MudDialog.Cancel();
 
+    private void ChangeCount(string target, int change)
+    {
+        if (target == nameof(MenCount))
+        {
+            MenCount = Math.Max(0, MenCount + change);
+        }
+        else if (target == nameof(WomenCount))
+        {
+            WomenCount = Math.Max(0, WomenCount + change);
+        }
+    }
+
     private async Task Save()
     {
         if (Order == null) return;

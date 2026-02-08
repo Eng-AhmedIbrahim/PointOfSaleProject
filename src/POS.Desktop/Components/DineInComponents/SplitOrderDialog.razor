@@ -99,7 +99,7 @@
     [Parameter] public DineInOrderDetails OrderToSplit { get; set; } = default!;
 
     private List<TableItem> SourceItems = new();
-    private Dictionary<int, int[]> SplitQuantities = new(); // DatabaseId -> Quantity for each of 8 splits
+    private Dictionary<int, int[]> SplitQuantities = new();
 
     protected override void OnInitialized()
     {

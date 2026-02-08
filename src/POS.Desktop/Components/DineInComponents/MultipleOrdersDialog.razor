@@ -1,11 +1,9 @@
-@using MudBlazor
-@using BlazorBase.Models
 @inject MudBlazor.ISnackbar _snackbar
-@inject Microsoft.Extensions.Localization.IStringLocalizer<MultipleOrdersDialog> Localizer
+@inject LocalizationService Localizar
 
 <MudDialog FullWidth="true" MaxWidth="MaxWidth.Medium">
     <TitleContent>
-        <MudText Typo="Typo.h6">@Localizer["SplitOrder"]</MudText>
+        <MudText Typo="Typo.h6">@Localizar["SplitOrder"]</MudText>
     </TitleContent>
     <DialogContent>
         <MudGrid Spacing="0">
@@ -20,9 +18,9 @@
                                          Color="@(isOriginal ? Color.Primary : Color.Default)" />
                                 <div class="d-flex flex-column">
                                     <MudText Typo="Typo.body1" Style="font-weight: bold">
-                                        @(isOriginal ? $"{order.RelatedTableName} (الأوردر الرئيسي)" : order.RelatedTableName)
+                                        @(isOriginal ? $"{order.RelatedTableName} ({Localizar["MainOrder"]})" : order.RelatedTableName)
                                     </MudText>
-                                    <MudText Typo="Typo.caption" Color="Color.Secondary">ID: @order.BasicOrderDetails?.OrderId</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Localizar["OrderID"]: @order.BasicOrderDetails?.OrderId</MudText>
                                 </div>
                             </MudStack>
                         </MudListItem>
@@ -39,10 +37,10 @@
                         <table class="items-table">
                             <thead>
                                 <tr>
-                                    <th>Qty</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
+                                    <th>@Localizar["Qty"]</th>
+                                    <th>@Localizar["Name"]</th>
+                                    <th>@Localizar["Price"]</th>
+                                    <th>@Localizar["Total"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,7 +60,7 @@
                 else
                 {
                     <div class="d-flex align-center justify-center h-100 opacity-50">
-                        <MudText Typo="Typo.h6">إختر أوردر لعرض الآيتمز</MudText>
+                        <MudText Typo="Typo.h6">@Localizar["ChoiceOrder"]</MudText>
                     </div>
                 }
             </MudItem>
@@ -71,14 +69,15 @@
     <DialogActions>
         <div class="d-flex flex-column w-100 pa-4 gap-2">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="Confirm" Disabled="@(SelectedOrder == null)" Class="confirm-btn">
-                تأكيد الاختيار
+                @Localizar["ConfirmSelection"]
             </MudButton>
             <MudButton Variant="Variant.Outlined" Color="Color.Error" FullWidth="true" OnClick="Cancel">
-                إلغاء
+                @Localizar["Cancel"]
             </MudButton>
         </div>
     </DialogActions>
 </MudDialog>
+
 
 <style>
     .selected-order-item {

@@ -172,12 +172,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>dsjol55i0b</Fingerprint>
-      <Integrity>00x3i2n/8lWjU4VaIH/83/sh4tiSu8TahQ2iLFSUnCo=</Integrity>
+      <Fingerprint>61tr15zrf6</Fingerprint>
+      <Integrity>upBpWiLVCv53mcS8WapLJ/1ZJoTP2ihwK0kYtK7ezlw=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>26161</FileLength>
-      <LastWriteTime>Sun, 08 Feb 2026 02:42:47 GMT</LastWriteTime>
+      <FileLength>26231</FileLength>
+      <LastWriteTime>Sun, 08 Feb 2026 14:29:01 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">

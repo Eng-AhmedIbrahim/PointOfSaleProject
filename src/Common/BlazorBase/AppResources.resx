@@ -507,4 +507,76 @@
   <data name="Guests" xml:space="preserve">
     <value>Guests</value>
   </data>
+  <data name="GuestCountDetails" xml:space="preserve">
+    <value>GuestCountDetails</value>
+  </data>
+  <data name="MenCount" xml:space="preserve">
+    <value>Men Count</value>
+  </data>
+  <data name="WomenCount" xml:space="preserve">
+    <value>Women Count</value>
+  </data>
+  <data name="TotalGuest" xml:space="preserve">
+    <value>Total Guest Count</value>
+  </data>
+  <data name="AdjustGuestCountDescription" xml:space="preserve">
+    <value>Adjust the number of guests for this order</value>
+  </data>
+  <data name="SumOfAllGuests" xml:space="preserve">
+    <value>Total sum of all guests</value>
+  </data>
+  <data name="ConfirmSelection" xml:space="preserve">
+    <value>ConfirmSelection</value>
+  </data>
+  <data name="ChoiceOrder" xml:space="preserve">
+    <value>Please select an order to display its items</value>
+  </data>
+  <data name="MainOrder" xml:space="preserve">
+    <value>Main Order</value>
+  </data>
+  <data name="OrderID" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="ReserveTable" xml:space="preserve">
+    <value>Reserve Table</value>
+  </data>
+  <data name="ReservationDate" xml:space="preserve">
+    <value>Reservation Date</value>
+  </data>
+  <data name="ReservationTime" xml:space="preserve">
+    <value>Reservation Time</value>
+  </data>
+  <data name="DepositAmount" xml:space="preserve">
+    <value>Deposit Amount</value>
+  </data>
+  <data name="SpecialRequests" xml:space="preserve">
+    <value>Special Requests / Notes</value>
+  </data>
+  <data name="ConfirmReservation" xml:space="preserve">
+    <value>Confirm Reservation</value>
+  </data>
+  <data name="CustomerNameRequired" xml:space="preserve">
+    <value>Customer name is required</value>
+  </data>
+  <data name="PhoneNumberRequired" xml:space="preserve">
+    <value>Phone number is required</value>
+  </data>
+  <data name="ReservationDateTimeRequired" xml:space="preserve">
+    <value>Reservation date and time are required</value>
+  </data>
+  <data name="GuestCountAtLeastOne" xml:space="preserve">
+    <value>Guest count must be at least 1</value>
+  </data>
+  <data name="ReservationInPast" xml:space="preserve">
+    <value>Reservation time cannot be in the past</value>
+  </data>
+  <data name="ReservationSuccess" xml:space="preserve">
+    <value>Table {0} reserved successfully for {1}</value>
+  </data>
+  <data name="ReservationFailed" xml:space="preserve">
+    <value>Failed to create reservation. Table may already be reserved or occupied.</value>
+  </data>
+  <data name="TableReservationSummary" xml:space="preserve">
+    <value>Table &lt;b&gt;{0}&lt;/b&gt; will be reserved for &lt;b&gt;{1}&lt;/b&gt; guests on &lt;b&gt;{2}&lt;/b&gt; at &lt;b&gt;{3}&lt;/b&gt;</value>
+  </data>
 </root>

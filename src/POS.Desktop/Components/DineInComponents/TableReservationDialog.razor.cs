@@ -23,25 +23,25 @@ public partial class TableReservationDialog
         // Validation
         if (string.IsNullOrWhiteSpace(CustomerName))
         {
-            Snackbar.Add("Customer name is required", Severity.Error);
+            Snackbar.Add(Localizar["CustomerNameRequired"], Severity.Error);
             return;
         }
 
         if (string.IsNullOrWhiteSpace(CustomerPhone))
         {
-            Snackbar.Add("Phone number is required", Severity.Error);
+            Snackbar.Add(Localizar["PhoneNumberRequired"], Severity.Error);
             return;
         }
 
         if (!ReservationDate.HasValue || !ReservationTime.HasValue)
         {
-            Snackbar.Add("Reservation date and time are required", Severity.Error);
+            Snackbar.Add(Localizar["ReservationDateTimeRequired"], Severity.Error);
             return;
         }
 
         if (GuestCount < 1)
         {
-            Snackbar.Add("Guest count must be at least 1", Severity.Error);
+            Snackbar.Add(Localizar["GuestCountAtLeastOne"], Severity.Error);
             return;
         }
 
@@ -51,7 +51,7 @@ public partial class TableReservationDialog
         // Check if reservation is in the past
         if (scheduledDateTime < DateTime.Now)
         {
-            Snackbar.Add("Reservation time cannot be in the past", Severity.Error);
+            Snackbar.Add(Localizar["ReservationInPast"], Severity.Error);
             return;
         }
 
@@ -75,12 +75,12 @@ public partial class TableReservationDialog
         
         if (result)
         {
-            Snackbar.Add($"Table {TableName} reserved successfully for {CustomerName}", Severity.Success);
+            Snackbar.Add(string.Format(Localizar["ReservationSuccess"], TableName, CustomerName), Severity.Success);
             MudDialog.Close(DialogResult.Ok(true));
         }
         else
         {
-            Snackbar.Add("Failed to create reservation. Table may already be reserved or occupied.", Severity.Error);
+            Snackbar.Add(Localizar["ReservationFailed"], Severity.Error);
         }
     }
 }

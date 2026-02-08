@@ -115,6 +115,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adjust the number of guests for this order.
+        /// </summary>
+        public static string AdjustGuestCountDescription {
+            get {
+                return ResourceManager.GetString("AdjustGuestCountDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Orders.
         /// </summary>
         public static string AllOrders {
@@ -250,6 +259,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please select an order to display its items.
+        /// </summary>
+        public static string ChoiceOrder {
+            get {
+                return ResourceManager.GetString("ChoiceOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose Mode.
         /// </summary>
         public static string ChooseMode {
@@ -336,6 +354,15 @@ namespace BlazorBase {
         public static string ConfirmOperation {
             get {
                 return ResourceManager.GetString("ConfirmOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ConfirmSelection.
+        /// </summary>
+        public static string ConfirmSelection {
+            get {
+                return ResourceManager.GetString("ConfirmSelection", resourceCulture);
             }
         }
         
@@ -529,6 +556,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to GuestCountDetails.
+        /// </summary>
+        public static string GuestCountDetails {
+            get {
+                return ResourceManager.GetString("GuestCountDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Guests.
         /// </summary>
         public static string Guests {
@@ -642,6 +678,15 @@ namespace BlazorBase {
         public static string Meals {
             get {
                 return ResourceManager.GetString("Meals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Men Count.
+        /// </summary>
+        public static string MenCount {
+            get {
+                return ResourceManager.GetString("MenCount", resourceCulture);
             }
         }
         
@@ -1096,6 +1141,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Total sum of all guests.
+        /// </summary>
+        public static string SumOfAllGuests {
+            get {
+                return ResourceManager.GetString("SumOfAllGuests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tables.
         /// </summary>
         public static string Tables {
@@ -1137,6 +1191,15 @@ namespace BlazorBase {
         public static string TotalAmount {
             get {
                 return ResourceManager.GetString("TotalAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Guest Count.
+        /// </summary>
+        public static string TotalGuest {
+            get {
+                return ResourceManager.GetString("TotalGuest", resourceCulture);
             }
         }
         
@@ -1218,6 +1281,15 @@ namespace BlazorBase {
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Women Count.
+        /// </summary>
+        public static string WomenCount {
+            get {
+                return ResourceManager.GetString("WomenCount", resourceCulture);
             }
         }
         
