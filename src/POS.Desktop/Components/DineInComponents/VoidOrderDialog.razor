@@ -1,89 +1,174 @@
-@inject ISnackbar Snackbar
-@inject IDialogService DialogService
-@inject IDineInOrderFrontService DineInOrderFrontService
 
-<MudDialog DisableSidePadding="true">
+
+<MudDialog DisableSidePadding="true" Class="void-dialog-custom">
     <DialogContent>
-        <MudGrid Class="pa-2" Style="height: 600px; overflow-y: hidden;">
+        <MudGrid Class="pa-4" Style="min-height: 650px; background-color: #f1f5f9;">
             <!-- Left Side: Order Items Table -->
-            <MudItem xs="6">
-                <MudTable T="VoidItemModel" Items="@Items" Dense="true" Hover="true" Bordered="true" Striped="true" 
-                          FixedHeader="true" Height="500px" 
-                          @bind-SelectedItem="SelectedItem" OnRowClick="@((args) => OnRowClick(args))">
-                    <HeaderContent>
-                        <MudTh>Qty</MudTh>
-                        <MudTh>Item Name</MudTh>
-                        <MudTh>Price</MudTh>
-                        <MudTh>Total</MudTh>
-                        <MudTh>Void Qty</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Qty">@context.OriginalQuantity</MudTd>
-                        <MudTd DataLabel="Item Name">@context.ItemName</MudTd>
-                        <MudTd DataLabel="Price">@context.UnitPrice.ToString("F2")</MudTd>
-                        <MudTd DataLabel="Total">@context.TotalAmount.ToString("F2")</MudTd>
-                        <MudTd DataLabel="Void Qty" Style="@(context.QuantityToVoid > 0 ? "background-color: #ffcccc;" : "")">
-                            @context.QuantityToVoid
-                        </MudTd>
-                    </RowTemplate>
-                </MudTable>
+            <MudItem xs="7" Class="d-flex flex-column h-100">
+                <div class="void-table-container elevation-2 rounded-lg bg-white flex-grow-1 overflow-hidden">
+                    <div class="table-header-custom pa-3 d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.ListAlt" Color="Color.Primary" Class="mr-2" />
+                        <MudText Typo="Typo.h6" Class="font-weight-bold">@_localizer["ItemsToVoid"]</MudText>
+                    </div>
+                    <MudTable T="VoidItemModel" Items="@Items" Dense="true" Hover="true" FixedHeader="true" Height="500px" 
+                               @bind-SelectedItem="SelectedItem" OnRowClick="OnRowClick"
+                               Class="void-mud-table flex-grow-1">
+                        <HeaderContent>
+                            <MudTh>@_localizer["Qty"]</MudTh>
+                            <MudTh>@_localizer["ItemName"]</MudTh>
+                            <MudTh>@_localizer["Price"]</MudTh>
+                            <MudTh>@_localizer["Total"]</MudTh>
+                            <MudTh Style="text-align: center;">@_localizer["VoidQty"]</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                             <MudTd DataLabel="@_localizer["Qty"]">@context.OriginalQuantity</MudTd>
+                             <MudTd DataLabel="@_localizer["ItemName"]">@context.ItemName</MudTd>
+                             <MudTd DataLabel="@_localizer["Price"]">@context.UnitPrice.ToString("N2")</MudTd>
+                             <MudTd DataLabel="@_localizer["Total"]" Class="font-weight-bold">@context.TotalAmount.ToString("N2")</MudTd>
+                             <MudTd DataLabel="@_localizer["VoidQty"]" Style="text-align: center;">
+                                 <div class="@(context.QuantityToVoid > 0 ? "void-qty-badge active" : "void-qty-badge")">
+                                     @context.QuantityToVoid
+                                 </div>
+                             </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </div>
             </MudItem>
 
             <!-- Right Side: Numpad & Actions -->
-            <MudItem xs="6">
-                 <MudGrid>
-                     <!-- Totals Display -->
-                     <MudItem xs="12" Class="d-flex justify-center align-center flex-column pa-4">
-                         <MudText Typo="Typo.h5" Color="Color.Error">Void Amount</MudText>
-                         <MudText Typo="Typo.h3" Color="Color.Error">@TotalVoidAmount.ToString("F2")</MudText>
-                     </MudItem>
+            <MudItem xs="5" Class="d-flex flex-column">
+                <div class="summary-area pa-4 rounded-lg bg-white elevation-2 mb-4">
+                    <div class="d-flex justify-space-between align-center mb-2">
+                        <MudText Typo="Typo.subtitle1" Class="opacity-75">@_localizer["SelectedToVoid"]</MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.DeleteSweep" Color="Color.Error" />
+                    </div>
+                    <MudText Typo="Typo.h3" Color="Color.Error" Class="font-weight-black text-center mb-4">@TotalVoidAmount.ToString("N2")</MudText>
+                    
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="VoidAll" 
+                                Class="py-3 rounded-pill font-weight-bold" StartIcon="@Icons.Material.Filled.DeleteForever">
+                        @_localizer["VoidAllItems"]
+                    </MudButton>
+                </div>
 
-                     <!-- Void All Button -->
-                     <MudItem xs="12">
-                         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="VoidAll" Class="py-3">
-                             Void All
-                         </MudButton>
-                     </MudItem>
+                <div class="numpad-control pa-4 rounded-lg bg-white elevation-2 mb-4">
+                    <MudGrid Spacing="1">
+                        @foreach (var key in new[] { "7", "8", "9", "4", "5", "6", "1", "2", "3", "0" })
+                        {
+                            var keyLabel = key;
+                            <MudItem xs="4">
+                                <MudButton Variant="Variant.Filled" Color="Color.Default" FullWidth="true" Class="py-4 numpad-btn"
+                                           OnClick="@(() => OnNumpadClick(keyLabel))">
+                                    @keyLabel
+                                </MudButton>
+                            </MudItem>
+                        }
+                        <MudItem xs="4">
+                            <MudButton Variant="Variant.Filled" Color="Color.Warning" FullWidth="true" Class="py-4 numpad-btn" OnClick="Backspace">
+                                <MudIcon Icon="@Icons.Material.Filled.Backspace" />
+                            </MudButton>
+                        </MudItem>
+                        <MudItem xs="4">
+                              <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" Class="py-4 numpad-btn" OnClick="ClearQuantity">
+                                <MudText Class="font-weight-bold">C</MudText>
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </div>
 
-                    <!-- Numpad -->
-                    <MudItem xs="12">
-                         <MudGrid Spacing="1">
-                             @foreach (var key in new[] { "7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "." })
-                             {
-                                 var keyLabel = key;
-                                 <MudItem xs="4">
-                                     <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" Class="py-4"
-                                                OnClick="@(() => OnNumpadClick(keyLabel))">
-                                         @keyLabel
-                                     </MudButton>
-                                 </MudItem>
-                             }
-                             <MudItem xs="4">
-                                 <MudButton Variant="Variant.Filled" Color="Color.Warning" FullWidth="true" Class="py-4" OnClick="Backspace">
-                                     <MudIcon Icon="@Icons.Material.Filled.Backspace" />
-                                 </MudButton>
-                             </MudItem>
-                         </MudGrid>
-                    </MudItem>
+                <div class="reason-area flex-grow-1 rounded-lg bg-white pa-4 elevation-2">
+                    <MudSelect T="string" Label="@_localizer["SelectReason"]" @bind-Value="SelectedReason" Variant="Variant.Outlined" Dense="true" Class="mb-3">
+                        <MudSelectItem Value="@("MISTAKE")">@_localizer["MistakeOrder"]</MudSelectItem>
+                        <MudSelectItem Value="@("CUSTOMER_CANCEL")">@_localizer["CustomerCanceled"]</MudSelectItem>
+                        <MudSelectItem Value="@("KITCHEN_ISSUE")">@_localizer["KitchenIssue"]</MudSelectItem>
+                        <MudSelectItem Value="@("OTHER")">@_localizer["Other"]</MudSelectItem>
+                    </MudSelect>
 
-                    <!-- Reason Input -->
-                     <MudItem xs="12" Class="mt-2">
-                         <MudTextField @bind-Value="Reason" Label="Reason (Required)" Variant="Variant.Outlined" Required="true" RequiredError="Reason is required!" />
-                     </MudItem>
-
-                     <!-- Action Buttons -->
-                     <MudItem xs="6" Class="mt-2">
-                         <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="Save" StartIcon="@Icons.Material.Filled.Check">
-                             Save
-                         </MudButton>
-                     </MudItem>
-                     <MudItem xs="6" Class="mt-2">
-                         <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="Cancel" StartIcon="@Icons.Material.Filled.Close">
-                             Close
-                         </MudButton>
-                     </MudItem>
-                 </MudGrid>
+                    @if (SelectedReason == "OTHER")
+                    {
+                        <MudTextField @bind-Value="CustomReason" Label="@_localizer["Reason"]" Variant="Variant.Outlined" FullWidth="true" />
+                    }
+                    
+                    <div class="d-flex gap-2 mt-4">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="Save" 
+                                   StartIcon="@Icons.Material.Filled.Check" Class="py-3 font-weight-bold rounded-lg action-btn">
+                            @_localizer["ConfirmVoid"]
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Default" FullWidth="true" OnClick="Cancel" 
+                                   StartIcon="@Icons.Material.Filled.Close" Class="py-3 font-weight-bold rounded-lg action-btn">
+                            @_localizer["Cancel"]
+                        </MudButton>
+                    </div>
+                </div>
             </MudItem>
         </MudGrid>
     </DialogContent>
 </MudDialog>
+
+<style>
+    .void-dialog-custom .mud-dialog-title {
+        background: #ef4444;
+        color: white;
+    }
+
+    .table-header-custom {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .void-qty-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #f1f5f9;
+        color: #64748b;
+        border-radius: 8px;
+        font-weight: 900;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+
+    .void-qty-badge.active {
+        background: #fee2e2;
+        color: #ef4444;
+        border-color: #fecaca;
+        transform: scale(1.1);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .numpad-btn {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+        color: #1e293b !important;
+    }
+
+    .numpad-btn:hover {
+        background: #f1f5f9 !important;
+        border-color: #3b82f6 !important;
+    }
+
+    .summary-area {
+        border-left: 6px solid #ef4444;
+    }
+
+    .action-btn {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .void-mud-table {
+        border: none !important;
+    }
+
+    .void-mud-table .mud-table-head {
+        background: #f8fafc !important;
+    }
+
+    .mud-table-container{
+        overflow-y: auto !important;
+    }
+</style>

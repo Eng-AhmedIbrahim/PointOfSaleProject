@@ -79,7 +79,25 @@ public class PrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.OrderDate = _commonProperties.PosDate?.ToDateTime(TimeOnly.FromDateTime(DateTime.Now));
         _commonProperties.OrderDto.OrderState = "Completed";
         _commonProperties.OrderDto.OrderNotice = _commonProperties.OrderNote;
-        _commonProperties.OrderDto.OrderDetails = _commonProperties.TableItems;
+        _commonProperties.OrderDto.OrderNotice = _commonProperties.OrderNote;
+        
+        // Combine Active and Voided items for saving
+        var allItems = new List<TableItem>();
+        if (_commonProperties.TableItems != null)
+            allItems.AddRange(_commonProperties.TableItems);
+        if (_commonProperties.VoidedTableItems != null)
+            allItems.AddRange(_commonProperties.VoidedTableItems);
+            
+        _commonProperties.OrderDto.OrderDetails = allItems;
+
+        // Calculate Total Void stats
+        if (_commonProperties.VoidedTableItems != null && _commonProperties.VoidedTableItems.Any())
+        {
+             _commonProperties.OrderDto.VoidCount = _commonProperties.VoidedTableItems.Sum(i => i.VoidAmount ?? 0);
+             _commonProperties.OrderDto.TotalVoid = _commonProperties.VoidedTableItems.Sum(i => i.TotalAmount ?? 0);
+             _commonProperties.OrderDto.VoidAmount = _commonProperties.OrderDto.TotalVoid;
+        }
+
         _commonProperties.OrderDto.CustomerName = customerName;
         _commonProperties.OrderDto.CustomerPhone = customerPhone;
         _commonProperties.OrderDto.OrderSettings = _commonProperties.OrderSettings;

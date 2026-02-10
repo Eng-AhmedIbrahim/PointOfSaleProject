@@ -3,9 +3,11 @@
 public static class AppIdentityDbContextSeed
 {
     private static readonly List<string> potentialFilePaths =
-  [
-      Path.Combine("Data", "DataSeed","JsonFiles"),
+    [
+        Path.Combine("Data", "DataSeed","JsonFiles"),
         Path.Combine("..", "Pos.Repository", "Data", "DataSeed","JsonFiles"),
+        Path.Combine("f:", "PointOfSaleProject", "src", "Pos.Repository", "Data", "DataSeed","JsonFiles"),
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DataSeed","JsonFiles"),
     ];
 
     public static async Task SeedAsync(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, AppIdentityDbContext context)
@@ -13,17 +15,30 @@ public static class AppIdentityDbContextSeed
 
         if (!context.Roles.Any())
         {
-            var roles = await GetDataFromJsonFile<IdentityRole>("roles.json");
-            context.Roles.AddRange(roles);
-            await context.SaveChangesAsync();
+            var roles = (await GetDataFromJsonFile<IdentityRole>("roles.json")).ToList();
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
         }
 
-        if (!context.Permissions.Any())
+        var allDefinedPermissions = await GetDataFromJsonFile<Permission>("permissions.json");
+        foreach (var perm in allDefinedPermissions)
         {
-            var rolePermissions = await GetDataFromJsonFile<Permission>("permissions.json");
-            context.Permissions.AddRange(rolePermissions);
-            await context.SaveChangesAsync();
+            var existing = await context.Permissions.FirstOrDefaultAsync(p => p.Name == perm.Name);
+            if (existing == null)
+            {
+                await context.Permissions.AddAsync(perm);
+            }
+            else
+            {
+                // Update localized names if they changed
+                existing.NameAr = perm.NameAr;
+                existing.NameEn = perm.NameEn;
+                context.Permissions.Update(existing);
+            }
         }
+        await context.SaveChangesAsync();
 
         if (!await userManager.Users.AnyAsync())
         {
@@ -54,10 +69,50 @@ public static class AppIdentityDbContextSeed
             }
         }
 
-        if (!context.Set<IdentityRoleClaim<string>>().Any())
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "CaptainMorning"))
         {
-            await SeedRoleClaims(roleManager);
+            var user = new AppUser()
+            {
+                Email = "CaptainMorning@pos.com",
+                UserName = "CaptainMorning",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "كابتن صالة صباحي"
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("5");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                {
+                    await userManager.AddToRoleAsync(user, role.Name);
+                }
+            }
         }
+
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "CaptainEvening"))
+        {
+            var user = new AppUser()
+            {
+                Email = "CaptainEvening@pos.com",
+                UserName = "CaptainEvening",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "كابتن صالة مسائي"
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("5");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                {
+                    await userManager.AddToRoleAsync(user, role.Name);
+                }
+            }
+        }
+
+        // Always Update Claims if needed
+        await SeedRoleClaims(roleManager, context);
 
     }
 
@@ -80,27 +135,72 @@ public static class AppIdentityDbContextSeed
             return [];
 
         var data = await File.ReadAllTextAsync(filePath);
-        return JsonSerializer.Deserialize<List<T>>(data) ?? [];
+        var options = new JsonSerializerOptions { AllowTrailingCommas = true, PropertyNameCaseInsensitive = true };
+        return JsonSerializer.Deserialize<List<T>>(data, options) ?? [];
     }
 
 
-    public static async Task SeedRoleClaims(RoleManager<IdentityRole> roleManager)
+    public static async Task SeedRoleClaims(RoleManager<IdentityRole> roleManager, AppIdentityDbContext context)
     {
-        var roles = new Dictionary<string, List<string>>
+        var allPermissions = await context.Permissions.Select(p => p.Name).ToListAsync();
+        
+        // Administrator gets ALL permissions
+        var adminRole = await roleManager.FindByNameAsync("Administrator");
+        if (adminRole != null)
         {
-            { "Administrator", new List<string> { "CanAccessTables", "CanAccessDelivery", "CanAccessAccounts", "CanAccessSummary", "CanAccessOrders" } },
-            { "Manager", new List<string> { "CanAccessTables", "CanAccessSummary", "CanAccessOrders" } },
-            { "مدير فرع", new List<string> { "CanAccessTakeAway", "CanAccessOrders" } }
+            var claims = await roleManager.GetClaimsAsync(adminRole);
+            foreach (var permission in allPermissions)
+            {
+                if (!claims.Any(c => c.Type == "Permission" && c.Value == permission))
+                {
+                    await roleManager.AddClaimAsync(adminRole, new Claim("Permission", permission));
+                }
+            }
+        }
+
+        // Define other roles with comprehensive permissions
+        var rolePermissions = new Dictionary<string, List<string>>
+        {
+            { "مدير فرع", new List<string> { 
+                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", "CanAccessDistribution",
+                "CanAccessOrders", "CanAccessReport", "CanAccessSummary", "CanAccessSettings",
+                "CanAccessVoidOrder", "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
+                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
+                "CanAccessUsers", "CanAccessRoles", "CanAccessPosSettings", "CanAccessPrintingSettings"
+            } },
+            { "مساعد مدير", new List<string> { 
+                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", 
+                "CanAccessOrders", "CanAccessSummary", "CanAccessReport",
+                "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
+                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem"
+            } },
+            { "كاشير", new List<string> { 
+                "CanAccessTakeAway", "CanAccessDelivery", "CanAccessTables",
+                "CanAccessOrders", "CanAccessDiscount", "CanAccessPrintReceipt", 
+                "CanAccessCloseOrder", "CanAccessWaiting"
+            } },
+            { "كابتن صاله", new List<string> { 
+                "CanAccessTables", "CanAccessOrders", "CanAccessPrintReceipt",
+                "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessWaiting"
+            } },
+            { "Call Center", new List<string> { 
+                "CanAccessDelivery", "CanAccessDistribution", "CanAccessOrders",
+                "CanAccessPrintReceipt", "CanAccessCloseOrder"
+            } }
         };
 
-        foreach (var role in roles)
+        foreach (var role in rolePermissions)
         {
             var identityRole = await roleManager.FindByNameAsync(role.Key);
             if (identityRole != null)
             {
+                 var claims = await roleManager.GetClaimsAsync(identityRole);
                 foreach (var permission in role.Value)
                 {
-                    await roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
+                    if (allPermissions.Contains(permission) && !claims.Any(c => c.Type == "Permission" && c.Value == permission))
+                    {
+                        await roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
+                    }
                 }
             }
         }

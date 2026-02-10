@@ -579,4 +579,97 @@
   <data name="TableReservationSummary" xml:space="preserve">
     <value>Table &lt;b&gt;{0}&lt;/b&gt; will be reserved for &lt;b&gt;{1}&lt;/b&gt; guests on &lt;b&gt;{2}&lt;/b&gt; at &lt;b&gt;{3}&lt;/b&gt;</value>
   </data>
+  <data name="ReservationDetails" xml:space="preserve">
+    <value>Reservation Details</value>
+  </data>
+  <data name="CancelReservation" xml:space="preserve">
+    <value>Cancel Reservation</value>
+  </data>
+  <data name="ReservationCanceled" xml:space="preserve">
+    <value>Reservation canceled successfully</value>
+  </data>
+  <data name="CancellationFailed" xml:space="preserve">
+    <value>Failed to cancel reservation</value>
+  </data>
+  <data name="ConfirmCancelReservation" xml:space="preserve">
+    <value>Are you sure you want to cancel this reservation?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="StartOrder" xml:space="preserve">
+    <value>Start Order</value>
+  </data>
+  <data name="SelectCaptain" xml:space="preserve">
+    <value>Select Captain</value>
+  </data>
+  <data name="Captain" xml:space="preserve">
+    <value>Captain</value>
+  </data>
+  <data name="PleaseSelectCaptain" xml:space="preserve">
+    <value>Please select a captain</value>
+  </data>
+  <data name="ReservationSeatedSuccess" xml:space="preserve">
+    <value>Table {0} seated successfully</value>
+  </data>
+  <data name="ActionFailed" xml:space="preserve">
+    <value>Action failed</value>
+  </data>
+  <data name="ItemsToVoid" xml:space="preserve">
+    <value>Items to Void</value>
+  </data>
+  <data name="VoidQty" xml:space="preserve">
+    <value>Void Qty</value>
+  </data>
+  <data name="SelectedToVoid" xml:space="preserve">
+    <value>Selected to Void</value>
+  </data>
+  <data name="VoidAllItems" xml:space="preserve">
+    <value>Void All Items</value>
+  </data>
+  <data name="SelectReason" xml:space="preserve">
+    <value>Select Reason</value>
+  </data>
+  <data name="MistakeOrder" xml:space="preserve">
+    <value>Mistake in Order</value>
+  </data>
+  <data name="CustomerCanceled" xml:space="preserve">
+    <value>Customer Canceled</value>
+  </data>
+  <data name="KitchenIssue" xml:space="preserve">
+    <value>Kitchen Issue</value>
+  </data>
+  <data name="ConfirmVoid" xml:space="preserve">
+    <value>Confirm Void</value>
+  </data>
+  <data name="PleaseSelectItemFirst" xml:space="preserve">
+    <value>Please select an item first</value>
+  </data>
+  <data name="CannotVoidMoreThan" xml:space="preserve">
+    <value>Cannot void more than</value>
+  </data>
+  <data name="AllItemsSelectedForVoid" xml:space="preserve">
+    <value>All items selected for voiding</value>
+  </data>
+  <data name="VoidReasonRequired" xml:space="preserve">
+    <value>Void reason is required</value>
+  </data>
+  <data name="NoItemsSelectedToVoid" xml:space="preserve">
+    <value>No items selected to void</value>
+  </data>
+  <data name="VoidOperationSuccessful" xml:space="preserve">
+    <value>Void operation successful</value>
+  </data>
+  <data name="FailedToVoid" xml:space="preserve">
+    <value>Failed to void order/items</value>
+  </data>
+  <data name="Voided" xml:space="preserve">
+    <value>Voided</value>
+  </data>
+  <data name="VoidedBy" xml:space="preserve">
+    <value>Voided By</value>
+  </data>
 </root>

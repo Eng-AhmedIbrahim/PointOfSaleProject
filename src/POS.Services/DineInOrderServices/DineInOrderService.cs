@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 namespace POS.Services.DineInOrderServices;
 
 public class DineInOrderService : IDineInOrderService
@@ -128,6 +129,9 @@ public class DineInOrderService : IDineInOrderService
         }
         */
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -211,6 +215,7 @@ public class DineInOrderService : IDineInOrderService
                 return null;
             }
         }
+        });
     }
 
     public async Task<Orders?> UpdateDineInOrderAsync(Orders order)
@@ -218,6 +223,9 @@ public class DineInOrderService : IDineInOrderService
         if (order is null)
             return null;
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -294,6 +302,7 @@ public class DineInOrderService : IDineInOrderService
                 return null;
             }
         }
+        });
     }
 
     public async Task<Orders?> GetDineInOrderByIdAsync(int orderId)
@@ -322,79 +331,101 @@ public class DineInOrderService : IDineInOrderService
         return await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
     }
 
-    public async Task<bool> CloseDineInOrderAsync(int orderId)
+    public async Task<bool> CloseDineInOrderAsync(int orderId, decimal? paid = null, decimal? remain = null)
+{
+    var strategy = _unitOfWork.CreateExecutionStrategy();
+    return await strategy.ExecuteAsync(async () =>
     {
-        using (var transaction = _unitOfWork.BeginTransaction())
+    using (var transaction = _unitOfWork.BeginTransaction())
+    {
+        try
         {
-            try
+            var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
+            if (order is null)
+                return false;
+
+            order.OrderState = OrderStates.Completed;
+            order.ClosingTime = DateTime.Now;
+            
+            // Update payment information if provided
+            if (paid.HasValue)
             {
-                var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
-                if (order is null)
-                    return false;
-
-                order.OrderState = OrderStates.Completed;
-                order.ClosingTime = DateTime.Now;
-
-                _unitOfWork.Repository<Orders>().Update(order);
-
-                var result = await _unitOfWork.CompleteAsync();
-                if (result <= 0)
-                {
-                    transaction.Rollback();
-                    return false;
-                }
-
-                // Track the order closure
-                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
-                {
-                    OrderId = order.OrderID,
-                    OrderType = "DineIn",
-                    Action = "Closed",
-                    UserName = order.CashierName,
-                    UserId = order.CashierID,
-                    MachineName = Environment.MachineName,
-                    TableId = order.TableID,
-                    TableName = order.TableName,
-                    Details = $"Order closed. Total: {order.GrandTotal}",
-                    ActionDateTime = DateTime.Now
-                });
-
-                if (order.TableID != null && order.TableID > 0)
-                {
-                    // Check if there are other OPEN orders for this table
-                    var openOrdersSpec = new BaseSpecifications<Orders>(o => 
-                        o.TableID == order.TableID && 
-                        o.OrderState == OrderStates.Pending && 
-                        o.OrderID != orderId); // Exclude current order
-                    
-                    var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
-                    
-                    if (otherOpenOrdersCount == 0)
-                    {
-                        var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
-                        if (table != null && table.TableState != TableState.Available)
-                        {
-                            table.TableState = TableState.Available;
-                            _unitOfWork.Repository<Table>().Update(table);
-                        }
-                    }
-                }
-
-                await _unitOfWork.CompleteAsync(); // Save table changes
-                transaction.Commit();
-                return true;
+                order.Paid = paid.Value;
             }
-            catch (Exception ex)
+            
+            if (remain.HasValue)
+            {
+                order.Remain = remain.Value;
+            }
+            else if (paid.HasValue)
+            {
+                // Calculate Remain if Paid is provided but Remain is not
+                order.Remain = (order.GrandTotal ?? 0) - paid.Value;
+            }
+
+            _unitOfWork.Repository<Orders>().Update(order);
+
+            var result = await _unitOfWork.CompleteAsync();
+            if (result <= 0)
             {
                 transaction.Rollback();
-                Log.Error(ex, "An error occurred while closing the DineIn order.");
                 return false;
             }
+
+            // Track the order closure
+            await _orderTrackService.TrackOrderActionAsync(new OrderTrack
+            {
+                OrderId = order.OrderID,
+                OrderType = "DineIn",
+                Action = "Closed",
+                UserName = order.CashierName,
+                UserId = order.CashierID,
+                MachineName = Environment.MachineName,
+                TableId = order.TableID,
+                TableName = order.TableName,
+                Details = $"Order closed. Total: {order.GrandTotal}, Paid: {order.Paid}, Remain: {order.Remain}",
+                ActionDateTime = DateTime.Now
+            });
+
+            if (order.TableID != null && order.TableID > 0)
+            {
+                // Check if there are other OPEN orders for this table
+                var openOrdersSpec = new BaseSpecifications<Orders>(o => 
+                    o.TableID == order.TableID && 
+                    o.OrderState == OrderStates.Pending && 
+                    o.OrderID != orderId); // Exclude current order
+                
+                var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
+                
+                if (otherOpenOrdersCount == 0)
+                {
+                    var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
+                    if (table != null && table.TableState != TableState.Available)
+                    {
+                        table.TableState = TableState.Available;
+                        _unitOfWork.Repository<Table>().Update(table);
+                    }
+                }
+            }
+
+            await _unitOfWork.CompleteAsync(); // Save table changes
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            Log.Error(ex, "An error occurred while closing the DineIn order.");
+            return false;
         }
     }
-
-    public async Task<bool> VoidDineInOrderAsync(int orderId)
+    });
+}
+    public async Task<bool> VoidDineInOrderAsync(int orderId, string reason, string voidBy, string voidByName)
     {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -406,16 +437,76 @@ public class DineInOrderService : IDineInOrderService
                 if (order is null)
                     return false;
 
+                DateTime voidTime = DateTime.Now;
+
                 order.OrderState = OrderStates.Voided;
-                order.ClosingTime = DateTime.Now;
-                order.VoidTime = DateTime.Now;
-                order.VoidByName = order.CashierName;
-                order.VoidBy = order.CashierID;
+                order.ClosingTime = voidTime;
+                order.VoidTime = voidTime;
+                order.VoidByName = voidByName;
+                order.VoidBy = voidBy;
+                order.VoidReason = reason;
+
+                decimal totalVoidedValue = 0;
+                int totalVoidedCount = 0;
+
+                // Mark all items as voided and track their details
+                if (order.OrderDetails != null)
+                {
+                    foreach (var item in order.OrderDetails)
+                    {
+                        if (item.IsVoided == true) continue;
+
+                        decimal itemValue = item.TotalAmount ?? 0;
+                        int itemQty = item.Quantity ?? 0;
+
+                        item.IsVoided = true;
+                        item.VoidAmount = (item.VoidAmount ?? 0) + itemQty;
+                        item.TotalVoidAmount = (item.TotalVoidAmount ?? 0) + itemValue;
+                        item.VoidBy = voidBy;
+                        item.VoidByName = voidByName;
+                        item.VoidTime = voidTime;
+                        item.VoidReason = reason;
+                        
+                        item.Quantity = 0;
+                        item.TotalAmount = 0;
+                        item.TotalAfterDiscount = 0;
+
+                        totalVoidedValue += itemValue;
+                        totalVoidedCount += itemQty;
+
+                        _unitOfWork.Repository<OrderItemsDetails>().Update(item);
+                    }
+                }
+
+                order.TotalVoid = (order.TotalVoid ?? 0) + totalVoidedValue;
+                order.VoidCount = (order.VoidCount ?? 0) + totalVoidedCount;
+                order.VoidAmount = (order.VoidAmount ?? 0) + totalVoidedValue; // Using both since user showed both in image
 
                 _unitOfWork.Repository<Orders>().Update(order);
 
+                // Update table state back to Available if this was the last open order
+                if (order.TableID.HasValue)
+                {
+                    var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
+                    if (table != null)
+                    {
+                        // Check if other open orders exist
+                        var openOrdersSpec = new BaseSpecifications<Orders>(o => 
+                            o.TableID == order.TableID && 
+                            o.OrderState == OrderStates.Pending && 
+                            o.OrderID != orderId);
+                        
+                        var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
+                        if (otherOpenOrdersCount == 0)
+                        {
+                            table.TableState = TableState.Available;
+                            _unitOfWork.Repository<Table>().Update(table);
+                        }
+                    }
+                }
+
                 var result = await _unitOfWork.CompleteAsync();
-                if (result <= 0)
+                if (result < 0) // result might be zero if no changes (e.g. already voided), but technically we added updates
                 {
                     transaction.Rollback();
                     return false;
@@ -427,13 +518,13 @@ public class DineInOrderService : IDineInOrderService
                     OrderId = order.OrderID,
                     OrderType = "DineIn",
                     Action = "Voided",
-                    UserName = order.CashierName,
-                    UserId = order.CashierID,
+                    UserName = voidByName,
+                    UserId = voidBy,
                     MachineName = Environment.MachineName,
                     TableId = order.TableID,
                     TableName = order.TableName,
-                    Details = $"Order voided. Total: {order.GrandTotal}",
-                    ActionDateTime = DateTime.Now
+                    Details = $"Order voided. Total: {totalVoidedValue}. Reason: {reason}",
+                    ActionDateTime = voidTime
                 });
 
                 transaction.Commit();
@@ -446,6 +537,7 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> AddItemsToDineInOrderAsync(int orderId, List<OrderItemsDetails> items)
@@ -453,6 +545,9 @@ public class DineInOrderService : IDineInOrderService
         if (items is null || !items.Any())
             return false;
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -569,10 +664,14 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> UpdateDineInOrderDiscountAsync(int orderId, decimal? discountAmount, decimal? discountPercentage, string? discountType, string? discountReason)
     {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -639,10 +738,14 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> TransferDineInOrderAsync(int orderId, int newTableId, string newTableName)
     {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -684,6 +787,7 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> MergeDineInOrdersAsync(int primaryOrderId, List<int> secondaryOrderIds)
@@ -691,6 +795,9 @@ public class DineInOrderService : IDineInOrderService
         if (secondaryOrderIds == null || !secondaryOrderIds.Any())
             return false;
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -887,6 +994,7 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> SplitDineInOrderAsync(int sourceOrderId, List<SplitTargetDto> targets)
@@ -894,6 +1002,9 @@ public class DineInOrderService : IDineInOrderService
         if (targets == null || !targets.Any())
             return false;
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -1080,13 +1191,17 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
-    public async Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy)
+    public async Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName)
     {
         if (itemsToVoid == null || !itemsToVoid.Any())
             return false;
 
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -1097,7 +1212,9 @@ public class DineInOrderService : IDineInOrderService
                 
                 if (order == null) return false;
 
-                decimal voidedTotal = 0;
+                DateTime voidTime = DateTime.Now;
+                decimal voidedTotalValue = 0;
+                int voidedTotalCount = 0;
 
                 foreach (var voidRequest in itemsToVoid)
                 {
@@ -1107,36 +1224,51 @@ public class DineInOrderService : IDineInOrderService
                     var unitPrice = (item.TotalAmount ?? 0) / (item.Quantity ?? 1);
                     var valueToVoid = unitPrice * voidRequest.QuantityToVoid;
 
-                    // Track voided amount
+                    // Track voided details on item
                     item.VoidAmount = (item.VoidAmount ?? 0) + voidRequest.QuantityToVoid;
+                    item.TotalVoidAmount = (item.TotalVoidAmount ?? 0) + valueToVoid;
+                    item.VoidBy = voidBy;
+                    item.VoidByName = voidByName;
+                    item.VoidTime = voidTime;
+                    item.VoidReason = reason;
+
                     item.Quantity -= voidRequest.QuantityToVoid;
                     item.TotalAmount -= valueToVoid;
-                    
+                    // Note: TotalAfterDiscount should also be adjusted
+                    if (item.TotalAfterDiscount.HasValue && item.TotalAfterDiscount > 0)
+                    {
+                        var afterDiscountUnitPrice = item.TotalAfterDiscount.Value / (item.Quantity.Value + voidRequest.QuantityToVoid);
+                        item.TotalAfterDiscount -= afterDiscountUnitPrice * voidRequest.QuantityToVoid;
+                    }
+
                     item.MenuSalesItem = null;
                     if (item.Quantity <= 0)
                     {
                         item.IsVoided = true;
-                        _unitOfWork.Repository<OrderItemsDetails>().Update(item);
-                        // We keep the record but marked as voided to track the void amount as requested
                     }
-                    else
-                    {
-                        _unitOfWork.Repository<OrderItemsDetails>().Update(item);
-                    }
+                    
+                    _unitOfWork.Repository<OrderItemsDetails>().Update(item);
 
-                    voidedTotal += valueToVoid;
+                    voidedTotalValue += valueToVoid;
+                    voidedTotalCount += voidRequest.QuantityToVoid;
                 }
 
                 // Update order totals
                 await RecalculateOrderTotalsAsync(order);
                 
+                // Update order level void tracking (even for partial voids)
+                order.TotalVoid = (order.TotalVoid ?? 0) + voidedTotalValue;
+                order.VoidCount = (order.VoidCount ?? 0) + voidedTotalCount;
+                order.VoidAmount = (order.VoidAmount ?? 0) + voidedTotalValue;
+                
                 // If no items left, void the whole order
                 if (order.OrderDetails == null || !order.OrderDetails.Any(i => i.Quantity > 0 && (i.IsVoided == null || i.IsVoided == false)))
                 {
                     order.OrderState = OrderStates.Voided;
-                    order.VoidTime = DateTime.Now;
+                    order.VoidTime = voidTime;
                     order.VoidReason = reason;
-                    order.VoidByName = voidBy;
+                    order.VoidByName = voidByName;
+                    order.VoidBy = voidBy;
                 }
 
                 _unitOfWork.Repository<Orders>().Update(order);
@@ -1147,13 +1279,13 @@ public class DineInOrderService : IDineInOrderService
                     OrderId = order.OrderID,
                     OrderType = "DineIn",
                     Action = "ItemsVoided",
-                    UserName = voidBy,
-                    UserId = voidBy, // Assuming voidBy is name/id for track
+                    UserName = voidByName,
+                    UserId = voidBy,
                     MachineName = Environment.MachineName,
                     TableId = order.TableID,
                     TableName = order.TableName,
-                    Details = $"Voided {itemsToVoid.Count} items (Total: {voidedTotal}). Reason: {reason}",
-                    ActionDateTime = DateTime.Now
+                    Details = $"Voided {voidedTotalCount} items (Total: {voidedTotalValue}). Reason: {reason}",
+                    ActionDateTime = voidTime
                 });
 
                 transaction.Commit();
@@ -1162,10 +1294,11 @@ public class DineInOrderService : IDineInOrderService
             catch (Exception ex)
             {
                 transaction.Rollback();
-                Log.Error(ex, "Error voiding DineIn order items");
+                Log.Error(ex, "Error voiding items from order {OrderId}", orderId);
                 return false;
             }
         }
+        });
     }
     public async Task<int> IncrementPrintCountAsync(int orderId)
     {
@@ -1206,6 +1339,9 @@ public class DineInOrderService : IDineInOrderService
 
     public async Task<bool> ReserveTableAsync(Orders reservationOrder)
     {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -1256,6 +1392,31 @@ public class DineInOrderService : IDineInOrderService
                     return false;
                 }
 
+                // Create a record in the Reservations table as requested
+                var reservation = new POS.Core.Entities.ReservationEntity.Reservation
+                {
+                    CustomerName = reservationOrder.ReservationCustomerName ?? reservationOrder.CustomerName ?? "",
+                    PhoneNumber = reservationOrder.ReservationCustomerPhone ?? reservationOrder.Phone1 ?? "",
+                    ReservationDate = reservationOrder.ScheduleDateTime ?? DateTime.Now,
+                    GuestCount = reservationOrder.CustomerCount,
+                    MaleCount = reservationOrder.MaleCount,
+                    FemaleCount = reservationOrder.FemaleCount,
+                    TableId = reservationOrder.TableID,
+                    BranchId = reservationOrder.BranchID,
+                    ReservationPaid = reservationOrder.ReservationPaid,
+                    ReservationStatus = "Reserved", 
+                    Notes = reservationOrder.OrderNotice,
+                    OrderId = reservationOrder.Id
+                };
+
+                await _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().AddAsync(reservation);
+                await _unitOfWork.CompleteAsync();
+
+                // Link back to Order
+                reservationOrder.ReservationId = reservation.Id;
+                _unitOfWork.Repository<Orders>().Update(reservationOrder);
+                await _unitOfWork.CompleteAsync();
+
                 // Update table state to Reserved
                 var table = await _unitOfWork.Repository<Table>().GetByIdAsync(reservationOrder.TableID.Value);
                 if (table != null)
@@ -1276,7 +1437,7 @@ public class DineInOrderService : IDineInOrderService
                     MachineName = Environment.MachineName,
                     TableId = reservationOrder.TableID,
                     TableName = reservationOrder.TableName,
-                    Details = $"Table reserved for {reservationOrder.CustomerName} ({reservationOrder.Phone1}). " +
+                    Details = $"Table reserved for {reservationOrder.ReservationCustomerName} ({reservationOrder.ReservationCustomerPhone}). " +
                               $"Scheduled: {reservationOrder.ScheduleDateTime}. Guests: {reservationOrder.CustomerCount}. " +
                               $"Deposit: {reservationOrder.ReservationPaid}",
                     ActionDateTime = DateTime.Now
@@ -1292,10 +1453,14 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
     }
 
     public async Task<bool> CancelReservationAsync(int orderId)
     {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try
@@ -1319,6 +1484,29 @@ public class DineInOrderService : IDineInOrderService
                 order.OrderState = OrderStates.Canceled;
                 order.ClosingTime = DateTime.Now;
                 _unitOfWork.Repository<Orders>().Update(order);
+
+                // Also cancel the linked reservation if it exists
+                if (order.ReservationId.HasValue)
+                {
+                    var reservation = await _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().GetByIdAsync(order.ReservationId.Value);
+                    if (reservation != null)
+                    {
+                        reservation.ReservationStatus = "Cancelled";
+                        _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().Update(reservation);
+                    }
+                }
+                else
+                {
+                    // Search for reservation by OrderId if link is missing
+                    var spec = new POS.Core.Specifications.ReservationSpecs.ReservationByOrderIdSpec(order.Id);
+                    var reservations = await _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().GetAllWithSpecificationAsync(spec);
+                    var reservation = reservations.FirstOrDefault();
+                    if (reservation != null)
+                    {
+                        reservation.ReservationStatus = "Cancelled";
+                        _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().Update(reservation);
+                    }
+                }
                 
                 var result = await _unitOfWork.CompleteAsync();
                 if (result <= 0)
@@ -1364,5 +1552,96 @@ public class DineInOrderService : IDineInOrderService
                 return false;
             }
         }
+        });
+    }
+
+    public async Task<bool> SeatReservationAsync(int orderId, string captainId, string captainName)
+    {
+        var strategy = _unitOfWork.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+        using (var transaction = _unitOfWork.BeginTransaction())
+        {
+            try
+            {
+                var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
+                if (order == null)
+                {
+                    var spec = new DineInOrderByOrderIdSpec(orderId);
+                    var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                    order = orders.FirstOrDefault();
+                }
+
+                if (order == null || order.OrderState != OrderStates.Reserved)
+                {
+                    Log.Warning("Cannot seat reservation - order {OrderId} not found or not reserved", orderId);
+                    return false;
+                }
+
+                // Mark order as Pending (Open)
+                order.OrderState = OrderStates.Pending;
+                if (!string.IsNullOrEmpty(captainId) && int.TryParse(captainId, out int cid))
+                {
+                    order.WaiterID = cid;
+                }
+                order.WaiterName = captainName;
+                
+                // Handle the deposit: Carry it over to the Paid field
+                // This ensures the remaining balance is correct when the order is closed
+                order.Paid = (order.Paid ?? 0) + (order.ReservationPaid ?? 0);
+                order.Remain = (order.GrandTotal ?? 0) - (order.Paid ?? 0);
+                
+                _unitOfWork.Repository<Orders>().Update(order);
+
+                // Update the linked reservation record
+                if (order.ReservationId.HasValue)
+                {
+                    var reservation = await _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().GetByIdAsync(order.ReservationId.Value);
+                    if (reservation != null)
+                    {
+                        reservation.ReservationStatus = "Seated";
+                        _unitOfWork.Repository<POS.Core.Entities.ReservationEntity.Reservation>().Update(reservation);
+                    }
+                }
+
+                // Update table state to Occupied
+                if (order.TableID.HasValue)
+                {
+                    var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
+                    if (table != null)
+                    {
+                        table.TableState = TableState.Occupied;
+                        _unitOfWork.Repository<Table>().Update(table);
+                    }
+                }
+
+                await _unitOfWork.CompleteAsync();
+
+                // Track the action
+                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
+                {
+                    OrderId = order.OrderID,
+                    OrderType = "DineIn",
+                    Action = "ReservationSeated",
+                    UserName = order.CashierName,
+                    UserId = order.CashierID,
+                    MachineName = Environment.MachineName,
+                    TableId = order.TableID,
+                    TableName = order.TableName,
+                    Details = $"Reservation seated for {order.CustomerName}. Captain: {captainName}. Deposit {order.ReservationPaid} carried over to Paid.",
+                    ActionDateTime = DateTime.Now
+                });
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(ex, "Error seating reservation {OrderId}", orderId);
+                return false;
+            }
+        }
+        });
     }
 }

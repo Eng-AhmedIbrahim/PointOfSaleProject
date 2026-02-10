@@ -146,11 +146,23 @@ public class DineInOrderFrontService : IDineInOrderFrontService
         }
     }
 
-    public async Task<bool> CloseDineInOrderAsync(int orderId)
+    public async Task<bool> CloseDineInOrderAsync(int orderId, decimal? paid = null, decimal? remain = null)
     {
         try
         {
-            var response = await _httpClient.PutAsync($"{_apiSettings.Endpoints!.CloseDineInOrder}/{orderId}", null);
+            var url = $"{_apiSettings.Endpoints!.CloseDineInOrder}/{orderId}";
+            
+            // Add query parameters if provided
+            var queryParams = new List<string>();
+            if (paid.HasValue)
+                queryParams.Add($"paid={paid.Value}");
+            if (remain.HasValue)
+                queryParams.Add($"remain={remain.Value}");
+                
+            if (queryParams.Any())
+                url += "?" + string.Join("&", queryParams);
+                
+            var response = await _httpClient.PutAsync(url, null);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -160,11 +172,18 @@ public class DineInOrderFrontService : IDineInOrderFrontService
         }
     }
 
-    public async Task<bool> VoidDineInOrderAsync(int orderId)
+    public async Task<bool> VoidDineInOrderAsync(int orderId, string reason, string voidBy, string voidByName)
     {
         try
         {
-            var response = await _httpClient.PutAsync($"{_apiSettings.Endpoints!.VoidDineInOrder}/{orderId}", null);
+            var request = new
+            {
+                OrderId = orderId,
+                Reason = reason,
+                VoidBy = voidBy,
+                VoidByName = voidByName
+            };
+            var response = await _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.VoidDineInOrder!, request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -264,7 +283,7 @@ public class DineInOrderFrontService : IDineInOrderFrontService
         }
     }
 
-    public async Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy)
+    public async Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName)
     {
         try
         {
@@ -273,7 +292,8 @@ public class DineInOrderFrontService : IDineInOrderFrontService
                 OrderId = orderId,
                 ItemsToVoid = itemsToVoid,
                 Reason = reason,
-                VoidBy = voidBy
+                VoidBy = voidBy,
+                VoidByName = voidByName
             };
 
             var response = await _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.VoidDineInItems!, request);
@@ -337,6 +357,21 @@ public class DineInOrderFrontService : IDineInOrderFrontService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error canceling reservation for table {TableId}", tableId);
+            return false;
+        }
+    }
+
+    public async Task<bool> SeatReservationAsync(int orderId, string captainId, string captainName)
+    {
+        try
+        {
+            var request = new { CaptainId = captainId, CaptainName = captainName };
+            var response = await _httpClient.PostAsJsonAsync($"api/DineInOrder/seat-reservation/{orderId}", request);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error seating reservation {OrderId}", orderId);
             return false;
         }
     }

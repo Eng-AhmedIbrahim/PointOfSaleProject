@@ -6,6 +6,9 @@ builder.AddSerilogService();
 
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Decryption temporarily disabled - connection string is plain text
+// var encryptedConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// var databaseConnectionString = POS.API.Helpers.EncryptionHelper.DecryptString(encryptedConnectionString!);
 
 
 builder.Services.AddControllers();
@@ -26,9 +29,15 @@ builder.Services.AddCors(options =>
 #region Database connections
 
 
-builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(databaseConnectionString); });
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(databaseConnectionString);
+});
 
-builder.Services.AddDbContext<AppIdentityDbContext>(options => { options.UseSqlServer(databaseConnectionString); });
+builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+{
+    options.UseSqlServer(databaseConnectionString);
+});
 
 #endregion
 

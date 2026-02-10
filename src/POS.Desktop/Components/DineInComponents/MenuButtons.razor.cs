@@ -201,7 +201,11 @@ public partial class MenuButtons
                 return;
             }
 
-            var result = await _dineInOrderService.CloseDineInOrderAsync(orderDetails.DatabaseId);
+            // Get payment information from BasicOrderDetails
+            var paid = orderDetails.BasicOrderDetails?.Paid;
+            var remain = orderDetails.BasicOrderDetails?.Remain;
+
+            var result = await _dineInOrderService.CloseDineInOrderAsync(orderDetails.DatabaseId, paid, remain);
             if (result)
             {
                 await _printOrderService.PrintDineInClosingReceipt(orderDetails);

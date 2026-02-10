@@ -45,6 +45,8 @@ public class DineInOrderDto
     public int? FemaleCount { get; set; }
     public DateTime? ScheduleDateTime { get; set; }
     public decimal? ReservationPaid { get; set; }
+    public string? ReservationCustomerName { get; set; }
+    public string? ReservationCustomerPhone { get; set; }
     
     public List<OrderItemsDetailsDto>? OrderDetails { get; set; } = new();
 }
@@ -76,6 +78,15 @@ public class OrderItemsDetailsDto
     public int? CategoryKitchenTypeId { get; set; }
     public bool? PrintInBackupReceiptFromItem { get; set; }
     public bool? PrintInBackupReceiptFromCategory { get; set; }
+
+    // Void details
+    public bool? IsVoided { get; set; }
+    public int? VoidAmount { get; set; }
+    public decimal? TotalVoidAmount { get; set; }
+    public string? VoidBy { get; set; }
+    public string? VoidByName { get; set; }
+    public DateTime? VoidTime { get; set; }
+    public string? VoidReason { get; set; }
 }
 
 public class OrderItemCommentDto

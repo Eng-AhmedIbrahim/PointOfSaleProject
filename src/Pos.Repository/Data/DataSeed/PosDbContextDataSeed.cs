@@ -6,27 +6,47 @@ public static class PosDbContextDataSeed
     [
         Path.Combine("Data", "DataSeed","JsonFiles"),
         Path.Combine("..", "Pos.Repository", "Data", "DataSeed","JsonFiles"),
+        Path.Combine("f:", "PointOfSaleProject", "src", "Pos.Repository", "Data", "DataSeed","JsonFiles"),
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DataSeed","JsonFiles"),
     ];
 
     public async static Task SeedAsync(AppDbContext _dbContext)
     {
+        if (!_dbContext.Companies.Any())
+        {
+            var companies = await GetDataFromJsonFile<Company>("company.json");
+            if (companies != null && companies.Any())
+            {
+                companies[0].CreationDate = DateTime.Now;
+                await _dbContext.Companies.AddAsync(companies[0]);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
 
+        Company? company = await _dbContext.Companies.FirstOrDefaultAsync();
 
         if (!_dbContext.Branches.Any())
         {
             var branches = await GetDataFromJsonFile<Branch>("branch.json");
-            branches[0].CreationDate = DateTime.Now;
-            await _dbContext.Branches.AddAsync(branches[0]);
-            await _dbContext.SaveChangesAsync();
+            if (branches != null && branches.Any())
+            {
+                branches[0].CreationDate = DateTime.Now;
+                if (company != null)
+                {
+                    branches[0].CompanyId = company.Id;
+                }
+                await _dbContext.Branches.AddAsync(branches[0]);
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
         Branch? branch = await _dbContext.Branches.FirstOrDefaultAsync();
 
-        if(!_dbContext.AppDate.Any())
+        if(!_dbContext.AppDate.Any() && branch != null)
         {
             var appDate = new AppDate()
             {
-                BranchId = branch!.Id,
+                BranchId = branch.Id,
                 PosDate = DateTime.Now.Date,
                 StoreDate = DateTime.Now.Date,
                CurrentOrderNumber = 1
@@ -96,6 +116,13 @@ public static class PosDbContextDataSeed
         }
 
 
+        if (!_dbContext.PosFeatureSettings.Any())
+        {
+            var posSettings = await GetDataFromJsonFile<PosFeatureSetting>("posSettings.json");
+            await _dbContext.PosFeatureSettings.AddRangeAsync(posSettings);
+            await _dbContext.SaveChangesAsync();
+        }
+
         //if (!_dbContext.PrintingSettings.Any())
         //{
         //    var printingSettings = await GetDataFromJsonFile<PrintingSettings>("printingSettings.json");
@@ -127,6 +154,7 @@ public static class PosDbContextDataSeed
             return [];
 
         var data = await File.ReadAllTextAsync(filePath);
-        return JsonSerializer.Deserialize<List<T>>(data) ?? [];
+        var options = new JsonSerializerOptions { AllowTrailingCommas = true, PropertyNameCaseInsensitive = true };
+        return JsonSerializer.Deserialize<List<T>>(data, options) ?? [];
     }
 }

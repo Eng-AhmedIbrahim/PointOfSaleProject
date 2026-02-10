@@ -2,6 +2,17 @@ F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\tmp_build_output\POS.C
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\tmp_build_output\POS.Reports.deps.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\BlazorBase.staticwebassets.runtime.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\BlazorBase.staticwebassets.endpoints.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\branch.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\company.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\DeliveryCustomerTitle.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\kitchenTypes.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\orderSettings.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\permissions.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\posSettings.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\printingSettings.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\roles.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\TableGroups.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\Tables.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\LatoFont\Lato-Black.ttf
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\LatoFont\Lato-BlackItalic.ttf
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\LatoFont\Lato-Bold.ttf

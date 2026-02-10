@@ -511,7 +511,7 @@ public partial class Section4Buttons
     }
 
     
-    private void OpenVoidDialog()
+    private async Task OpenVoidDialog()
     {
         if (_commonProperties.TableItems == null || !_commonProperties.TableItems.Any())
         {
@@ -521,12 +521,81 @@ public partial class Section4Buttons
 
         var parameters = new DialogParameters 
         { 
-            ["Items"] = _commonProperties.TableItems,
+            ["TableItems"] = _commonProperties.TableItems,
             ["IsDineIn"] = false 
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        // Assuming VoidOrderDialog is accessible or fully qualified
-        _dialogService.Show<POS.Desktop.Components.DineInComponents.VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        
+        var dialog = await _dialogService.ShowAsync<POS.Desktop.Components.DineInComponents.VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data != null)
+        {
+            if (_commonProperties.VoidedTableItems == null)
+                _commonProperties.VoidedTableItems = new List<TableItem>();
+
+            // Handle voided items for TakeAway/Delivery
+            var voidedItems = result.Data as IEnumerable<dynamic>;
+            if (voidedItems != null)
+            {
+                foreach (var voidedItem in voidedItems)
+                {
+                    // Using reflection or dynamic access to get properties
+                    object itemObj = voidedItem.GetType().GetProperty("Item")?.GetValue(voidedItem, null);
+                    var item = itemObj as TableItem;
+                    
+                    int qtyToVoid = 0;
+                    var qtyProp = voidedItem.GetType().GetProperty("QuantityToVoid");
+                    if (qtyProp != null)
+                        qtyToVoid = (int)qtyProp.GetValue(voidedItem, null);
+                        
+                    string reason = "";
+                    var reasonProp = voidedItem.GetType().GetProperty("Reason");
+                    if (reasonProp != null)
+                        reason = (string)reasonProp.GetValue(voidedItem, null);
+
+                    if (item != null)
+                    {
+                        // Create a record of the voided item
+                        var voidedRecord = item.Clone();
+                        voidedRecord.Quantity = qtyToVoid; // This is the voided quantity
+                        voidedRecord.IsVoided = true;
+                        voidedRecord.VoidAmount = qtyToVoid;
+                        voidedRecord.VoidReason = reason;
+                        voidedRecord.VoidTime = DateTime.Now;
+                        voidedRecord.VoidBy = _commonProperties.CurrentUserId;
+                        voidedRecord.VoidByName = _commonProperties.CurrentUser;
+                        voidedRecord.Total = voidedRecord.Price * qtyToVoid;
+                        voidedRecord.TotalAmount = voidedRecord.Total;
+
+                        _commonProperties.VoidedTableItems.Add(voidedRecord);
+
+                        // Find the item in the current order
+                        var orderItem = _commonProperties.TableItems.FirstOrDefault(x => x == item);
+                        if (orderItem != null)
+                        {
+                            if (qtyToVoid >= orderItem.Quantity)
+                            {
+                                // Remove item completely
+                                _commonProperties.TableItems.Remove(orderItem);
+                            }
+                            else
+                            {
+                                // Reduce quantity
+                                orderItem.Quantity -= qtyToVoid;
+                                orderItem.Total = orderItem.Quantity * orderItem.Price;
+                                orderItem.TotalAmount = orderItem.Total - (orderItem.TotalDiscountPrice ?? 0);
+                            }
+                        }
+                    }
+                }
+                
+                // Recalculate totals
+                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                _services.NotifyStateChanged();
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ReprintOrder()

@@ -13,6 +13,7 @@ public class CommonProperties
     public decimal? SubTotal { get; set; }
     public decimal? TotalOrderPrice { get; set; }
     public List<TableItem>? TableItems { get; set; } = [];
+    public List<TableItem>? VoidedTableItems { get; set; } = [];
     public List<TableItem>? AppendedTableItems { get; set; } = [];
     public bool TableItemDisabled { get; set; } = false;
 
@@ -58,6 +59,7 @@ public class CommonProperties
     public Task ClearTableItems()
     {
         TableItems?.Clear();
+        VoidedTableItems?.Clear();
         return Task.CompletedTask;
     }
 

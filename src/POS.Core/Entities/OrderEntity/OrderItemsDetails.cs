@@ -18,7 +18,12 @@ public class OrderItemsDetails:BaseEntity
     public decimal? TotalDiscountAmount { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
     public bool? IsVoided { get; set; }
-    public int? VoidAmount { get; set; }
+    public int? VoidAmount { get; set; } // This is VoidQuantity
+    public decimal? TotalVoidAmount { get; set; }
+    public string? VoidBy { get; set; }
+    public string? VoidByName { get; set; }
+    public DateTime? VoidTime { get; set; }
+    public string? VoidReason { get; set; }
     public decimal? TotalAmount { get; set; }
     
     // Denormalized item details

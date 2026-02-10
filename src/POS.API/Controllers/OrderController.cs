@@ -1,4 +1,6 @@
 ﻿using POS.Core.Services.Contract.DineInOrderServices;
+using POS.Contract.Dtos.OrderDtos;
+using POS.Contract.Dtos.DineIn;
 
 namespace POS.API.Controllers;
 
@@ -149,6 +151,42 @@ public class OrderController : BaseApiController
         return Ok(_mapper.Map<OrderDto>(order));
     }
 
+    [HttpPut("void/{orderId}")]
+    public async Task<ActionResult<bool>> VoidOrder(int orderId, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
+    {
+        try
+        {
+            var result = await _orderService.VoidOrderAsync(orderId, reason, voidBy, voidByName);
+            if (result)
+                return Ok(result);
+            else
+                return BadRequest(new ApiResponse(400, "Failed to void order"));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error voiding order {OrderId}", orderId);
+            return StatusCode(500, new ApiResponse(500, "Internal server error"));
+        }
+    }
+
+    [HttpPut("void-items/{orderId}")]
+    public async Task<ActionResult<bool>> VoidOrderItems(int orderId, [FromBody] List<OrderItemVoidDto> itemsToVoid, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
+    {
+        try
+        {
+            var result = await _orderService.VoidOrderItemsAsync(orderId, itemsToVoid, reason, voidBy, voidByName);
+            if (result)
+                return Ok(result);
+            else
+                return BadRequest(new ApiResponse(400, "Failed to void items"));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error voiding items from order {OrderId}", orderId);
+            return StatusCode(500, new ApiResponse(500, "Internal server error"));
+        }
+    }
+
     private async Task printDineInReceipts(OrderDto dineInOrder, List<string> branchDetails)
     {
         // Try to find the order to check print count
@@ -234,8 +272,15 @@ public class OrderController : BaseApiController
             OrderState = orderType == OrderTypes.DineIn ? OrderStates.Pending : OrderStates.Completed,
             Discount = OrderDto.TotalOrderDiscount,
             DiscountByName = OrderDto.DiscountByName,
-            //DiscountBy = OrderDto.DiscountBy,
+            DiscountReason = OrderDto.DiscountReason,
+            DiscountType = OrderDto.DiscountType,
+            DiscountPercentage = OrderDto.DiscountPercentage,
+            TotalDiscount = OrderDto.TotalDiscount,
+            TotalVoid = OrderDto.TotalVoid,
+            VoidCount = OrderDto.VoidCount,
+            VoidAmount = OrderDto.VoidAmount,
             Paid = OrderDto.Paid,
+            Remain = OrderDto.Remaining,  // ✅ إضافة حفظ المبلغ المتبقي
             Subtotal = OrderDto.SubTotal,
             Service = OrderDto.Services,
             Tax = OrderDto.Tax,
@@ -262,8 +307,16 @@ public class OrderController : BaseApiController
                 PrintInBackupReceiptFromItem = detail.PrintInBackupReceiptFromItem,
                 TotalDiscountPrice = detail.TotalDiscountPrice ?? 0M,
                 TotalAfterDiscount = detail.TotalAfterDiscount,
-                IsVoided = false,
-                VoidAmount = 0,
+                IsVoided = detail.IsVoided,
+                VoidAmount = detail.VoidAmount ?? 0,
+                TotalVoidAmount = detail.TotalVoidAmount ?? 0,
+                VoidBy = detail.VoidBy,
+                VoidByName = detail.VoidByName,
+                VoidTime = detail.VoidTime,
+                VoidReason = detail.VoidReason,
+                UnitPrice = detail.Price,  // ✅ إضافة حفظ سعر الوحدة
+                CategoryId = detail.CategoryId,  // ✅ إضافة حفظ معرف الفئة
+                CategoryName = detail.CategoryName,  // ✅ إضافة حفظ اسم الفئة
                 OrderItemAttributes = detail.Attributes?
                 .Where(a => a.Id < 5000)
                 .Select(a => new OrderItemAttributes

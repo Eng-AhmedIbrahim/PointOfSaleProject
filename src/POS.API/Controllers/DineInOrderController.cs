@@ -134,11 +134,11 @@ public class DineInOrderController : ControllerBase
     }
 
     [HttpPut("close/{orderId}")]
-    public async Task<ActionResult<bool>> CloseDineInOrder(int orderId)
+    public async Task<ActionResult<bool>> CloseDineInOrder(int orderId, [FromQuery] decimal? paid = null, [FromQuery] decimal? remain = null)
     {
         try
         {
-            var result = await _dineInOrderService.CloseDineInOrderAsync(orderId);
+            var result = await _dineInOrderService.CloseDineInOrderAsync(orderId, paid, remain);
             return Ok(result);
         }
         catch (Exception ex)
@@ -148,17 +148,32 @@ public class DineInOrderController : ControllerBase
         }
     }
 
-    [HttpPut("void/{orderId}")]
-    public async Task<ActionResult<bool>> VoidDineInOrder(int orderId)
+    [HttpPost("void-order")]
+    public async Task<ActionResult<bool>> VoidOrder([FromBody] VoidOrderRequest request)
     {
         try
         {
-            var result = await _dineInOrderService.VoidDineInOrderAsync(orderId);
+            var result = await _dineInOrderService.VoidDineInOrderAsync(request.OrderId, request.Reason, request.VoidBy, request.VoidByName);
             return Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error voiding DineIn order");
+            _logger.LogError(ex, "Error voiding DineIn order {OrderId}", request.OrderId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost("void-items")]
+    public async Task<ActionResult<bool>> VoidItems([FromBody] VoidItemsRequest request)
+    {
+        try
+        {
+            var result = await _dineInOrderService.VoidDineInItemsAsync(request.OrderId, request.ItemsToVoid, request.Reason, request.VoidBy, request.VoidByName);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error voiding items from DineIn order {OrderId}", request.OrderId);
             return StatusCode(500, "Internal server error");
         }
     }
@@ -241,20 +256,7 @@ public class DineInOrderController : ControllerBase
         return BadRequest(new { Message = "Failed to split order" });
     }
 
-    [HttpPost("void-items")]
-    public async Task<ActionResult<bool>> VoidDineInItems([FromBody] VoidItemsRequest request)
-    {
-        try
-        {
-            var result = await _dineInOrderService.VoidDineInItemsAsync(request.OrderId, request.ItemsToVoid, request.Reason, request.VoidBy);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error voiding DineIn order items");
-            return StatusCode(500, "Internal server error");
-        }
-    }
+
     
     [HttpPost("{orderId}/increment-print")]
     public async Task<ActionResult<int>> IncrementPrintCount(int orderId)
@@ -301,6 +303,35 @@ public class DineInOrderController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpPost("seat-reservation/{orderId}")]
+    public async Task<ActionResult<bool>> SeatReservation(int orderId, [FromBody] SeatReservationRequest request)
+    {
+        try
+        {
+            var result = await _dineInOrderService.SeatReservationAsync(orderId, request.CaptainId, request.CaptainName);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error seating reservation for order {OrderId}", orderId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+}
+
+public class SeatReservationRequest
+{
+    public string CaptainId { get; set; } = string.Empty;
+    public string CaptainName { get; set; } = string.Empty;
+}
+
+public class VoidOrderRequest
+{
+    public int OrderId { get; set; }
+    public string Reason { get; set; } = string.Empty;
+    public string VoidBy { get; set; } = string.Empty;
+    public string VoidByName { get; set; } = string.Empty;
 }
 
 public class VoidItemsRequest
@@ -309,6 +340,7 @@ public class VoidItemsRequest
     public List<OrderItemVoidDto> ItemsToVoid { get; set; } = new();
     public string Reason { get; set; } = string.Empty;
     public string VoidBy { get; set; } = string.Empty;
+    public string VoidByName { get; set; } = string.Empty;
 }
 
 public class SplitOrderRequest

@@ -35,7 +35,7 @@ public partial class DineIn : IDisposable
     private Dictionary<int, bool> tableStates = new();
     protected async override Task OnInitializedAsync()
     {
-        var TableGroups = await _DineInService.GetTableGroupsAsync();
+        var TableGroups = await _dineInService.GetTableGroupsAsync();
         _tableGroups = TableGroups.ToList();
 
 
@@ -103,13 +103,13 @@ public partial class DineIn : IDisposable
 
     private async Task GetTablesFromGroup(int tableGroupId)
     {
-        var TableItems = await _DineInService.GetTablesByGroupId(tableGroupId);
+        var TableItems = await _dineInService.GetTablesByGroupId(tableGroupId);
         _tables = TableItems.ToList();
     }
 
     private async Task GetCaptainOrders()
     {
-        var CaptainOrders = await _DineInService.GetCaptainOrders();
+        var CaptainOrders = await _dineInService.GetCaptainOrders();
         _captainOrders = CaptainOrders.ToList();
     }
 
@@ -121,6 +121,13 @@ public partial class DineIn : IDisposable
         {
             _commonProperties.TableId = Int32.Parse(key.ToString()!);
             
+            var table = _tables?.FirstOrDefault(t => t.Id == _commonProperties.TableId);
+            if (table?.TableState == "Reserved")
+            {
+                await ShowReservationDetails(table.Id!.Value);
+                return;
+            }
+
             if (_commonProperties.CurrentDineInOrder == null)
             {
                 _commonProperties.CurrentDineInOrder = new DineInOrderDetails
@@ -211,11 +218,10 @@ public partial class DineIn : IDisposable
         
         if (reservation != null)
         {
-            // Table is reserved - show cancel option
             bool? cancelConfirm = await _dialogService.ShowMessageBox(
-                "Cancel Reservation",
-                $"Are you sure you want to cancel the reservation for {table.TableName}?",
-                yesText: "Yes", cancelText: "No");
+                Localizer["CancelReservation"],
+                Localizer["ConfirmCancelReservation"],
+                yesText: Localizer["Yes"], cancelText: Localizer["No"]);
             
             if (cancelConfirm == true)
             {
@@ -240,7 +246,8 @@ public partial class DineIn : IDisposable
                 ["TableId"] = table.Id.Value,
                 ["TableName"] = table.TableName,
                 ["CurrentUser"] = _commonProperties.CurrentUser,
-                ["CurrentUserId"] = _commonProperties.CurrentUserId
+                ["CurrentUserId"] = _commonProperties.CurrentUserId,
+                ["BranchId"] = _commonProperties.BranchDetails?.Id ?? 0
             };
             var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
             var dialog = await _dialogService.ShowAsync<TableReservationDialog>("Reserve Table", parameters, options);
@@ -297,6 +304,39 @@ public partial class DineIn : IDisposable
             if (selectedOrder != null)
             {
                 SetSelectedOrder(selectedOrder);
+            }
+        }
+    }
+
+    private async Task ShowReservationDetails(int tableId)
+    {
+        var reservation = await _dineInOrderService.GetDineInOrderByTableIdAsync(tableId, "Reserved");
+        if (reservation != null)
+        {
+            var parameters = new DialogParameters 
+            { 
+                ["Reservation"] = reservation 
+            };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var dialog = await _dialogService.ShowAsync<ReservationDetailsDialog>(Localizer["ReservationDetails"], parameters, options);
+            var result = await dialog.Result;
+
+            if (result != null && !result.Canceled)
+            {
+                await LoadOpenOrdersFromDatabase();
+                
+                // Auto-select the newly seated order
+                if (_commonProperties.DineInOrdersDetails != null && 
+                    _commonProperties.DineInOrdersDetails.TryGetValue(tableId, out var orders) && 
+                    orders.Any())
+                {
+                    _commonProperties.CurrentDineInOrder = orders.First();
+                    SetSelectedOrder(orders.First());
+                    _commonProperties.TableId = tableId;
+                    _commonProperties.CurrentDineInOrder!.RelatedTableName = reservation.TableName;
+                }
+                
+                StateHasChanged();
             }
         }
     }

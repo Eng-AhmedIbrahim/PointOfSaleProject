@@ -7,6 +7,7 @@ public partial class TableReservationDialog
     [Parameter] public string TableName { get; set; } = string.Empty;
     [Parameter] public string CurrentUser { get; set; } = string.Empty;
     [Parameter] public string CurrentUserId { get; set; } = string.Empty;
+    [Parameter] public int BranchId { get; set; }
 
     private string CustomerName { get; set; } = string.Empty;
     private string CustomerPhone { get; set; } = string.Empty;
@@ -60,14 +61,15 @@ public partial class TableReservationDialog
         {
             TableId = TableId,
             TableName = TableName,
-            CustomerName = CustomerName,
-            CustomerPhone = CustomerPhone,
+            ReservationCustomerName = CustomerName,
+            ReservationCustomerPhone = CustomerPhone,
             ScheduleDateTime = scheduledDateTime,
             CustomerCount = GuestCount,
             ReservationPaid = DepositAmount,
             OrderNotice = SpecialRequests,
             CashierId = CurrentUserId,
             CashierName = CurrentUser,
+            BranchId = BranchId,
             OrderState = "Reserved"
         };
 

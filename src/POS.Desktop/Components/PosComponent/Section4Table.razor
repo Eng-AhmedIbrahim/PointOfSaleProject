@@ -25,23 +25,56 @@
 
     <RowTemplate>
         <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style" @onclick="() => SelectItem(context)">
-            <MudNumericField T="int" Value="context.Quantity" Min="1"
-                             Style="width: 60px;" Immediate="true"
-                             ValueChanged="(val) => UpdateQuantity(context, val)"
-                             Disabled="context.IsReadOnly" /> 
+            @if (context.IsVoided)
+            {
+                <MudText Typo="Typo.body1" Class="table-style text-decoration-line-through opacity-50">@context.Quantity</MudText>
+            }
+            else
+            {
+                <MudNumericField T="int" Value="context.Quantity" Min="1"
+                                 Style="width: 60px;" Immediate="true"
+                                 ValueChanged="(val) => UpdateQuantity(context, val)"
+                                 Disabled="context.IsReadOnly" /> 
+            }
         </MudTd>
-        <MudTd DataLabel="Name" Class="table-style">@context.Name</MudTd>
-        <MudTd DataLabel="Price" Class="table-style">@context.Price</MudTd>
-        <MudTd DataLabel="Total" Class="table-style">@context.TotalAmount?.ToString("N2")</MudTd>
+        <MudTd DataLabel="Name" Class="table-style">
+            <div class="d-flex align-center">
+                <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+                    @context.Name
+                </MudText>
+                @if (context.IsVoided)
+                {
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Filled" Class="ml-2 void-chip">@Localizer["Voided"]</MudChip>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="Price" Class="table-style">
+             <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+                @context.Price
+             </MudText>
+        </MudTd>
+        <MudTd DataLabel="Total" Class="table-style">
+             <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+                @context.TotalAmount?.ToString("N2")
+             </MudText>
+        </MudTd>
     </RowTemplate>
 
     <ChildRowContent>
-        @if (context.Attributes?.Any() == true || context.HasDiscount)
+        @if (context.Attributes?.Any() == true || context.HasDiscount || context.IsVoided)
         {
             <MudTr Class="attribute-row">
                 <MudTd></MudTd>
                 <MudTd ColSpan="3" Style="padding-top: 6px;padding-bottom: 0px;">
                     <div style="font-size: 12px; color:black;">
+                        @if (context.IsVoided)
+                        {
+                            <p class="void-detail" style="margin-bottom: 5px; color: #ef4444; font-weight: bold;">
+                                ✖ @Localizer["VoidedBy"]: @context.VoidByName (@context.VoidTime?.ToString("HH:mm"))
+                                <br/>
+                                ✖ @Localizer["Reason"]: @context.VoidReason
+                            </p>
+                        }
                         @if (context.HasDiscount)
                         {
                             <p class="discount-name" style="margin-right: 0px; margin-bottom: 5px; color: darkred; font-weight: bold;">

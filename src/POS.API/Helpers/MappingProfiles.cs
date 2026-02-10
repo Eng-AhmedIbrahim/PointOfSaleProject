@@ -249,6 +249,12 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.MaleCount, opt => opt.MapFrom(src => src.MaleCount))
             .ForMember(dest => dest.FemaleCount, opt => opt.MapFrom(src => src.FemaleCount))
             .ForMember(dest => dest.DiscountedItems, opt => opt.MapFrom(src => src.DiscountedItems))
+            .ForMember(dest => dest.ReservationCustomerName, opt => opt.MapFrom(src => src.ReservationCustomerName))
+            .ForMember(dest => dest.ReservationCustomerPhone, opt => opt.MapFrom(src => src.ReservationCustomerPhone))
+            .ForMember(dest => dest.ReservationPaid, opt => opt.MapFrom(src => src.ReservationPaid))
+            .ForMember(dest => dest.ScheduleDateTime, opt => opt.MapFrom(src => src.ScheduleDateTime))
+            .ForMember(dest => dest.MaleCount, opt => opt.MapFrom(src => src.MaleCount))
+            .ForMember(dest => dest.FemaleCount, opt => opt.MapFrom(src => src.FemaleCount))
             .ReverseMap()
             .ForMember(dest => dest.OrderID, opt => opt.MapFrom(src => src.OrderId))
             .ForMember(dest => dest.BranchID, opt => opt.MapFrom(src => src.BranchId))
@@ -260,7 +266,14 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.TableName, opt => opt.MapFrom(src => src.TableName))
             .ForMember(dest => dest.WaiterName, opt => opt.MapFrom(src => src.CaptainName))
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => OrderTypes.DineIn))
-            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState == "Open" ? OrderStates.Pending : OrderStates.Completed));
+            .ForMember(dest => dest.ReservationCustomerName, opt => opt.MapFrom(src => src.ReservationCustomerName))
+            .ForMember(dest => dest.ReservationCustomerPhone, opt => opt.MapFrom(src => src.ReservationCustomerPhone))
+            .ForMember(dest => dest.ReservationPaid, opt => opt.MapFrom(src => src.ReservationPaid))
+            .ForMember(dest => dest.ScheduleDateTime, opt => opt.MapFrom(src => src.ScheduleDateTime))
+            .ForMember(dest => dest.MaleCount, opt => opt.MapFrom(src => src.MaleCount))
+            .ForMember(dest => dest.FemaleCount, opt => opt.MapFrom(src => src.FemaleCount))
+            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState == "Open" ? OrderStates.Pending : 
+                                                                  src.OrderState == "Reserved" ? OrderStates.Reserved : OrderStates.Completed));
 
     }
 }

@@ -1,0 +1,51 @@
+[
+  {
+    "FeatureName": "EnableReservation",
+    "NameEn": "Enable Reservation System",
+    "NameAr": "تفعيل نظام الحجز",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableWaiterSelection",
+    "NameEn": "Enable Waiter Selection",
+    "NameAr": "تفعيل اختيار الويتر",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableCaptainSelection",
+    "NameEn": "Enable Captain Selection",
+    "NameAr": "تفعيل اختيار الكابتن",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableTableMerge",
+    "NameEn": "Enable Table Merge",
+    "NameAr": "تفعيل دمج الطاولات",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableTableTransfer",
+    "NameEn": "Enable Table Transfer",
+    "NameAr": "تفعيل نقل الطاولات",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableSplitBill",
+    "NameEn": "Enable Split Bill",
+    "NameAr": "تفعيل تقسيم الشيك",
+    "ModuleName": "Dine-In",
+    "Value": true
+  },
+  {
+    "FeatureName": "EnableGuestCount",
+    "NameEn": "Enable Guest Count",
+    "NameAr": "تفعيل عدد الضيوف",
+    "ModuleName": "Dine-In",
+    "Value": true
+  }
+]

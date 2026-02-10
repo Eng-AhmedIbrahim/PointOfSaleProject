@@ -460,15 +460,15 @@ public partial class POS
                 _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
                 _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
             }
-            
-            _services.NotifyStateChanged();
+
+            _section4ButtonsServices.NotifyStateChanged();
         }
     }
 
     private async Task<BranchToReturnDto> GetBranchDetails()
     {
         var branches = await _branchService.GetBranches();
-        var Branch = branches.FirstOrDefault(b => b.Id == 1);
+        var Branch = branches.FirstOrDefault();
         if (Branch == null)
             return new BranchToReturnDto();
 

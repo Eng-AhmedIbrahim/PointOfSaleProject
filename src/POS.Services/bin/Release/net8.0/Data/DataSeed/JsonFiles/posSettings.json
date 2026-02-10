@@ -1,0 +1,37 @@
+[
+  {
+    "NameEn": "EnableReservation",
+    "NameAr": "تفعيل نظام الحجز",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableWaiterSelection",
+    "NameAr": "تفعيل اختيار الويتر",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableCaptainSelection",
+    "NameAr": "تفعيل اختيار الكابتن",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableTableMerge",
+    "NameAr": "تفعيل دمج الطاولات",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableTableTransfer",
+    "NameAr": "تفعيل نقل الطاولات",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableSplitBill",
+    "NameAr": "تفعيل تقسيم الشيك",
+    "Value": true
+  },
+  {
+    "NameEn": "EnableGuestCount",
+    "NameAr": "تفعيل عدد الضيوف",
+    "Value": true
+  }
+]

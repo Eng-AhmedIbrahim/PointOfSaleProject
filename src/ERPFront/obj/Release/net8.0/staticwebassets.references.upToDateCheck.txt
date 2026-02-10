@@ -1,0 +1,3 @@
+F:\PointOfSaleProject\src\Common\BlazorBase\obj\Release\net8.0\staticwebassets.build.json
+F:\PointOfSaleProject\src\Common\BlazorBase\obj\Release\net8.0\staticwebassets.build.json
+F:\PointOfSaleProject\src\Common\BlazorBase\obj\Release\net8.0\staticwebassets.build.json

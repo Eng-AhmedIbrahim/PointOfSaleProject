@@ -40,20 +40,42 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-        base.OnStartup(e);
+        try
+        {
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            base.OnStartup(e);
 
-        // Setup Serilog for file logging
-        SetupSerilog();
+            // Setup Serilog for file logging
+            SetupSerilog();
 
-        // Configure services
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-        _serviceProvider = services.BuildServiceProvider();
+            Log.Information("Setting up services...");
 
-        // Create and show main window
-        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+            // Configure services
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            _serviceProvider = services.BuildServiceProvider();
+
+            Log.Information("Creating main window...");
+
+            // Create and show main window
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+
+            Log.Information("Main window shown successfully");
+        }
+        catch (Exception ex)
+        {
+            var logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "POS-Logs");
+            Directory.CreateDirectory(logPath);
+            
+            var errorFile = Path.Combine(logPath, $"startup-error-{DateTime.Now:yyyyMMdd-HHmmss}.txt");
+            File.WriteAllText(errorFile, $"Startup Error:\n{ex.ToString()}");
+            
+            Log.Fatal(ex, "Application startup failed");
+            MessageBox.Show($"Failed to start application:\n{ex.Message}\n\nCheck logs at: {logPath}", 
+                "Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 
     private void SetupSerilog()
@@ -145,11 +167,11 @@ public partial class App : Application
         services.AddSingleton<Section4ButtonsServices>();
         services.AddScoped<CustomAuthenticationStateProvider>();
         services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthenticationStateProvider>());
-        services.AddScoped<DineInService>();
-        services.AddScoped<AppDateService>();
-        services.AddScoped<OrderSettingsService>();
-        services.AddScoped<DeliveryServices>();
-        services.AddScoped<BranchService>();
+        services.AddScoped<IDineInService, DineInService>();
+        services.AddScoped<IAppDateService, AppDateService>();
+        services.AddScoped<IOrderSettingsService, OrderSettingsService>();
+        services.AddScoped<IDeliveryServices, DeliveryServices>();
+        services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<IPrintOrderService, DesktopPrintOrderService>();
 
         // Category services

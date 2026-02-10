@@ -5,9 +5,9 @@
 @using global::POS.Core.Entities.Delivery
 @inject IDialogService DialogService
 @inject CommonProperties _commonProperties
-@inject DeliveryServices _deliveryServices
+@inject IDeliveryServices _deliveryServices
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
-@inject BranchService _branchService
+@inject IBranchService _branchService
 @inject ISnackbar _snackbar
 
 <MudDialog FullWidth="true" MaxWidth="MaxWidth.Small">

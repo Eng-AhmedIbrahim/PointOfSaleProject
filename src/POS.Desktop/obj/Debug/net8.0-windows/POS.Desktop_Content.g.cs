@@ -32,6 +32,7 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/menubuttons.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/mergetables.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/multipleordersdialog.razor")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/reservationdetailsdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/splitorderdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/tablereservationdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/dineincomponents/transfertable.razor")]
@@ -78,5 +79,6 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/possettingscomponents/section3settingscomponent.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/routes.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/_imports.razor")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("poslogo.ico")]
 
 

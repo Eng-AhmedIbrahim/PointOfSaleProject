@@ -157,7 +157,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>4943</FileLength>
-      <LastWriteTime>Sat, 24 Jan 2026 01:39:31 GMT</LastWriteTime>
+      <LastWriteTime>Fri, 06 Feb 2026 17:17:22 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\pos.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))">
@@ -172,12 +172,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>dsjol55i0b</Fingerprint>
-      <Integrity>00x3i2n/8lWjU4VaIH/83/sh4tiSu8TahQ2iLFSUnCo=</Integrity>
+      <Fingerprint>awz23u6zog</Fingerprint>
+      <Integrity>xqJMo/DvVTyLrrjB/ijvDFlUUN7uYISj9jGK06UdjKA=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>26161</FileLength>
-      <LastWriteTime>Fri, 06 Feb 2026 14:39:59 GMT</LastWriteTime>
+      <FileLength>27820</FileLength>
+      <LastWriteTime>Mon, 09 Feb 2026 14:07:58 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">

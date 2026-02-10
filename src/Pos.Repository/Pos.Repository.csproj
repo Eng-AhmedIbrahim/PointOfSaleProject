@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\DataSeed\JsonFiles\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Identity\Configurations\" />
     <Folder Include="Migrations\AppDb\" />
   </ItemGroup>

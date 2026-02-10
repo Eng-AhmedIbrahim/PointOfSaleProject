@@ -90,4 +90,7 @@ public class Orders : BaseEntity
     // Reservation link
     public int? ReservationId { get; set; }
     public POS.Core.Entities.ReservationEntity.Reservation? Reservation { get; set; }
+    
+    public string? ReservationCustomerName { get; set; }
+    public string? ReservationCustomerPhone { get; set; }
 }

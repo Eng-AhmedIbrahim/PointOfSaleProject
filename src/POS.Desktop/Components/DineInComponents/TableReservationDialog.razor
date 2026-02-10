@@ -51,7 +51,9 @@
                                   Variant="Variant.Outlined" 
                                   Required="true" 
                                   Editable="true"
-                                  Color="Color.Primary" />
+                                  AmPm="true"
+                                  Color="Color.Info"
+                                  AdornmentIcon="@Icons.Material.Filled.AccessTime" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
@@ -88,12 +90,17 @@
                 </MudItem>
 
                 <MudItem xs="12" Class="mt-2">
-                    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Elevation="0" Class="rounded-lg">
-                        @((MarkupString)string.Format(Localizar["TableReservationSummary"], 
-                            TableName, 
-                            GuestCount, 
-                            ReservationDate?.ToString("dd MMM yyyy") ?? "", 
-                            ReservationTime.HasValue ? DateTime.Today.Add(ReservationTime.Value).ToString("hh:mm tt") : ""))
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Elevation="4" Class="rounded-xl py-3 px-4" Icon="@Icons.Material.Filled.Info">
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.subtitle2" Class="font-weight-bold mb-1">@Localizar["Summary"]</MudText>
+                            <MudText Typo="Typo.body2">
+                                @((MarkupString)string.Format(Localizar["TableReservationSummary"], 
+                                    $"<span class='font-weight-bold text-white'>{TableName}</span>", 
+                                    $"<span class='font-weight-bold text-white'>{GuestCount}</span>", 
+                                    $"<span class='font-weight-bold text-white'>{ReservationDate?.ToString("dd MMM yyyy") ?? ""}</span>", 
+                                    ReservationTime.HasValue ? $"<span class='font-weight-bold text-white'>{DateTime.Today.Add(ReservationTime.Value).ToString("hh:mm tt")}</span>" : ""))
+                            </MudText>
+                        </div>
                     </MudAlert>
                 </MudItem>
             </MudGrid>
@@ -115,23 +122,43 @@
 
 <style>
     .premium-reservation-dialog {
-        border-radius: 20px !important;
+        border-radius: 24px !important;
         overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
     }
     .premium-reservation-dialog .mud-dialog-title {
-        background: linear-gradient(to right, rgba(var(--mud-palette-success-rgb), 0.05), transparent);
+        background: linear-gradient(135deg, rgba(var(--mud-palette-success-rgb), 0.1), rgba(var(--mud-palette-info-rgb), 0.05));
         border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 1.5rem !important;
     }
     .icon-box {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 8px 16px -4px rgba(var(--mud-palette-success-rgb), 0.2);
     }
     .rounded-lg {
-        border-radius: 12px !important;
+        border-radius: 16px !important;
+    }
+    .rounded-xl {
+        border-radius: 20px !important;
+    }
+    .mud-input-outlined {
+        background-color: #fcfcfc;
+    }
+    .mud-input-outlined:focus-within {
+        background-color: white;
+    }
+    .counter-label {
+        color: var(--mud-palette-text-secondary);
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
     }
 </style>
 

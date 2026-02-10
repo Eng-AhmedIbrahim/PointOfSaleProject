@@ -470,7 +470,7 @@ namespace Pos.Repository.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("DiscountPercentage")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("DiscountReason")
                         .HasMaxLength(250)
@@ -1053,11 +1053,26 @@ namespace Pos.Repository.Migrations
                     b.Property<decimal?>("TotalDiscountPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("TotalVoidAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("VoidAmount")
                         .HasColumnType("int");
+
+                    b.Property<string>("VoidBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoidByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoidReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VoidTime")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -1359,6 +1374,12 @@ namespace Pos.Repository.Migrations
                     b.Property<decimal?>("Remain")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ReservationCustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReservationCustomerPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ReservationId")
                         .HasColumnType("int");
 
@@ -1482,6 +1503,40 @@ namespace Pos.Repository.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.PosFeatureSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ComputerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModuleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Value")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PosFeatureSettings");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.ReservationEntity.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -1519,12 +1574,15 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<DateTime>("ReservationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("ReservationPaid")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("ReservationStatus")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("ReservationTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("TableId")
                         .HasColumnType("int");

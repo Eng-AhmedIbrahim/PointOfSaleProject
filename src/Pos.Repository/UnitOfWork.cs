@@ -36,4 +36,9 @@ public class UnitOfWork : IUnitOfWork
     {
         return _dbContext.Database.BeginTransaction();
     }
+
+    public IExecutionStrategy CreateExecutionStrategy()
+    {
+        return _dbContext.Database.CreateExecutionStrategy();
+    }
 }

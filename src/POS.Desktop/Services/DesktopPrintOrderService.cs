@@ -3,16 +3,16 @@ namespace POS.Desktop.Services;
 public class DesktopPrintOrderService : IPrintOrderService
 {
     private readonly CommonProperties _commonProperties;
-    private readonly OrderSettingsService _orderSettingsService;
+    private readonly IOrderSettingsService _orderSettingsService;
     private readonly IPrinterServices _printerServices;
-    private readonly BranchService _branchService;
+    private readonly IBranchService _branchService;
     private readonly IConfiguration _configuration;
 
     public DesktopPrintOrderService(
         CommonProperties commonProperties,
-        OrderSettingsService orderSettingsService,
+        IOrderSettingsService orderSettingsService,
         IPrinterServices printerServices,
-        BranchService branchService,
+        IBranchService branchService,
         IConfiguration configuration)
     {
         _commonProperties = commonProperties;

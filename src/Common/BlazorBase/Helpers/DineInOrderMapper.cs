@@ -176,7 +176,13 @@ public static class DineInOrderMapper
             ItemKitchenTypeId = item.ItemKitchenTypeId,
             CategoryKitchenTypeId = item.CategoryKitchenTypeId,
             PrintInBackupReceiptFromItem = item.PrintInBackupReceiptFromItem,
-            PrintInBackupReceiptFromCategory = item.PrintInBackupReceiptFromCategory
+            PrintInBackupReceiptFromCategory = item.PrintInBackupReceiptFromCategory,
+            IsVoided = item.IsVoided ?? false,
+            TotalVoidAmount = item.TotalVoidAmount,
+            VoidBy = item.VoidBy,
+            VoidByName = item.VoidByName,
+            VoidTime = item.VoidTime,
+            VoidReason = item.VoidReason
         }).ToList();
     }
 

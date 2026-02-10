@@ -1,6 +1,4 @@
 @inject LocalizationService Localizer
-@using BlazorBase.ERPFrontServices.DineInOrderServices
-@using BlazorBase.ERPFrontServices.OrderTrackServices
 @using BlazorBase.ERPFrontServices.PrintOrderServices
 @using POS.Desktop.Components.PosDialog
 @inject CommonProperties _commonProperties
@@ -8,7 +6,7 @@
 @inject NavigationManager _navigationManager
 @inject ISnackbar _snackbar
 @inject CartService _cartService
-@inject AppDateService _appDateService
+@inject IAppDateService _appDateService
 @inject IPrintOrderService _printOrderService
 @inject IDialogService _dialogService
 @inject IDineInOrderFrontService _dineInOrderService
@@ -16,34 +14,46 @@
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="action-buttons-grid">
     <MudItem xs="4">
-        <MudButton Variant="Variant.Filled"
-                   FullWidth="true"
-                   Class="action-btn cancel-btn special-sec4-button"
-                   Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.Cancel"
-                   OnClick="CancelOrder">
-            @Localizer["Cancel"]
-        </MudButton>
+        <AuthorizeView Policy="CanAccessVoidOrder">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           FullWidth="true"
+                           Class="action-btn cancel-btn special-sec4-button"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Cancel"
+                           OnClick="CancelOrder">
+                    @Localizer["Cancel"]
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     </MudItem>
     <MudItem xs="4">
-        <MudButton Variant="Variant.Filled"
-                   FullWidth="true"
-                   Class="action-btn waiting-btn special-sec4-button"
-                   Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.HourglassTop"
-                   OnClick="AddOrderToWaitingQueue">
-            @Localizer["Waiting"]
-        </MudButton>
+        <AuthorizeView Policy="CanAccessWaiting">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           FullWidth="true"
+                           Class="action-btn waiting-btn special-sec4-button"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.HourglassTop"
+                           OnClick="AddOrderToWaitingQueue">
+                    @Localizer["Waiting"]
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     </MudItem>
     <MudItem xs="4">
-        <MudButton Variant="Variant.Filled"
-                   FullWidth="true"
-                   Class="action-btn print-btn special-sec4-button"
-                   Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.Print"
-                   OnClick="PrintOrder">
-            @Localizer["Print"]
-        </MudButton>
+        <AuthorizeView Policy="CanAccessPrintReceipt">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           FullWidth="true"
+                           Class="action-btn print-btn special-sec4-button"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Print"
+                           OnClick="PrintOrder">
+                    @Localizer["Print"]
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     </MudItem>
     @* <MudItem xs="3">
         <MudButton Variant="Variant.Filled"

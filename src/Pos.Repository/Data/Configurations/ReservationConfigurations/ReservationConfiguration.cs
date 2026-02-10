@@ -24,6 +24,9 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.Property(r => r.Notes)
             .HasMaxLength(500);
 
+        builder.Property(r => r.ReservationPaid)
+            .HasColumnType("decimal(18,2)");
+
         // Relationships
         builder.HasOne(r => r.Order)
             .WithOne(o => o.Reservation)

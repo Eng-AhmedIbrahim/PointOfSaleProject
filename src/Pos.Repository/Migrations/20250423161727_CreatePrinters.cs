@@ -11,13 +11,6 @@ namespace Pos.Repository.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "ClientNote",
-                table: "DeliveryCustomerInfo");
-
-            migrationBuilder.DropColumn(
-                name: "OrderDiscount",
-                table: "DeliveryCustomerInfo");
 
             migrationBuilder.AddColumn<int>(
                 name: "DeliveryCompanyInfoId",
@@ -167,19 +160,6 @@ namespace Pos.Repository.Migrations
                 name: "PrintInBackupReceipt",
                 table: "Categories");
 
-            migrationBuilder.AddColumn<string>(
-                name: "ClientNote",
-                table: "DeliveryCustomerInfo",
-                type: "nvarchar(500)",
-                maxLength: 500,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "OrderDiscount",
-                table: "DeliveryCustomerInfo",
-                type: "nvarchar(10)",
-                maxLength: 10,
-                nullable: true);
         }
     }
 }

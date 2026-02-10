@@ -30,6 +30,13 @@ public class TableItem
     public decimal? TotalAmount { get; set; }
 
     public bool IsReadOnly { get; set; }
+    public bool IsVoided { get; set; }
+    public decimal? TotalVoidAmount { get; set; }
+    public int? VoidAmount { get; set; }
+    public string? VoidBy { get; set; }
+    public string? VoidByName { get; set; }
+    public DateTime? VoidTime { get; set; }
+    public string? VoidReason { get; set; }
 
     public TableItem Clone()
     {
@@ -58,7 +65,13 @@ public class TableItem
             TotalAmount = this.TotalAmount,
             IsReadOnly = this.IsReadOnly,
             TotalDiscountPrice = this.TotalDiscountPrice,
-            TotalAfterDiscount = this.TotalAfterDiscount
+            TotalAfterDiscount = this.TotalAfterDiscount,
+            IsVoided = this.IsVoided,
+            TotalVoidAmount = this.TotalVoidAmount,
+            VoidBy = this.VoidBy,
+            VoidByName = this.VoidByName,
+            VoidTime = this.VoidTime,
+            VoidReason = this.VoidReason
         };
     }
 }

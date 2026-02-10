@@ -579,4 +579,97 @@
   <data name="TableReservationSummary" xml:space="preserve">
     <value>سيتم حجز الطاولة &lt;b&gt;{0}&lt;/b&gt; لـ &lt;b&gt;{1}&lt;/b&gt; أفراد بتاريخ &lt;b&gt;{2}&lt;/b&gt; الساعة &lt;b&gt;{3}&lt;/b&gt;</value>
   </data>
+  <data name="ReservationDetails" xml:space="preserve">
+    <value>تفاصيل الحجز</value>
+  </data>
+  <data name="CancelReservation" xml:space="preserve">
+    <value>إلغاء الحجز</value>
+  </data>
+  <data name="ReservationCanceled" xml:space="preserve">
+    <value>تم إلغاء الحجز بنجاح</value>
+  </data>
+  <data name="CancellationFailed" xml:space="preserve">
+    <value>فشل إلغاء الحجز</value>
+  </data>
+  <data name="ConfirmCancelReservation" xml:space="preserve">
+    <value>هل أنت متأكد من إلغاء هذا الحجز؟</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>نعم</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>لا</value>
+  </data>
+  <data name="StartOrder" xml:space="preserve">
+    <value>تسكين / فتح طلب</value>
+  </data>
+  <data name="SelectCaptain" xml:space="preserve">
+    <value>اختر الكابتن</value>
+  </data>
+  <data name="Captain" xml:space="preserve">
+    <value>الكابتن</value>
+  </data>
+  <data name="PleaseSelectCaptain" xml:space="preserve">
+    <value>برجاء اختيار الكابتن</value>
+  </data>
+  <data name="ReservationSeatedSuccess" xml:space="preserve">
+    <value>تم تسكين طاولة {0} بنجاح</value>
+  </data>
+  <data name="ItemsToVoid" xml:space="preserve">
+    <value>الأصناف المراد إلغاؤها</value>
+  </data>
+  <data name="VoidQty" xml:space="preserve">
+    <value>الكمية الملغاة</value>
+  </data>
+  <data name="SelectedToVoid" xml:space="preserve">
+    <value>المحدد للإلغاء</value>
+  </data>
+  <data name="VoidAllItems" xml:space="preserve">
+    <value>إلغاء جميع الأصناف</value>
+  </data>
+  <data name="SelectReason" xml:space="preserve">
+    <value>اختر السبب</value>
+  </data>
+  <data name="MistakeOrder" xml:space="preserve">
+    <value>خطأ في الطلب</value>
+  </data>
+  <data name="CustomerCanceled" xml:space="preserve">
+    <value>الزبون ألغى الطلب</value>
+  </data>
+  <data name="KitchenIssue" xml:space="preserve">
+    <value>مشكلة في المطبخ</value>
+  </data>
+  <data name="ConfirmVoid" xml:space="preserve">
+    <value>تأكيد الإلغاء</value>
+  </data>
+  <data name="PleaseSelectItemFirst" xml:space="preserve">
+    <value>يرجى اختيار صنف أولاً</value>
+  </data>
+  <data name="CannotVoidMoreThan" xml:space="preserve">
+    <value>لا يمكن إلغاء أكثر من</value>
+  </data>
+  <data name="AllItemsSelectedForVoid" xml:space="preserve">
+    <value>تم تحديد جميع الأصناف للإلغاء</value>
+  </data>
+  <data name="VoidReasonRequired" xml:space="preserve">
+    <value>سبب الإلغاء مطلوب</value>
+  </data>
+  <data name="NoItemsSelectedToVoid" xml:space="preserve">
+    <value>لم يتم تحديد أي أصناف للإلغاء</value>
+  </data>
+  <data name="VoidOperationSuccessful" xml:space="preserve">
+    <value>تمت عملية الإلغاء بنجاح</value>
+  </data>
+  <data name="FailedToVoid" xml:space="preserve">
+    <value>فشل في إلغاء الطلب/الأصناف</value>
+  </data>
+  <data name="ActionFailed" xml:space="preserve">
+    <value>فشلت العملية</value>
+  </data>
+  <data name="Voided" xml:space="preserve">
+    <value>ملغي</value>
+  </data>
+  <data name="VoidedBy" xml:space="preserve">
+    <value>ألغي بواسطة</value>
+  </data>
 </root>

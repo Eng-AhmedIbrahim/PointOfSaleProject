@@ -177,3 +177,5 @@ f:\PointOfSaleProject\src\POS.Desktop\obj\Release\net8.0-windows\refint\POS.Desk
 f:\PointOfSaleProject\src\POS.Desktop\obj\Release\net8.0-windows\POS.Desktop.pdb
 f:\PointOfSaleProject\src\POS.Desktop\obj\Release\net8.0-windows\POS.Desktop.genruntimeconfig.cache
 f:\PointOfSaleProject\src\POS.Desktop\obj\Release\net8.0-windows\ref\POS.Desktop.dll
+F:\PointOfSaleProject\src\POS.Desktop\bin\Release\net8.0-windows\errors.json
+F:\PointOfSaleProject\src\POS.Desktop\obj\Release\net8.0-windows\scopedcss\Components\DineInComponents\GuestCountDialog.razor.rz.scp.css

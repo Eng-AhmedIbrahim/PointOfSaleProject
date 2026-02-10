@@ -3915,6 +3915,22 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "paid",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "remain",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
           }
         ],
         "responses": {
@@ -3941,22 +3957,78 @@
         }
       }
     },
-    "/api/DineInOrder/void/{orderId}": {
-      "put": {
+    "/api/DineInOrder/void-order": {
+      "post": {
         "tags": [
           "DineInOrder"
         ],
-        "parameters": [
-          {
-            "name": "orderId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidOrderRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidOrderRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidOrderRequest"
+              }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/DineInOrder/void-items": {
+      "post": {
+        "tags": [
+          "DineInOrder"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidItemsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidItemsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidItemsRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -4244,54 +4316,6 @@
         }
       }
     },
-    "/api/DineInOrder/void-items": {
-      "post": {
-        "tags": [
-          "DineInOrder"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VoidItemsRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VoidItemsRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/VoidItemsRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/DineInOrder/{orderId}/increment-print": {
       "post": {
         "tags": [
@@ -4399,6 +4423,65 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/DineInOrder/seat-reservation/{orderId}": {
+      "post": {
+        "tags": [
+          "DineInOrder"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatReservationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatReservationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatReservationRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -5572,6 +5655,156 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Order/void/{orderId}": {
+      "put": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidByName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Order/void-items/{orderId}": {
+      "put": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidByName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -7463,6 +7696,14 @@
             "format": "double",
             "nullable": true
           },
+          "reservationCustomerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reservationCustomerPhone": {
+            "type": "string",
+            "nullable": true
+          },
           "orderDetails": {
             "type": "array",
             "items": {
@@ -8402,6 +8643,37 @@
           "printInBackupReceiptFromCategory": {
             "type": "boolean",
             "nullable": true
+          },
+          "isVoided": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "voidAmount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalVoidAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "voidBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "voidReason": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -8669,6 +8941,20 @@
             "items": {
               "$ref": "#/components/schemas/RolePermissionItem"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SeatReservationRequest": {
+        "type": "object",
+        "properties": {
+          "captainId": {
+            "type": "string",
+            "nullable": true
+          },
+          "captainName": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -8984,6 +9270,36 @@
           },
           "isReadOnly": {
             "type": "boolean"
+          },
+          "isVoided": {
+            "type": "boolean"
+          },
+          "totalVoidAmount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "voidAmount": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "voidBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "voidReason": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -8993,7 +9309,8 @@
           0,
           1,
           2,
-          3
+          3,
+          4
         ],
         "type": "integer",
         "format": "int32"
@@ -9232,6 +9549,32 @@
             "nullable": true
           },
           "voidBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidByName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VoidOrderRequest": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidByName": {
             "type": "string",
             "nullable": true
           }

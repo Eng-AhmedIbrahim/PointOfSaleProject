@@ -2287,6 +2287,16 @@
         "Name": "orderId",
         "Type": "System.Int32",
         "IsRequired": true
+      },
+      {
+        "Name": "paid",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "remain",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
@@ -2401,6 +2411,37 @@
   },
   {
     "ContainingType": "POS.API.Controllers.DineInOrderController",
+    "Method": "SeatReservation",
+    "RelativePath": "api/DineInOrder/seat-reservation/{orderId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "POS.API.Controllers.SeatReservationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DineInOrderController",
     "Method": "SplitDineInOrder",
     "RelativePath": "api/DineInOrder/split",
     "HttpMethod": "POST",
@@ -2484,7 +2525,7 @@
   },
   {
     "ContainingType": "POS.API.Controllers.DineInOrderController",
-    "Method": "VoidDineInItems",
+    "Method": "VoidItems",
     "RelativePath": "api/DineInOrder/void-items",
     "HttpMethod": "POST",
     "IsController": true,
@@ -2510,15 +2551,15 @@
   },
   {
     "ContainingType": "POS.API.Controllers.DineInOrderController",
-    "Method": "VoidDineInOrder",
-    "RelativePath": "api/DineInOrder/void/{orderId}",
-    "HttpMethod": "PUT",
+    "Method": "VoidOrder",
+    "RelativePath": "api/DineInOrder/void-order",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "orderId",
-        "Type": "System.Int32",
+        "Name": "request",
+        "Type": "POS.API.Controllers.VoidOrderRequest",
         "IsRequired": true
       }
     ],
@@ -3214,6 +3255,93 @@
     "ReturnTypes": [
       {
         "Type": "POS.Contract.Dtos.OrderDtos.OrderDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.OrderController",
+    "Method": "VoidOrderItems",
+    "RelativePath": "api/Order/void-items/{orderId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "itemsToVoid",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.DineIn.OrderItemVoidDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      },
+      {
+        "Name": "reason",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidByName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.OrderController",
+    "Method": "VoidOrder",
+    "RelativePath": "api/Order/void/{orderId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "reason",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidByName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
         "MediaTypes": [
           "text/plain",
           "application/json",

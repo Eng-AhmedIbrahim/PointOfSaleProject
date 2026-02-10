@@ -16,8 +16,18 @@ public partial class MainWindow : Window
 
     public MainWindow(IServiceProvider serviceProvider) : this()
     {
-        blazorWebView.Services = serviceProvider;
-        _commonProperties = serviceProvider.GetRequiredService<CommonProperties>();
+        try
+        {
+            Serilog.Log.Information("MainWindow constructor called with ServiceProvider");
+            blazorWebView.Services = serviceProvider;
+            _commonProperties = serviceProvider.GetRequiredService<CommonProperties>();
+            Serilog.Log.Information("MainWindow initialized successfully");
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Error in MainWindow constructor");
+            throw;
+        }
     }
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

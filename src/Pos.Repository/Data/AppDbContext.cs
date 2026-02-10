@@ -7,7 +7,21 @@ public class AppDbContext : DbContext
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    => modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Configure decimal properties to avoid truncation warnings
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var properties = entityType.GetProperties()
+                .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?));
+
+            foreach (var property in properties)
+            {
+                property.SetColumnType("decimal(18,2)");
+            }
+        }
+    }
 
     public DbSet<AttributeItem> AttributeItems { get; set; }
     public DbSet<Attributes> Attributes { get; set; }
@@ -35,5 +49,5 @@ public class AppDbContext : DbContext
     public DbSet<CustomerAddress> CustomerAddress { get; set; }
     public DbSet<OrderTrack> OrderTracks { get; set; }
     public DbSet<POS.Core.Entities.ReservationEntity.Reservation> Reservations { get; set; }
-
+    public DbSet<PosFeatureSetting> PosFeatureSettings { get; set; }
 }
