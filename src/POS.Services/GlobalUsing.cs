@@ -57,3 +57,16 @@ global using POS.Contract.Dtos.DineIn;
 global using POS.Core.Services.Contract.DineInOrderServices;
 global using POS.Core.Services.Contract.OrderTrackServices;
 global using POS.Core.Specifications.DineInSpecs;
+
+global using AutoMapper;
+global using POS.Core.Services.Contract.PosFeatureServices;
+global using POS.Contract.Dtos.OrderDto;
+global using Pos.Repository.Data.DataSeed;
+
+global using POS.Contract.Dtos.OrderDtos;
+global using POS.Core.Services.Contract.DistributionServices;
+
+global using POS.Contract.Dtos;
+global using POS.Core.Entities.ComplaintEntity;
+global using POS.Core.Services.Contract.ComplaintServices;
+global using POS.Core.Specifications.ComplaintSpecs;

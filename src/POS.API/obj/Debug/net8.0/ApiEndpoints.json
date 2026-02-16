@@ -151,7 +151,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "Microsoft.AspNetCore.Identity.IdentityRole",
+        "Type": "POS.Core.Entities.UserSettings.ApplicationRole",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -171,7 +171,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[Microsoft.AspNetCore.Identity.IdentityRole, Microsoft.Extensions.Identity.Stores, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Core.Entities.UserSettings.ApplicationRole, POS.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -308,7 +308,7 @@
         "StatusCode": 400
       },
       {
-        "Type": "POS.Contract.Dtos.DineInDtos.CaptainOrderUserToReturnDto",
+        "Type": "POS.Contract.Dtos.DineInDtos.UserToReturnDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1412,6 +1412,125 @@
           "text/json"
         ],
         "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ComplaintController",
+    "Method": "CreateComplaint",
+    "RelativePath": "api/Complaint",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "complaintDto",
+        "Type": "POS.Contract.Dtos.ComplaintDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ComplaintDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ComplaintController",
+    "Method": "GetAllComplaints",
+    "RelativePath": "api/Complaint",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.ComplaintDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ComplaintController",
+    "Method": "GetComplaintById",
+    "RelativePath": "api/Complaint/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ComplaintDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ComplaintController",
+    "Method": "UpdateStatus",
+    "RelativePath": "api/Complaint/{id}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ComplaintController",
+    "Method": "GetComplaintsByPhone",
+    "RelativePath": "api/Complaint/phone/{phone}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "phone",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.ComplaintDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
       }
     ]
   },
@@ -2576,6 +2695,229 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "CollectAllOrders",
+    "RelativePath": "api/Distribution/collect-all",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "CollectDeliveryOrder",
+    "RelativePath": "api/Distribution/collect-delivery",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderDto",
+        "Type": "POS.Contract.Dtos.OrderDtos.OrderDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "CollectDriverOrders",
+    "RelativePath": "api/Distribution/collect-driver-orders/{driverId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "driverId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "DispatchOrder",
+    "RelativePath": "api/Distribution/dispatch",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderDto",
+        "Type": "POS.Contract.Dtos.OrderDtos.OrderDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "GetDriverSettlement",
+    "RelativePath": "api/Distribution/driver-settlement",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "posDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDtos.DriverSettlementDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "GetUnCompletedDeliveryOrders",
+    "RelativePath": "api/Distribution/GetUnCompletedDeliveryOrders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "UnDispatchOrder",
+    "RelativePath": "api/Distribution/un-dispatch/{orderId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "GetVoidedOrders",
+    "RelativePath": "api/Distribution/voided-orders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "posDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDtos.OrderDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "VoidItems",
+    "RelativePath": "api/Distribution/voidItems/{orderId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "itemsToVoid",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.DineIn.OrderItemVoidDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      },
+      {
+        "Name": "reason",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidByName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DistributionControllers.DistributionController",
+    "Method": "VoidOrder",
+    "RelativePath": "api/Distribution/voidOrder/{orderId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "reason",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "voidByName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "POS.API.Controllers.ItemController",
     "Method": "CreateMenuItemAsync",
     "RelativePath": "api/Item",
@@ -3266,6 +3608,48 @@
   },
   {
     "ContainingType": "POS.API.Controllers.OrderController",
+    "Method": "AddItemsToOrder",
+    "RelativePath": "api/Order/add-items",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderDto",
+        "Type": "POS.Contract.Dtos.OrderDtos.OrderDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.OrderController",
+    "Method": "IncrementPrintCount",
+    "RelativePath": "api/Order/incrementPrintCount/{orderId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.OrderController",
     "Method": "VoidOrderItems",
     "RelativePath": "api/Order/void-items/{orderId}",
     "HttpMethod": "PUT",
@@ -3363,6 +3747,11 @@
         "Name": "orderType",
         "Type": "System.String",
         "IsRequired": true
+      },
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
@@ -3393,7 +3782,13 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "POS.API.Errors.ApiResponse",
@@ -3432,6 +3827,11 @@
         "Name": "orderSetting",
         "Type": "POS.Core.Entities.OrderEntity.OrderSetting",
         "IsRequired": true
+      },
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
@@ -3539,6 +3939,53 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.PosFeatureSettingsController",
+    "Method": "GetSettings",
+    "RelativePath": "api/PosFeatureSettings/{computerName}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDto.PosFeatureSettingToReturnDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.PosFeatureSettingsController",
+    "Method": "UpdateSettings",
+    "RelativePath": "api/PosFeatureSettings/{computerName}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "settings",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDto.PosFeatureSettingToReturnDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.PrinterController",
     "Method": "GetInstalledPrinters",
     "RelativePath": "api/Printer/installed-printers",
@@ -3591,7 +4038,13 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "deviceName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.List\u00601[[POS.Core.Entities.Kitchen.KitchenType, POS.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
@@ -3689,7 +4142,13 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "deviceName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.List\u00601[[POS.Core.Entities.OrderEntity.OrderSetting, POS.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",

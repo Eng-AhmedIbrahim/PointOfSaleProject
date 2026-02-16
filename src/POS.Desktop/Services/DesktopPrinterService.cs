@@ -1,16 +1,3 @@
-using System.Drawing.Printing;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Diagnostics;
-using Microsoft.Extensions.Configuration;
-using PdfiumViewer;
-using POS.Core.Entities.Kitchen;
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.PrinterServices;
-using BlazorBase.API;
-using Serilog;
-
 namespace POS.Desktop.Services;
 
 public class DesktopPrinterService : IPrinterServices
@@ -37,9 +24,10 @@ public class DesktopPrinterService : IPrinterServices
         return await response.Content.ReadFromJsonAsync<KitchenType>();
     }
 
-    public async Task<List<KitchenType>?> GetKitchenTypesAsync()
+    public async Task<List<KitchenType>?> GetKitchenTypesAsync(string? deviceName = null)
     {
-        return await _httpClient.GetFromJsonAsync<List<KitchenType>>("api/Printer/kitchens");
+        var terminalName = deviceName ?? Environment.MachineName;
+        return await _httpClient.GetFromJsonAsync<List<KitchenType>>($"api/Printer/kitchens?deviceName={terminalName}");
     }
 
     public async Task<KitchenType?> GetKitchenByIdAsync(int kitchenId)
@@ -65,9 +53,10 @@ public class DesktopPrinterService : IPrinterServices
         return await response.Content.ReadFromJsonAsync<OrderSetting>();
     }
 
-    public async Task<List<OrderSetting>?> GetOrderSettingsAsync()
+    public async Task<List<OrderSetting>?> GetOrderSettingsAsync(string? deviceName = null)
     {
-        return await _httpClient.GetFromJsonAsync<List<OrderSetting>>("api/Printer/order-settings");
+        var terminalName = deviceName ?? Environment.MachineName;
+        return await _httpClient.GetFromJsonAsync<List<OrderSetting>>($"api/Printer/order-settings?deviceName={terminalName}");
     }
 
     public async Task<OrderSetting?> GetOrderSettingByIdAsync(int orderSettingId)
@@ -103,6 +92,7 @@ public class DesktopPrinterService : IPrinterServices
             if (!File.Exists(pdfFilePath))
                 throw new FileNotFoundException("PDF file not found.", pdfFilePath);
 
+            // Manual Rendering (Using internal library as requested)
             byte[] pdfBytes = await File.ReadAllBytesAsync(pdfFilePath);
             using (var memoryStream = new MemoryStream(pdfBytes))
             using (var pdfDocument = PdfDocument.Load(memoryStream))
@@ -114,34 +104,67 @@ public class DesktopPrinterService : IPrinterServices
                     PrintController = new StandardPrintController()
                 };
 
-                // Thermal receipt paper (80mm) is approx 3.15 inches
-                // We set the PaperSize to match the PDF if possible, or force a standard receipt width
-                printDoc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+                // Calculate height dynamically from PDF
+                double pageHeightPoints = pdfDocument.PageSizes.Count > 0 ? pdfDocument.PageSizes[0].Height : 842;
+                int heightInHundredths = (int)(pageHeightPoints / 72.0 * 100.0);
                 
-                // Set high resolution for thermal printers (usually 203 or 300 DPI)
+                // Use Custom Paper Size (72mm = 285 hundredths) which is the standard PRINTABLE area for 80mm paper
+                // Reducing from 315 to 285 fixes the "cutting from right" issue by respecting the non-printable margins
+                var customSize = new PaperSize("Receipt72mm", 285, heightInHundredths)
+                {
+                    RawKind = (int)PaperKind.Custom
+                };
+
+                printDoc.DefaultPageSettings.PaperSize = customSize;
+                printDoc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+
+                // FORCE High Resolution (Critical for correct scaling)
+                // If we don't do this, some drivers default to screen resolution (96 DPI), causing small prints
                 printDoc.DefaultPageSettings.PrinterResolution = printDoc.PrinterSettings.PrinterResolutions
                     .Cast<PrinterResolution>()
                     .FirstOrDefault(r => r.Kind == PrinterResolutionKind.High) 
-                    ?? new PrinterResolution { Kind = PrinterResolutionKind.Custom, X = 300, Y = 300 };
+                    ?? new PrinterResolution { Kind = PrinterResolutionKind.Custom, X = 203, Y = 203 };
 
                 int currentPage = 0;
                 printDoc.PrintPage += (sender, e) =>
                 {
                     if (currentPage < pdfDocument.PageCount)
                     {
-                        // Optimization for Xprinter: High quality rendering
+                        // Optimization for Xprinter
                         e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                         e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                         e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
 
-                        // Use 300 DPI for sharp text on thermal printers
-                        // Render the page fitting it into the actual printable area of the printer
-                        pdfDocument.Render(currentPage, e.Graphics, 300, 300, e.MarginBounds, true);
+                        // CRITICAL FIX: Ensure scaling matches printer execution
+                        // Never accept less than 203 DPI (Standard Thermal) for rendering
+                        // This prevents 96 DPI (Screen) rendering which makes receipts look tiny
+                        int dpiX = (int)e.Graphics.DpiX;
+                        int dpiY = (int)e.Graphics.DpiY;
+
+                        if (dpiX < 200) dpiX = 203;
+                        if (dpiY < 200) dpiY = 203;
+
+                        // Use the explicit resolution values if available in settings
+                        if (printDoc.DefaultPageSettings.PrinterResolution.Kind != PrinterResolutionKind.Custom)
+                        {
+                            if (printDoc.DefaultPageSettings.PrinterResolution.X > 0) dpiX = printDoc.DefaultPageSettings.PrinterResolution.X;
+                            if (printDoc.DefaultPageSettings.PrinterResolution.Y > 0) dpiY = printDoc.DefaultPageSettings.PrinterResolution.Y;
+                        }
+
+                        // Calculate dimensions in PIXELS for correct 1:1 scaling
+                        // e.PageBounds provides 1/100 inch, but Render needs explicit PIXELS to match the scale
+                        // This fixes the issue where passing Bounds (315 units) was interpreted as 315 pixels (tiny)
+                        int widthPx = (int)((printDoc.DefaultPageSettings.PaperSize.Width / 100.0) * dpiX);
+                        int heightPx = (int)((printDoc.DefaultPageSettings.PaperSize.Height / 100.0) * dpiY);
+
+                        // Render centered or strictly at 0,0 within the printable area
+                        pdfDocument.Render(currentPage, e.Graphics, dpiX, dpiY, new System.Drawing.Rectangle(0, 0, widthPx, heightPx), PdfRenderFlags.CorrectFromDpi);
                         
                         currentPage++;
                         e.HasMorePages = currentPage < pdfDocument.PageCount;
                     }
                 };
+
 
                 await Task.Run(() => printDoc.Print()); 
             }

@@ -59,3 +59,15 @@ global using POS.Reports.Models.DineIn;
 global using POS.Reports.Models.Kitchen;
 global using System.IO;
 global using BlazorBase.Services;
+
+global using POS.Desktop.Components.PosDialog;
+global using Microsoft.AspNetCore.SignalR.Client;
+global using ERPFront.HubSettings;
+global using ERPFront.Models;
+
+global using POS.Reports.Models.Delivery;
+global using System.Drawing.Printing;
+global using System.Net.Http;
+global using System.Net.Http.Json;
+global using System.Diagnostics;
+global using PdfiumViewer;

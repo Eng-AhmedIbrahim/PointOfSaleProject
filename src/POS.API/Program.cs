@@ -1,3 +1,4 @@
+using POS.API.Hubs;
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,15 @@ var databaseConnectionString = builder.Configuration.GetConnectionString("Defaul
 builder.Services.AddControllers();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddSignalR();
+
+var callCenterSettings = builder.Configuration.GetSection("CallCenterSettings").Get<CallCenterSettings>() ?? new CallCenterSettings();
+builder.Services.AddSingleton(callCenterSettings);
+
+if (callCenterSettings.IsCentralCallCenter)
+{
+    builder.Services.AddHostedService<OrderRetryBackgroundService>();
+}
 
 builder.Services.AddCors(options =>
 {
@@ -21,7 +31,8 @@ builder.Services.AddCors(options =>
     {
         options.AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowAnyOrigin();
+            .SetIsOriginAllowed(_ => true) // Allow any origin for SignalR
+            .AllowCredentials(); // Required for SignalR
     });
 });
 
@@ -43,16 +54,6 @@ builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 
 builder.Services.AddIdentityServices(builder.Configuration);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MyPolicy", options =>
-    {
-        options.AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin();
-    });
-});
-
 var app = builder.Build();
 
 #region Database Migrate
@@ -64,7 +65,7 @@ var services = scope.ServiceProvider;
 var dbContext = services.GetRequiredService<AppDbContext>();
 var identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
 var userManager = services.GetRequiredService<UserManager<AppUser>>();
-var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
@@ -99,7 +100,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<DeliveryHub>("/callcenterhub");
 #endregion
 
 await app.RunAsync();

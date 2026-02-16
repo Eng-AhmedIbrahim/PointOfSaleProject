@@ -2,13 +2,13 @@
 
 public partial class MenuButtons
 {
-    private void CreateDineInOrder()
+    private async Task CreateDineInOrder()
     {
         var orderDetails = _commonProperties.GetActiveOrder();
         if (orderDetails != null)
         {
             UpdateCurrentDineInOrder(orderDetails);
-            _navigationManager.NavigateTo("/pos");
+            await SafeNavigateAsync("/pos");
         }
         else
         {
@@ -22,7 +22,7 @@ public partial class MenuButtons
                 return;
             }
 
-            _navigationManager.NavigateTo("/pos");
+            await SafeNavigateAsync("/pos");
         }
     }
     private void BackUpDineInOrder()
@@ -43,9 +43,9 @@ public partial class MenuButtons
             }
         };
     }
-    private void BackToPos()
+    private async Task BackToPos()
     {
-        _navigationManager.NavigateTo("/pos");
+        await SafeNavigateAsync("/pos");
         _commonProperties.AppendedTableItems!.Clear();
         _commonProperties.TableItems!.Clear();
         _commonProperties.CurrentDineInOrder = null;
@@ -126,7 +126,7 @@ public partial class MenuButtons
                 _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout
                 _section4ButtonsServices.NotifyStateChanged();
                 // Navigate without forceLoad to avoid "Leave site" browser prompt
-                _navigationManager.NavigateTo("/dineIn");
+                await SafeNavigateAsync("/dineIn");
             }
         }
         else
@@ -153,7 +153,7 @@ public partial class MenuButtons
                 
                 _commonProperties.NotifyStateChanged();
                 _section4ButtonsServices.NotifyStateChanged();
-                _navigationManager.NavigateTo("/dineIn");
+                await SafeNavigateAsync("/dineIn");
             }
         }
         else
@@ -226,7 +226,7 @@ public partial class MenuButtons
 
                 _snackbar.Add(Localizer["TableClosed"], Severity.Success);
                 StateHasChanged();
-                _navigationManager.NavigateTo("/dineIn");
+                await SafeNavigateAsync("/dineIn");
             }
             else
             {
@@ -245,5 +245,58 @@ public partial class MenuButtons
         
         // Use the in-memory PrintCount which should be updated after printing
         return (orderDetails?.PrintCount ?? 0) == 0;
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 5;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                
+                // Check if NavigationManager is initialized by safely checking the Uri property
+                if (_navigationManager != null)
+                {
+                    try
+                    {
+                        // Try to access Uri - if it throws, NavigationManager isn't ready yet
+                        var currentUri = _navigationManager.Uri;
+                        if (!string.IsNullOrEmpty(currentUri))
+                        {
+                            // Use InvokeAsync to ensure we're on the correct synchronization context
+                            await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                            return;
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // NavigationManager not yet initialized, will retry
+                        throw new InvalidOperationException("NavigationManager not yet initialized");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                
+                if (currentRetry >= maxRetries)
+                {
+                    _snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                
+                // Exponential backoff
+                delayMs *= 2;
+            }
+        }
     }
 }

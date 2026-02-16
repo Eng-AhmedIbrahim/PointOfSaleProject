@@ -30,15 +30,14 @@ public class KitchenReceiptDocument : IDocument
 
     private void ConfigurePage(ref PageDescriptor page)
     {
-        page.Size(PageSizes.A6);
-        page.ContinuousSize(10.5f, Unit.Centimetre);
+        page.ContinuousSize(72, Unit.Millimetre); // Match printer internal width (72mm)
         page.PageColor(Colors.White);
-        page.MarginTop(15);
-        page.MarginRight(5);
-        page.MarginBottom(10);
-        page.MarginLeft(5);
+        page.Margin(2); // Minimal marginsatched" look on thermal printers
         page.DefaultTextStyle(
-            TextStyle.Default.FontFamily("Noto Sans", "Noto Sans Arabic"));
+            TextStyle.Default
+                .FontFamily("Noto Sans", "Noto Sans Arabic")
+                .FontSize(12) // Increased from 10 to 12 for better readability
+                .Bold()); // Bold for better darkness on thermal printers
     }
 
     private void AddHeader(ref ColumnDescriptor column)
@@ -48,7 +47,7 @@ public class KitchenReceiptDocument : IDocument
            {
                text.Span(receipt.KitchenType.ToString())
                    .Bold()
-                   .FontSize(15);
+                   .FontSize(18);
                text.AlignCenter();
            });
 
@@ -56,9 +55,18 @@ public class KitchenReceiptDocument : IDocument
             .PaddingTop(6)
             .Text(text =>
             {
-                text.Span(receipt.Id.ToString())
+                text.Span(receipt.Id.ToString("0.##"))
                     .Bold()
-                    .FontSize(15);
+                    .FontSize(18);
+                
+                if (receipt.IsFollowUp)
+                {
+                    text.Span(" - تابع")
+                        .Bold()
+                        .FontSize(18)
+                        .FontColor(Colors.Red.Medium);
+                }
+                
                 text.AlignCenter();
             });
 
@@ -68,9 +76,18 @@ public class KitchenReceiptDocument : IDocument
             {
                 text.Span(receipt.OrderType)
                     .Bold()
-                    .FontSize(15);
+                    .FontSize(18);
                 text.AlignCenter();
             });
+
+        if (receipt.ParentOrderId.HasValue)
+        {
+            column.Item()
+                .AlignCenter()
+                .Text($"تكملة لرقم {receipt.ParentOrderId}")
+                .Bold()
+                .FontSize(11);
+        }
 
         if (!string.IsNullOrEmpty(receipt.TableName))
         {
@@ -80,7 +97,7 @@ public class KitchenReceiptDocument : IDocument
                 {
                     text.Span($"{receipt.TableName} : {ArabicConstStrings.Table}")
                         .Bold()
-                        .FontSize(18);
+                        .FontSize(20);
                     text.AlignCenter();
                 });
         }
@@ -122,6 +139,28 @@ public class KitchenReceiptDocument : IDocument
 
     private void BuildItemsTable(ref ColumnDescriptor column)
     {
+        // Group items before printing
+        var groupedItems = _items
+            .GroupBy(i => new
+            {
+                i.Id,
+                i.Name,
+                i.IsVoided,
+                AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
+            })
+            .Select(g =>
+            {
+                var first = g.First();
+                return new TableItem
+                {
+                    Id = first.Id,
+                    Name = first.Name,
+                    Quantity = g.Sum(x => x.Quantity),
+                    Attributes = first.Attributes,
+                    IsVoided = first.IsVoided
+                };
+            }).ToList();
+
         column.Item()
             .PaddingTop(3)
             .Table(table =>
@@ -147,7 +186,7 @@ public class KitchenReceiptDocument : IDocument
                         .Bold();
                 });
 
-                foreach (TableItem item in _items)
+                foreach (TableItem item in groupedItems)
                 {
                     table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();

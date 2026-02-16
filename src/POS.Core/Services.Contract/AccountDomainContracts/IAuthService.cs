@@ -19,8 +19,8 @@ public interface IAuthService
     public Task<bool> AddUserToRoleAsync(string userId, string roleName);
     public Task<bool> RemoveUserFromRoleAsync(string userId, string roleName);
 
-    public Task<List<IdentityRole>> GetAllRolesAsync();
-    public Task<IdentityRole> GetRoleAsync(string roleName);
+    public Task<List<ApplicationRole>> GetAllRolesAsync();
+    public Task<ApplicationRole> GetRoleAsync(string roleName);
 
     public Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user);
 

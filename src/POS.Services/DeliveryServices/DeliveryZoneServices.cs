@@ -44,6 +44,7 @@ public class DeliveryZoneServices : IDeliveryZoneServices
         {
             existingZone.ZoneName = zone.ZoneName;
             existingZone.DeliveryFee = zone.DeliveryFee;
+            existingZone.ZoneBonus = zone.ZoneBonus;
             existingZone.BranchId = zone.BranchId;
 
             _unitOfWork.Repository<DeliveryZone>().Update(existingZone);

@@ -1,5 +1,6 @@
 @page "/pos"
 @using BlazorBase.ERPFrontServices.PrintOrderServices
+@using global::POS.Core.Services.Contract.PosFeatureServices
 @layout PosScreenLayout
 @inject CommonProperties _commonProperties
 @inject ICategoryServices _categoryServices
@@ -12,7 +13,9 @@
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
 @inject IBranchService _branchService
 @inject IPrintOrderService _printOrderService
+@inject IPosFeatureSettingsService _featureSettingsService
 @inject LocalizationService Localizer
+@inject IDialogService DialogService
 @implements IDisposable
 
 <link href="section4-footer.css" rel="stylesheet" />
@@ -54,8 +57,33 @@
 
     <!-- Section 4 -->
     <MudItem xs="5" Class="section-container border-l border-solid custom-border-color">
-        <MudText Typo="Typo.h6" Class="section4-label">@_commonProperties.CurrentPosMode @Localizer["Order"] @_handelDeliveryInvocation.DeliveryDetails </MudText>
+        <div class="d-flex align-center gap-1">
+            <MudText Typo="Typo.h6" Class="section4-label flex-grow-1">
+                @(_commonProperties.CurrentPosMode == "Delivery" ? Localizer["DeliveryService"] : _commonProperties.CurrentPosMode + " " + Localizer["Order"])
+            </MudText>
+            
+            @if (_commonProperties.CurrentPosMode == "Delivery" && (_dispatcherSettings.IsDispatcher || canChangeBranch))
+            {
+                <div class="branch-selector-container d-flex align-center gap-2">
+                    <MudText Typo="Typo.caption" Class="branch-label">@Localizer["Branch"]</MudText>
+                    <MudSelect T="int" Value="@(_commonProperties.BranchDetails?.Id ?? 0)" ValueChanged="OnBranchChanged" 
+                              Dense="true" Margin="Margin.Dense" Variant="Variant.Outlined" Class="branch-select-pos" Style="min-width: 120px;">
+                        @foreach (var branch in _branches ?? [])
+                        {
+                            <MudSelectItem Value="@branch.Id">@branch.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+            }
+        </div>
+
         <div class="full-height d-flex flex-column">
+            @if (_commonProperties.UpdateDeliveryOrder || _commonProperties.UpdateDineInOrder)
+            {
+                <MudAlert Severity="Severity.Warning" Dense="true" Class="mb-1 py-1" Style="font-size: 0.9rem; font-weight: bold;">
+                    @Localizer["ReceiptBelongsToOrder"] @(_commonProperties.UpdateDineInOrder ? _commonProperties.DineInOrderValues?.OrderID : _commonProperties.OrderDto?.OrderId)
+                </MudAlert>
+            }
             <!-- Order Table - Fills remaining space -->
             <div class="flex-grow-1 overflow-y-auto">
                 <Section4Table Items="_commonProperties.TableItems" OnItemsChanged="OnSection4ItemsChanged" />

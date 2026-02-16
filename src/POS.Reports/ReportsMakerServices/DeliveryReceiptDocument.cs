@@ -36,15 +36,17 @@ public class DeliveryReceiptDocument : IDocument
 
     private void ConfigurePage(ref PageDescriptor page)
     {
-        page.Size(PageSizes.A6);
-        page.ContinuousSize(10.5f, Unit.Centimetre);
+        page.ContinuousSize(7.2f, Unit.Centimetre); // 72mm printable width
         page.PageColor(Colors.White);
-        page.MarginTop(15);
-        page.MarginRight(5);
-        page.MarginBottom(10);
-        page.MarginLeft(5);
+        page.MarginTop(5);
+        page.MarginRight(2);
+        page.MarginBottom(5);
+        page.MarginLeft(2);
         page.DefaultTextStyle(
-            TextStyle.Default.FontFamily("Noto Sans", "Noto Sans Arabic"));
+            TextStyle.Default
+                .FontFamily("Noto Sans", "Noto Sans Arabic")
+                .FontSize(12)
+                .Bold()); // Bold for better darkness on thermal printers
     }
 
     private void AddHeader(ref ColumnDescriptor column)
@@ -53,25 +55,72 @@ public class DeliveryReceiptDocument : IDocument
             .AlignCenter()
             .Text(_receipt.StoreName)
             .Bold()
-            .FontSize(12);
+            .FontSize(18);
 
-        // 🖼️ Logo section
         if (!string.IsNullOrEmpty(_receipt.LogoPath) && File.Exists(_receipt.LogoPath))
         {
             column.Item()
             .PaddingTop(5)
             .AlignCenter()
-            .Width(_receipt.LogoWidth)
+            .MaxHeight(100)
+            .MaxWidth(180)
             .Image(_receipt.LogoPath)
-            .FitWidth();
+            .FitArea();
         }
 
         column.Item()
             .PaddingTop(5)
             .AlignCenter()
-            .Text("توصيل طلبات")
-            .Bold()
-            .FontSize(12);
+            .Text(text =>
+            {
+                if (_receipt.IsCopy)
+                {
+                    text.Span("*********COPY**********")
+                        .Bold()
+                        .FontSize(11)
+                        .FontColor(Colors.Red.Medium);
+                    text.EmptyLine();
+                }
+
+                text.Span(_receipt.ReceiptType ?? "توصيل طلبات")
+                    .Bold()
+                    .FontSize(12);
+
+                if (_receipt.IsCopy)
+                {
+                    text.EmptyLine();
+                    text.Span("*********COPY**********")
+                        .Bold()
+                        .FontSize(11)
+                        .FontColor(Colors.Red.Medium);
+                }
+            });
+
+        column.Item()
+            .AlignCenter()
+            .PaddingTop(2)
+            .Text(text =>
+            {
+                text.Span(_receipt.Id.ToString("0.##")).Bold().FontSize(18);
+                
+                if (_receipt.IsFollowUp)
+                {
+                    text.Span(" - تابع")
+                        .Bold()
+                        .FontSize(12)
+                        .FontColor(Colors.Grey.Medium);
+                }
+            });
+
+        if (_receipt.ParentOrderId.HasValue)
+        {
+            column.Item()
+                .AlignCenter()
+                .Text($"تكملة لرقم {_receipt.ParentOrderId}")
+                .Bold()
+                .FontSize(11)
+                .FontColor(Colors.Grey.Medium);
+        }
 
         column.Item().Table(table =>
         {
@@ -92,8 +141,8 @@ public class DeliveryReceiptDocument : IDocument
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.RelativeColumn(6); // Label column (40%)
-                columns.RelativeColumn(2); // Value column (60%)
+                columns.RelativeColumn(5.5f); // Value column
+                columns.RelativeColumn(2.5f); // Label column
             });
 
             table.Cell().Element(CellStyle).Text(_receipt.CashierName).AlignRight();
@@ -141,16 +190,45 @@ public class DeliveryReceiptDocument : IDocument
 
     private void BuildItemsTable(ref ColumnDescriptor column)
     {
+        // Group items before printing
+        var groupedItems = _items
+            .GroupBy(i => new
+            {
+                i.Id,
+                i.Name,
+                i.Price,
+                i.IsVoided,
+                i.HasDiscount,
+                i.DiscountPercentage,
+                AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
+            })
+            .Select(g =>
+            {
+                var first = g.First();
+                return new TableItem
+                {
+                    Id = first.Id,
+                    Name = first.Name,
+                    Price = first.Price,
+                    Quantity = g.Sum(x => x.Quantity),
+                    TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
+                    Attributes = first.Attributes,
+                    IsVoided = first.IsVoided,
+                    HasDiscount = first.HasDiscount,
+                    DiscountPercentage = first.DiscountPercentage
+                };
+            }).ToList();
+
         column.Item()
             .PaddingTop(6)
             .Table(table =>
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(2); 
-                    columns.RelativeColumn(2); 
-                    columns.RelativeColumn(4.5f);  
-                    columns.RelativeColumn(1.5f);
+                    columns.RelativeColumn(2.5f); // اجمالي 
+                    columns.RelativeColumn(2.5f); // السعر
+                    columns.RelativeColumn(3.5f); // الصنف 
+                    columns.RelativeColumn(1.5f); // كمية
                 });
 
                 table.Header(header =>
@@ -180,10 +258,10 @@ public class DeliveryReceiptDocument : IDocument
                         .Bold();
                 });
 
-                foreach (TableItem item in _items)
+                foreach (TableItem item in groupedItems)
                 {
-                    table.Cell().Element(CellStyle).Text(item.Total?.ToString("N2")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.Price?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
 
@@ -214,14 +292,14 @@ public class DeliveryReceiptDocument : IDocument
                 columns.RelativeColumn();
             });
 
-            table.Cell().Text(_receipt.TotalAmount.ToString()).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text(_receipt.TotalAmount?.ToString("0.##")).FontSize(13).Bold().AlignCenter();
             table.Cell().Text("حساب الاصناف").Bold().FontSize(15).Bold().AlignCenter();
 
-            table.Cell().Text(_receipt.DeliveryFees.ToString()).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text(_receipt.DeliveryFees?.ToString("0.##")).FontSize(13).Bold().AlignCenter();
             table.Cell().Text("خدمة توصيل").Bold().FontSize(15).Bold().AlignCenter();
 
-            table.Cell().Text(_receipt.TotalOrder.ToString()).FontSize(13).Bold().AlignCenter();
-            table.Cell().Text("الإجمالي").FontSize(15).Bold().AlignCenter();
+            table.Cell().Text(_receipt.TotalOrder?.ToString("0.##")).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text("الاجمالي").FontSize(13).Bold().AlignCenter();
         });
     }
     private void BuildPaymentMethod(ref ColumnDescriptor column)
@@ -244,27 +322,15 @@ public class DeliveryReceiptDocument : IDocument
             .FontSize(15)
             .AlignCenter();
 
-        column.Item()
-            .Table(table =>
+       column.Item()
+            .AlignCenter()
+            .PaddingTop(5)
+            .Text(text =>
             {
-                table.ColumnsDefinition(cols =>
-                {
-                    cols.RelativeColumn();
-                    cols.RelativeColumn();
-                });
-
-                table.Cell()
-                    .PaddingTop(5)
-                    .Text("FB:New Tech")
-                    .FontSize(9)
-                    .AlignLeft();
-
-                table.Cell()
-                    .PaddingTop(5)
-                    .Text("www.NewTech.com")
-                    .FontSize(9)
-                    .AlignRight();
+                text.Line("New Tech Company for Software Development").FontSize(9);
+                text.Line("Contact: 01033964899").FontSize(9);
             });
+
     }
 
     private static IContainer CellStyle(IContainer container)

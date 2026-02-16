@@ -1,3 +1,4 @@
+@using POS.Core.Services.Contract.PosFeatureServices
 @using global::POS.Desktop.Components.Auth
 @inherits LayoutComponentBase
 @implements IDisposable
@@ -16,7 +17,7 @@
 <link href="settings-styles.css" rel="stylesheet" />
 
 
-<TokenInitializer />
+@* <TokenInitializer /> *@
 
 @* Required *@
 <MudThemeProvider/>
@@ -87,16 +88,32 @@
 @code {
     [Inject] private LocalizationService _localizationService { get; set; } = default!;
     [Inject] private DesktopFontSizeService _fontSizeService { get; set; } = default!;
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
+
+    private Action? _stateChangedHandler;
 
     protected override async Task OnInitializedAsync()
     {
-        _commonProperties.OnChange += StateHasChanged;
+        _stateChangedHandler = async () => 
+        {
+            try { await InvokeAsync(StateHasChanged); } catch { }
+        };
+
+        _commonProperties.OnChange += _stateChangedHandler;
         await _localizationService.InitializeAsync();
         await _fontSizeService.LoadStoredFontSizes();
+
+        if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
+        {
+            _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
+        }
     }
 
     public void Dispose()
     {
-        _commonProperties.OnChange -= StateHasChanged;
+        if (_stateChangedHandler != null)
+        {
+            _commonProperties.OnChange -= _stateChangedHandler;
+        }
     }
 }

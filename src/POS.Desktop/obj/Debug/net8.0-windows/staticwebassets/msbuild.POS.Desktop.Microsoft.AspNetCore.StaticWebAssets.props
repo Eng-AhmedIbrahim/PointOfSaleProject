@@ -12,12 +12,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>bhx66qgmgw</Fingerprint>
-      <Integrity>ASOisTC7C5C2yKUb5kXZJom2o0l0nZ5n1HxLbpMjglA=</Integrity>
+      <Fingerprint>mk0dq0oups</Fingerprint>
+      <Integrity>2mF+TN6J7sby/DqMukft1EF1K9gMU4/ejT6tIDOG100=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>2925</FileLength>
-      <LastWriteTime>Sat, 24 Jan 2026 01:59:20 GMT</LastWriteTime>
+      <FileLength>3181</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 16:12:55 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\actions-section.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))">
@@ -80,6 +80,26 @@
       <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\bootstrap\bootstrap.min.css.map'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\delivery.css'))">
+      <SourceType>Package</SourceType>
+      <SourceId>POS.Desktop</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>/</BasePath>
+      <RelativePath>delivery.css</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>x4imbkm2bw</Fingerprint>
+      <Integrity>r1/+LiyXPHqztFlTXnV2OygR4FyNOcoFApChoP4PR14=</Integrity>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <FileLength>10137</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 16:34:06 GMT</LastWriteTime>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\delivery.css'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\favicon.png'))">
       <SourceType>Package</SourceType>
       <SourceId>POS.Desktop</SourceId>
@@ -120,6 +140,26 @@
       <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Logo.png'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\ReceiptLogo\logo.png'))">
+      <SourceType>Package</SourceType>
+      <SourceId>POS.Desktop</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>/</BasePath>
+      <RelativePath>images/ReceiptLogo/logo.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>m5dfkfl50o</Fingerprint>
+      <Integrity>WrA+RK/rb2F85tlYvtOUvDqwIKAPOAyWu3rZVw7Kaq8=</Integrity>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <FileLength>130595</FileLength>
+      <LastWriteTime>Tue, 25 Apr 2023 01:05:52 GMT</LastWriteTime>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\ReceiptLogo\logo.png'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))">
       <SourceType>Package</SourceType>
       <SourceId>POS.Desktop</SourceId>
@@ -132,12 +172,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>vcctw9lunv</Fingerprint>
-      <Integrity>z5ejZezQgKguWfRqVsDJe3x9EecBQVuhholNlZTkEVI=</Integrity>
+      <Fingerprint>tllv0sz2gj</Fingerprint>
+      <Integrity>3+Dnlt7QcPPtI595KUXpJfpq3OV/TlYLz6IBuJG2h6k=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>3885</FileLength>
-      <LastWriteTime>Fri, 23 Jan 2026 21:09:37 GMT</LastWriteTime>
+      <FileLength>4057</FileLength>
+      <LastWriteTime>Thu, 12 Feb 2026 14:37:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\pos.css'))">
@@ -177,7 +217,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>27820</FileLength>
-      <LastWriteTime>Tue, 10 Feb 2026 13:48:21 GMT</LastWriteTime>
+      <LastWriteTime>Thu, 12 Feb 2026 02:36:44 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">
@@ -192,12 +232,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>tvk9p4d59b</Fingerprint>
-      <Integrity>B9Vdo8kc6C/OeM1T/GNQ1P0D2BQa9XEdvMi7hXZy0kw=</Integrity>
+      <Fingerprint>e1uq2iuazm</Fingerprint>
+      <Integrity>kkRTfzbeAYtN+GwgTykS21Ek4ZrmKw58fil8z1/k8/4=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>3219</FileLength>
-      <LastWriteTime>Sat, 24 Jan 2026 02:25:55 GMT</LastWriteTime>
+      <FileLength>5294</FileLength>
+      <LastWriteTime>Sat, 14 Feb 2026 16:03:15 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\settings-styles.css'))">

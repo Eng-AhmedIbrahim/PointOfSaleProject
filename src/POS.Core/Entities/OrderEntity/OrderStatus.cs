@@ -3,8 +3,14 @@
 public enum OrderStates : byte
 {
     Pending = 1,
-    Canceled ,
+    Canceled,
     Completed,
     Voided,
-    Reserved
+    Reserved,
+    Dispatched,
+    Delivered,
+    FailedToDeliverToBranch,
+    SentToBranch,
+    Assigned,
+    OnTable
 }

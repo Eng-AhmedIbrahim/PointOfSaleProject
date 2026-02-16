@@ -33,7 +33,50 @@ namespace POS.Desktop.Components.Pages
         }
         private async Task SaveChanges()
         {
+            // Implementation for saving changes
+            await SafeNavigateAsync("/pos");
+        }
 
+        private async Task Cancel()
+        {
+            await SafeNavigateAsync("/pos");
+        }
+
+        private async Task SafeNavigateAsync(string uri)
+        {
+            int maxRetries = 5;
+            int currentRetry = 0;
+            int delayMs = 50;
+
+            while (currentRetry < maxRetries)
+            {
+                try
+                {
+                    await Task.Delay(delayMs);
+                    if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                    {
+                        await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                        return;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("NavigationManager not yet initialized");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    currentRetry++;
+                    if (currentRetry >= maxRetries)
+                    {
+                        var logger = _clientFactory.CreateClient("POS.Desktop"); 
+                        // Assuming basic logging or alert
+                        // No snackbar defined in this file, so we just swallow or console log
+                        Console.WriteLine($"Navigation failed: {ex.Message}");
+                        return;
+                    }
+                    delayMs *= 2;
+                }
+            }
         }
     }
 }

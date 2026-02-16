@@ -109,11 +109,13 @@ public class CommonProperties
 
     #region Delivery
     public CustomerDetails? CustomerDetails { get; set; } = new();
+    public bool UpdateDeliveryOrder { get; set; } = false;
 
     #endregion
     public DateOnly? PosDate { get; set; } = new();
 
     public ICollection<OrderSettingToReturnDto> OrderSettings { get; set; } = new List<OrderSettingToReturnDto>();
+    public List<POS.Contract.Dtos.OrderDto.PosFeatureSettingToReturnDto> FeatureSettings { get; set; } = new();
     public TakeAwaySettings? TakeAwaySettings { get; set; }
     public DineInSettings? DineInSettings { get; set; }
     public DeliverySettings? DeliverySettings { get; set; }
@@ -130,6 +132,12 @@ public class CommonProperties
     public BranchToReturnDto? BranchDetails { get; set; } = new();
 
     public string? OrderNote { get; set; }
+
+    // Distribution properties
+    public Dictionary<UserToReturnDto, string> Drivers { get; set; } = new();
+    public IDialogReference? ChoiceDriverDialogReference { get; set; }
+    public IDialogReference? DeliveryOrderViewDialogReference { get; set; }
+    public IDialogReference? DriversDialogReference { get; set; }
 
     #region Localization & Layout
     private string _language = "ar";
@@ -161,4 +169,9 @@ public class CommonProperties
     }
     public void NotifyStateChanged() => OnChange?.Invoke();
     #endregion
+
+    public bool IsFeatureEnabled(string featureName)
+    {
+        return FeatureSettings?.FirstOrDefault(s => s.FeatureName == featureName)?.Value ?? true;
+    }
 }

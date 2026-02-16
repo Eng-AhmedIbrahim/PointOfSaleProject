@@ -25,6 +25,10 @@ public partial class SelectAddressDialog
         _commonProperties.CustomerDetails.HomeNumber = address.HomeNumber;
         _commonProperties.CustomerDetails.FloorNumber = address.FloorNumber;
         _commonProperties.CustomerDetails.FlatNumber = address.FlatNumber;
+        _commonProperties.CustomerDetails.ZoneID = address.DeliveryZoneId;
+        _commonProperties.CustomerDetails.BranchId = address.BranchId;
+        _commonProperties.CustomerDetails.ZoneFees = address.DeliveryFee;
+        _commonProperties.CustomerDetails.CustomerAddressId = address.Id;
 
         _handelDeliveryInvocation.TriggerAddressSelected();
 

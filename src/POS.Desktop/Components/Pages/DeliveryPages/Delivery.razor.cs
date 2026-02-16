@@ -1,18 +1,94 @@
-﻿namespace POS.Desktop.Components.Pages.DeliveryPages;
+﻿using POS.Core.Services.Contract.PosFeatureServices;
+using POS.Desktop.Services;
+
+namespace POS.Desktop.Components.Pages.DeliveryPages;
 
 public partial class Delivery : IDisposable
 {
+    [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
+    [Inject] private CallCenterNotificationService _callCenterService { get; set; } = default!;
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
+    
     public IReadOnlyList<DeliveryTitleToReturnDto>? CustomerTitles { get; set; } = new List<DeliveryTitleToReturnDto>();
     public IReadOnlyList<BranchToReturnDto>? Branches { get; set; } = new List<BranchToReturnDto>();
+    public DeliveryCustomerToReturnDto? CustomerStats { get; set; }
 
     private IReadOnlyList<DeliveryZonesToReturnDto> Zones = [];
-    protected async override Task OnInitializedAsync()
+    private string _pageDirection = "rtl";
+    private bool _callCenterInitialized = false;
+    private Action? _stateChangedHandler;
+    
+    protected override void OnInitialized()
     {
-        _handelDeliveryInvocation.OnAddressSelected += HandleAddressSelected;
-        _commonProperties.CustomerDetails = new ();
+        _stateChangedHandler = async () => 
+        {
+            try { await InvokeAsync(StateHasChanged); } catch { }
+        };
 
-        await GetAllTitles();
-        await GetAllBranches();
+        Localizer.OnLanguageChanged += _stateChangedHandler;
+        _handelDeliveryInvocation.OnAddressSelected += SafeAddressSelected;
+        _handelDeliveryInvocation.OnToggleDirection += SafeToggleDirection;
+        _handelDeliveryInvocation.OnNewOrderReceived += SafeNewOrderReceived;
+        
+        if (_commonProperties.CustomerDetails == null)
+        {
+            _commonProperties.CustomerDetails = new();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadDirection();
+                
+                // Load initial data
+                await GetAllTitles();
+                await GetAllBranches();
+                await GetZones();
+                await LoadCustomerOrders();
+
+                if (!_callCenterInitialized)
+                {
+                    await _callCenterService.InitializeAsync();
+                    _callCenterInitialized = true;
+                }
+
+                if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
+                {
+                    _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
+                }
+                
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                _snackbar.Add($"Error loading Delivery Page: {ex.Message}", Severity.Error);
+                Console.WriteLine($"Error in Delivery.OnAfterRenderAsync: {ex}");
+            }
+        }
+    }
+
+    private async Task LoadDirection()
+    {
+        var savedDirection = await _localStorage.GetItemAsync<string>("deliveryPageDirection");
+        _pageDirection = string.IsNullOrEmpty(savedDirection) ? "rtl" : savedDirection;
+    }
+
+
+
+    private async Task LoadCustomerOrders()
+    {
+        // TODO: Load actual customer orders from the delivery service
+        // For now, this will be implemented when backend API is ready
+        // Example: _orders = await _deliveryServices.GetRecentCustomerOrdersAsync(_commonProperties.CustomerDetails.FirstPhoneNumber);
+    }
+
+    private async Task GetZones()
+    {
+        Zones = await _deliveryServices.GetAllDeliveryZonesAsync();
     }
 
     private async Task GetAllBranches()
@@ -21,9 +97,92 @@ public partial class Delivery : IDisposable
     private async Task GetAllTitles()
        => CustomerTitles = await _deliveryServices.GetAllDeliveryCustomerTitlesAsync();
 
-    private void HandleAddressSelected()
-        => StateHasChanged();
+    private DeliveryZonesToReturnDto? SelectedZone;
+
+    private void OnZoneChanged(DeliveryZonesToReturnDto zone)
+    {
+        SelectedZone = zone;
+        if (zone != null)
+        {
+            _commonProperties.CustomerDetails!.ZoneName = zone.ZoneName;
+            _commonProperties.CustomerDetails.ZoneID = zone.Id;
+            _commonProperties.CustomerDetails.ZoneFees = zone.DeliveryFee ?? 0;
+            _commonProperties.CustomerDetails.ZoneBonus = zone.ZoneBonus ?? 0;
+        }
+        else
+        {
+            _commonProperties.CustomerDetails!.ZoneName = string.Empty;
+            _commonProperties.CustomerDetails.ZoneID = 0;
+            _commonProperties.CustomerDetails.ZoneFees = 0;
+            _commonProperties.CustomerDetails.ZoneBonus = 0;
+        }
+        StateHasChanged();
+    }
+
+    private async void SafeAddressSelected()
+    {
+        try
+        {
+            if (_commonProperties != null && _commonProperties.CustomerDetails != null)
+            {
+                // Check if branch needs updating
+                if (_commonProperties.CustomerDetails.BranchId > 0 && 
+                    (_commonProperties.BranchDetails == null || _commonProperties.BranchDetails.Id != _commonProperties.CustomerDetails.BranchId))
+                {
+                    _commonProperties.BranchDetails = Branches?.FirstOrDefault(b => b.Id == _commonProperties.CustomerDetails.BranchId) 
+                        ?? new BranchToReturnDto { Id = _commonProperties.CustomerDetails.BranchId, Name = _commonProperties.CustomerDetails.BranchName };
+                    
+                    await GetZones();
+                }
+
+                if (Zones != null && Zones.Any())
+                {
+                    SelectedZone = Zones.FirstOrDefault(z => z.Id == _commonProperties.CustomerDetails.ZoneID);
+                    
+                    // Update Fees just in case
+                    if (SelectedZone != null)
+                    {
+                        _commonProperties.CustomerDetails.ZoneFees = SelectedZone.DeliveryFee ?? 0;
+                    }
+                }
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in SafeAddressSelected: {ex.Message}");
+        }
+    }
+
+    private async void SafeToggleDirection()
+    {
+        try
+        {
+            _pageDirection = _pageDirection == "rtl" ? "ltr" : "rtl";
+            await _localStorage.SetItemAsync("deliveryPageDirection", _pageDirection);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch { }
+    }
+
+    private async void SafeNewOrderReceived()
+    {
+        try
+        {
+            await LoadCustomerOrders();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch { }
+    }
 
     public void Dispose()
-        => _handelDeliveryInvocation.OnAddressSelected -= HandleAddressSelected;
+    {
+        if (_stateChangedHandler != null)
+        {
+            Localizer.OnLanguageChanged -= _stateChangedHandler;
+        }
+        _handelDeliveryInvocation.OnAddressSelected -= SafeAddressSelected;
+        _handelDeliveryInvocation.OnToggleDirection -= SafeToggleDirection;
+        _handelDeliveryInvocation.OnNewOrderReceived -= SafeNewOrderReceived;
+    }
 }

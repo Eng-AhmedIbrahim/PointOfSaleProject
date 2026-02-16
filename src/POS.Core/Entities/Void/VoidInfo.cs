@@ -3,7 +3,7 @@
 public class VoidInfo
 {
     public decimal? VoidAmount { get; set; }
-    public int? VoidBy { get; set; }
+    public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }

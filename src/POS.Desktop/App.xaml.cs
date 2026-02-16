@@ -21,6 +21,7 @@ using BlazorBase.ERPFrontServices.DeliveryServices;
 using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.DineInOrderServices;
 using BlazorBase.ERPFrontServices.OrderTrackServices;
+using BlazorBase.ERPFrontServices.ComplaintServices;
 using BlazorBase.API;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -30,18 +31,37 @@ using POS.Desktop.Components;
 using System.Net.Http;
 using POS.Desktop.Services;
 using POS.Core.Services.Contract.PrinterServices;
+using POS.Core.Services.Contract.PosFeatureServices;
 using Microsoft.Extensions.Localization;
+using ERPFront.HubSettings;
+using ERPFront.Models;
 
 namespace POS.Desktop;
 
 public partial class App : Application
 {
     private ServiceProvider? _serviceProvider;
+    public static List<string> InMemoryLogs { get; } = new();
+    private static readonly object _logLock = new();
+
+    public static void AddLog(string message)
+    {
+        lock (_logLock)
+        {
+            InMemoryLogs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+            if (InMemoryLogs.Count > 500) InMemoryLogs.RemoveAt(0);
+        }
+    }
 
     protected override void OnStartup(StartupEventArgs e)
     {
         try
         {
+            // Register global exception handlers
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
             base.OnStartup(e);
 
@@ -49,6 +69,7 @@ public partial class App : Application
             SetupSerilog();
 
             Log.Information("Setting up services...");
+            AddLog("Application Starting Store POS Desktop");
 
             // Configure services
             var services = new ServiceCollection();
@@ -91,6 +112,7 @@ public partial class App : Application
             .Enrich.FromLogContext()
             .Enrich.WithMachineName()
             .WriteTo.Console()
+            .WriteTo.Sink(new DelegatingSink(AddLog)) // Custom sink to push logs to our list
             .WriteTo.File(
                 Path.Combine(logPath, "POS-Desktop-.txt"),
                 rollingInterval: RollingInterval.Day,
@@ -98,6 +120,54 @@ public partial class App : Application
             .CreateLogger();
 
         Log.Information("Application starting up - Logs saved to: {LogPath}", logPath);
+    }
+
+    private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+    {
+        Log.Fatal(e.Exception, "Unhandled UI Exception");
+        ShowErrorDialog("UI Thread Error", e.Exception);
+        e.Handled = true; // Prevent app from closing immediately
+    }
+
+    private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        var ex = e.ExceptionObject as Exception;
+        Log.Fatal(ex, "Unhandled Domain Exception");
+        if (ex != null) ShowErrorDialog("Domain Error", ex);
+    }
+
+    private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+    {
+        Log.Fatal(e.Exception, "Unobserved Task Exception");
+        ShowErrorDialog("Background Task Error", e.Exception);
+        e.SetObserved();
+    }
+
+    private void ShowErrorDialog(string title, Exception ex)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            var message = $"Critical Error: {ex.Message}\n\nType: {ex.GetType().Name}\n\nStack Trace:\n{ex.StackTrace}";
+            if (ex.InnerException != null)
+            {
+                message += $"\n\nInner Exception: {ex.InnerException.Message}";
+            }
+            
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+        });
+    }
+
+    // Helper sink for Serilog
+    private class DelegatingSink : Serilog.Core.ILogEventSink
+    {
+        private readonly Action<string> _logAction;
+        public DelegatingSink(Action<string> logAction) => _logAction = logAction;
+        public void Emit(Serilog.Events.LogEvent logEvent)
+        {
+            var message = logEvent.RenderMessage();
+            if (logEvent.Exception != null) message += $" | EX: {logEvent.Exception.Message}";
+            _logAction(message);
+        }
     }
 
     private void ConfigureServices(IServiceCollection services)
@@ -113,6 +183,7 @@ public partial class App : Application
 
         // Add Blazor services
         services.AddWpfBlazorWebView();
+        services.AddBlazorWebViewDeveloperTools();
         services.AddMudServices(config =>
         {
             config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -173,11 +244,24 @@ public partial class App : Application
         services.AddScoped<IDeliveryServices, DeliveryServices>();
         services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<IPrintOrderService, DesktopPrintOrderService>();
+        services.AddSingleton<CallCenterNotificationService>();
 
         // Category services
         services.AddScoped<ICategoryServices, CategoryService>();
         services.AddScoped<IDineInOrderFrontService, DineInOrderFrontService>();
         services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
+        services.AddScoped<IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
+        services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
+
+        // Call Center Hub Settings
+        services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));
+        services.AddSingleton(resolver =>
+            resolver.GetRequiredService<IOptions<CallCenterHubSettings>>().Value);
+        
+        // Dispatcher Settings
+        services.Configure<DispatcherSettings>(configuration.GetSection("DispatcherSettings"));
+        services.AddSingleton(resolver =>
+            resolver.GetRequiredService<IOptions<DispatcherSettings>>().Value);
         
         // Desktop-specific services (file-based storage instead of localStorage)
         services.AddSingleton<DesktopFileStorageService>();
@@ -201,6 +285,7 @@ public partial class App : Application
             config.JsonSerializerOptions.WriteIndented = false;
         });
 
+        services.AddScoped<IPosFeatureSettingsService, DesktopPosFeatureSettingsService>();
         services.AddScoped<IPrinterServices, DesktopPrinterService>();
 
         // Authentication & Authorization

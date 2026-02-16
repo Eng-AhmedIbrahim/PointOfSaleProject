@@ -1,5 +1,4 @@
-﻿@using MudBlazor
-@inject NavigationManager _navigationManager
+﻿@inject NavigationManager _navigationManager
 @inject CommonProperties _commonProperties
 @inject ISnackbar _snackbar
 @inject IDialogService _dialogService
@@ -7,122 +6,147 @@
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
 @inject LocalizationService Localizer
 
-<MudGrid Spacing="1" Justify="Justify.Center">
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button active-button"
-                   Size="Size.Large"
-                   OnClick='AddCustomer'>
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["OrderBtn"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large"
-                   OnClick='AddNewAddress'>
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.LocationCity" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["AddNew"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large"
-                   OnClick="ClearDeliveryOrder">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.Clear" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Clear"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.ReportProblem" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Complaints"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.Search" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Search"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.Business" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Branches"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.HorizontalDistribute" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Distribution"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-
-    <MudItem xs="12">
-        <MudButton Variant="Variant.Filled"
-                   Class="full-height-button special-keypad-button"
-                   Size="Size.Large"
-                   OnClick="BackToPos">
-            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.ArrowBack" Class="button-icon" />
-                <MudText Typo="Typo.subtitle2">@Localizer["Back"]</MudText>
-            </MudStack>
-        </MudButton>
-    </MudItem>
-</MudGrid>
-
-<style>
-    .full-height-button {
-        height: calc((100vh - 68px) / 8);
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-transform: none;
+<MudStack Spacing="0" Class="action-button-container flex-grow-1" Style="height: 100%;">
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_Order"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryOrderBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-primary-gradient"
+                           Size="Size.Large"
+                           OnClick='AddCustomer'>
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["OrderBtn"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     }
 
-    .button-icon {
-        font-size: 2rem;
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_AddNew"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryAddNewBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-secondary-gradient"
+                           Size="Size.Large"
+                           OnClick='AddNewAddress'>
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationCity" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["AddNew"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     }
 
-    .special-keypad-button {
-        background: linear-gradient(135deg, #ffffff, #e7ecf5);
-        color: #143155 !important;
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_Clear"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryClearBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-danger-gradient"
+                           Size="Size.Large"
+                           OnClick="ClearDeliveryOrder">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Clear" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Clear"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     }
 
-    .active-button {
-        background: linear-gradient(135deg, #fbd14b, #ffea92);
-        color: black !important;
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_Complaints"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryComplaintsBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-secondary-gradient"
+                           Size="Size.Large"
+                           OnClick="ShowComplaints">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.ReportProblem" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Complaints"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
     }
-</style>
+
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_Search"))
+    {
+        <AuthorizeView Policy="CanAccessDeliverySearchBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-info-gradient"
+                           Size="Size.Large">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Search" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Search"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+    }
+
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_BranchMgmt"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryBranchManagementBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-info-gradient"
+                           Size="Size.Large">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.ManageAccounts" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["BranchManagement"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+    }
+
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_Distribution"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryDistributionBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-warning-gradient"
+                           Size="Size.Large">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalShipping" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Distribution"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+    }
+
+    @if (_commonProperties.IsFeatureEnabled("Delivery_Button_ToggleDir"))
+    {
+        <AuthorizeView Policy="CanAccessDeliveryToggleDirectionBtn">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Class="modern-action-button btn-success-gradient"
+                           Size="Size.Large"
+                           OnClick="ToggleDirection">
+                    <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Class="action-icon" />
+                        <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["ToggleDirection"]</MudText>
+                    </MudStack>
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+    }
+
+    <MudButton Variant="Variant.Filled"
+               Class="modern-action-button btn-secondary-gradient"
+               Size="Size.Large"
+               OnClick="BackToPos">
+        <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
+            <MudIcon Icon="@Icons.Material.Filled.ArrowBack" Class="action-icon" />
+            <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Back"]</MudText>
+        </MudStack>
+    </MudButton>
+</MudStack>

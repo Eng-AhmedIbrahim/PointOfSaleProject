@@ -2577,7 +2577,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
+          "AutoMapper": "13.0.1",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "8.0.8",
+          "POS.Contract": "1.0.0",
+          "POS.Reports": "1.0.0",
           "PdfiumViewer": "2.13.0",
           "PdfiumViewer.Native.x86_64.v8-xfa": "2018.4.8.256",
           "Pos.Repository": "1.0.0",
@@ -6391,6 +6394,7 @@
       "ERPFront >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.8",
       "Microsoft.AspNetCore.SignalR.Common >= 8.0.15",
+      "Microsoft.EntityFrameworkCore.Design >= 8.0.8",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.8",
       "POS.Contract >= 1.0.0",
       "POS.Reports >= 1.0.0",
@@ -6484,6 +6488,12 @@
           "Microsoft.AspNetCore.SignalR.Common": {
             "target": "Package",
             "version": "[8.0.15, )"
+          },
+          "Microsoft.EntityFrameworkCore.Design": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[8.0.8, )"
           },
           "Microsoft.EntityFrameworkCore.Tools": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

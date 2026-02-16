@@ -1,19 +1,17 @@
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.PosFeatureServices;
-using Pos.Repository.Data.DataSeed;
-
 namespace POS.Services.PosFeatureServices;
 
 public class PosFeatureSettingsService : IPosFeatureSettingsService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public PosFeatureSettingsService(IUnitOfWork unitOfWork)
+    public PosFeatureSettingsService(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    public async Task<List<PosFeatureSetting>> GetSettingsByComputerNameAsync(string computerName)
+    public async Task<List<PosFeatureSettingToReturnDto>> GetSettingsByComputerNameAsync(string computerName)
     {
         var spec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => s.ComputerName == computerName);
         var settings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(spec);
@@ -25,45 +23,31 @@ public class PosFeatureSettingsService : IPosFeatureSettingsService
             settings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(spec);
         }
 
-        return settings.ToList();
+        return _mapper.Map<List<PosFeatureSettingToReturnDto>>(settings);
     }
 
     public async Task<bool> InitializeSettingsForComputerAsync(string computerName)
     {
-        // Fetch default settings (where ComputerName is null or specifically marked as default)
-        // Or fetch from seed file if not in DB.
-        // Assuming there are "template" settings with ComputerName = "Default" or null
-        var spec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => string.IsNullOrEmpty(s.ComputerName) || s.ComputerName == "Default");
-        var defaultSettings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(spec);
+        // 1. Check if settings for this specific device already exist
+        var computerSpec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => s.ComputerName == computerName);
+        var existingSettings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(computerSpec);
         
-        if (defaultSettings == null || !defaultSettings.Any())
+        if (existingSettings != null && existingSettings.Any())
         {
-             // If no defaults in DB, try to load from JSON
-             try 
-             {
-                 var settings = await PosDbContextDataSeed.GetDataFromJsonFile<PosFeatureSetting>("posSettings.json");
-                 if (settings != null && settings.Any())
-                 {
-                     foreach (var setting in settings)
-                     {
-                         setting.Id = 0; // Reset ID for new entry
-                         setting.ComputerName = computerName;
-                         // Ensure defaults
-                         if (string.IsNullOrEmpty(setting.NameEn)) setting.NameEn = setting.FeatureName; 
-                         await _unitOfWork.Repository<PosFeatureSetting>().AddAsync(setting);
-                     }
-                     await _unitOfWork.CompleteAsync();
-                     return true;
-                 }
-             }
-             catch
-             {
-                 // Log error or fallback
-             }
-             return false;
+            return true; // Already initialized for this computer
         }
 
-        foreach (var setting in defaultSettings)
+        // 2. Load default settings from JSON file
+        // This ensures every new device starts with the latest defaults from the configuration file
+        var settingsFromJson = await PosDbContextDataSeed.GetDataFromJsonFile<PosFeatureSetting>("posSettings.json");
+        
+        if (settingsFromJson == null || !settingsFromJson.Any())
+        {
+            return false;
+        }
+
+        // 3. Create settings for this specific computer
+        foreach (var setting in settingsFromJson)
         {
             var newSetting = new PosFeatureSetting
             {
@@ -71,33 +55,35 @@ public class PosFeatureSettingsService : IPosFeatureSettingsService
                 NameEn = setting.NameEn,
                 NameAr = setting.NameAr,
                 ModuleName = setting.ModuleName,
+                ScreenName = setting.ScreenName,
                 Value = setting.Value,
-                ComputerName = computerName
+                ComputerName = computerName // Assign the current computer name
             };
             await _unitOfWork.Repository<PosFeatureSetting>().AddAsync(newSetting);
         }
 
+        // Save all settings at once
         return await _unitOfWork.CompleteAsync() > 0;
     }
 
-    public async Task<bool> UpdateSettingsAsync(string computerName, List<PosFeatureSetting> settings)
+    public async Task<bool> UpdateSettingsAsync(string computerName, List<PosFeatureSettingToReturnDto> settings)
     {
         var existingSpec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => s.ComputerName == computerName);
         var existingSettings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(existingSpec);
 
-        foreach (var setting in settings)
+        foreach (var settingDto in settings)
         {
-            var existing = existingSettings.FirstOrDefault(s => s.FeatureName == setting.FeatureName);
+            var existing = existingSettings.FirstOrDefault(s => s.FeatureName == settingDto.FeatureName);
             if (existing != null)
             {
-                existing.Value = setting.Value;
-                // Update names if they changed in definition (optional)
-                existing.NameEn = setting.NameEn;
-                existing.NameAr = setting.NameAr;
+                existing.Value = settingDto.Value;
+                existing.NameEn = settingDto.NameEn;
+                existing.NameAr = settingDto.NameAr;
                 _unitOfWork.Repository<PosFeatureSetting>().Update(existing);
             }
             else
             {
+                var setting = _mapper.Map<PosFeatureSetting>(settingDto);
                 setting.Id = 0;
                 setting.ComputerName = computerName;
                 await _unitOfWork.Repository<PosFeatureSetting>().AddAsync(setting);

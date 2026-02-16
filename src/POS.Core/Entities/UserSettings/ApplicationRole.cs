@@ -2,6 +2,7 @@
 
 public class ApplicationRole : IdentityRole
 {
+    public bool ShowInLogin { get; set; } = true;
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 }
 

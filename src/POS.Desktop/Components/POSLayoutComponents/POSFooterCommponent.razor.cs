@@ -13,11 +13,17 @@ public partial class POSFooterCommponent : IDisposable
 
     [Inject] public required LocalizationService LocalizationService { get; set; }
     private bool _drawerOpen;
+    private Action? _stateChangedHandler;
 
     protected override async Task OnInitializedAsync()
     {
-        commonProperties.OnChange += StateHasChanged;
-        LocalizationService.OnLanguageChanged += StateHasChanged;
+        _stateChangedHandler = async () => 
+        {
+            try { await InvokeAsync(StateHasChanged); } catch { }
+        };
+
+        _commonProperties.OnChange += _stateChangedHandler;
+        LocalizationService.OnLanguageChanged += _stateChangedHandler;
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -40,37 +46,91 @@ public partial class POSFooterCommponent : IDisposable
     private async Task OpenOrderDiscountDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        commonProperties.OrderDiscountDialogReference = await DialogService.ShowAsync<OrderDiscountDialog>(LocalizationService["OrderDiscount"], options);
+        _commonProperties.OrderDiscountDialogReference = await DialogService.ShowAsync<OrderDiscountDialog>(LocalizationService["OrderDiscount"], options);
     }
 
-    private void GotoWaitingPage()
+    private async Task GotoWaitingPage()
     {
-        if (commonProperties!.TableItems!.Any())
+        if (_commonProperties!.TableItems!.Any())
         {
             Snackbar.Add(LocalizationService["FinishOrderFirst"], Severity.Warning);
         }
         else
         {
-            navigationManager.NavigateTo("/waitingPage");
+            await SafeNavigateAsync("/waitingPage");
         }
     }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 5;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                
+                // Check if NavigationManager is initialized by safely checking the Uri property
+                if (navigationManager != null)
+                {
+                    try
+                    {
+                        // Try to access Uri - if it throws, NavigationManager isn't ready yet
+                        var currentUri = navigationManager.Uri;
+                        if (!string.IsNullOrEmpty(currentUri))
+                        {
+                            // Use InvokeAsync to ensure we're on the correct synchronization context
+                            await InvokeAsync(() => navigationManager.NavigateTo(uri, forceLoad: false));
+                            return;
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // NavigationManager not yet initialized, will retry
+                        throw new InvalidOperationException("NavigationManager not yet initialized");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                
+                if (currentRetry >= maxRetries)
+                {
+                    Snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                
+                // Exponential backoff
+                delayMs *= 2;
+            }
+        }
+    }
+
 
     private async Task OpenCustomerInfoDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        commonProperties.CustomerInfoDialogReference = await DialogService.ShowAsync<CustomerInfoDialog>(LocalizationService["CustomerData"], options);
+        _commonProperties.CustomerInfoDialogReference = await DialogService.ShowAsync<CustomerInfoDialog>(LocalizationService["CustomerData"], options);
     }
 
     private async Task OpenPaymentMethodDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        commonProperties.PaymentMethodDialogReference = await DialogService.ShowAsync<PaymentModeDialog>(LocalizationService["PaymentMethod"], options);
+        _commonProperties.PaymentMethodDialogReference = await DialogService.ShowAsync<PaymentModeDialog>(LocalizationService["PaymentMethod"], options);
     }
 
     private async Task OpenQuickPaymentDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-        commonProperties.QuickPaymentDialogReference = await DialogService.ShowAsync<QuickPaymentDialog>(LocalizationService["QuickPayment"], options);
+        _commonProperties.QuickPaymentDialogReference = await DialogService.ShowAsync<QuickPaymentDialog>(LocalizationService["QuickPayment"], options);
     }
 
     private void ToggleDrawer()
@@ -78,7 +138,10 @@ public partial class POSFooterCommponent : IDisposable
 
     public void Dispose()
     {
-        commonProperties.OnChange -= StateHasChanged;
-        LocalizationService.OnLanguageChanged -= StateHasChanged;
+        if (_stateChangedHandler != null)
+        {
+            _commonProperties.OnChange -= _stateChangedHandler;
+            LocalizationService.OnLanguageChanged -= _stateChangedHandler;
+        }
     }
 }

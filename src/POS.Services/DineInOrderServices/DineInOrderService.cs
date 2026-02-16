@@ -20,7 +20,7 @@ public class DineInOrderService : IDineInOrderService
     {
         if (settings == null)
         {
-            settings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(new POS.Core.Specifications.OrderSpecs.OrderSettingSpecs(OrderTypes.DineIn));
+            settings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(new POS.Core.Specifications.OrderSpecs.OrderSettingSpecs(OrderTypes.DineIn, order.MachineName));
         }
 
         if (order.OrderDetails == null) return;
@@ -147,7 +147,7 @@ public class DineInOrderService : IDineInOrderService
                 }
 
                 // Apply captain tips deduction if enabled in settings
-                var dineInSettings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(new POS.Core.Specifications.OrderSpecs.OrderSettingSpecs(OrderTypes.DineIn));
+                var dineInSettings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(new POS.Core.Specifications.OrderSpecs.OrderSettingSpecs(OrderTypes.DineIn, order.MachineName));
                 if (dineInSettings != null && dineInSettings.DeductCaptainTips == true)
                 {
                     order.CaptainTipsDeduction = dineInSettings.CaptainTipsAmount;
@@ -267,6 +267,9 @@ public class DineInOrderService : IDineInOrderService
                 existingOrder.CustomerCount = order.CustomerCount;
                 existingOrder.MaleCount = order.MaleCount;
                 existingOrder.FemaleCount = order.FemaleCount;
+                existingOrder.TableState = order.TableState;
+                existingOrder.WaiterID = order.WaiterID;
+                existingOrder.WaiterName = order.WaiterName;
 
                 _unitOfWork.Repository<Orders>().Update(existingOrder);
 
@@ -809,6 +812,16 @@ public class DineInOrderService : IDineInOrderService
                 if (primaryOrder == null)
                     return false;
 
+                // Clear navigation properties immediately to avoid identity conflicts during EF tracking
+                if (primaryOrder.OrderDetails != null)
+                {
+                    foreach (var item in primaryOrder.OrderDetails)
+                    {
+                        item.MenuSalesItem = null;
+                        item.Order = null;
+                    }
+                }
+
                 foreach (var secId in secondaryOrderIds)
                 {
                     var spec = new DineInOrderByIdSpec(secId);
@@ -816,6 +829,16 @@ public class DineInOrderService : IDineInOrderService
                     var secOrder = secOrders.FirstOrDefault();
                     
                     if (secOrder == null) continue;
+
+                    // Clear navigation properties immediately to avoid identity conflicts
+                    if (secOrder.OrderDetails != null)
+                    {
+                        foreach (var item in secOrder.OrderDetails)
+                        {
+                            item.MenuSalesItem = null;
+                            item.Order = null;
+                        }
+                    }
 
                     // Merge Order-Level Discount if primary doesn't have one
                     if ((primaryOrder.DiscountPercentage == null || primaryOrder.DiscountPercentage == 0) &&
@@ -832,9 +855,6 @@ public class DineInOrderService : IDineInOrderService
                     {
                         foreach (var secItem in secOrder.OrderDetails.ToList())
                         {
-                            // Clear navigation property to avoid identity conflict in EF tracking
-                            secItem.MenuSalesItem = null;
-
                             var primaryItem = primaryOrder.OrderDetails?.FirstOrDefault(i => AreItemsSame(i, secItem));
                             
                             if (primaryItem != null)
@@ -850,9 +870,6 @@ public class DineInOrderService : IDineInOrderService
                                 primaryItem.TotalDiscountAmount = (primaryItem.TotalDiscountAmount ?? 0) + (secItem.TotalDiscountAmount ?? 0);
                                 primaryItem.TotalDiscountPrice = (primaryItem.TotalDiscountPrice ?? 0) + (secItem.TotalDiscountPrice ?? 0);
                                 primaryItem.VoidAmount = (primaryItem.VoidAmount ?? 0) + (secItem.VoidAmount ?? 0); // Void quantity
-                                
-                                // Avoid re-attaching graph if possible
-                                if (primaryItem.MenuSalesItem != null) primaryItem.MenuSalesItem = null;
                                 
                                 _unitOfWork.Repository<OrderItemsDetails>().Update(primaryItem);
                             }
@@ -1580,9 +1597,9 @@ public class DineInOrderService : IDineInOrderService
 
                 // Mark order as Pending (Open)
                 order.OrderState = OrderStates.Pending;
-                if (!string.IsNullOrEmpty(captainId) && int.TryParse(captainId, out int cid))
+                if (!string.IsNullOrEmpty(captainId))
                 {
-                    order.WaiterID = cid;
+                    order.WaiterID = captainId;
                 }
                 order.WaiterName = captainName;
                 

@@ -11,13 +11,13 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly AppDbContext _context;
     private readonly UserManager<AppUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly AppIdentityDbContext _identityDbContext;
 
     public AuthService(IConfiguration configuration,
         AppDbContext context,
          UserManager<AppUser> userManager,
-         RoleManager<IdentityRole> roleManager,
+         RoleManager<ApplicationRole> roleManager,
          AppIdentityDbContext identityDbContext
         )
     {
@@ -48,7 +48,7 @@ public class AuthService : IAuthService
         if (await _roleManager.RoleExistsAsync(roleName))
             return false;
 
-        var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+        var result = await _roleManager.CreateAsync(new ApplicationRole { Name = roleName });
 
         return result.Succeeded;
     }
@@ -137,13 +137,13 @@ public class AuthService : IAuthService
         return result.Succeeded;
     }
 
-    public async Task<List<IdentityRole>> GetAllRolesAsync()
+    public async Task<List<ApplicationRole>> GetAllRolesAsync()
     => _roleManager.Roles.ToList();
 
     public async Task<List<AppUser>> GetAllUsersAsync()
     => _userManager.Users.ToList();
 
-    public async Task<IdentityRole> GetRoleAsync(string roleName)
+    public async Task<ApplicationRole> GetRoleAsync(string roleName)
     => await _roleManager.FindByNameAsync(roleName) ?? new();
 
     public async Task<AppUser> GetUserAsync(string userId)
@@ -190,7 +190,7 @@ public class AuthService : IAuthService
 
         if (!await _roleManager.RoleExistsAsync(newRole))
         {
-            await _roleManager.CreateAsync(new IdentityRole(newRole));
+            await _roleManager.CreateAsync(new ApplicationRole { Name = newRole });
         }
 
         var roleResult = await _userManager.AddToRoleAsync(user, newRole);

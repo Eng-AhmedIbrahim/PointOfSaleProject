@@ -68,7 +68,7 @@
                 <MudItem xs="12">
                     <div class="detail-group highlight-captain">
                         <MudText Typo="Typo.caption" Class="detail-label">@Localizer["SelectCaptain"]</MudText>
-                        <MudSelect T="CaptainOrderUserToReturnDto" @bind-Value="SelectedCaptain" 
+                        <MudSelect T="UserToReturnDto" @bind-Value="SelectedCaptain" 
                                    Label="@Localizer["Captain"]" 
                                    Variant="Variant.Outlined" 
                                    AnchorOrigin="Origin.BottomCenter"
@@ -98,8 +98,8 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public DineInOrderDto Reservation { get; set; } = default!;
 
-    private List<CaptainOrderUserToReturnDto> Captains { get; set; } = new();
-    private CaptainOrderUserToReturnDto? SelectedCaptain { get; set; }
+    private List<UserToReturnDto> Captains { get; set; } = new();
+    private UserToReturnDto? SelectedCaptain { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

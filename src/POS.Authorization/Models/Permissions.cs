@@ -30,6 +30,14 @@ public static class Permissions
         { "CanAccessRoles", "CanAccessRoles" },
         { "CanAccessPosSettings", "CanAccessPosSettings" },
         { "CanAccessPrintingSettings", "CanAccessPrintingSettings" },
+        { "CanAccessDeliveryOrderBtn", "CanAccessDeliveryOrderBtn" },
+        { "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryAddNewBtn" },
+        { "CanAccessDeliveryClearBtn", "CanAccessDeliveryClearBtn" },
+        { "CanAccessDeliveryComplaintsBtn", "CanAccessDeliveryComplaintsBtn" },
+        { "CanAccessDeliverySearchBtn", "CanAccessDeliverySearchBtn" },
+        { "CanAccessDeliveryBranchManagementBtn", "CanAccessDeliveryBranchManagementBtn" },
+        { "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryDistributionBtn" },
+        { "CanAccessDeliveryToggleDirectionBtn", "CanAccessDeliveryToggleDirectionBtn" },
     };
 }
 

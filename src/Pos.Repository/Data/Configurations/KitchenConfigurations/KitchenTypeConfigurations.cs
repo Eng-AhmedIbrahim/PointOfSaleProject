@@ -15,11 +15,7 @@ public class KitchenTypeConfiguration : IEntityTypeConfiguration<KitchenType>
             .HasMaxLength(100)
         .IsRequired(false);
 
-        builder.HasOne(k => k.KitchenPrinters)
-               .WithOne(p => p.KitchenType)
-               .HasForeignKey<KitchenType>(k => k.KitchenPrinterId)
-               .IsRequired(false)
-               .OnDelete(DeleteBehavior.Restrict);
+
 
 
         builder.HasMany(c => c.Categories)

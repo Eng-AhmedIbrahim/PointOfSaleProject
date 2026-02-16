@@ -12,7 +12,7 @@ public class PrintOrderService : IPrintOrderService
         _orderSettingsService = orderSettingsService;
     }
 
-    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId, bool printCustomer = true, bool printKitchen = true, bool isClosing = false)
+    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId, bool printCustomer = true, bool printKitchen = true, bool isClosing = false, bool isUpdate = false)
     {
         BackupMainOrderDtoDetails(null!, null!, null!);
         BackupDineInDate(orderId);
@@ -40,7 +40,10 @@ public class PrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.WaiterName = orderId.CaptainName;
     }
 
-    public async Task<bool> PrintTakeAwayOrder(decimal paid = 0, string customerName = "", string customerPhone = "", PaymentMethod paymentMethod = PaymentMethod.Cash)
+    public async Task<bool> PrintTakeAwayOrder(decimal paid = 0
+        , string customerName = ""
+        , string customerPhone = "", 
+        PaymentMethod paymentMethod = PaymentMethod.Cash)
     {
         BackupMainOrderDtoDetails(customerName, customerPhone, paid, paymentMethod);
         var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
@@ -138,5 +141,40 @@ public class PrintOrderService : IPrintOrderService
     public Task PrintDineInClosingReceipt(DineInOrderDetails orderId)
     {
         return Task.CompletedTask;
+    }
+
+    public Task PrintReceivedOrderAsync(OrderDto order)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task PrintDispatchOrderAsync(OrderDto order)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<bool> PrintDeliveryOrder(decimal paid = 0)
+    {
+        BackupMainOrderDtoDetails(
+            _commonProperties.CustomerDetails?.CustomerName ?? "", 
+            _commonProperties.CustomerDetails?.FirstPhoneNumber ?? "", 
+            paid, 
+            _commonProperties.SelectedPaymentMethod
+        );
+        
+        // Add delivery specifics
+        _commonProperties.OrderDto!.Phone2 = _commonProperties.CustomerDetails?.SecondPhoneNumber;
+        _commonProperties.OrderDto.StreetName = _commonProperties.CustomerDetails?.ClientAddress;
+        _commonProperties.OrderDto.ZoneBonus = _commonProperties.CustomerDetails?.ZoneFees ?? 0;
+        _commonProperties.OrderDto.ZoneName = _commonProperties.CustomerDetails?.ZoneName;
+        _commonProperties.OrderDto.AddressNotice = _commonProperties.CustomerDetails?.AddressNote;
+        _commonProperties.OrderDto.HomeNum = _commonProperties.CustomerDetails?.HomeNumber;
+        _commonProperties.OrderDto.FloorNum = _commonProperties.CustomerDetails?.FloorNumber;
+        _commonProperties.OrderDto.ApartmentNum = _commonProperties.CustomerDetails?.FlatNumber;
+        _commonProperties.OrderDto.ZoneID = _commonProperties.CustomerDetails?.ZoneID;
+        _commonProperties.OrderDto.OrderState = "Pending";
+
+        var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
+        return result is not null;
     }
 }

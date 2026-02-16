@@ -6,6 +6,7 @@
 @inject ISnackbar _snackbar
 @inject Section4ButtonsServices _section4ButtonsServices
 @inject CartService _cartService
+@inject IDialogService DialogService
 
 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="px-3 py-1">
     <div class="logo-container">
@@ -13,32 +14,32 @@
     </div>
 
     <MudStack Row="true" Spacing="2" Class="flex-grow-1">
-        @if (canAccessTables)
+        @if (canAccessTables && _commonProperties.IsFeatureEnabled("Navbar_Button_Tables"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.TableRestaurant"
                        Class="@( _commonProperties.CurrentPosMode == "DineIn" ? "btn-active" : "btn-nav")"
-                       OnClick='() => SetMode(PosModes.DineIn.ToString())'>
+                       OnClick='async () => await SetMode(PosModes.DineIn.ToString())'>
                 @Localizer["Tables"]
             </MudButton>
         }
 
-        @if (canAccessDelivery)
+        @if (canAccessDelivery && _commonProperties.IsFeatureEnabled("Navbar_Button_Delivery"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.DeliveryDining"
                        Class="@( _commonProperties.CurrentPosMode == "Delivery" ? "btn-active" : "btn-nav")"
-                       OnClick='() => SetMode(PosModes.Delivery.ToString())'>
+                       OnClick='async () => await SetMode(PosModes.Delivery.ToString())'>
                 @Localizer["Delivery"]
             </MudButton>
         }
 
-        @if (canAccessTakeAway)
+        @if (canAccessTakeAway && _commonProperties.IsFeatureEnabled("Navbar_Button_TakeAway"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.DirectionsRun"
                        Class="@( _commonProperties.CurrentPosMode == "TakeAway" ? "btn-active" : "btn-nav")"
-                       OnClick='() => SetMode(PosModes.TakeAway.ToString())'>
+                       OnClick='async () => await SetMode(PosModes.TakeAway.ToString())'>
                 @Localizer["TakeAway"]
             </MudButton>
         }
@@ -47,7 +48,7 @@
     <MudSpacer />
 
     <MudStack Row="true" Spacing="2">
-        @if (canAccessAccounts)
+        @if (canAccessAccounts && _commonProperties.IsFeatureEnabled("Navbar_Button_Accounts"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AttachMoney"
@@ -56,7 +57,7 @@
             </MudButton>
         }
 
-        @if (canAccessSummary)
+        @if (canAccessSummary && _commonProperties.IsFeatureEnabled("Navbar_Button_Summary"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AreaChart"
@@ -65,16 +66,17 @@
             </MudButton>
         }
 
-        @if (canAccessDistribution)
+        @if (canAccessDistribution && _commonProperties.IsFeatureEnabled("Navbar_Button_Distribution"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.PushPin"
-                       Class="btn-nav">
+                       Class="@( _commonProperties.CurrentPosMode == "Distribution" ? "btn-active" : "btn-nav")"
+                       OnClick='async () => await SetMode("Distribution")'>
                 @Localizer["Distribution"]
             </MudButton>
         }
 
-        @if (canAccessOrders)
+        @if (canAccessOrders && _commonProperties.IsFeatureEnabled("Navbar_Button_AllOrders"))
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.Checklist"
@@ -83,11 +85,20 @@
             </MudButton>
         }
 
-        <MudIconButton Icon="@Icons.Material.Filled.PowerSettingsNew" 
+        <MudIconButton Icon="@Icons.Material.Filled.BugReport" 
                        Variant="Variant.Filled"
-                       Class="btn-exit"
-                       OnClick="ExitApp" 
-                       title="@Localizer["ExitApp"]" />
+                       Class="btn-debug"
+                       OnClick="OpenDebugTerminal" 
+                       title="Debug Terminal" />
+
+        @if (_commonProperties.IsFeatureEnabled("Navbar_Button_Exit"))
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.PowerSettingsNew" 
+                           Variant="Variant.Filled"
+                           Class="btn-exit"
+                           OnClick="ExitApp" 
+                           title="@Localizer["ExitApp"]" />
+        }
     </MudStack>
 </MudStack>
 
@@ -141,5 +152,19 @@
         color: white !important;
         transform: rotate(90deg) scale(1.1);
         box-shadow: 0 0 15px rgba(229, 57, 53, 0.5) !important;
+    }
+
+    .btn-debug {
+        background: rgba(255, 152, 0, 0.1) !important;
+        color: #ffb74d !important;
+        border: 1px solid rgba(255, 152, 0, 0.3) !important;
+        border-radius: 10px !important;
+        margin-right: 4px;
+    }
+
+    .btn-debug:hover {
+        background: #fb8c00 !important;
+        color: white !important;
+        box-shadow: 0 0 10px rgba(251, 140, 0, 0.4) !important;
     }
 </style>

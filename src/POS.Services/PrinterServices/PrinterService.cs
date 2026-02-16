@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Pos.Repository.Data.DataSeed;
 
 namespace POS.Services.PrinterServices;
 
@@ -61,14 +62,79 @@ public class PrinterService : IPrinterServices
         return existingPrinter;
     }
 
-    public async Task<List<KitchenType>?> GetKitchenTypesAsync()
+    public async Task<List<KitchenType>?> GetKitchenTypesAsync(string? deviceName = null)
     {
         var spec = new KitchenTypeSpecs();
         var kitchenTypes = await _unitOfWork.Repository<KitchenType>().GetAllWithSpecificationAsync(spec);
 
         if (kitchenTypes is null) return null;
 
-        return kitchenTypes!.ToList() ?? [];
+        var result = kitchenTypes.ToList();
+
+        if (!string.IsNullOrEmpty(deviceName))
+        {
+            // Check if ANY printer exists for this device
+            var anyPrinterForDevice = result.SelectMany(k => k.KitchenPrinters).Any(p => p.DeviceName == deviceName);
+
+            if (!anyPrinterForDevice)
+            {
+                // Seed printers for this device
+                await SeedPrintersForDeviceAsync(deviceName, result);
+                // Refresh data
+                kitchenTypes = await _unitOfWork.Repository<KitchenType>().GetAllWithSpecificationAsync(spec);
+                result = kitchenTypes.ToList();
+            }
+
+            foreach (var kitchen in result)
+            {
+                if (kitchen.KitchenPrinters != null)
+                {
+                    kitchen.KitchenPrinters = kitchen.KitchenPrinters
+                        .Where(p => p.DeviceName == deviceName)
+                        .ToList();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private async Task SeedPrintersForDeviceAsync(string deviceName, List<KitchenType> kitchenTypes)
+    {
+        try
+        {
+            // Reading from json seed file
+            var seedPrinters = await PosDbContextDataSeed.GetDataFromJsonFile<KitchenPrinters>("kitchenPrinters.json");
+
+            foreach (var kitchen in kitchenTypes)
+            {
+                // Find matching seed by KitchenTypeId or use first Default seed
+                var seed = seedPrinters?.FirstOrDefault(p => p.KitchenTypeId == kitchen.Id) ??
+                           seedPrinters?.FirstOrDefault(p => p.DeviceName == "Default");
+
+                var newPrinter = new KitchenPrinters
+                {
+                    KitchenTypeId = kitchen.Id,
+                    DeviceName = deviceName,
+                    Copy1 = seed?.Copy1,
+                    Copy2 = seed?.Copy2,
+                    Copy3 = seed?.Copy3,
+                    Copy4 = seed?.Copy4,
+                    Copy5 = seed?.Copy5,
+                    Copy6 = seed?.Copy6,
+                    Copy7 = seed?.Copy7,
+                    Copy8 = seed?.Copy8,
+                    Copy9 = seed?.Copy9,
+                    Copy10 = seed?.Copy10
+                };
+                await _unitOfWork.Repository<KitchenPrinters>().AddAsync(newPrinter);
+            }
+            await _unitOfWork.CompleteAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"Error seeding printers for device {deviceName}");
+        }
     }
 
     public async Task<OrderSetting?> GetOrderSettingByIdAsync(int orderSettingId)
@@ -84,17 +150,64 @@ public class PrinterService : IPrinterServices
         }
     }
 
-    public async Task<List<OrderSetting>?> GetOrderSettingsAsync()
+    public async Task<List<OrderSetting>?> GetOrderSettingsAsync(string? deviceName = null)
     {
         try
         {
-            var orderSettings = await _unitOfWork.Repository<OrderSetting>().GetAllAsync();
-            if (orderSettings is null) return null;
-            return orderSettings.ToList();
+            if (string.IsNullOrEmpty(deviceName))
+            {
+                var orderSettings = await _unitOfWork.Repository<OrderSetting>().GetAllAsync();
+                return orderSettings?.ToList();
+            }
+
+            var spec = new POS.Core.Specifications.OrderSpecs.OrderSettingSpecs(deviceName);
+            var settings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(spec);
+
+            if (settings == null || !settings.Any())
+            {
+                // We can use a similar seeding logic here if needed, 
+                // but since OrderService.cs already handles this, 
+                // maybe we just call a common initialization if possible.
+                // For now, let's keep it simple and match what OrderService does.
+                
+                var defaultSpec = new POS.Core.Specifications.BaseSpecifications<OrderSetting>(x => string.IsNullOrEmpty(x.ComputerName) || x.ComputerName == "Default");
+                var defaultSettings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(defaultSpec);
+
+                if (defaultSettings != null && defaultSettings.Any())
+                {
+                    foreach (var setting in defaultSettings)
+                    {
+                        var newSetting = new OrderSetting
+                        {
+                            BranchID = setting.BranchID,
+                            OrderType = setting.OrderType,
+                            OrderStatment = setting.OrderStatment,
+                            Service = setting.Service,
+                            Tax = setting.Tax,
+                            Tips = setting.Tips,
+                            JobID = setting.JobID,
+                            CustomerReceiptCount = setting.CustomerReceiptCount,
+                            FullKitchenReceiptCount = setting.FullKitchenReceiptCount,
+                            SeparateReceiptCount = setting.SeparateReceiptCount,
+                            ClosingReceiptCount = setting.ClosingReceiptCount,
+                            AddServiceToItemPrice = setting.AddServiceToItemPrice,
+                            CanCloseWithoutPrint = setting.CanCloseWithoutPrint,
+                            DeductCaptainTips = setting.DeductCaptainTips,
+                            CaptainTipsAmount = setting.CaptainTipsAmount,
+                            ComputerName = deviceName
+                        };
+                        await _unitOfWork.Repository<OrderSetting>().AddAsync(newSetting);
+                    }
+                    await _unitOfWork.CompleteAsync();
+                    settings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(spec);
+                }
+            }
+
+            return settings?.ToList();
         }
         catch (Exception ex)
         {
-            Log.Error($"Error fetching all OrderSettings: {ex.Message}");
+            Log.Error($"Error fetching all OrderSettings for device {deviceName}: {ex.Message}");
             return null;
         }
     }

@@ -9,4 +9,5 @@ public class AppUser : IdentityUser
     public DateTime? DateOfBirth { get; set; }
     public string? DisplayName { get; set; }
     public string? ArabicName { get; set; }
+    public bool IsActive { get; set; } = true;
 }

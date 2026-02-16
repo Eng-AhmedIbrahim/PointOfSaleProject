@@ -11,6 +11,7 @@
 @inject NavigationManager _navigationManager
 @inject IAppDateService _appDateService
 @inject Section4ButtonsServices _services
+@inject ISnackbar _snackbar
 
 <MudDialog Class="premium-calc-dialog">
     <TitleContent>
@@ -231,10 +232,44 @@
             _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
             await _appDateService.UpdateOrderCount();
 
-            _navigationManager.NavigateTo("/pos");
+            await SafeNavigateAsync("/pos");
             _services.NotifyStateChanged();
 
             _commonProperties.QuickPaymentDialogReference?.Close(DialogResult.Ok(true));
+        }
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 50;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                {
+                    await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries) 
+                {
+                    _snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                delayMs *= 2;
+            }
         }
     }
 }

@@ -6,5 +6,5 @@ public interface IDineInService
 
     public Task<ICollection<TableToReturnDto>> GetTablesByGroupId(int tableGroupId);
     public Task<ICollection<TableToReturnDto>> GetTables();
-    public Task<ICollection<CaptainOrderUserToReturnDto>> GetCaptainOrders();
+    public Task<ICollection<UserToReturnDto>> GetCaptainOrders();
 }

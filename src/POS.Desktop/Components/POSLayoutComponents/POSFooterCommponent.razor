@@ -1,7 +1,7 @@
 @using BlazorBase.Services
 @using POS.Contract.Models
 @inject NavigationManager navigationManager
-@inject CommonProperties commonProperties
+@inject CommonProperties _commonProperties
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IJSRuntime JS
@@ -14,70 +14,91 @@
 
     @* @if (canAccessDiscount) *@
     @* { *@
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.Discount"
-               Class="button-color-footer"
-               OnClick="OpenOrderDiscountDialog">
-        @Localizer["Discount"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Discount"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.Discount"
+                   Class="button-color-footer"
+                   OnClick="OpenOrderDiscountDialog">
+            @Localizer["Discount"]
+        </MudButton>
+    }
 
 
 
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.Person"
-               Class="button-color-footer"
-               OnClick="OpenCustomerInfoDialog">
-        @Localizer["CustomerData"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_CustomerData"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.Person"
+                   Class="button-color-footer"
+                   OnClick="OpenCustomerInfoDialog">
+            @Localizer["CustomerData"]
+        </MudButton>
+    }
 
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.AccountBalanceWallet"
-               Class="button-color-footer"
-               OnClick="OpenPaymentMethodDialog">
-        @Localizer["PaymentMethod"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_PaymentMethod"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.AccountBalanceWallet"
+                   Class="button-color-footer"
+                   OnClick="OpenPaymentMethodDialog">
+            @Localizer["PaymentMethod"]
+        </MudButton>
+    }
 
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.Calculate"
-               Class="button-color-footer"
-               OnClick="OpenQuickPaymentDialog">
-        @Localizer["QuickPayment"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_QuickPayment"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.Calculate"
+                   Class="button-color-footer"
+                   OnClick="OpenQuickPaymentDialog">
+            @Localizer["QuickPayment"]
+        </MudButton>
+    }
 
     @* @if (canAccessMeals) *@
     @* { *@
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.SetMeal"
-               Class="button-color-footer">
-        @Localizer["Meals"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Meals"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.SetMeal"
+                   Class="button-color-footer">
+            @Localizer["Meals"]
+        </MudButton>
+    }
     @* } *@
 
     @* @if (canAccessWaiting) *@
     @* { *@
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               StartIcon="@Icons.Material.Filled.Alarm"
-               Class="button-color-footer"
-               OnClick="()=>GotoWaitingPage()">
-        @Localizer["Waiting"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Waiting"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.Alarm"
+                   Class="button-color-footer"
+                   OnClick="async ()=> await GotoWaitingPage()">
+            @Localizer["Waiting"]
+        </MudButton>
+    }
     @* } *@
 
     @* @if (canAccessSettings) *@
     @* { *@
-    <MudButton Variant="Variant.Text"
-               Size="Size.Large"
-               OnClick="ToggleDrawer"
-               StartIcon="@Icons.Material.Filled.Settings"
-               Class="button-color-footer">
-        @Localizer["Settings"]
-    </MudButton>
+    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Settings"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   OnClick="ToggleDrawer"
+                   StartIcon="@Icons.Material.Filled.Settings"
+                   Class="button-color-footer">
+            @Localizer["Settings"]
+        </MudButton>
+    }
     @* } *@
 </MudStack>
 

@@ -1,0 +1,64 @@
+@using POS.Contract.Dtos
+@inject LocalizationService Localizer
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["ComplaintNumber"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.ComplaintNumber</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["OrderId"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.OrderId</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["OrderDatabaseId"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.OrderDatabaseId</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["Date"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.ComplaintDate.ToString("yyyy-MM-dd HH:mm")</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["Customer"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.CustomerName</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudText Typo="Typo.subtitle2">@Localizer["Phone"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.CustomerPhone</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudDivider Class="my-2" />
+                <MudText Typo="Typo.subtitle2">@Localizer["ComplaintText"]</MudText>
+                <MudText Typo="Typo.body1">@ComplaintDto.ComplaintText</MudText>
+            </MudItem>
+            @if (!string.IsNullOrEmpty(ComplaintDto.Note))
+            {
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">@Localizer["Note"]</MudText>
+                    <MudText Typo="Typo.body1">@ComplaintDto.Note</MudText>
+                </MudItem>
+            }
+            @if (!string.IsNullOrEmpty(ComplaintDto.Resolution))
+            {
+                <MudItem xs="12">
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.subtitle2" Color="Color.Success">@Localizer["Resolution"]</MudText>
+                    <MudText Typo="Typo.body1">@ComplaintDto.Resolution</MudText>
+                    <MudText Typo="Typo.caption">@ComplaintDto.ResolutionDate?.ToString("yyyy-MM-dd HH:mm")</MudText>
+                </MudItem>
+            }
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Primary">@Localizer["Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public ComplaintDto ComplaintDto { get; set; } = new();
+
+    private void Close() => MudDialog.Close();
+}

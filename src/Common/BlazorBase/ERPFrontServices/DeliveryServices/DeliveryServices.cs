@@ -25,6 +25,14 @@ public class DeliveryServices : IDeliveryServices
       )??new();
     }
 
+    public async Task<IReadOnlyList<DeliveryZonesToReturnDto>> GetAllDeliveryZonesAsync()
+    {
+        return await GetApiResponseAsync<List<DeliveryZonesToReturnDto>>(
+        GetAllDeliveryZonesRequest,
+        "Failed to retrieve Zones from the API."
+    ) ?? new List<DeliveryZonesToReturnDto>();
+    }
+
     public async Task<IReadOnlyList<DeliveryZonesToReturnDto>> GetDeliveryZoneByBranchAsync(int branchId)
     {
         return await GetApiResponseAsync<List<DeliveryZonesToReturnDto>>(
@@ -69,6 +77,9 @@ public class DeliveryServices : IDeliveryServices
      => await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetZoneByBranchId}/{branchId}");
     private async Task<HttpResponseMessage> GetAllDeliveryCustomerTitlesRequest()
         => await _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllDeliveryCustomerTitles);
+
+    private async Task<HttpResponseMessage> GetAllDeliveryZonesRequest()
+        => await _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllZones);
 
     private async Task<HttpResponseMessage> CreateClientAsyncRequest(DeliveryCustomerDto deliveryCustomer)
        => await _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateNewCustomer,deliveryCustomer);

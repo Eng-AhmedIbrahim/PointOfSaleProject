@@ -26,8 +26,8 @@ public class KitchenPrintersConfiguration : IEntityTypeConfiguration<KitchenPrin
             .IsRequired();
 
         builder.HasOne(p => p.KitchenType)  
-              .WithOne(k => k.KitchenPrinters)  
-              .HasForeignKey<KitchenPrinters>(p => p.KitchenTypeId)
+              .WithMany(k => k.KitchenPrinters)  
+              .HasForeignKey(p => p.KitchenTypeId)
               .OnDelete(DeleteBehavior.Restrict);
     }
 }

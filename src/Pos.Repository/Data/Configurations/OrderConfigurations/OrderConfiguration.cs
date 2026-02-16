@@ -12,6 +12,13 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.OrderID)
             .ValueGeneratedNever();
 
+        // Performance: Add indices for frequently searched fields
+        builder.HasIndex(o => o.OrderID);
+        builder.HasIndex(o => o.Phone1);
+        builder.HasIndex(o => o.Phone2);
+        builder.HasIndex(o => o.TakeawayCustomerPhone);
+        builder.HasIndex(o => o.OrderDate);
+
         builder.Property(o => o.BranchName).HasMaxLength(100);
         builder.Property(o => o.CashierName).HasMaxLength(100);
         builder.Property(o => o.CashierID)
@@ -32,7 +39,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.VoidReason).HasMaxLength(500);
         builder.Property(o => o.PaymentMethod).HasMaxLength(50);
         builder.Property(o => o.OrderType).HasMaxLength(50);
-        builder.Property(o => o.TakerID).HasColumnType("int");
+        builder.Property(o => o.TakerID).HasColumnType("nvarchar").HasMaxLength(200);
         builder.Property(o => o.TakerName).HasMaxLength(200);
         builder.Property(o => o.ShiftID).IsRequired(false);
 
@@ -60,6 +67,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Orders>
         builder.Property(o => o.DiscountBy).HasColumnType("nvarchar").HasMaxLength(100);
         builder.Property(o => o.MachineName).HasMaxLength(100);
         builder.Property(o => o.CaptainTipsDeduction).HasColumnType("decimal(18,2)");
+        builder.Property(o => o.CallCenterOrderId).HasColumnName("CentralOrderID");
 
         builder.HasMany(o => o.OrderDetails)
                .WithOne(od => od.Order)

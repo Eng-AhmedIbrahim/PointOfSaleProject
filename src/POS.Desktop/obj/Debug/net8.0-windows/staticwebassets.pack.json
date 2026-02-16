@@ -21,12 +21,20 @@
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\delivery.css",
+      "PackagePath": "staticwebassets\\delivery.css"
+    },
+    {
       "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
       "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\images\\Logo.png",
       "PackagePath": "staticwebassets\\images\\Logo.png"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\images\\ReceiptLogo\\logo.png",
+      "PackagePath": "staticwebassets\\images\\ReceiptLogo\\logo.png"
     },
     {
       "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\index.html",

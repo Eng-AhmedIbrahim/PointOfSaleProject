@@ -10,12 +10,12 @@ public static class AppIdentityDbContextSeed
         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "DataSeed","JsonFiles"),
     ];
 
-    public static async Task SeedAsync(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, AppIdentityDbContext context)
+    public static async Task SeedAsync(UserManager<AppUser> userManager, RoleManager<ApplicationRole> roleManager, AppIdentityDbContext context)
     {
 
         if (!context.Roles.Any())
         {
-            var roles = (await GetDataFromJsonFile<IdentityRole>("roles.json")).ToList();
+            var roles = (await GetDataFromJsonFile<ApplicationRole>("roles.json")).ToList();
             foreach (var role in roles)
             {
                 await roleManager.CreateAsync(role);
@@ -47,7 +47,8 @@ public static class AppIdentityDbContextSeed
                 Email = "Administrator",
                 UserName = "Administrator",
                 RegistrationDate = DateTime.Now,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                IsActive = true
             };
 
             var result = await userManager.CreateAsync(user, "12312300Aa#@");
@@ -77,7 +78,9 @@ public static class AppIdentityDbContextSeed
                 UserName = "CaptainMorning",
                 RegistrationDate = DateTime.Now,
                 EmailConfirmed = true,
-                DisplayName = "كابتن صالة صباحي"
+                DisplayName = "كابتن صالة صباحي",
+                ArabicName = "كابتن صالة صباحي",
+                IsActive = true
             };
             var result = await userManager.CreateAsync(user, "123456");
             if (result.Succeeded)
@@ -98,7 +101,9 @@ public static class AppIdentityDbContextSeed
                 UserName = "CaptainEvening",
                 RegistrationDate = DateTime.Now,
                 EmailConfirmed = true,
-                DisplayName = "كابتن صالة مسائي"
+                DisplayName = "كابتن صالة مسائي",
+                ArabicName = "كابتن صالة مسائي",
+                IsActive = true
             };
             var result = await userManager.CreateAsync(user, "123456");
             if (result.Succeeded)
@@ -140,7 +145,7 @@ public static class AppIdentityDbContextSeed
     }
 
 
-    public static async Task SeedRoleClaims(RoleManager<IdentityRole> roleManager, AppIdentityDbContext context)
+    public static async Task SeedRoleClaims(RoleManager<ApplicationRole> roleManager, AppIdentityDbContext context)
     {
         var allPermissions = await context.Permissions.Select(p => p.Name).ToListAsync();
         
@@ -166,18 +171,25 @@ public static class AppIdentityDbContextSeed
                 "CanAccessOrders", "CanAccessReport", "CanAccessSummary", "CanAccessSettings",
                 "CanAccessVoidOrder", "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
                 "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
-                "CanAccessUsers", "CanAccessRoles", "CanAccessPosSettings", "CanAccessPrintingSettings"
+                "CanAccessUsers", "CanAccessRoles", "CanAccessPosSettings", "CanAccessPrintingSettings",
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
+                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn"
             } },
             { "مساعد مدير", new List<string> { 
                 "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", 
                 "CanAccessOrders", "CanAccessSummary", "CanAccessReport",
                 "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
-                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem"
+                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn"
             } },
             { "كاشير", new List<string> { 
                 "CanAccessTakeAway", "CanAccessDelivery", "CanAccessTables",
                 "CanAccessOrders", "CanAccessDiscount", "CanAccessPrintReceipt", 
-                "CanAccessCloseOrder", "CanAccessWaiting"
+                "CanAccessCloseOrder", "CanAccessWaiting",
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn"
             } },
             { "كابتن صاله", new List<string> { 
                 "CanAccessTables", "CanAccessOrders", "CanAccessPrintReceipt",
@@ -185,7 +197,10 @@ public static class AppIdentityDbContextSeed
             } },
             { "Call Center", new List<string> { 
                 "CanAccessDelivery", "CanAccessDistribution", "CanAccessOrders",
-                "CanAccessPrintReceipt", "CanAccessCloseOrder"
+                "CanAccessPrintReceipt", "CanAccessCloseOrder",
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
+                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn"
             } }
         };
 

@@ -16,7 +16,19 @@ public class CustomerDetails
     public string? ClientAddress { get; set; }
     public string? OrderDiscount { get; set; }
     public string? AddressNote { get; set; }
+    
+    // Additional properties for delivery management
+    public int CustomerAddressId { get; set; }
+    public int ZoneID { get; set; }
+    public int Id { get; set; }
+    public int BranchId { get; set; }
+    public decimal ZoneFees { get; set; }
 
+
+    public decimal ZoneBonus { get; set; }
+    
+    public OrderDto? ActiveOrder { get; set; }
+    public List<OrderDto>? Last10Orders { get; set; }
 
     public static CustomerDetails Clone(CustomerDetails source)
     {
@@ -35,7 +47,15 @@ public class CustomerDetails
             KitchenNote = source.KitchenNote,
             ClientAddress = source.ClientAddress,
             OrderDiscount = source.OrderDiscount,
-            AddressNote = source.AddressNote
+            AddressNote = source.AddressNote,
+            CustomerAddressId = source.CustomerAddressId,
+            ZoneID = source.ZoneID,
+            Id = source.Id,
+            BranchId = source.BranchId,
+            ZoneFees = source.ZoneFees,
+            ZoneBonus = source.ZoneBonus,
+            ActiveOrder = source.ActiveOrder,
+            Last10Orders = source.Last10Orders != null ? new List<OrderDto>(source.Last10Orders) : null
         };
     }
 }

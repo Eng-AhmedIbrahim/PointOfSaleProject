@@ -1,0 +1,65 @@
+@using POS.Contract.Dtos.OrderDtos
+@using MudBlazor
+@inject LocalizationService Localizer
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 400px; overflow-y: auto;">
+            <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">
+                @Localizer["ActiveOrderFound"] #@ActiveOrder.OrderId
+            </MudText>
+            
+            <MudAlert Severity="Severity.Info" Class="my-2">
+                @Localizer["ActiveOrderDescription"]
+            </MudAlert>
+
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle2">@Localizer["OrderDate"]:</MudText>
+                    <MudText Typo="Typo.body2">@ActiveOrder.OrderDate?.ToString("g")</MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle2">@Localizer["TotalAmount"]:</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Primary" Style="font-weight:bold">
+                        @ActiveOrder.GrandTotal?.ToString("F2")
+                    </MudText>
+                </MudItem>
+                 <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle2">@Localizer["Status"]:</MudText>
+                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">@ActiveOrder.OrderState</MudChip>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-3" />
+
+            <MudText Typo="Typo.subtitle1" GutterBottom="true">@Localizer["OrderItems"]</MudText>
+            @if (ActiveOrder.OrderDetails != null && ActiveOrder.OrderDetails.Any())
+            {
+                <MudTable Items="@ActiveOrder.OrderDetails" Dense="true" Hover="true" Elevation="0">
+                    <HeaderContent>
+                        <MudTh>@Localizer["Item"]</MudTh>
+                        <MudTh>@Localizer["Qty"]</MudTh>
+                        <MudTh>@Localizer["Price"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Item">@context.Name</MudTd>
+                        <MudTd DataLabel="Qty">@context.Quantity</MudTd>
+                        <MudTd DataLabel="Price">@context.TotalAmount?.ToString("F2")</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+            else
+            {
+                <MudText Typo="Typo.caption">@Localizer["NoItems"]</MudText>
+            }
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CreateNew" Variant="Variant.Text" Color="Color.Secondary">
+            @Localizer["CreateNewOrder"]
+        </MudButton>
+        <MudButton OnClick="EditExisting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+            @Localizer["EditExistingOrder"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>

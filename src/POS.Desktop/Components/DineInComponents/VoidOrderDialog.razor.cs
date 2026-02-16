@@ -1,3 +1,5 @@
+using BlazorBase.ERPFrontServices.DistributionServices;
+
 namespace POS.Desktop.Components.DineInComponents;
 
 public partial class VoidOrderDialog
@@ -10,12 +12,15 @@ public partial class VoidOrderDialog
     // For TakeAway/Delivery mode (order not yet saved)
     [Parameter] public List<TableItem>? TableItems { get; set; }
     [Parameter] public bool IsDineIn { get; set; } = true;
+    [Parameter] public bool IsDistribution { get; set; } = false;
 
     [Inject] public IDineInOrderFrontService _dineInOrderFrontService { get; set; } = default!;
+    [Inject] public IDistributionErpService _distributionErpService { get; set; } = default!;
     [Inject] public ISnackbar _snackbar { get; set; } = default!;
     [Inject] public LocalizationService _localizer { get; set; } = default!;
     [Inject] public CommonProperties _commonProperties { get; set; } = default!;
 
+    public OrderDto? DistributionOrder { get; set; }
     public DineInOrderDto? Order { get; set; } 
     public List<VoidItemModel> Items { get; set; } = new();
     public VoidItemModel? SelectedItem { get; set; }
@@ -28,8 +33,28 @@ public partial class VoidOrderDialog
 
     protected override async Task OnInitializedAsync()
     {
+        // Distribution mode: Load from provided OrderId using Distribution service
+        if (IsDistribution && OrderId > 0)
+        {
+            var orders = await _distributionErpService.GetUnCompletedDeliveryOrders();
+            DistributionOrder = orders.FirstOrDefault(o => o.OrderId == OrderId);
+            
+            if (DistributionOrder?.OrderDetails != null)
+            {
+                Items = DistributionOrder.OrderDetails
+                    .Where(x => !x.IsVoided)
+                    .Select(x => new VoidItemModel
+                    {
+                        DistributionItem = x,
+                        OriginalQuantity = x.Quantity,
+                        QuantityToVoid = 0,
+                        UnitPrice = x.Price ?? 0,
+                        ItemName = _commonProperties!.Language == "ar" ? x.NameAr : x.Name
+                    }).ToList();
+            }
+        }
         // DineIn mode: Load from database
-        if (IsDineIn && OrderId > 0)
+        else if (IsDineIn && OrderId > 0)
         {
             Order = await _dineInOrderFrontService.GetDineInOrderByIdAsync(OrderId);
             
@@ -160,8 +185,37 @@ public partial class VoidOrderDialog
             return;
         }
 
+        // Distribution mode: Save to database using Distribution service
+        if (IsDistribution && DistributionOrder != null)
+        {
+            bool result;
+            string voidBy = _commonProperties.CurrentUserId ?? "System";
+            string voidByName = _commonProperties.CurrentUser ?? "System";
+
+            bool isFullVoid = itemsToVoid.Count == Items.Count && itemsToVoid.All(i => i.QuantityToVoid == i.OriginalQuantity);
+
+            if (isFullVoid)
+            {
+                result = await _distributionErpService.VoidOrder(DistributionOrder.OrderId, Reason, voidBy, voidByName);
+            }
+            else
+            {
+                var voidDtos = itemsToVoid.Select(i => new OrderItemVoidDto(i.DistributionItem!.Id, i.QuantityToVoid)).ToList();
+                result = await _distributionErpService.VoidItems(DistributionOrder.OrderId, voidDtos, Reason, voidBy, voidByName);
+            }
+
+            if (result)
+            {
+                _snackbar.Add(_localizer["VoidOperationSuccessful"], Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                _snackbar.Add(_localizer["FailedToVoid"], Severity.Error);
+            }
+        }
         // DineIn mode: Save to database
-        if (IsDineIn && Order != null)
+        else if (IsDineIn && Order != null)
         {
             bool result;
             string voidBy = _commonProperties.CurrentUserId ?? "System";
@@ -176,7 +230,7 @@ public partial class VoidOrderDialog
             else
             {
                 // Use simple class name now that ambiguity is resolved
-                var voidDtos = itemsToVoid.Select(i => new OrderItemVoidDto(i.OriginalItem.Id, i.QuantityToVoid)).ToList();
+                var voidDtos = itemsToVoid.Select(i => new OrderItemVoidDto(i.OriginalItem!.Id, i.QuantityToVoid)).ToList();
                 result = await _dineInOrderFrontService.VoidDineInItemsAsync(Order.Id, voidDtos, Reason, voidBy, voidByName);
             }
 
@@ -214,7 +268,10 @@ public class VoidItemModel
     // For DineIn mode
     public OrderItemsDetailsDto? OriginalItem { get; set; }
     
-    // For TakeAway/Delivery mode
+    // For Distribution mode
+    public TableItem? DistributionItem { get; set; }
+    
+    // For TakeAway/Delivery mode (unsaved)
     public TableItem? TableItem { get; set; }
     
     public string ItemName { get; set; } = string.Empty;

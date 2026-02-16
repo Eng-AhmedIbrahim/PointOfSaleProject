@@ -4,46 +4,45 @@
 @inject IDialogService _dialogService
 @inject NavigationManager _navigationManager
 @inject Section4ButtonsServices _section4ButtonsServices
+@inject LocalizationService Localizer
 
-<MudDialog FullWidth="true" MaxWidth="MaxWidth.Small">
+<MudDialog FullWidth="true" MaxWidth="MaxWidth.Small" Style="direction: rtl; font-family: 'Tajawal', sans-serif;">
     <TitleContent>
-        <MudText Typo="Typo.h6">Merge Tables</MudText>
+        <MudText Typo="Typo.h6">@Localizer["MergeTables"]</MudText>
     </TitleContent>
 
     <DialogContent>
-        <MudGrid Spacing="3">
-            <MudItem xs="12">
-                <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2">
-                    @foreach (var table in _tables ?? new())
-                    {
+        <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+            <MudText>@Localizer["SelectAtLeastTwoTablesToMerge"]</MudText>
+            <MudGrid Spacing="2">
+                @foreach (var table in _tables ?? new())
+                {
+                    <MudItem xs="6" sm="4">
                         <MudButton Size="Size.Large"
-                                   Variant="Variant.Filled"
-                                   DisableElevation="true"
-                                   Class="@GetTableClass(table)"
+                                   Variant="Variant.Outlined"
+                                   Class="@GetButtonClass(table)"
+                                   Style="width: 100%; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center;"
                                    OnClick="() => ToggleTableSelection(table)">
-                            <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                                <MudIcon Icon="@( Icons.Material.Filled.TableRestaurant )" Size="Size.Large" />
-                                <MudText Typo="Typo.subtitle2">@table.RelatedTableName</MudText>
+                            <MudStack AlignItems="AlignItems.Center" Spacing="0">
+                                <MudIcon Icon="@Icons.Material.Filled.TableBar" Size="Size.Medium" Color="@(table.IsMigrated ? Color.Success : Color.Default)" />
+                                <MudText Typo="Typo.subtitle2" Style="font-weight: bold;">@table.RelatedTableName</MudText>
+                                <MudText Typo="Typo.caption">@Localizer["Total"]: @table.BasicOrderDetails!.Total?.ToString("N2")</MudText>
                             </MudStack>
                         </MudButton>
-                    }
-                </MudStack>
-            </MudItem>
-
-            <MudItem xs="12" Class="text-center">
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           OnClick="MergeSelectedTables"
-                           Disabled="@IsMergeDisabled">
-                    <MudIcon Icon="@(Icons.Material.Filled.Merge)" />
-                    Merge Tables
-                </MudButton>
-            </MudItem>
-        </MudGrid>
+                    </MudItem>
+                }
+            </MudGrid>
+        </div>
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="CloseDialog" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="CloseDialog" Variant="Variant.Outlined">@Localizer["Cancel"]</MudButton>
+        <MudButton OnClick="MergeSelectedTables"
+                   Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   Disabled="@IsMergeDisabled">
+            @Localizer["Apply"]
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -89,7 +88,7 @@
     {
         if (TablesToMigrates.Count < 2)
         {
-            _snackbar.Add("Select at least two tables to merge.", Severity.Warning);
+            _snackbar.Add(Localizer["SelectAtLeastTwoTablesToMerge"], Severity.Warning);
             return;
         }
 
@@ -102,7 +101,7 @@
 
         if (success)
         {
-            _snackbar.Add("Tables merged successfully!", Severity.Success);
+            _snackbar.Add(Localizer["TablesMergedSuccessfully"], Severity.Success);
             
             // Clear in-memory state to force refresh
             _commonProperties.CurrentDineInOrder = null;
@@ -110,17 +109,51 @@
             
             CloseDialog();
             _section4ButtonsServices.NotifyStateChanged();
-            _navigationManager.NavigateTo("/dineIn");
+            await SafeNavigateAsync("/dineIn");
         }
         else
         {
-            _snackbar.Add("Failed to merge tables.", Severity.Error);
+            _snackbar.Add(Localizer["ActionFailed"], Severity.Error);
+        }
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 50;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                {
+                    await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries) 
+                {
+                    _snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                delayMs *= 2;
+            }
         }
     }
 
     private bool IsMergeDisabled => SelectedTableIds.Count < 2;
 
-    private string GetTableClass(DineInOrderDetails table)
+    private string GetButtonClass(DineInOrderDetails table)
     {
         if (table == null)
             return "order-button";
@@ -133,12 +166,10 @@
         return "order-button";
     }
 
-
     private void CloseDialog()
     {
         _commonProperties.DialogReference?.Close();
     }
-
 }
 
 

@@ -38,7 +38,7 @@ public class AppDateService : IAppDateService
         if (response is null || !response.IsSuccessStatusCode)
         {
             _logger.LogError("API call failed: {ErrorMessage}", message ?? "No message provided.");
-            return default!;
+            return Activator.CreateInstance<T>();
         }
 
         var content = await response.Content.ReadAsStringAsync();

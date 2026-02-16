@@ -5,13 +5,13 @@ public class AccountController : BaseApiController
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly IAuthService _authService;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
 
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
         IAuthService authService,
-        RoleManager<IdentityRole> roleManager,
+        RoleManager<ApplicationRole> roleManager,
         IConfiguration configuration,
         IMapper mapper
         )
@@ -40,6 +40,7 @@ public class AccountController : BaseApiController
             //ImageUrl = registerDto!.ImageUrl!.FileName,
             ArabicName = registerDto.ArabicName,
             PhoneNumber = registerDto.PhoneNumber,
+            IsActive = true
         };
 
         var result = await _userManager.CreateAsync(user, registerDto!.Password!);
@@ -75,7 +76,7 @@ public class AccountController : BaseApiController
             return Unauthorized(new ApiResponse(401));
 
         var user = await _userManager.FindByNameAsync(model.UserName!);
-        if (user is null)
+        if (user is null || !user.IsActive)
             return Unauthorized(new ApiResponse(401));
 
         var result = await _signInManager.PasswordSignInAsync(user, model.Password!, false, false);
@@ -125,8 +126,20 @@ public class AccountController : BaseApiController
     [HttpGet("GetUsers")]
     public async Task<ActionResult<List<UserDto>>> GetUsers()
     {
-        var users = await _userManager.Users.ToListAsync();
-        var mappedUsers = _mapper.Map<List<UserDto>>(users);
+        var rolesToShow = await _roleManager.Roles.Where(r => r.ShowInLogin).Select(r => r.Name).ToListAsync();
+        var activeUsers = await _userManager.Users.Where(u => u.IsActive).ToListAsync();
+        
+        var filteredUsers = new List<AppUser>();
+        foreach(var user in activeUsers)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Any(r => rolesToShow.Contains(r)))
+            {
+                filteredUsers.Add(user);
+            }
+        }
+
+        var mappedUsers = _mapper.Map<List<UserDto>>(filteredUsers);
         return Ok(mappedUsers);
     }
 
@@ -144,7 +157,7 @@ public class AccountController : BaseApiController
             bool isRoleAlreadyExists = await _roleManager.RoleExistsAsync(Name);
             if (isRoleAlreadyExists) return BadRequest(new ApiResponse(400, $"Role: {Name} Already Exists !!"));
 
-            await _roleManager.CreateAsync(new IdentityRole(Name));
+            await _roleManager.CreateAsync(new ApplicationRole { Name = Name });
             return Ok(Name);
         }
         catch (Exception ex)
@@ -195,7 +208,7 @@ public class AccountController : BaseApiController
     }
 
     [HttpGet("get-roles")]
-    public async Task<ActionResult<List<IdentityRole>>> GetAllRoles()
+    public async Task<ActionResult<List<ApplicationRole>>> GetAllRoles()
     {
         var roles = await _authService.GetAllRolesAsync();
         return Ok(roles);
@@ -209,7 +222,7 @@ public class AccountController : BaseApiController
     }
 
     [HttpGet("get-role/{roleName}")]
-    public async Task<ActionResult<IdentityRole>> GetRole(string roleName)
+    public async Task<ActionResult<ApplicationRole>> GetRole(string roleName)
     {
         var role = await _authService.GetRoleAsync(roleName);
         return role != null ? Ok(role) : NotFound("Role not found");
@@ -350,21 +363,24 @@ public class AccountController : BaseApiController
     }
 
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(CaptainOrderUserToReturnDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserToReturnDto), StatusCodes.Status200OK)]
     [HttpGet("GetUsersByRole/{roleName}")]
     public async Task<IActionResult> GetUsersByRole(string roleName)
     {
-        var role = await _roleManager.FindByNameAsync(roleName);
+        var role = await _roleManager.FindByNameAsync(roleName) ?? await _roleManager.FindByIdAsync(roleName);
         
         if (role is null) return 
                 NotFound(new ApiResponse(404, "Role not found"));
 
-        var users = await _authService.GetUsersHasSpecificRole(roleName);
+        var users = await _authService.GetUsersHasSpecificRole(role.Name!);
         
-        var mappedUsers = _mapper.Map<List<AppUser>,List<CaptainOrderUserToReturnDto>>(users);
-
-        if(users is null) 
+        if (users is null)
             return NotFound(new ApiResponse(404, "No users found"));
+
+        // Filter only active users
+        var activeUsers = users.Where(u => u.IsActive).ToList();
+        
+        var mappedUsers = _mapper.Map<List<AppUser>, List<UserToReturnDto>>(activeUsers);
         
         return Ok(mappedUsers);
     }

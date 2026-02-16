@@ -20,6 +20,7 @@ public record Receipt
     public DateTimeOffset DateCreated { get; set; }
     public float LogoWidth { get; set; } = 120f;
     public bool IsCopy { get; set; }
+    public bool IsFollowUp { get; set; }
     public int? TableId { get; set; }
     public string? TableName { get; set; }
     public string? WaiterName { get; set; }

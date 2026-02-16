@@ -37,13 +37,48 @@ public partial class WaitingPage
         StateHasChanged();
     }
 
-    private void CompleteWaitingOrder()
+    private async Task CompleteWaitingOrder()
     {
         WaitingOrder? waitingOrder = _commonProperties!.WaitingQueue!.WaitingOrders.FirstOrDefault(o => o.Id == CurrentOrderId);
         _commonProperties.TableItems = waitingOrder!.Items;
         _commonProperties!._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
 
         RemoveWaitingOrder();
-        _navigationManager.NavigateTo("/pos");
+        await SafeNavigateAsync("/pos");
+    }
+
+    private async Task BackToPos()
+    {
+        await SafeNavigateAsync("/pos");
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 50;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                {
+                    await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries) return;
+                delayMs *= 2;
+            }
+        }
     }
 }

@@ -5,8 +5,7 @@ public class KitchenType : BaseEntity
     public int BranchId { get; set; }
     public string? KitchenName { get; set; }
 
-    public int? KitchenPrinterId { get; set; }
-    public KitchenPrinters? KitchenPrinters { get; set; }
+    public virtual ICollection<KitchenPrinters> KitchenPrinters { get; set; } = new List<KitchenPrinters>();
 
     [System.Text.Json.Serialization.JsonIgnore]
     public ICollection<Category>? Categories { get; set; }

@@ -4,7 +4,7 @@ public static class IdentityServicesExtensions
 {
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddIdentity<AppUser, IdentityRole>(options =>
+        services.AddIdentity<AppUser, ApplicationRole>(options =>
         {
             options.Password.RequireDigit = false;  
             options.Password.RequiredLength = 6;

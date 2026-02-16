@@ -24,20 +24,77 @@ public partial class SettingsDrawer
         await OpenChanged.InvokeAsync(Open);
     }
 
-    private string CurrentPageName => GetCurrentPageName();
+    private string _currentPageName = "";
+    private string CurrentPageName => _currentPageName;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AttemptToInitializePageNameAsync();
+        }
+    }
+
+    private async Task AttemptToInitializePageNameAsync()
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 100;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                // Accessing Navigation.Uri too early in Blazor Hybrid can throw
+                if (Navigation != null && !string.IsNullOrEmpty(Navigation.Uri))
+                {
+                    _currentPageName = GetCurrentPageName();
+                    StateHasChanged();
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries)
+                {
+                    _currentPageName = "Unknown";
+                    StateHasChanged();
+                    return;
+                }
+                
+                await Task.Delay(delayMs);
+                delayMs *= 2;
+            }
+        }
+    }
 
     private string GetCurrentPageName()
     {
-        var currentRoute = Navigation.Uri.Replace(Navigation.BaseUri, "")
-            .Trim('/');
-
-        return currentRoute.ToLower() switch
+        try
         {
-            "" or "index" => PagesNames.Home,
-            "login" => PagesNames.Login,
-            "register" => PagesNames.Register,
-            "pos" => PagesNames.POS,
-            _ => "Unknown" // Default for unmapped routes
-        };
+            if (Navigation == null || string.IsNullOrEmpty(Navigation.Uri) || string.IsNullOrEmpty(Navigation.BaseUri))
+                return "Unknown";
+
+            var currentRoute = Navigation.Uri.Replace(Navigation.BaseUri, "")
+                .Trim('/');
+
+            return currentRoute.ToLower() switch
+            {
+                "" or "index" => PagesNames.Home,
+                "login" => PagesNames.Login,
+                "register" => PagesNames.Register,
+                "pos" => PagesNames.POS,
+                _ => "Unknown"
+            };
+        }
+        catch
+        {
+            return "Unknown";
+        }
     }
 }

@@ -1,0 +1,15 @@
+﻿f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(17,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(30,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(41,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(52,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(65,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(78,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+f:\PointOfSaleProject\src\POS.Desktop\Components\POSLayoutComponents\POSFooterCommponent.razor(92,10): error CS0103: The name '_commonProperties' does not exist in the current context [f:\PointOfSaleProject\src\POS.Desktop\POS.Desktop_dokhj2sb_wpftmp.csproj]
+
+Build FAILED.
+    101 Warning(s)
+    7 Error(s)
+
+Time Elapsed 00:00:06.37
+
+Workload updates are available. Run `dotnet workload list` for more information.

@@ -5,10 +5,13 @@ public class DeliveryCustomerController : BaseApiController
     private readonly IDeliveryCustomerService _deliveryCustomerService;
     private readonly IMapper _mapper;
 
-    public DeliveryCustomerController(IDeliveryCustomerService deliveryCustomerService, IMapper mapper)
+    private readonly IOrderService _orderService;
+
+    public DeliveryCustomerController(IDeliveryCustomerService deliveryCustomerService, IMapper mapper, IOrderService orderService)
     {
         _deliveryCustomerService = deliveryCustomerService;
         _mapper = mapper;
+        _orderService = orderService;
     }
 
     [HttpGet("{id}")]
@@ -43,6 +46,61 @@ public class DeliveryCustomerController : BaseApiController
             return NotFound("Customer not found");
 
         var customerDto = _mapper.Map<DeliveryCustomerToReturnDto>(customer);
+
+        // Fetch orders - already ordered DESC by OrderDate in specification
+        var orders = await _orderService.GetOrdersByCustomerPhoneAsync(phoneNumber);
+        
+        if (orders != null && orders.Any())
+        {
+            // Calculate stats efficiently
+            customerDto.OrderCount = orders.Count;
+            customerDto.TotalOrdersAmount = orders.Sum(o => o.GrandTotal ?? 0);
+            customerDto.AverageOrderValue = customerDto.OrderCount > 0 
+                ? Math.Round(customerDto.TotalOrdersAmount / customerDto.OrderCount, 2) 
+                : 0;
+            
+            // Orders are already sorted DESC, so first = latest, last = oldest
+            customerDto.LastOrderDate = orders.First().OrderDate;
+            var lastOrder = orders.First();
+            customerDto.LastReceiverName = lastOrder?.CustomerName ?? lastOrder?.TakeawayCustomerName;
+            
+            customerDto.FirstOrderDate = orders.Last().OrderDate;
+
+            // Take first 10 (already sorted DESC, so these are the latest 10)
+            // Map WITHOUT OrderDetails for performance - we don't need item details in the list view
+            var last10 = orders.Take(10).Select(o => new POS.Contract.Dtos.OrderDtos.OrderDto
+            {
+                OrderId = o.OrderID,
+                OrderDate = o.OrderDate,
+                GrandTotal = o.GrandTotal,
+                OrderState = o.OrderState.ToString(),
+                CustomerName = o.CustomerName,
+                CustomerPhone = o.Phone1,
+                BranchId = o.BranchID,
+                PaymentMethod = o.PaymentMethod
+                // Intentionally NOT mapping OrderDetails here for performance
+            }).ToList();
+            
+            customerDto.Last10Orders = last10;
+
+            // Check for active order (also already in DESC order)
+            var activeOrderSummary = orders.FirstOrDefault(o =>
+                o.OrderState != OrderStates.Completed &&
+                o.OrderState != OrderStates.Voided &&
+                o.OrderState != OrderStates.FailedToDeliverToBranch &&
+                o.OrderState != OrderStates.Canceled);
+
+            if (activeOrderSummary != null)
+            {
+                // Fetch full order details separately since summary doesn't have details
+                var fullActiveOrder = await _orderService.GetOrderByOrderIdAsync(activeOrderSummary.OrderID);
+                if (fullActiveOrder != null)
+                {
+                    customerDto.ActiveOrder = _mapper.Map<OrderDto>(fullActiveOrder);
+                }
+            }
+        }
+
         return Ok(customerDto);
     }
 

@@ -4,6 +4,7 @@ namespace POS.Contract.Dtos.OrderDtos;
 
 public class OrderDto
 {
+    public int Id { get; set; }
     //for all Orders
     public string? OrderType { get; set; }
     public string? CashierName { get; set; }
@@ -75,13 +76,17 @@ public class OrderDto
     public int? ZoneID { get; set; }
     public string? ZoneName { get; set; }
     public decimal? ZoneBonus { get; set; }
+    public decimal? DeliveryFees { get; set; }
     public string? DispatchID { get; set; }
-    public int? DriverID { get; set; }
+    public string? DriverID { get; set; }
     public string? DriverName { get; set; }
     public DateTime? AssignTime { get; set; }
     public DateTime? BackTime { get; set; }
+    public string? CollectorID { get; set; }
+    public string? CollectorName { get; set; }
     public bool? WithoutDeliveryFees { get; set; }
     public DateTime? ClosingTime { get; set; }
+    public string? DeliveryBranchUrl { get; set; }
 
 
     //Void Details 
@@ -103,4 +108,7 @@ public class OrderDto
     public bool? SkipPrintingOnServer { get; set; }
     public string? MachineName { get; set; }
     public decimal? CaptainTipsDeduction { get; set; }
+    public int? CallCenterOrderId { get; set; }
+    public string? CallCenterApiUrl { get; set; }
+    public int? ParentOrderId { get; set; }
 }

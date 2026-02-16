@@ -52,15 +52,15 @@ public class DineInService : IDineInService
          );
     }
 
-    public async Task<ICollection<CaptainOrderUserToReturnDto>> GetCaptainOrders()
-        => await GetApiResponseAsync<CaptainOrderUserToReturnDto>(GetCaptainOrdersRequest,
+    public async Task<ICollection<UserToReturnDto>> GetCaptainOrders()
+        => await GetApiResponseAsync<UserToReturnDto>(GetCaptainOrdersRequest,
             "Failed to retrieve Captain Orders from the API.");
 
     private async Task<HttpResponseMessage> GetTablesByGroupIdRequest(int groupId)
     => await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetTablesByGroupId}/{groupId}");
 
     private async Task<HttpResponseMessage> GetCaptainOrdersRequest()
-        => await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetUsersByRole}/كابتن صاله");
+        => await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetUsersByRole}/5");
 
     public async Task<ICollection<TableToReturnDto>> GetTables()
     {

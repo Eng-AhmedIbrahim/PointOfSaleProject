@@ -16,6 +16,9 @@ public class DeliveryReceipt
     public IReadOnlyList<ReceiptItem> Items => _items;
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
     public float LogoWidth { get; set; } = 120f;
+    public bool IsFollowUp { get; set; }
+    public int? ParentOrderId { get; set; }
+    public bool IsCopy { get; set; }
 
 
     //Customer Information

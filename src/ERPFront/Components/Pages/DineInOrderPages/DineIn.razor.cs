@@ -1,7 +1,4 @@
-﻿using BlazorBase.ERPFrontServices.DineInOrderServices;
-using BlazorBase.ERPFrontServices.Section4ButtonsService;
-using MudBlazor;
-using ERPFront.Components.DineInComponents;
+﻿using ERPFront.Components.DineInComponents;
 
 namespace ERPFront.Components.Pages.DineInOrderPages;
 
@@ -10,7 +7,7 @@ public partial class DineIn
     public List<TableItem> Items { get; set; } = new();
     public List<TableGroupToReturnDto>? _tableGroups { get; set; }
     public List<TableToReturnDto>? _tables { get; set; }
-    public List<CaptainOrderUserToReturnDto>? _captainOrders { get; set; } = new();
+    public List<UserToReturnDto>? _captainOrders { get; set; } = new();
     private Dictionary<string, bool> buttonStates = new();
     private Dictionary<int, bool> tableStates = new();
     protected async override Task OnInitializedAsync()
@@ -103,7 +100,7 @@ public partial class DineIn
     [Inject] private Section4ButtonsServices _services { get; set; } = default!;
     [Inject] private IDialogService _dialogService { get; set; } = default!;
 
-    private string GetButtonClass(CaptainOrderUserToReturnDto captainOrder)
+    private string GetButtonClass(UserToReturnDto captainOrder)
     {
         if (captainOrder == null || string.IsNullOrEmpty(captainOrder.Id))
             return "order-button";

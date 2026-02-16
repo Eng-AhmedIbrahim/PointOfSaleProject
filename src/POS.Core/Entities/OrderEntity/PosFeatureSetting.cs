@@ -8,4 +8,5 @@ public class PosFeatureSetting : BaseEntity
     public bool Value { get; set; }
     public string? ComputerName { get; set; }
     public string? ModuleName { get; set; }
+    public string? ScreenName { get; set; }
 }

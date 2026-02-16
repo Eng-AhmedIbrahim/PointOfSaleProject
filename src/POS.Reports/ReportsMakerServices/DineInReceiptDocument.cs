@@ -37,15 +37,17 @@ public class DineInReceiptDocument : IDocument
 
     private void ConfigurePage(ref PageDescriptor page)
     {
-        page.Size(PageSizes.A6);
-        page.ContinuousSize(10.5f, Unit.Centimetre);
+        page.ContinuousSize(7.2f, Unit.Centimetre); // 72mm printable width
         page.PageColor(Colors.White);
-        page.MarginTop(15);
-        page.MarginRight(5);
-        page.MarginBottom(10);
-        page.MarginLeft(5);
+        page.MarginTop(5);
+        page.MarginRight(2);
+        page.MarginBottom(5);
+        page.MarginLeft(2);
         page.DefaultTextStyle(
-            TextStyle.Default.FontFamily("Noto Sans", "Noto Sans Arabic"));
+            TextStyle.Default
+                .FontFamily("Noto Sans", "Noto Sans Arabic")
+                .FontSize(12)
+                .Bold()); // Bold for better darkness on thermal printers
     }
 
     private void AddHeader(ref ColumnDescriptor column)
@@ -56,28 +58,37 @@ public class DineInReceiptDocument : IDocument
            {
                text.Span(receipt.StoreName)
                    .Bold()
-                   .FontSize(25);
+                   .FontSize(18);
                text.AlignCenter();
            });
 
-        // 🖼️ Logo section
         if (!string.IsNullOrEmpty(receipt.LogoPath) && File.Exists(receipt.LogoPath))
         {
             column.Item()
+            .PaddingTop(5)
             .AlignCenter()
-            .Width(receipt.LogoWidth)
+            .MaxHeight(100)
+            .MaxWidth(180)
             .Image(receipt.LogoPath)
-            .FitWidth();
+            .FitArea();
         }
 
-        /*Header * Id */
         column.Item()
             .PaddingTop(8)
             .Text(text =>
             {
                 text.Span(receipt.Id.ToString())
                     .Bold()
-                    .FontSize(25);
+                    .FontSize(18);
+                
+                if (receipt.IsFollowUp)
+                {
+                    text.Span(" - تابع")
+                        .Bold()
+                        .FontSize(18)
+                        .FontColor(Colors.Red.Medium);
+                }
+                
                 text.AlignCenter();
             });
 
@@ -86,9 +97,27 @@ public class DineInReceiptDocument : IDocument
             .PaddingTop(1)
             .Text(text =>
             {
+                if (receipt.IsCopy)
+                {
+                    text.Span("*********COPY**********")
+                        .Bold()
+                        .FontSize(20)
+                        .FontColor(Colors.Red.Medium);
+                    text.EmptyLine();
+                }
+
                 text.Span(receipt.ReceiptType)
                     .Bold()
-                    .FontSize(22);
+                    .FontSize(18);
+
+                if (receipt.IsCopy)
+                {
+                    text.EmptyLine();
+                    text.Span("*********COPY**********")
+                        .Bold()
+                        .FontSize(20)
+                        .FontColor(Colors.Red.Medium);
+                }
                 text.AlignCenter();
             });
     }
@@ -139,16 +168,46 @@ public class DineInReceiptDocument : IDocument
 
     private void BuildItemsTable(ref ColumnDescriptor column)
     {
+        // Group items before printing
+        var groupedItems = _items
+            .GroupBy(i => new
+            {
+                i.Id,
+                i.Name,
+                i.Price,
+                i.IsVoided,
+                i.HasDiscount,
+                i.DiscountPercentage,
+                AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
+            })
+            .Select(g =>
+            {
+                var first = g.First();
+                return new TableItem
+                {
+                    Id = first.Id,
+                    Name = first.Name,
+                    Price = first.Price,
+                    Quantity = g.Sum(x => x.Quantity),
+                    TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
+                    Attributes = first.Attributes,
+                    IsVoided = first.IsVoided,
+                    HasDiscount = first.HasDiscount,
+                    DiscountPercentage = first.DiscountPercentage,
+                    TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0)
+                };
+            }).ToList();
+
         column.Item()
             .PaddingTop(3)
             .Table(table =>
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(2);     // Total
-                    columns.RelativeColumn(2);     // Price
-                    columns.RelativeColumn(4.5f);  // Name
-                    columns.RelativeColumn(1.5f);  // Quantity
+                    columns.RelativeColumn(2.5f);  // اجمالي
+                    columns.RelativeColumn(2.5f);  // السعر
+                    columns.RelativeColumn(3.5f);  // الصنف
+                    columns.RelativeColumn(1.5f);  // كمية
                 });
 
                 table.Header(header =>
@@ -178,10 +237,10 @@ public class DineInReceiptDocument : IDocument
                         .Bold();
                 });
 
-                foreach (TableItem item in _items)
+                foreach (TableItem item in groupedItems)
                 {
-                    table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("N2")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.Price?.ToString("N2")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
 
@@ -190,12 +249,12 @@ public class DineInReceiptDocument : IDocument
                     {
                         var discountText = item.DiscountPercentage > 0 
                             ? $"{item.DiscountPercentage}%" 
-                            : item.TotalDiscountPrice?.ToString("N2");
+                            : item.TotalDiscountPrice?.ToString("0.##");
 
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(45)
-                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("N2")})")
+                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
                             .FontSize(10)
                             .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
                             .AlignEnd();
@@ -229,7 +288,7 @@ public class DineInReceiptDocument : IDocument
                 columns.RelativeColumn();
             });
 
-            table.Cell().Text(receipt.TotalAmount?.ToString("N2")).FontSize(13).Bold().AlignCenter();
+            table.Cell().Text(receipt.TotalAmount?.ToString("0.##")).FontSize(13).Bold().AlignCenter();
             table.Cell().Text(ArabicConstStrings.SubTotal).Bold().FontSize(15).Bold().AlignCenter();
 
             if (!string.IsNullOrEmpty(receipt.ServiceAmount) && receipt.ServiceAmount != "0" && receipt.ServiceAmount != "0.00")
@@ -244,9 +303,9 @@ public class DineInReceiptDocument : IDocument
                 table.Cell().Text(ArabicConstStrings.Tax).Bold().FontSize(15).Bold().AlignCenter();
             }
 
-            if (receipt.Discount.HasValue && Math.Abs(receipt.Discount.Value) > 0.001m)
+            if (receipt.Discount.HasValue && Math.Abs(receipt.Discount.Value) > 1.0m)
             {
-                table.Cell().Text(receipt.Discount.Value.ToString("N2")).FontSize(13).Bold().AlignCenter();
+                table.Cell().Text(receipt.Discount.Value.ToString("0.##")).FontSize(13).Bold().AlignCenter();
                 table.Cell().Text(ArabicConstStrings.Discount).Bold().FontSize(15).Bold().AlignCenter();
             }
 
@@ -277,26 +336,14 @@ public class DineInReceiptDocument : IDocument
             .AlignCenter();
 
         column.Item()
-            .Table(table =>
+            .AlignCenter()
+            .PaddingTop(5)
+            .Text(text =>
             {
-                table.ColumnsDefinition(cols =>
-                {
-                    cols.RelativeColumn();
-                    cols.RelativeColumn();
-                });
-
-                table.Cell()
-                    .PaddingTop(5)
-                    .Text("FB:New Tech")
-                    .FontSize(9)
-                    .AlignLeft();
-
-                table.Cell()
-                    .PaddingTop(5)
-                    .Text("www.NewTech.com")
-                    .FontSize(9)
-                    .AlignRight();
+                text.Line("New Tech Company for Software Development").FontSize(9);
+                text.Line("Contact: 01033964899").FontSize(9);
             });
+
     }
 
     private static IContainer CellStyle(IContainer container)

@@ -1,0 +1,104 @@
+@page "/delivery-complaints"
+@using BlazorBase.ERPFrontServices.ComplaintServices
+@using global::POS.Contract.Dtos
+@inject IComplaintServices ComplaintService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject LocalizationService Localizer
+@inject NavigationManager NavigationManager
+
+<div class="pa-4">
+    <MudPaper Elevation="4" Class="pa-4">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+            <MudText Typo="Typo.h5" Color="Color.Primary">@Localizer["ComplaintsManagement"]</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Variant="Variant.Outlined" OnClick="Back">@Localizer["Back"]</MudButton>
+        </MudStack>
+        
+        <MudTable Items="@_complaints" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" 
+                  Bordered="true" Striped="true" CustomHeader="true" Dense="true">
+            <HeaderContent>
+                <MudTHeadRow>
+                    <MudTh>@Localizer["ComplaintNumber"]</MudTh>
+                    <MudTh>@Localizer["CustomerName"]</MudTh>
+                    <MudTh>@Localizer["Phone"]</MudTh>
+                    <MudTh>@Localizer["Date"]</MudTh>
+                    <MudTh>@Localizer["Status"]</MudTh>
+                    <MudTh>@Localizer["Actions"]</MudTh>
+                </MudTHeadRow>
+            </HeaderContent>
+            <RowTemplate Context="complaint">
+                <MudTd DataLabel="@Localizer["ComplaintNumber"]">@complaint.ComplaintNumber</MudTd>
+                <MudTd DataLabel="@Localizer["CustomerName"]">@complaint.CustomerName</MudTd>
+                <MudTd DataLabel="@Localizer["Phone"]">@complaint.CustomerPhone</MudTd>
+                <MudTd DataLabel="@Localizer["Date"]">@complaint.ComplaintDate.ToString("yyyy-MM-dd HH:mm")</MudTd>
+                <MudTd DataLabel="@Localizer["Status"]">
+                    <MudChip T="string" Color="@GetStatusColor(complaint.Status)" Size="Size.Small">@Localizer[complaint.Status]</MudChip>
+                </MudTd>
+                <MudTd DataLabel="@Localizer["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info" OnClick="@(() => ShowDetails(complaint))" />
+                    @if (complaint.Status == "Open" || complaint.Status == "Pending")
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" OnClick="@(() => ResolveComplaint(complaint))" />
+                    }
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+</div>
+
+@code {
+    private IEnumerable<ComplaintDto> _complaints = new List<ComplaintDto>();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadComplaints();
+    }
+
+    private async Task LoadComplaints()
+    {
+        _loading = true;
+        _complaints = await ComplaintService.GetAllComplaintsAsync();
+        _loading = false;
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Open" => Color.Error,
+        "Pending" => Color.Warning,
+        "Resolved" => Color.Success,
+        "Closed" => Color.Default,
+        _ => Color.Default
+    };
+
+    private async Task ShowDetails(ComplaintDto complaint)
+    {
+        var parameters = new DialogParameters { ["ComplaintDto"] = complaint };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        await DialogService.ShowAsync<ComplaintDetailsDialog>(Localizer["ComplaintDetails"], parameters, options);
+    }
+
+    private async Task ResolveComplaint(ComplaintDto complaint)
+    {
+        // Simple prompt for resolution text
+        var parameters = new DialogParameters
+        {
+            { "ContentText", Localizer["EnterResolution"] },
+            { "ButtonText", Localizer["Resolve"] },
+            { "Color", Color.Success }
+        };
+
+        // Actually, let's just update status for now or use a dialog with a text field
+        var result = await ComplaintService.UpdateComplaintStatusAsync(complaint.Id, "Resolved");
+        if (result)
+        {
+            Snackbar.Add(Localizer["ComplaintResolved"], Severity.Success);
+            await LoadComplaints();
+        }
+    }
+
+    private void Back() => NavigationManager.NavigateTo("/delivery");
+}

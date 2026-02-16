@@ -37,7 +37,7 @@
                 <MudGrid Spacing="2" Class="pa-3">
                     @foreach (var table in _tables ?? [])
                     {
-                        <MudItem xs="3" sm="3" md="2">
+                        <MudItem xs="3" sm="3" md="2" @key="table.Id">
                             <div class="table-card-container">
                                 <button class="@GetTableModernClass(table)" 
                                         @onclick="() => ToggleState(tableStates, table!.Id!.Value, table!.TableName!, UpdateState)"
@@ -48,7 +48,7 @@
                                     </div>
                                     <span class="table-name">@table.TableName</span>
                                     
-                                    @if (_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value))
+                                    @if (_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id!.Value))
                                     {
                                         <span class="table-status">@Localizer["Order"]</span>
                                     }
@@ -59,25 +59,28 @@
                                 </button>
                                 
                                 <div class="table-action-icons">
-                                    @if (!_commonProperties!.DineInOrdersDetails!.Keys.Contains(table.Id!.Value) && table.TableState != "Reserved")
+                                    @if (_commonProperties.IsFeatureEnabled("EnableReservation"))
                                     {
-                                        <MudTooltip Text="@Localizer["ReserveTable"]">
-                                            <MudIconButton Icon="@Icons.Material.Filled.EventNote" 
-                                                           Size="Size.Small" 
-                                                           Color="Color.Success" 
-                                                           OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
-                                                           Class="reserve-icon-btn" />
-                                        </MudTooltip>
-                                    }
-                                    else if (table.TableState == "Reserved")
-                                    {
-                                        <MudTooltip Text="@Localizer["Cancel"]">
-                                            <MudIconButton Icon="@Icons.Material.Filled.EventBusy" 
-                                                           Size="Size.Small" 
-                                                           Color="Color.Error" 
-                                                           OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
-                                                           Class="reserve-icon-btn" />
-                                        </MudTooltip>
+                                        @if (!_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id!.Value) && table.TableState != "Reserved")
+                                        {
+                                            <MudTooltip Text="@Localizer["ReserveTable"]">
+                                                <MudIconButton Icon="@Icons.Material.Filled.EventNote" 
+                                                               Size="Size.Small" 
+                                                               Color="Color.Success" 
+                                                               OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
+                                                               Class="reserve-icon-btn" />
+                                            </MudTooltip>
+                                        }
+                                        else if (table.TableState == "Reserved")
+                                        {
+                                            <MudTooltip Text="@Localizer["Cancel"]">
+                                                <MudIconButton Icon="@Icons.Material.Filled.EventBusy" 
+                                                               Size="Size.Small" 
+                                                               Color="Color.Error" 
+                                                               OnClick="@(e => OnTableRightClick(new MouseEventArgs(), table))" 
+                                                               Class="reserve-icon-btn" />
+                                            </MudTooltip>
+                                        }
                                     }
                                 </div>
                             </div>
@@ -86,35 +89,39 @@
                 </MudGrid>
             </div>
 
-            <!-- Captain Selection Section -->
-            <div class="captain-selection-section">
-                <MudText Typo="Typo.subtitle2"
-                         Class="px-4 pt-2 font-weight-bold opacity-75">
-                    @Localizer["CaptainName"]
-                </MudText>
+            @if (_commonProperties.IsFeatureEnabled("EnableCaptainSelection"))
+            {
+                <!-- Captain Selection Section -->
+                <div class="captain-selection-section">
+                    <MudText Typo="Typo.subtitle2"
+                             Class="px-4 pt-2 font-weight-bold opacity-75">
+                        @Localizer["CaptainName"]
+                    </MudText>
 
-                <div class="captain-scroll-container">
-                    @foreach (var captainOrder in _captainOrders ?? [])
-                    {
-                        <button class="@GetCaptainModernClass(captainOrder)"
-                                @onclick="() => ToggleState(buttonStates!, captainOrder.Id!, captainOrder.ArabicName!, UpdateState)"
-                                type="button">
+                    <div class="captain-scroll-container">
+                        @foreach (var captainOrder in _captainOrders ?? [])
+                        {
+                            <button class="@GetCaptainModernClass(captainOrder)"
+                                    @key="captainOrder.Id"
+                                    @onclick="() => ToggleState(buttonStates!, captainOrder.Id!, captainOrder.ArabicName!, UpdateState)"
+                                    type="button">
 
-                            <div class="captain-popup">
-                                @captainOrder.ArabicName
-                            </div>
+                                <div class="captain-popup">
+                                    @captainOrder.ArabicName
+                                </div>
 
-                            <div class="captain-avatar">
-                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
-                            </div>
+                                <div class="captain-avatar">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                                </div>
 
-                            <span class="captain-name-text">
-                                @captainOrder.ArabicName
-                            </span>
-                        </button>
-                    }
+                                <span class="captain-name-text">
+                                    @captainOrder.ArabicName
+                                </span>
+                            </button>
+                        }
+                    </div>
                 </div>
-            </div>
+            }
 
         </div>
     </MudItem>

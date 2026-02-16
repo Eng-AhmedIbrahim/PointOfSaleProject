@@ -2,7 +2,7 @@
 
 namespace Pos.Repository.Identity;
 
-public class AppIdentityDbContext : IdentityDbContext<AppUser>
+public class AppIdentityDbContext : IdentityDbContext<AppUser, ApplicationRole, string>
 {
     public AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options) : base(options) { }
 

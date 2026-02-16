@@ -1,6 +1,7 @@
 ﻿@inject LocalizationService Localizer
 @page "/"
 @page "/login"
+@attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navigationManager
 @inject ISnackbar Snackbar

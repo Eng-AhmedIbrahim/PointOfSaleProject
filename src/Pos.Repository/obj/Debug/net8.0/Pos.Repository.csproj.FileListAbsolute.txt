@@ -5,6 +5,7 @@ F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\BlazorBase.staticwebas
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\branch.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\company.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\DeliveryCustomerTitle.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\kitchenPrinters.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\kitchenTypes.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\orderSettings.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\permissions.json

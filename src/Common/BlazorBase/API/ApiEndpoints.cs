@@ -41,4 +41,21 @@ public record ApiEndpoints
     public string? TrackOrderAction { get; set; }
     public string? GetOrderTrackingHistory { get; set; }
     public string? GetOrderTrackingByDateRange { get; set; }
+
+
+
+    public string? GetUnCompletedDeliveryOrders { get; set; }
+    public string? DispatchOrder { get; set; }
+    public string? CollectDelivery { get; set; }
+    public string? UnDispatchOrder { get; set; }
+    public string? CollectDriverOrders { get; set; }
+    public string? CollectAllOrders { get; set; }
+    public string? GetAllZones { get; set; }
+
+    // Complaint endpoints
+    public string? CreateComplaint { get; set; }
+    public string? GetAllComplaints { get; set; }
+    public string? GetComplaintById { get; set; }
+    public string? UpdateComplaintStatus { get; set; }
+    public string? GetDriverSettlement { get; set; }
 }

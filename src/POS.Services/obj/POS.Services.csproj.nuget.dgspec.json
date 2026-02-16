@@ -427,6 +427,12 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
+              "F:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "F:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              },
+              "F:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+                "projectPath": "F:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
+              },
               "F:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj": {
                 "projectPath": "F:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj"
               }
@@ -449,6 +455,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
             "Microsoft.Extensions.Caching.StackExchangeRedis": {
               "target": "Package",
               "version": "[8.0.8, )"

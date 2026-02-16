@@ -1,5 +1,4 @@
-﻿@using MudBlazor
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @* Required *@
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -10,20 +9,37 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-@using BlazorBase
+@using POS.Core.Services.Contract.PosFeatureServices
 @inject CommonProperties _commonProperties
 @inject ISnackbar _snackbar
 @inject BlazorBase.Services.LocalizationService Localizer
 
-<NavigationLock ConfirmExternalNavigation='_commonProperties.TableItems?.Any() == true' 
-                OnBeforeInternalNavigation="HandleInternalNavigation" />
+@* <NavigationLock ConfirmExternalNavigation='_commonProperties.TableItems?.Any() == true' 
+                OnBeforeInternalNavigation="HandleInternalNavigation" /> *@
 
 @implements IDisposable
 
+@inject IPosFeatureSettingsService _featureSettingsService
+
+@inject BlazorBase.HandelDeliveryInvocation _deliveryInvocation
+
 @code {
+    private Action? _stateChangedHandler;
+
     protected override void OnInitialized()
     {
-        _commonProperties.OnChange += StateHasChanged;
+        _stateChangedHandler = async () => 
+        {
+            try { await InvokeAsync(StateHasChanged); } catch { }
+        };
+
+        _commonProperties.OnChange += _stateChangedHandler;
+        _deliveryInvocation.OnShowNotification += ShowNotification;
+    }
+
+    private async void ShowNotification(string message, Severity severity)
+    {
+        await InvokeAsync(() => _snackbar.Add(message, severity));
     }
 
     private void HandleInternalNavigation(LocationChangingContext context)
@@ -42,7 +58,11 @@
 
     public void Dispose()
     {
-        _commonProperties.OnChange -= StateHasChanged;
+        if (_stateChangedHandler != null)
+        {
+            _commonProperties.OnChange -= _stateChangedHandler;
+        }
+        _deliveryInvocation.OnShowNotification -= ShowNotification;
     }
 }
 <div class="page">

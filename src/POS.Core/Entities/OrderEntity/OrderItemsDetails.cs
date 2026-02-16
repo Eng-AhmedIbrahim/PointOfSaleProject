@@ -33,13 +33,10 @@ public class OrderItemsDetails:BaseEntity
     public string? CategoryName { get; set; }
     public decimal? UnitPrice { get; set; }
     
-    [NotMapped]
+    // Kitchen and printing configuration
     public int? ItemKitchenTypeId { get; set; }
-    [NotMapped]
     public int? CategoryKitchenTypeId { get; set; }
-    [NotMapped]
     public bool? PrintInBackupReceiptFromCategory { get; set; }
-    [NotMapped]
     public bool? PrintInBackupReceiptFromItem { get; set; }
 
     public Orders? Order { get; set; }

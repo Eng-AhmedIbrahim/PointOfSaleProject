@@ -1,6 +1,4 @@
-﻿using POS.Contract.Models;
-
-namespace BlazorBase.ERPFrontServices.CartServices;
+﻿namespace BlazorBase.ERPFrontServices.CartServices;
 
 public class CartService : ICartService
 {
@@ -141,7 +139,7 @@ public class CartService : ICartService
             new FinanceSettings { Label = "Account", Value = 0M },
             new FinanceSettings { Label = "Discount", Value = 0M },
             new FinanceSettings { Label = "Tax", Value = 0M },
-            new FinanceSettings { Label = "Service", Value = 0M },
+            new FinanceSettings { Label = (posMode == nameof(PosModes.Delivery) ? "DeliveryService" : "Service"), Value = 0M },
             new FinanceSettings { Label = "Total", Value = 0M }
         };
 
@@ -267,8 +265,13 @@ public class CartService : ICartService
         decimal taxAmount = (taxRate * Amount) / 100;
         decimal serviceAmount = (serviceRate * Amount) / 100;
 
+        if (settings is DeliverySettings && _commonProperties?.CustomerDetails?.ZoneFees > 0)
+        {
+            serviceAmount = _commonProperties.CustomerDetails.ZoneFees;
+        }
+
         // Store these in finance settings if they exist
-        if (_commonProperties._financeSettingsList != null)
+        if (_commonProperties?._financeSettingsList != null)
         {
             if (_commonProperties._financeSettingsList.Count > 2)
                 _commonProperties._financeSettingsList[2].Value = FormatValue(taxAmount);
@@ -312,6 +315,7 @@ public class CartService : ICartService
         _commonProperties.CustomerName = "";
         _commonProperties.CustomerPhone = "";
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
+        _commonProperties.UpdateDeliveryOrder = false;
     }
 
     public void RemoveItemDiscount()

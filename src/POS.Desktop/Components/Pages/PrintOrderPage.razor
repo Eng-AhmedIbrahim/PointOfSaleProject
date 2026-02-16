@@ -1,6 +1,7 @@
 ﻿@layout CommonLayout
 @inject CommonProperties _commonProperties
 @inject NavigationManager _navigationManager
+@inject ISnackbar _snackbar
 @page "/printOrder"
 @using global::POS.Contract.Models
 @using global::POS.Core.Entities.Customer
@@ -123,7 +124,7 @@
                 <MudItem xs="12" Class="mt-2">
                     <MudButton Variant="Variant.Outlined"
                                Color="Color.Secondary"
-                               OnClick='()=>_navigationManager.NavigateTo("/pos")'
+                               OnClick="BackToPos"
                                FullWidth="true"
                                Style="font-size: 1.2rem; height: 100px;">
                         <MudIcon Icon="@Icons.Material.Filled.ArrowBack" Class="mr-2" />
@@ -297,8 +298,46 @@
 
     }
 
+    private async Task BackToPos()
+    {
+        await SafeNavigateAsync("/pos");
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 50;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                {
+                    await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                if (currentRetry >= maxRetries) 
+                {
+                    _snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                delayMs *= 2;
+            }
+        }
+    }
 }
-}
+
 <style>
     .first-section {
         height: calc(100vh - 86px) !important;

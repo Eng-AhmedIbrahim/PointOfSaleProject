@@ -15,7 +15,7 @@ public class Orders : BaseEntity
     public OrderTypes? OrderType { get; set; }
     public OrderStates? OrderState { get; set; }
     public string? DeliveryCompany { get; set; }
-    public int? TakerID { get; set; }
+    public string? TakerID { get; set; }
     public string? TakerName { get; set; }
     public string? TitleName { get; set; }
     public int? CustomerID { get; set; }
@@ -31,14 +31,16 @@ public class Orders : BaseEntity
     public string? ZoneName { get; set; }
     public decimal? ZoneBonus { get; set; }
     public string? DispatchID { get; set; }
-    public int? DriverID { get; set; }
+    public string? DriverID { get; set; }
     public string? DriverName { get; set; }
     public DateTime? AssignTime { get; set; }
     public DateTime? BackTime { get; set; }
+    public string? CollectorID { get; set; }
+    public string? CollectorName { get; set; }
     public int? TableID { get; set; }
     public string? TableName { get; set; }
     public string? TableState { get; set; }
-    public int? WaiterID { get; set; }
+    public string? WaiterID { get; set; }
     public string? WaiterName { get; set; }
     public decimal? Subtotal { get; set; }
     public decimal? Tax { get; set; }
@@ -93,4 +95,11 @@ public class Orders : BaseEntity
     
     public string? ReservationCustomerName { get; set; }
     public string? ReservationCustomerPhone { get; set; }
+    public int? CallCenterOrderId { get; set; }
+    
+    // For additional items added to an existing order
+    public int? ParentOrderId { get; set; }
+    
+    public string? DeliveryBranchUrl { get; set; }
+    public string? CallCenterApiUrl { get; set; }
 }

@@ -97,7 +97,9 @@ public partial class Login
 
                 _commonProperties.TableItems = new List<TableItem>(); // Explicitly clear right before navigation to avoid NavLock
                 _commonProperties.NotifyStateChanged();
-                _navigationManager.NavigateTo("/pos", true);
+                
+                // Safe navigation for Blazor Hybrid after login
+                await SafeNavigateAsync("/pos");
             }
             else
             {
@@ -141,6 +143,46 @@ public partial class Login
 
     private void HandelOnChange(ChangeEventArgs e)
        => _userName = e.Value?.ToString() ?? string.Empty;
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 100;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                
+                // Check if NavigationManager is initialized by checking the Uri property
+                if (_navigationManager != null && !string.IsNullOrEmpty(_navigationManager.Uri))
+                {
+                    // Use InvokeAsync to ensure we're on the correct synchronization context
+                    await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                    return;
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager not yet initialized");
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                currentRetry++;
+                
+                if (currentRetry >= maxRetries)
+                {
+                    Snackbar.Add("Navigation error after login. Please refresh.", Severity.Error);
+                    return;
+                }
+                
+                // Exponential backoff
+                delayMs *= 2;
+            }
+        }
+    }
 
     private void ExitApp()
     {

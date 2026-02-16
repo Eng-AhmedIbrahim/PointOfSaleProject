@@ -11,5 +11,7 @@ public class OrdersByOrderIdSpecs : BaseSpecifications<Orders>
         Includes.Add(o => o.OrderDetails!);
         AddThenInclude("OrderDetails.OrderItemAttributes");
         AddThenInclude("OrderDetails.OrderItemComments");
+        AddThenInclude("OrderDetails.MenuSalesItem");
+        AddThenInclude("OrderDetails.MenuSalesItem.Category");
     }
 }

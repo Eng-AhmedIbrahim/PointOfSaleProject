@@ -50,4 +50,5 @@ public class AppDbContext : DbContext
     public DbSet<OrderTrack> OrderTracks { get; set; }
     public DbSet<POS.Core.Entities.ReservationEntity.Reservation> Reservations { get; set; }
     public DbSet<PosFeatureSetting> PosFeatureSettings { get; set; }
+    public DbSet<POS.Core.Entities.ComplaintEntity.Complaint> Complaints { get; set; }
 }

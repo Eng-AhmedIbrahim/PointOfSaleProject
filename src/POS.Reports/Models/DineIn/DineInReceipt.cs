@@ -20,6 +20,8 @@ public class DineInReceipt
     public string TotalOrder { get; set; } = string.Empty;
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
     public float LogoWidth { get; set; } = 120f;
+    public bool IsFollowUp { get; set; }
+    public bool IsCopy { get; set; }
 
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);

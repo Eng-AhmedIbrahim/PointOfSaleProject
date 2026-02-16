@@ -3,6 +3,13 @@ using POS.Contract.Dtos.DineIn;
 using POS.Core.Services.Contract.OrderServices;
 using POS.Core.Specifications.OrderSpecs;
 using POS.Core.Services.Contract.AppDateServices;
+using POS.Core.Repository.Contract;
+using Pos.Repository.Data.DataSeed;
+using Serilog;
+using POS.Core.Entities.OrderEntity;
+using POS.Core.Specifications;
+using AutoMapper;
+using POS.Contract.Dtos.OrderDtos;
 
 namespace POS.Services.OrderServices;
 
@@ -10,11 +17,13 @@ public class OrderService : IOrderService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAppDateService _appDateService;
+    private readonly IMapper _mapper;
 
-    public OrderService(IUnitOfWork unitOfWork, IAppDateService appDateService)
+    public OrderService(IUnitOfWork unitOfWork, IAppDateService appDateService, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _appDateService = appDateService;
+        _mapper = mapper;
     }
     public async Task<Orders?> CreateOrderAsync(Orders order)
     {
@@ -88,34 +97,114 @@ public class OrderService : IOrderService
 
     }
 
-    public async Task<OrderSetting?> GetOrderSettingAsync(OrderTypes orderType)
+    public async Task<OrderSetting?> GetOrderSettingAsync(OrderTypes orderType, string? computerName = null)
     {
-        var orderSettingSpecs = new OrderSettingSpecs(orderType);
-        return await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(orderSettingSpecs);
+        var orderSettingSpecs = new OrderSettingSpecs(orderType, computerName);
+        var settings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(orderSettingSpecs);
+
+        if (settings == null && !string.IsNullOrEmpty(computerName))
+        {
+            await InitializeOrderSettingsForComputerAsync(computerName);
+            settings = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(orderSettingSpecs);
+        }
+
+        return settings;
     }
 
-    public async Task<IReadOnlyList<OrderSetting>> GetOrderSettingsAsync()
-     => await _unitOfWork.Repository<OrderSetting>().GetAllAsync();
-
-    public async Task<OrderSetting?> UpdateOrderSettingAsync(OrderTypes orderType, OrderSetting orderSetting)
+    public async Task<IReadOnlyList<OrderSetting>> GetOrderSettingsAsync(string? computerName = null)
     {
-        var orderSettingSpecs = new OrderSettingSpecs(orderType);
+        if (string.IsNullOrEmpty(computerName))
+            return await _unitOfWork.Repository<OrderSetting>().GetAllAsync();
+
+        var spec = new OrderSettingSpecs(computerName);
+        var settings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(spec);
+
+        if (settings == null || !settings.Any())
+        {
+            await InitializeOrderSettingsForComputerAsync(computerName);
+            settings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(spec);
+        }
+
+        return settings.ToList();
+    }
+
+    private async Task InitializeOrderSettingsForComputerAsync(string computerName)
+    {
+        try
+        {
+            // Get defaults (those with no ComputerName or marked as Default)
+            var defaultSpec = new POS.Core.Specifications.BaseSpecifications<OrderSetting>(x => string.IsNullOrEmpty(x.ComputerName) || x.ComputerName == "Default");
+            var defaultSettings = await _unitOfWork.Repository<OrderSetting>().GetAllWithSpecificationAsync(defaultSpec);
+
+            if (defaultSettings == null || !defaultSettings.Any())
+            {
+                // Fallback to JSON if nothing in DB
+                var jsonSettings = await PosDbContextDataSeed.GetDataFromJsonFile<OrderSetting>("orderSettings.json");
+                if (jsonSettings != null && jsonSettings.Any())
+                {
+                    foreach (var setting in jsonSettings)
+                    {
+                        setting.Id = 0;
+                        setting.ComputerName = computerName;
+                        await _unitOfWork.Repository<OrderSetting>().AddAsync(setting);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var setting in defaultSettings)
+                {
+                    var newSetting = new OrderSetting
+                    {
+                        BranchID = setting.BranchID,
+                        OrderType = setting.OrderType,
+                        OrderStatment = setting.OrderStatment,
+                        Service = setting.Service,
+                        Tax = setting.Tax,
+                        Tips = setting.Tips,
+                        JobID = setting.JobID,
+                        CustomerReceiptCount = setting.CustomerReceiptCount,
+                        FullKitchenReceiptCount = setting.FullKitchenReceiptCount,
+                        SeparateReceiptCount = setting.SeparateReceiptCount,
+                        ClosingReceiptCount = setting.ClosingReceiptCount,
+                        AddServiceToItemPrice = setting.AddServiceToItemPrice,
+                        CanCloseWithoutPrint = setting.CanCloseWithoutPrint,
+                        DeductCaptainTips = setting.DeductCaptainTips,
+                        CaptainTipsAmount = setting.CaptainTipsAmount,
+                        ComputerName = computerName
+                    };
+                    await _unitOfWork.Repository<OrderSetting>().AddAsync(newSetting);
+                }
+            }
+            await _unitOfWork.CompleteAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error initializing order settings for computer {ComputerName}", computerName);
+        }
+    }
+
+    public async Task<OrderSetting?> UpdateOrderSettingAsync(OrderTypes orderType, OrderSetting orderSetting, string? computerName = null)
+    {
+        var orderSettingSpecs = new OrderSettingSpecs(orderType, computerName);
         var oldOrderSetting = await _unitOfWork.Repository<OrderSetting>().GetByIdWithSpecificationAsync(orderSettingSpecs);
 
         if (oldOrderSetting is null)
             return null;
 
-        oldOrderSetting.OrderType = oldOrderSetting.OrderType;
-        oldOrderSetting.BranchID = oldOrderSetting.BranchID;
-        oldOrderSetting.Service = orderSetting.Service != 0 ? orderSetting.Service : oldOrderSetting.Service;
-        oldOrderSetting.Tips = orderSetting.Tips != 0 ? orderSetting.Tips : oldOrderSetting.Tips;
-        oldOrderSetting.Tax = orderSetting.Tax != 0 ? orderSetting.Tax : oldOrderSetting.Tax;
-        oldOrderSetting.SeparateReceiptCount = orderSetting.SeparateReceiptCount != 0 ? orderSetting.SeparateReceiptCount : oldOrderSetting.SeparateReceiptCount;
-        oldOrderSetting.CustomerReceiptCount = orderSetting.CustomerReceiptCount != 0 ? orderSetting.CustomerReceiptCount : oldOrderSetting.CustomerReceiptCount;
-        oldOrderSetting.ClosingReceiptCount = orderSetting.ClosingReceiptCount != 0 ? orderSetting.ClosingReceiptCount : oldOrderSetting.ClosingReceiptCount;
-        oldOrderSetting.FullKitchenReceiptCount = orderSetting.FullKitchenReceiptCount != 0 ? orderSetting.FullKitchenReceiptCount : oldOrderSetting.FullKitchenReceiptCount;
-        oldOrderSetting.JobID = orderSetting.JobID != 0 ? orderSetting.JobID : oldOrderSetting.JobID;
+        oldOrderSetting.Service = orderSetting.Service;
+        oldOrderSetting.Tips = orderSetting.Tips;
+        oldOrderSetting.Tax = orderSetting.Tax;
+        oldOrderSetting.OrderStatment = orderSetting.OrderStatment;
+        oldOrderSetting.SeparateReceiptCount = orderSetting.SeparateReceiptCount;
+        oldOrderSetting.CustomerReceiptCount = orderSetting.CustomerReceiptCount;
+        oldOrderSetting.ClosingReceiptCount = orderSetting.ClosingReceiptCount;
+        oldOrderSetting.FullKitchenReceiptCount = orderSetting.FullKitchenReceiptCount;
+        oldOrderSetting.JobID = orderSetting.JobID;
         oldOrderSetting.AddServiceToItemPrice = orderSetting.AddServiceToItemPrice;
+        oldOrderSetting.CanCloseWithoutPrint = orderSetting.CanCloseWithoutPrint;
+        oldOrderSetting.DeductCaptainTips = orderSetting.DeductCaptainTips;
+        oldOrderSetting.CaptainTipsAmount = orderSetting.CaptainTipsAmount;
 
         _unitOfWork.Repository<OrderSetting>().Update(oldOrderSetting);
         await _unitOfWork.CompleteAsync();
@@ -176,6 +265,11 @@ public class OrderService : IOrderService
 
                         totalVoidedValue += itemValue;
                         totalVoidedCount += itemQty;
+
+                        // Null navigation properties to avoid tracking conflicts during update
+                        item.MenuSalesItem = null;
+                        item.DineInOrder = null;
+                        item.Order = null;
 
                         _unitOfWork.Repository<OrderItemsDetails>().Update(item);
                     }
@@ -253,6 +347,11 @@ public class OrderService : IOrderService
                     {
                         item.IsVoided = true;
                     }
+
+                    // Null navigation properties to avoid tracking conflicts during update
+                    item.MenuSalesItem = null;
+                    item.DineInOrder = null;
+                    item.Order = null;
                     
                     _unitOfWork.Repository<OrderItemsDetails>().Update(item);
 
@@ -296,6 +395,178 @@ public class OrderService : IOrderService
                 Log.Error(ex, "Error voiding items from order {OrderId}", orderId);
                 return false;
             }
+        }
+    }
+
+    public async Task<bool> UpdateOrderStatusAsync(int orderId, OrderStates state)
+    {
+        var spec = new OrdersByOrderIdSpecs(orderId);
+        var order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+        if (order == null) return false;
+
+        order.OrderState = state;
+        _unitOfWork.Repository<Orders>().Update(order);
+        return await _unitOfWork.CompleteAsync() > 0;
+    }
+
+    public async Task<IReadOnlyList<Orders>?> GetFailedDeliveryOrdersAsync()
+    {
+        var spec = new BaseSpecifications<Orders>(x => x.OrderType == OrderTypes.Delivery && (x.OrderState == OrderStates.FailedToDeliverToBranch || (x.OrderState == OrderStates.Pending && x.BranchID > 0)));
+        // Note: Logic depends on how we identify failed dispatches. 
+        // Adding Pending with BranchID > 0 as a fallback for Central mode orders that didn't move.
+        return await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+    }
+
+    public async Task<OrderDto?> GetOrderDtoByIdAsync(int id)
+    {
+        var spec = new OrdersByOrderIdSpecs(id);
+        var order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+        return order != null ? _mapper.Map<OrderDto>(order) : null;
+    }
+
+    public async Task<bool> UpdateOrderAsync(Orders order)
+    {
+        _unitOfWork.Repository<Orders>().Update(order);
+        return await _unitOfWork.CompleteAsync() > 0;
+    }
+
+    public async Task<Orders?> FullUpdateOrderAsync(Orders order)
+    {
+        if (order is null || order.OrderID == 0)
+            return null;
+
+        using (var transaction = _unitOfWork.BeginTransaction())
+        {
+            try
+            {
+                var spec = new OrdersByOrderIdSpecs(order.OrderID);
+                var existingOrder = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+                if (existingOrder == null) return null;
+
+                // Update basic fields
+                existingOrder.Subtotal = order.Subtotal;
+                existingOrder.Service = order.Service;
+                existingOrder.Tax = order.Tax;
+                existingOrder.Discount = order.Discount;
+                existingOrder.DiscountPercentage = order.DiscountPercentage;
+                existingOrder.TotalDiscount = order.TotalDiscount;
+                existingOrder.GrandTotal = order.GrandTotal;
+                existingOrder.Paid = order.Paid;
+                existingOrder.Remain = order.Remain;
+                existingOrder.OrderNotice = order.OrderNotice;
+                existingOrder.OrderState = order.OrderState;
+                existingOrder.PaymentMethod = order.PaymentMethod;
+                
+                // Delivery specific
+                existingOrder.CustomerName = order.CustomerName;
+                existingOrder.Phone1 = order.Phone1;
+                existingOrder.StreetName = order.StreetName;
+                existingOrder.ZoneName = order.ZoneName;
+                existingOrder.DeliveryFees = order.DeliveryFees;
+
+                // Clear and Re-add details (simplest way to sync complex order graphs)
+                if (existingOrder.OrderDetails != null)
+                {
+                    foreach (var detail in existingOrder.OrderDetails.ToList())
+                    {
+                        // Null navigation properties to avoid tracking conflicts during deletion
+                        // especially for shared entities like Category/MenuSalesItem
+                        detail.MenuSalesItem = null;
+                        detail.DineInOrder = null;
+                        detail.Order = null;
+                        
+                        _unitOfWork.Repository<OrderItemsDetails>().Delete(detail);
+                    }
+                    await _unitOfWork.CompleteAsync();
+                    existingOrder.OrderDetails.Clear();
+                }
+
+                if (order.OrderDetails != null)
+                {
+                    // Group and Merge items to prevent duplicates in DB
+                    var mergedItems = order.OrderDetails
+                        .GroupBy(i => new 
+                        { 
+                            i.MenuSalesItemId, 
+                            i.IsVoided,
+                            i.UnitPrice,
+                            AttributeKey = string.Join(",", i.OrderItemAttributes?.Select(a => a.AttributeItemId).OrderBy(id => id) ?? Enumerable.Empty<int?>())
+                        })
+                        .Select(g => 
+                        {
+                            var first = g.First();
+                            if (g.Count() > 1)
+                            {
+                                first.Quantity = g.Sum(x => x.Quantity ?? 0);
+                                first.TotalAmount = g.Sum(x => x.TotalAmount ?? 0);
+                                first.TotalAfterDiscount = g.Sum(x => x.TotalAfterDiscount ?? 0);
+                                first.TotalDiscountAmount = g.Sum(x => x.TotalDiscountAmount ?? 0);
+                                first.TotalVoidAmount = g.Sum(x => x.TotalVoidAmount ?? 0);
+                                first.VoidAmount = g.Sum(x => x.VoidAmount ?? 0);
+                                first.TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0);
+                            }
+                            return first;
+                        }).ToList();
+
+                    foreach (var item in mergedItems)
+                    {
+                        item.OrderId = existingOrder.Id;
+                        item.Id = 0; // Ensure it's treated as a new insert
+                        // Clear IDs from attributes to prevent identity insert errors
+                        if (item.OrderItemAttributes != null)
+                        {
+                            foreach (var attr in item.OrderItemAttributes)
+                            {
+                                attr.Id = 0;
+                                attr.OrderItemId = 0;
+                            }
+                        }
+                        await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(item);
+                    }
+                }
+
+                _unitOfWork.Repository<Orders>().Update(existingOrder);
+                await _unitOfWork.CompleteAsync();
+
+                transaction.Commit();
+
+                // Re-fetch to get all merged items and includes for the response
+                return await GetOrderByOrderIdAsync(existingOrder.OrderID);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                Log.Error(ex, "An error occurred while updating the order {OrderId}.", order.OrderID);
+                return null;
+            }
+        }
+    }
+    public async Task<IReadOnlyList<Orders>> GetOrdersByCustomerPhoneAsync(string phoneNumber)
+    {
+        var spec = new OrdersByCustomerPhoneSpecs(phoneNumber);
+        return await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+    }
+
+    public async Task<int> IncrementPrintCountAsync(int orderId)
+    {
+        try
+        {
+            var spec = new BaseSpecifications<Orders>(o => o.OrderID == orderId);
+            var order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+            
+            if (order == null) return 0;
+
+            order.PrintCount = (order.PrintCount ?? 0) + 1;
+            
+            _unitOfWork.Repository<Orders>().Update(order);
+            await _unitOfWork.CompleteAsync();
+            
+            return order.PrintCount ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error incrementing print count for order {OrderId}", orderId);
+            return 0;
         }
     }
 }

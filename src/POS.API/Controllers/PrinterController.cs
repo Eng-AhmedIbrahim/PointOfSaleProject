@@ -43,9 +43,9 @@ public class PrinterController : BaseApiController
     }
 
     [HttpGet("kitchens")]
-    public async Task<ActionResult<List<KitchenType>>> GetKitchenTypesAsync()
+    public async Task<ActionResult<List<KitchenType>>> GetKitchenTypesAsync([FromQuery] string? deviceName = null)
     {
-        var result = await _printerServices.GetKitchenTypesAsync();
+        var result = await _printerServices.GetKitchenTypesAsync(deviceName);
         if (result == null || result.Count == 0)
         {
             return NoContent();
@@ -65,9 +65,9 @@ public class PrinterController : BaseApiController
     }
 
     [HttpGet("order-settings")]
-    public async Task<ActionResult<List<OrderSetting>>> GetOrderSettingsAsync()
+    public async Task<ActionResult<List<OrderSetting>>> GetOrderSettingsAsync([FromQuery] string? deviceName = null)
     {
-        var result = await _printerServices.GetOrderSettingsAsync();
+        var result = await _printerServices.GetOrderSettingsAsync(deviceName);
         if (result == null || result.Count == 0)
         {
             return NoContent();

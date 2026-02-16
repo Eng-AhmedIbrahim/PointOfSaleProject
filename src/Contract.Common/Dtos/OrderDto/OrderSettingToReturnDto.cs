@@ -16,4 +16,5 @@ public class OrderSettingToReturnDto
     public bool? CanCloseWithoutPrint { get; set; }
     public bool? DeductCaptainTips { get; set; }
     public decimal? CaptainTipsAmount { get; set; }
+    public string? ComputerName { get; set; }
 }

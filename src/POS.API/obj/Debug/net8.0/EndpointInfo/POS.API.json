@@ -341,7 +341,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IdentityRole"
+                    "$ref": "#/components/schemas/ApplicationRole"
                   }
                 }
               },
@@ -349,7 +349,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IdentityRole"
+                    "$ref": "#/components/schemas/ApplicationRole"
                   }
                 }
               },
@@ -357,7 +357,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IdentityRole"
+                    "$ref": "#/components/schemas/ApplicationRole"
                   }
                 }
               }
@@ -425,17 +425,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityRole"
+                  "$ref": "#/components/schemas/ApplicationRole"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityRole"
+                  "$ref": "#/components/schemas/ApplicationRole"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IdentityRole"
+                  "$ref": "#/components/schemas/ApplicationRole"
                 }
               }
             }
@@ -772,17 +772,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/CaptainOrderUserToReturnDto"
+                  "$ref": "#/components/schemas/UserToReturnDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CaptainOrderUserToReturnDto"
+                  "$ref": "#/components/schemas/UserToReturnDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CaptainOrderUserToReturnDto"
+                  "$ref": "#/components/schemas/UserToReturnDto"
                 }
               }
             }
@@ -2438,6 +2438,220 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/Complaint": {
+      "post": {
+        "tags": [
+          "Complaint"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Complaint"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Complaint/{id}": {
+      "get": {
+        "tags": [
+          "Complaint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Complaint/phone/{phone}": {
+      "get": {
+        "tags": [
+          "Complaint"
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ComplaintDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Complaint/{id}/status": {
+      "put": {
+        "tags": [
+          "Complaint"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -4506,6 +4720,383 @@
         }
       }
     },
+    "/api/Distribution/GetUnCompletedDeliveryOrders": {
+      "get": {
+        "tags": [
+          "Distribution"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/dispatch": {
+      "put": {
+        "tags": [
+          "Distribution"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/collect-delivery": {
+      "put": {
+        "tags": [
+          "Distribution"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/un-dispatch/{orderId}": {
+      "put": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/collect-driver-orders/{driverId}": {
+      "put": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "driverId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/collect-all": {
+      "put": {
+        "tags": [
+          "Distribution"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Distribution/driver-settlement": {
+      "get": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "posDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriverSettlementDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriverSettlementDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriverSettlementDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/voidOrder/{orderId}": {
+      "delete": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidByName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/voidItems/{orderId}": {
+      "post": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "reason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voidByName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OrderItemVoidDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Distribution/voided-orders": {
+      "get": {
+        "tags": [
+          "Distribution"
+        ],
+        "parameters": [
+          {
+            "name": "posDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Item": {
       "post": {
         "tags": [
@@ -5723,6 +6314,49 @@
         }
       }
     },
+    "/api/Order/incrementPrintCount/{orderId}": {
+      "put": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Order/void-items/{orderId}": {
       "put": {
         "tags": [
@@ -5812,10 +6446,50 @@
         }
       }
     },
+    "/api/Order/add-items": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/OrderSetting/GetOrderSettings": {
       "get": {
         "tags": [
           "OrderSetting"
+        ],
+        "parameters": [
+          {
+            "name": "computerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "400": {
@@ -5883,6 +6557,13 @@
             "schema": {
               "$ref": "#/components/schemas/OrderTypes"
             }
+          },
+          {
+            "name": "computerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -5941,6 +6622,13 @@
             "required": true,
             "schema": {
               "$ref": "#/components/schemas/OrderTypes"
+            }
+          },
+          {
+            "name": "computerName",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -6156,6 +6844,102 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/PosFeatureSettings/{computerName}": {
+      "get": {
+        "tags": [
+          "PosFeatureSettings"
+        ],
+        "parameters": [
+          {
+            "name": "computerName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "PosFeatureSettings"
+        ],
+        "parameters": [
+          {
+            "name": "computerName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PosFeatureSettingToReturnDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -6393,6 +7177,15 @@
         "tags": [
           "Printer"
         ],
+        "parameters": [
+          {
+            "name": "deviceName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -6470,6 +7263,15 @@
       "get": {
         "tags": [
           "Printer"
+        ],
+        "parameters": [
+          {
+            "name": "deviceName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -6839,6 +7641,41 @@
           "arabicName": {
             "type": "string",
             "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApplicationRole": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedName": {
+            "type": "string",
+            "nullable": true
+          },
+          "concurrencyStamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "showInLogin": {
+            "type": "boolean"
+          },
+          "rolePermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RolePermission"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -7076,28 +7913,6 @@
         },
         "additionalProperties": false
       },
-      "CaptainOrderUserToReturnDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "displayName": {
-            "type": "string",
-            "nullable": true
-          },
-          "arabicName": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "CategoryDto": {
         "required": [
           "arabicName",
@@ -7236,6 +8051,68 @@
             "items": {
               "$ref": "#/components/schemas/Branch"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ComplaintDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "complaintNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "orderDatabaseId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "complaintText": {
+            "type": "string",
+            "nullable": true
+          },
+          "complaintDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "resolution": {
+            "type": "string",
+            "nullable": true
+          },
+          "resolutionDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         },
@@ -7488,6 +8365,11 @@
             "format": "double",
             "nullable": true
           },
+          "zoneBonus": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "branchId": {
             "type": "integer",
             "format": "int32"
@@ -7513,6 +8395,11 @@
             "nullable": true
           },
           "deliveryFee": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "zoneBonus": {
             "type": "number",
             "format": "double",
             "nullable": true
@@ -7714,24 +8601,28 @@
         },
         "additionalProperties": false
       },
-      "IdentityRole": {
+      "DriverSettlementDto": {
         "type": "object",
         "properties": {
-          "id": {
+          "driverId": {
             "type": "string",
             "nullable": true
           },
-          "name": {
+          "driverName": {
             "type": "string",
             "nullable": true
           },
-          "normalizedName": {
-            "type": "string",
-            "nullable": true
+          "orderCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "concurrencyStamp": {
-            "type": "string",
-            "nullable": true
+          "totalAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalBonus": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -7928,13 +8819,12 @@
             "type": "string",
             "nullable": true
           },
-          "kitchenPrinterId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
           "kitchenPrinters": {
-            "$ref": "#/components/schemas/KitchenPrinters"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KitchenPrinters"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -8118,6 +9008,10 @@
       "OrderDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
           "orderType": {
             "type": "string",
             "nullable": true
@@ -8376,13 +9270,17 @@
             "format": "double",
             "nullable": true
           },
+          "deliveryFees": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "dispatchID": {
             "type": "string",
             "nullable": true
           },
           "driverID": {
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "nullable": true
           },
           "driverName": {
@@ -8399,6 +9297,14 @@
             "format": "date-time",
             "nullable": true
           },
+          "collectorID": {
+            "type": "string",
+            "nullable": true
+          },
+          "collectorName": {
+            "type": "string",
+            "nullable": true
+          },
           "withoutDeliveryFees": {
             "type": "boolean",
             "nullable": true
@@ -8406,6 +9312,10 @@
           "closingTime": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          },
+          "deliveryBranchUrl": {
+            "type": "string",
             "nullable": true
           },
           "voidAmount": {
@@ -8466,6 +9376,20 @@
           "captainTipsDeduction": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "callCenterOrderId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "callCenterApiUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentOrderId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -8753,6 +9677,26 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "computerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "canVoidFromBranch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "canVoidFromCallCenter": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "canAddItemsFromBranch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "canAddItemsFromCallCenter": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -8823,6 +9767,10 @@
           "captainTipsAmount": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "computerName": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -8900,6 +9848,72 @@
         "type": "integer",
         "format": "int32"
       },
+      "Permission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameAr": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameEn": {
+            "type": "string",
+            "nullable": true
+          },
+          "rolePermissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RolePermission"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PosFeatureSettingToReturnDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "featureName": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameEn": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameAr": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "boolean"
+          },
+          "computerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "moduleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "screenName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RoleClaimsRequest": {
         "type": "object",
         "properties": {
@@ -8912,6 +9926,26 @@
               }
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RolePermission": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "$ref": "#/components/schemas/ApplicationRole"
+          },
+          "permissionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permission": {
+            "$ref": "#/components/schemas/Permission"
           }
         },
         "additionalProperties": false
@@ -9524,6 +10558,28 @@
             "format": "double"
           },
           "defaultLanguage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserToReturnDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "arabicName": {
             "type": "string",
             "nullable": true
           }

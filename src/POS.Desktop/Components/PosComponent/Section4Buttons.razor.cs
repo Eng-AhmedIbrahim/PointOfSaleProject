@@ -21,7 +21,11 @@ public partial class Section4Buttons
         {
             if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
             {
-                var result = await _printOrderService.PrintTakeAwayOrder(0, _commonProperties.CustomerName ?? "", _commonProperties.CustomerPhone ?? "", _commonProperties.SelectedPaymentMethod);
+                var result = await _printOrderService.PrintTakeAwayOrder(0, 
+                    _commonProperties.CustomerName ?? "", 
+                    _commonProperties.CustomerPhone ?? "",
+                    _commonProperties.SelectedPaymentMethod);
+
                 if (result is false)
                     return;
 
@@ -66,7 +70,7 @@ public partial class Section4Buttons
                                     Tax = existingOrder.BasicOrderDetails.Tax
                                 }
                             };
-                            await _printOrderService.PrintInitialDineInOrder(appendedOrder, false, true);
+                            await _printOrderService.PrintInitialDineInOrder(appendedOrder, false, true, isClosing: true, isUpdate: true);
                         }
                         else
                         {
@@ -80,7 +84,7 @@ public partial class Section4Buttons
 
             if (_commonProperties.CurrentPosMode == PosModes.Delivery.ToString())
             {
-                PrintDeliveryOrder();
+                await PrintDeliveryOrder();
             }
 
             _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
@@ -125,9 +129,17 @@ public partial class Section4Buttons
         }
         _services.NotifyStateChanged();
     }
-    private void PrintDeliveryOrder()
+    private async Task PrintDeliveryOrder()
     {
-        throw new NotImplementedException();
+        var result = await _printOrderService.PrintDeliveryOrder(0);
+        if (result is false)
+            return;
+
+        _cartService.ClearTakeAwayOrderAttributes(); // Reuse clearing logic for now
+        _commonProperties.CustomerDetails = new();
+        _handelDeliveryInvocation.DeliveryDetails = string.Empty;
+        _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+        _services.NotifyStateChanged();
     }
 
    

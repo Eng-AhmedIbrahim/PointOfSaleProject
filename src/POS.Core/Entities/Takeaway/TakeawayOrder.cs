@@ -6,7 +6,7 @@ public class TakeawayOrder:BaseEntity
     public int BranchID { get; set; }
     public string? BranchName { get; set; }
     public int? ShiftID { get; set; } = 1;
-    public int? CashierID { get; set; }
+    public string? CashierID { get; set; }
     public string? CashierName { get; set; }
     public string? OrderState { get; set; }
     public string? CustomerName { get; set; }

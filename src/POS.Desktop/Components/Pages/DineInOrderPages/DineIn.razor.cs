@@ -10,7 +10,7 @@ public partial class DineIn : IDisposable
     [Inject] private IDialogService _dialogService { get; set; } = default!;
     [Inject] private ISnackbar _snackbar { get; set; } = default!;
 
-    private string GetCaptainModernClass(CaptainOrderUserToReturnDto captain)
+    private string GetCaptainModernClass(UserToReturnDto captain)
     {
         if (captain == null || string.IsNullOrEmpty(captain.Id))
             return "captain-modern-btn";
@@ -30,40 +30,68 @@ public partial class DineIn : IDisposable
     public List<TableItem> Items { get; set; } = new();
     public List<TableGroupToReturnDto>? _tableGroups { get; set; }
     public List<TableToReturnDto>? _tables { get; set; }
-    public List<CaptainOrderUserToReturnDto>? _captainOrders { get; set; } = new();
+    public List<UserToReturnDto>? _captainOrders { get; set; } = new();
     private Dictionary<string, bool> buttonStates = new();
     private Dictionary<int, bool> tableStates = new();
+    private bool _isLoadingOrders = false;
+
     protected async override Task OnInitializedAsync()
     {
-        var TableGroups = await _dineInService.GetTableGroupsAsync();
-        _tableGroups = TableGroups.ToList();
+        // 1. Fire all tasks in parallel
+        var tableGroupsTask = _dineInService.GetTableGroupsAsync();
+        var captainOrdersTask = _dineInService.GetCaptainOrders();
+        var openOrdersTask = _dineInOrderService.GetAllOpenDineInOrdersAsync();
 
-
-        _commonProperties.AppendedTableItems!.Clear();
-
-        await GetCaptainOrders();
+        // 2. Wait for table groups and show them immediately
+        var tableGroups = await tableGroupsTask;
+        _tableGroups = tableGroups?.ToList() ?? new List<TableGroupToReturnDto>();
         
-        // Load open orders from database
-        await LoadOpenOrdersFromDatabase();
+        if (_tableGroups.Any())
+        {
+            // Fetch tables for the first group and render ASAP
+            await GetTablesFromGroup(_tableGroups.First().Id);
+            await InvokeAsync(StateHasChanged);
+        }
 
+        // 3. Wait for captains and open orders (badges) in the background
+        await Task.WhenAll(captainOrdersTask, openOrdersTask);
+        
+        _captainOrders = (await captainOrdersTask)?.ToList() ?? new List<UserToReturnDto>();
+        
+        var openOrders = await openOrdersTask;
+        ProcessOpenOrders(openOrders);
+
+        _commonProperties.AppendedTableItems?.Clear();
         _services.OnChanged += HandleStateChanged;
+        
+        await InvokeAsync(StateHasChanged);
     }
 
     private async void HandleStateChanged()
     {
-        await LoadOpenOrdersFromDatabase();
-        
-        // Sync items with common properties state
-        if (_commonProperties.CurrentDineInOrder == null)
-        {
-            Items = new List<TableItem>();
-        }
-        else
-        {
-            Items = _commonProperties.TableItems ?? new List<TableItem>();
-        }
+        if (_isLoadingOrders) return;
 
-        await InvokeAsync(StateHasChanged);
+        try 
+        {
+            _isLoadingOrders = true;
+            await LoadOpenOrdersFromDatabase();
+            
+            // Sync items with common properties state
+            if (_commonProperties.CurrentDineInOrder == null)
+            {
+                Items = new List<TableItem>();
+            }
+            else
+            {
+                Items = _commonProperties.TableItems ?? new List<TableItem>();
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            _isLoadingOrders = false;
+        }
     }
 
     public void Dispose()
@@ -76,41 +104,43 @@ public partial class DineIn : IDisposable
         try
         {
             var openOrders = await _dineInOrderService.GetAllOpenDineInOrdersAsync();
-            
-            // Clear existing in-memory orders first to ensure synchronization
-            _commonProperties.DineInOrdersDetails?.Clear();
-
-            if (openOrders != null && openOrders.Any())
-            {
-                // Convert database orders to in-memory format
-                foreach (var dbOrder in openOrders)
-                {
-                    var orderDetails = DineInOrderMapper.MapToDineInOrderDetails(dbOrder);
-                    if (!_commonProperties.DineInOrdersDetails!.ContainsKey(dbOrder.TableId))
-                    {
-                        _commonProperties.DineInOrdersDetails[dbOrder.TableId] = new List<DineInOrderDetails>();
-                    }
-                    _commonProperties.DineInOrdersDetails[dbOrder.TableId].Add(orderDetails);
-                }
-            }
+            ProcessOpenOrders(openOrders);
         }
         catch (Exception ex)
         {
-            // Log error but don't crash the app
             Console.WriteLine($"Error loading orders from database: {ex.Message}");
+        }
+    }
+
+    private void ProcessOpenOrders(IEnumerable<DineInOrderDto>? openOrders)
+    {
+        // Clear existing in-memory orders first to ensure synchronization
+        _commonProperties.DineInOrdersDetails?.Clear();
+
+        if (openOrders != null && openOrders.Any())
+        {
+            foreach (var dbOrder in openOrders)
+            {
+                var orderDetails = DineInOrderMapper.MapToDineInOrderDetails(dbOrder);
+                if (!_commonProperties.DineInOrdersDetails!.ContainsKey(dbOrder.TableId))
+                {
+                    _commonProperties.DineInOrdersDetails[dbOrder.TableId] = new List<DineInOrderDetails>();
+                }
+                _commonProperties.DineInOrdersDetails[dbOrder.TableId].Add(orderDetails);
+            }
         }
     }
 
     private async Task GetTablesFromGroup(int tableGroupId)
     {
         var TableItems = await _dineInService.GetTablesByGroupId(tableGroupId);
-        _tables = TableItems.ToList();
+        _tables = TableItems?.ToList() ?? new List<TableToReturnDto>();
     }
 
     private async Task GetCaptainOrders()
     {
         var CaptainOrders = await _dineInService.GetCaptainOrders();
-        _captainOrders = CaptainOrders.ToList();
+        _captainOrders = CaptainOrders?.ToList() ?? new List<UserToReturnDto>();
     }
 
     private async Task ToggleState<T>(Dictionary<T, bool> stateDict, T key, string keyName, Action<Dictionary<T, bool>, T> stateUpdater) where T : notnull
@@ -240,6 +270,12 @@ public partial class DineIn : IDisposable
         }
         else if (!_commonProperties.DineInOrdersDetails!.ContainsKey(table.Id.Value))
         {
+            if (!_commonProperties.IsFeatureEnabled("EnableReservation"))
+            {
+                _snackbar.Add(Localizer["ReservationSystemDisabled"], Severity.Info);
+                return;
+            }
+
             // Table is available - show reserve option
             var parameters = new DialogParameters 
             { 

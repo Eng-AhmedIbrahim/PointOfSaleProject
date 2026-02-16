@@ -1,0 +1,64 @@
+@using POS.Contract.Dtos.OrderDtos
+@inject LocalizationService Localizer
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <div class="d-flex align-center gap-2">
+            <MudIcon Icon="@Icons.Material.Filled.Assignment" Color="Color.Primary" />
+            <MudText Typo="Typo.h6">@Localizer["Distribution_DriverSettlement"] (@PosDate.ToString("yyyy-MM-dd"))</MudText>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Elevation="0" Class="pa-4 bg-gray-50 rounded-xl" Style="max-height: 60vh; overflow-y: auto;">
+            <MudTable Items="Settlements" Hover="true" Dense="true" Elevation="0" Class="bg-transparent">
+                <HeaderContent>
+                    <MudTh>@Localizer["DriverName"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["OrderCount"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["TotalAmount"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["TotalBonus"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["Actions"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Driver">@context.DriverName</MudTd>
+                    <MudTd DataLabel="Orders" Style="text-align: center;">
+                        <MudChip T="string" Color="Color.Info" Size="Size.Small" Variant="Variant.Text" Class="font-bold">@context.OrderCount</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Total" Style="text-align: center;">
+                        <MudText Color="Color.Success" Class="font-bold">@context.TotalAmount.ToString("N3")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Bonus" Style="text-align: center;">
+                        <MudText Color="Color.Warning" Class="font-bold">@context.TotalBonus.ToString("N3")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Print" Style="text-align: center;">
+                        <MudIconButton Icon="@Icons.Material.Filled.Print" Color="Color.Primary" OnClick="@(() => PrintSettlement(context))" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" OnClick="Cancel">@Localizer["Close"]</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Print" OnClick="PrintAll">@Localizer["PrintAll"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public List<DriverSettlementDto> Settlements { get; set; } = new();
+    [Parameter] public DateTime PosDate { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void PrintSettlement(DriverSettlementDto settlement)
+    {
+        // TODO: Implement printing logic for a specific driver
+        Snackbar.Add(Localizer["Distribution_PrintingSettlement"], Severity.Info);
+    }
+
+    private void PrintAll()
+    {
+        // TODO: Implement printing logic for all drivers
+        Snackbar.Add(Localizer["Distribution_PrintingAllSettlements"], Severity.Info);
+    }
+}

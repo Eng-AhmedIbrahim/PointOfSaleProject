@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
     <PackageReference Include="PdfiumViewer" Version="2.13.0" NoWarn="NU1701" />
     <PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
@@ -18,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pos.Repository\Pos.Repository.csproj" />
+    <ProjectReference Include="..\POS.Reports\POS.Reports.csproj" />
+    <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
   </ItemGroup>
 
 </Project>

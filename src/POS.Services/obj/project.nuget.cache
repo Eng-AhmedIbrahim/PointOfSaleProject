@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "t5bXTlZpic8=",
+  "dgSpecHash": "BVYh6veobYM=",
   "success": true,
   "projectFilePath": "F:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\roma2\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\blazor.bootstrap\\3.3.1\\blazor.bootstrap.3.3.1.nupkg.sha512",

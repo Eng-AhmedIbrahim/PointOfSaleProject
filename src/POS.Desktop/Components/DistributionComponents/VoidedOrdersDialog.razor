@@ -1,0 +1,100 @@
+@using POS.Contract.Dtos.OrderDtos
+@inject LocalizationService Localizer
+@inject CommonProperties _commonProperties
+
+<MudDialog DisableSidePadding="true">
+    <TitleContent>
+        <div class="d-flex align-center gap-2 px-4 py-2" style="background: #f43f5e; color: white;">
+            <MudIcon Icon="@Icons.Material.Filled.EventBusy" />
+            <MudText Typo="Typo.h6">@Localizer["Distribution_VoidHistory"] (@PosDate.ToString("yyyy-MM-dd"))</MudText>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Elevation="0" Class="pa-4 bg-gray-50" Style="max-height: 70vh; overflow-y: auto;">
+            @if (VoidedOrders == null || !VoidedOrders.Any())
+            {
+                <div class="d-flex flex-column align-center justify-center py-12 text-gray-400">
+                    <MudIcon Icon="@Icons.Material.Filled.History" Size="Size.Large" Class="mb-2" />
+                    <MudText>@Localizer["Distribution_NoVoidedHistory"]</MudText>
+                </div>
+            }
+            else
+            {
+                <MudTable Items="VoidedOrders" Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+                    <HeaderContent>
+                        <MudTh></MudTh>
+                        <MudTh>@Localizer["OrderID"]</MudTh>
+                        <MudTh>@Localizer["CustomerName"]</MudTh>
+                        <MudTh>@Localizer["OrderState"]</MudTh>
+                        <MudTh>@Localizer["VoidBy"]</MudTh>
+                        <MudTh>@Localizer["VoidTime"]</MudTh>
+                        <MudTh>@Localizer["VoidReason"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudIconButton Icon="@(IsExpanded(context.OrderId) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" 
+                                           OnClick="@(() => ToggleDetails(context.OrderId))" />
+                        </MudTd>
+                        <MudTd DataLabel="ID">@context.OrderId</MudTd>
+                        <MudTd DataLabel="Customer">@context.CustomerName</MudTd>
+                        <MudTd DataLabel="State">
+                             <MudChip T="string" Color="@(context.OrderState == "Voided" ? Color.Error : Color.Warning)" Size="Size.Small">
+                                 @Localizer[context.OrderState ?? "Pending"]
+                             </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="By">@context.VoidByName</MudTd>
+                        <MudTd DataLabel="Time">@context.VoidTime?.ToString("hh:mm tt")</MudTd>
+                        <MudTd DataLabel="Reason">@context.VoidReason</MudTd>
+                    </RowTemplate>
+                    <ChildRowContent>
+                        @if (IsExpanded(context.OrderId))
+                        {
+                            <MudTr>
+                                <td colspan="7" class="pa-4 bg-white">
+                                    <MudText Typo="Typo.subtitle2" Class="mb-2 font-bold color-error">@Localizer["VoidedItems"]</MudText>
+                                    <MudTable Items="@context.OrderDetails?.Where(d => d.IsVoided == true)" Dense="true" Hover="true" Elevation="0" Style="border: 1px solid #fee2e2;">
+                                        <HeaderContent>
+                                            <MudTh>@Localizer["ItemName"]</MudTh>
+                                            <MudTh Style="text-align: center;">@Localizer["VoidQty"]</MudTh>
+                                            <MudTh Style="text-align: center;">@Localizer["VoidAmount"]</MudTh>
+                                            <MudTh>@Localizer["VoidReason"]</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate Context="item">
+                                            <MudTd>@(_commonProperties.Language == "ar" ? item.NameAr : item.Name)</MudTd>
+                                            <MudTd Style="text-align: center;">@item.VoidAmount</MudTd>
+                                            <MudTd Style="text-align: center;">@item.TotalVoidAmount?.ToString("N2")</MudTd>
+                                            <MudTd>@item.VoidReason</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </td>
+                            </MudTr>
+                        }
+                    </ChildRowContent>
+                </MudTable>
+            }
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="Close" Class="rounded-lg px-8">@Localizer["Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public List<OrderDto> VoidedOrders { get; set; } = new();
+    [Parameter] public DateTime PosDate { get; set; }
+
+    private Dictionary<int, bool> _expandedOrders = new();
+
+    private void ToggleDetails(int orderId)
+    {
+        if (_expandedOrders.ContainsKey(orderId))
+            _expandedOrders[orderId] = !_expandedOrders[orderId];
+        else
+            _expandedOrders[orderId] = true;
+    }
+
+    private bool IsExpanded(int orderId) => _expandedOrders.ContainsKey(orderId) && _expandedOrders[orderId];
+
+    private void Close() => MudDialog.Cancel();
+}

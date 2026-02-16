@@ -1,12 +1,11 @@
 .actions-grid-container {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    grid-auto-rows: minmax(50px, 1fr) !important;
+    grid-auto-rows: minmax(60px, 1fr) !important;
     width: 100% !important;
     height: 100% !important;
     gap: 0 !important;
     overflow: hidden !important;
-    /* Prevent any overflow */
 }
 
 .action-button {
@@ -52,13 +51,21 @@
 }
 
 .keypad-btn {
-    font-size: 1.2rem !important;
+    font-size: 1.6rem !important;
     font-weight: 800 !important;
 }
 
-.special-btn {
-    grid-column: span 1;
-    font-size: 1rem !important;
+.customer-data-btn {
+    background-color: #f0fdf4 !important;
+    border-color: #22c55e !important;
+}
+
+.customer-data-btn .mud-icon-root {
+    color: #16a34a !important;
+}
+
+.customer-data-btn:hover:not(:disabled) {
+    background-color: #dcfce7 !important;
 }
 
 .icon-btn {
@@ -74,9 +81,12 @@
     grid-column: span 2 !important;
 }
 
+.span-2 {
+    grid-column: span 2 !important;
+}
+
 .full-width .mud-icon-root {
     font-size: 2.2rem !important;
-    /* Reduced icon size */
 }
 
 /* Plus button - Green with filled icon */
@@ -124,4 +134,8 @@
 /* Edit button - Blue */
 .edit-btn .mud-icon-root {
     color: #1976d2 !important;
+}
+
+.full-width .mud-icon-root {
+    font-size: 2.2rem !important;
 }

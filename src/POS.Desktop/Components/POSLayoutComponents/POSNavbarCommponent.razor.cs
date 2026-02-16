@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using POS.Desktop.Components.PosDialog;
+using System.Windows;
 
 namespace POS.Desktop.Components.POSLayoutComponents;
 
@@ -11,11 +12,32 @@ public partial class POSNavbarCommponent : IDisposable
     private bool canAccessSummary;
     private bool canAccessDistribution;
     private bool canAccessOrders;
+    
+    // Store event handler reference for proper cleanup
+    private Action? _stateChangedHandler;
 
     protected override async Task OnInitializedAsync()
     {
-        _section4ButtonsServices.OnChanged += () => InvokeAsync(StateHasChanged);
-        Localizer.OnLanguageChanged += StateHasChanged;
+        // Create and store event handler reference
+        _stateChangedHandler = async () =>
+        {
+            try
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Component already disposed, ignore
+            }
+            catch (Exception)
+            {
+                // Silently ignore other exceptions during state update
+            }
+        };
+        
+        _section4ButtonsServices.OnChanged += _stateChangedHandler;
+        _commonProperties.OnChange += _stateChangedHandler;
+        Localizer.OnLanguageChanged += _stateChangedHandler;
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -41,7 +63,7 @@ public partial class POSNavbarCommponent : IDisposable
         canAccessOrders = (await AuthorizationService.AuthorizeAsync(user, "CanAccessOrders")).Succeeded;
     }
 
-    private void SetMode(string mode)
+    private async Task SetMode(string mode)
     {
         if (_commonProperties!.TableItems!.Any())
         {
@@ -59,11 +81,11 @@ public partial class POSNavbarCommponent : IDisposable
             }
         }
 
+        // Update state BEFORE navigation to prevent TargetInvocationException
         switch (mode)
         {
             case "TakeAway":
                 {
-                    _navigationManager.NavigateTo("/pos");
                     _commonProperties.CurrentPosMode = "TakeAway";
                     _commonProperties.TableItems!.Clear();
                     _commonProperties.AppendedTableItems!.Clear();
@@ -75,19 +97,93 @@ public partial class POSNavbarCommponent : IDisposable
                 }
             case "Delivery":
                 {
-                    _navigationManager.NavigateTo("/delivery");
                     _commonProperties.CurrentPosMode = "Delivery";
+                    break;
+                }
+            case "Distribution":
+                {
+                    _commonProperties.CurrentPosMode = "Distribution";
                     break;
                 }
             case "DineIn":
                 {
-                    _navigationManager.NavigateTo("/dinein");
                     _commonProperties.CurrentPosMode = "DineIn";
                     break;
                 }
         }
+        
         _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-        InvokeAsync(StateHasChanged);
+
+        string targetUrl = mode switch
+        {
+            "TakeAway" => "/pos",
+            "Delivery" => "/delivery",
+            "Distribution" => "/distribution",
+            "DineIn" => "/dinein",
+            _ => "/pos"
+        };
+
+        // Navigate last - component will unmount after this
+        await SafeNavigateAsync(targetUrl);
+    }
+
+    private async Task SafeNavigateAsync(string uri)
+    {
+        int maxRetries = 5;
+        int currentRetry = 0;
+        int delayMs = 5;
+
+        while (currentRetry < maxRetries)
+        {
+            try
+            {
+                await Task.Delay(delayMs);
+                
+                // Check if NavigationManager is initialized by safely checking the Uri property
+                if (_navigationManager != null)
+                {
+                    try
+                    {
+                        // Try to access Uri - if it throws, NavigationManager isn't ready yet
+                        var currentUri = _navigationManager.Uri;
+                        if (!string.IsNullOrEmpty(currentUri))
+                        {
+                            // Use InvokeAsync to ensure we're on the correct synchronization context
+                            await InvokeAsync(() => _navigationManager.NavigateTo(uri, forceLoad: false));
+                            return;
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // NavigationManager not yet initialized, will retry
+                        throw new InvalidOperationException("NavigationManager not yet initialized");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("NavigationManager is null");
+                }
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                
+                if (currentRetry >= maxRetries)
+                {
+                    _snackbar.Add($"Navigation failed: {ex.Message}", Severity.Error);
+                    return;
+                }
+                
+                // Exponential backoff
+                delayMs *= 2;
+            }
+        }
+    }
+
+    private void OpenDebugTerminal()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        DialogService.Show<LogViewerDialog>("Debug Terminal", options);
     }
 
     private void ExitApp()
@@ -112,6 +208,12 @@ public partial class POSNavbarCommponent : IDisposable
 
     public void Dispose()
     {
-        Localizer.OnLanguageChanged -= StateHasChanged;
+        // Unsubscribe from all events to prevent memory leaks and exceptions
+        if (_stateChangedHandler != null)
+        {
+            _section4ButtonsServices.OnChanged -= _stateChangedHandler;
+            _commonProperties.OnChange -= _stateChangedHandler;
+            Localizer.OnLanguageChanged -= _stateChangedHandler;
+        }
     }
 }

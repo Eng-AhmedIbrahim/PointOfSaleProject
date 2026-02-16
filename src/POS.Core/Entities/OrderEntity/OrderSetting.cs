@@ -17,4 +17,11 @@ public class OrderSetting : BaseEntity
     public bool? CanCloseWithoutPrint { get; set; }
     public bool? DeductCaptainTips { get; set; }
     public decimal? CaptainTipsAmount { get; set; }
+    public string? ComputerName { get; set; }
+    
+    // Delivery order modification permissions
+    public bool? CanVoidFromBranch { get; set; } = true;
+    public bool? CanVoidFromCallCenter { get; set; } = true;
+    public bool? CanAddItemsFromBranch { get; set; } = true;
+    public bool? CanAddItemsFromCallCenter { get; set; } = true;
 }

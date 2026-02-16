@@ -7,16 +7,18 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="typeof(global::POS.Desktop.App).Assembly">
         <Found Context="routeData">
-            <AuthorizeView Context="AuthorizationContext">
-                <Authorized>
-                    <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-                </Authorized>
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
                 <NotAuthorized>
-                    <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.AuthLayout)">
-                        <NotAuthorized><RedirectToLogin /></NotAuthorized>
-                    </AuthorizeRouteView>
+                    @if (!context.User.Identity?.IsAuthenticated ?? true)
+                    {
+                        <RedirectToLogin />
+                    }
+                    else
+                    {
+                        <p role="alert">You are not authorized to access this resource.</p>
+                    }
                 </NotAuthorized>
-            </AuthorizeView>
+            </AuthorizeRouteView>
             <FocusOnNavigate RouteData="routeData" Selector="h1" />
         </Found>
     </Router>

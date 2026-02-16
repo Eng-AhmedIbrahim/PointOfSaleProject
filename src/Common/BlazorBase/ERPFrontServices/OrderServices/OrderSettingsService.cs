@@ -28,10 +28,24 @@ public class OrderSettingsService : IOrderSettingsService
         );
     }
 
-    public async Task<ICollection<OrderSettingToReturnDto>?> GetOrderSettingsAsync()
+    public async Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto)
     {
+        return await GetApiResponseAsync<OrderDto>(
+            () => _httpClient.PutAsJsonAsync(_apiSettings.Endpoints!.CreateOrder!, orderDto),
+            "Failed to update order via the API."
+        );
+    }
+
+    public async Task<ICollection<OrderSettingToReturnDto>?> GetOrderSettingsAsync(string? computerName = null)
+    {
+        var url = _apiSettings.Endpoints!.GetOrderSettings;
+        if (!string.IsNullOrEmpty(computerName))
+        {
+            url += $"?computerName={computerName}";
+        }
+
         return await GetApiResponseAsync<ICollection<OrderSettingToReturnDto>>(
-            GetOrderSettingsRequest,
+            () => _httpClient.GetAsync(url),
             "Failed to retrieve Order Settings from the API."
         );
     }
@@ -41,6 +55,14 @@ public class OrderSettingsService : IOrderSettingsService
         return await GetApiResponseAsync<OrderDto>(
             () => _httpClient.GetAsync($"{_apiSettings.Endpoints!.CreateOrder}/{orderId}"),
             "Failed to retrieve order."
+        );
+    }
+
+    public async Task<int> IncrementPrintCountAsync(int orderId)
+    {
+        return await GetApiResponseAsync<int>(
+            () => _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.CreateOrder}/incrementPrintCount/{orderId}", new { }),
+            "Failed to increment print count via the API."
         );
     }
 

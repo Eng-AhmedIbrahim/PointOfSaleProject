@@ -9,4 +9,17 @@ public class DeliveryCustomerToReturnDto
     public string? CustomerName { get; set; }
 
     public ICollection<CustomerAddressDto>? CustomerAddresses { get; set; }
+
+    // Statistics
+    public DateTime? FirstOrderDate { get; set; }
+    public DateTime? LastOrderDate { get; set; }
+    public string? LastReceiverName { get; set; }
+    public decimal TotalOrdersAmount { get; set; }
+    public int OrderCount { get; set; }
+    public decimal AverageOrderValue { get; set; }
+
+    // History & Active Order
+    // History & Active Order
+    public List<POS.Contract.Dtos.OrderDtos.OrderDto>? Last10Orders { get; set; }
+    public POS.Contract.Dtos.OrderDtos.OrderDto? ActiveOrder { get; set; }
 }

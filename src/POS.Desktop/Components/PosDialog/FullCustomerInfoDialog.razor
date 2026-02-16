@@ -1,0 +1,222 @@
+@using BlazorBase
+@inject CommonProperties _commonProperties
+@inject LocalizationService Localizer
+@inject MudBlazor.ISnackbar _snackbar
+
+<MudDialog Class="@(_commonProperties.IsRtl ? "rtl-dialog" : "")">
+    <DialogContent>
+        <div class="customer-full-info-container pa-4" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")">
+            <!-- Header Section -->
+            <div class="dialog-custom-header mb-6">
+                <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Color="Color.Primary" Size="Size.Large" Class="header-icon" />
+                <div class="header-titles">
+                    <MudText Typo="Typo.h5" Class="main-title">@Localizer["CustomerInfo"]</MudText>
+                    <MudText Typo="Typo.caption" Class="sub-title">@Localizer["CustomerInfoSubtitle"]</MudText>
+                </div>
+            </div>
+
+            <div class="info-sections-grid">
+                <!-- Personal Info Card -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                        <MudText Typo="Typo.subtitle2">@Localizer["BasicInfo"]</MudText>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span class="label">@Localizer["Name"]:</span>
+                            <span class="value">@(_commonProperties.CustomerDetails?.CustomerName ?? "-")</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">@Localizer["PrimaryPhone"]:</span>
+                            <span class="value phone-value">@(_commonProperties.CustomerDetails?.FirstPhoneNumber ?? "-")</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(_commonProperties.CustomerDetails?.SecondPhoneNumber))
+                        {
+                            <div class="info-row">
+                                <span class="label">@Localizer["SecondaryPhone"]:</span>
+                                <span class="value phone-value">@_commonProperties.CustomerDetails.SecondPhoneNumber</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Address Details Card -->
+                <div class="info-card mt-4">
+                    <div class="card-header">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />
+                        <MudText Typo="Typo.subtitle2">@Localizer["AddressDetails"]</MudText>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-grid-2col">
+                            <div class="info-row">
+                                <span class="label">@Localizer["Zone"]:</span>
+                                <span class="value">@(_commonProperties.CustomerDetails?.ZoneName ?? "-")</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">@Localizer["Branch"]:</span>
+                                <span class="value">@(_commonProperties.BranchDetails?.Name ?? "-")</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row full-width mt-2">
+                            <span class="label">@Localizer["FullAddress"]:</span>
+                            <span class="value address-value">@(_commonProperties.CustomerDetails?.ClientAddress ?? "-")</span>
+                        </div>
+
+                        <div class="info-grid-3col mt-2">
+                            <div class="info-row">
+                                <span class="label">@Localizer["HomeNumber"]:</span>
+                                <span class="value">@(_commonProperties.CustomerDetails?.HomeNumber ?? "-")</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">@Localizer["FloorNumber"]:</span>
+                                <span class="value">@(_commonProperties.CustomerDetails?.FloorNumber ?? "-")</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">@Localizer["FlatNumber"]:</span>
+                                <span class="value">@(_commonProperties.CustomerDetails?.FlatNumber ?? "-")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Card -->
+                @if (!string.IsNullOrEmpty(_commonProperties.CustomerDetails?.AddressNote))
+                {
+                    <div class="info-card notes-card mt-4">
+                        <div class="card-header">
+                            <MudIcon Icon="@Icons.Material.Filled.Note" Size="Size.Small" />
+                            <MudText Typo="Typo.subtitle2">@Localizer["AddressNote"]</MudText>
+                        </div>
+                        <div class="card-content">
+                            <MudText Typo="Typo.body2" Class="note-text">@_commonProperties.CustomerDetails.AddressNote</MudText>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Close" FullWidth="true" Class="py-3 close-btn-custom">@Localizer["Close"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .rtl-dialog {
+        direction: rtl;
+    }
+    .customer-full-info-container {
+        font-family: 'Cairo', sans-serif !important;
+    }
+    
+    .dialog-custom-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
+        padding: 12px;
+        border-radius: 12px;
+        border-right: 4px solid #114484;
+    }
+    .header-titles {
+        display: flex;
+        flex-direction: column;
+    }
+    .main-title {
+        font-weight: 800 !important;
+        color: #1e293b;
+    }
+    .sub-title {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .card-header {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #114484;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .card-header .mud-typography {
+        font-weight: 800 !important;
+    }
+    
+    .card-content {
+        padding: 12px;
+    }
+
+    .info-row {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 8px;
+    }
+    .info-row.full-width {
+        grid-column: span 100%;
+    }
+    .label {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+    .value {
+        font-size: 1.1rem;
+        color: #1e293b;
+        font-weight: 700;
+    }
+    .phone-value {
+        color: #114484;
+        letter-spacing: 0.5px;
+    }
+    .address-value {
+        color: #334155;
+        line-height: 1.4;
+    }
+
+    .info-grid-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .info-grid-3col {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+    }
+
+    .notes-card {
+        border-bottom: 4px solid #114484;
+    }
+    .note-text {
+        color: #475569;
+        font-weight: 600;
+        background: #f8fafc;
+        padding: 8px;
+        border-radius: 8px;
+        min-height: 50px;
+    }
+
+    .close-btn-custom {
+        font-family: 'Cairo', sans-serif !important;
+        font-weight: 800 !important;
+        font-size: 1.1rem !important;
+        border-radius: 8px !important;
+    }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    void Close() => MudDialog.Close();
+}

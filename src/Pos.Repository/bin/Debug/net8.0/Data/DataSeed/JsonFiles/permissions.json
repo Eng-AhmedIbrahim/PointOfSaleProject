@@ -118,5 +118,45 @@
     "Name": "CanAccessWaiting",
     "NameEn": "Waiting List",
     "NameAr": "قائمة الانتظار"
+  },
+  {
+    "Name": "CanAccessDeliveryOrderBtn",
+    "NameEn": "Delivery: Order Button",
+    "NameAr": "التوصيل: زر طلب جديد"
+  },
+  {
+    "Name": "CanAccessDeliveryAddNewBtn",
+    "NameEn": "Delivery: Add New Button",
+    "NameAr": "التوصيل: زر إضافة جديد"
+  },
+  {
+    "Name": "CanAccessDeliveryClearBtn",
+    "NameEn": "Delivery: Clear Button",
+    "NameAr": "التوصيل: زر مسح"
+  },
+  {
+    "Name": "CanAccessDeliveryComplaintsBtn",
+    "NameEn": "Delivery: Complaints Button",
+    "NameAr": "التوصيل: الشكاوى"
+  },
+  {
+    "Name": "CanAccessDeliverySearchBtn",
+    "NameEn": "Delivery: Search Button",
+    "NameAr": "التوصيل: بحث"
+  },
+  {
+    "Name": "CanAccessDeliveryBranchManagementBtn",
+    "NameEn": "Delivery: Branch Management Button",
+    "NameAr": "التوصيل: إدارة الفروع"
+  },
+  {
+    "Name": "CanAccessDeliveryDistributionBtn",
+    "NameEn": "Delivery: Distribution Button",
+    "NameAr": "التوصيل: التوزيع"
+  },
+  {
+    "Name": "CanAccessDeliveryToggleDirectionBtn",
+    "NameEn": "Delivery: Toggle Direction Button",
+    "NameAr": "التوصيل: تغيير الاتجاه"
   }
 ]

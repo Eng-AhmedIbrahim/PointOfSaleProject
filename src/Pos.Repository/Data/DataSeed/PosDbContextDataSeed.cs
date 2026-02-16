@@ -116,12 +116,6 @@ public static class PosDbContextDataSeed
         }
 
 
-        if (!_dbContext.PosFeatureSettings.Any())
-        {
-            var posSettings = await GetDataFromJsonFile<PosFeatureSetting>("posSettings.json");
-            await _dbContext.PosFeatureSettings.AddRangeAsync(posSettings);
-            await _dbContext.SaveChangesAsync();
-        }
 
         //if (!_dbContext.PrintingSettings.Any())
         //{
