@@ -1,7 +1,3 @@
-using System;
-using System.Linq.Expressions;
-using POS.Core.Entities.OrderEntity;
-
 namespace POS.Core.Specifications.OrderTrackSpecs;
 
 public class OrderTrackByDateRangeSpec : BaseSpecifications<OrderTrack>

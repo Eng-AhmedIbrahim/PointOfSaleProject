@@ -52,7 +52,8 @@
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AttachMoney"
-                       Class="btn-nav">
+                       Class="@( _commonProperties.CurrentPosMode == "Accounts" ? "btn-active" : "btn-nav")"
+                       OnClick='async () => await SetMode("Accounts")'>
                 @Localizer["Accounts"]
             </MudButton>
         }
@@ -61,8 +62,19 @@
         {
             <MudButton Variant="Variant.Filled"
                        StartIcon="@Icons.Material.Filled.AreaChart"
-                       Class="btn-nav">
+                       Class="@( _commonProperties.CurrentPosMode == "Summary" ? "btn-active" : "btn-nav")"
+                       OnClick='async () => await SetMode("Summary")'>
                 @Localizer["Summary"]
+            </MudButton>
+        }
+
+        @if (canAccessOrders && _commonProperties.IsFeatureEnabled("Navbar_Button_AllOrders"))
+        {
+            <MudButton Variant="Variant.Filled"
+                       StartIcon="@Icons.Material.Filled.Checklist"
+                       Class="@( _commonProperties.CurrentPosMode == "AllOrders" ? "btn-active" : "btn-nav")"
+                       OnClick='async () => await SetMode("AllOrders")'>
+                @Localizer["AllOrders"]
             </MudButton>
         }
 
@@ -73,15 +85,6 @@
                        Class="@( _commonProperties.CurrentPosMode == "Distribution" ? "btn-active" : "btn-nav")"
                        OnClick='async () => await SetMode("Distribution")'>
                 @Localizer["Distribution"]
-            </MudButton>
-        }
-
-        @if (canAccessOrders && _commonProperties.IsFeatureEnabled("Navbar_Button_AllOrders"))
-        {
-            <MudButton Variant="Variant.Filled"
-                       StartIcon="@Icons.Material.Filled.Checklist"
-                       Class="btn-nav">
-                @Localizer["AllOrders"]
             </MudButton>
         }
 

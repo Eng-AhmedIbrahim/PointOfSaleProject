@@ -39,10 +39,6 @@ public interface IDineInOrderService
     /// </summary>
     Task<bool> CloseDineInOrderAsync(int orderId, decimal? paid = null, decimal? remain = null);
     
-    /// <summary>
-    /// Voids a DineIn order
-    /// </summary>
-    Task<bool> VoidDineInOrderAsync(int orderId, string reason, string voidBy, string voidByName);
     
     /// <summary>
     /// Adds items to an existing DineIn order
@@ -69,10 +65,7 @@ public interface IDineInOrderService
     /// </summary>
     Task<bool> SplitDineInOrderAsync(int sourceOrderId, List<SplitTargetDto> targets);
 
-    /// <summary>
-    /// Voids specific items or quantities from an order
-    /// </summary>
-    Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName);
+    
     Task<int> IncrementPrintCountAsync(int orderId);
     Task<bool> ReserveTableAsync(Orders reservationOrder);
     Task<bool> CancelReservationAsync(int orderId);

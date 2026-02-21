@@ -40,6 +40,9 @@
         <DependentUpon>AppResources.resx</DependentUpon>
       </Compile>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ERPFrontServices\VoidServices\" />
+    </ItemGroup>
 
 
 </Project>

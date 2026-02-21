@@ -1,4 +1,3 @@
-@using BlazorBase.Services
 @using POS.Contract.Models
 @inject NavigationManager navigationManager
 @inject CommonProperties _commonProperties
@@ -12,9 +11,7 @@
 
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center" Class="footer-container">
 
-    @* @if (canAccessDiscount) *@
-    @* { *@
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Discount"))
+    @if (_canFooterDiscount && _commonProperties.IsFeatureEnabled("Footer_Button_Discount"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -25,9 +22,7 @@
         </MudButton>
     }
 
-
-
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_CustomerData"))
+    @if (_canFooterCustomerData && _commonProperties.IsFeatureEnabled("Footer_Button_CustomerData"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -38,7 +33,7 @@
         </MudButton>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_PaymentMethod"))
+    @if (_canFooterPaymentMethod && _commonProperties.IsFeatureEnabled("Footer_Button_PaymentMethod"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -49,7 +44,7 @@
         </MudButton>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_QuickPayment"))
+    @if (_canFooterQuickPayment && _commonProperties.IsFeatureEnabled("Footer_Button_QuickPayment"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -60,9 +55,7 @@
         </MudButton>
     }
 
-    @* @if (canAccessMeals) *@
-    @* { *@
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Meals"))
+    @if (_canFooterMeals && _commonProperties.IsFeatureEnabled("Footer_Button_Meals"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -71,11 +64,8 @@
             @Localizer["Meals"]
         </MudButton>
     }
-    @* } *@
 
-    @* @if (canAccessWaiting) *@
-    @* { *@
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Waiting"))
+    @if (_canFooterWaiting && _commonProperties.IsFeatureEnabled("Footer_Button_Waiting"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -85,11 +75,8 @@
             @Localizer["Waiting"]
         </MudButton>
     }
-    @* } *@
 
-    @* @if (canAccessSettings) *@
-    @* { *@
-    @if (_commonProperties.IsFeatureEnabled("Footer_Button_Settings"))
+    @if (_canFooterSettings && _canPosSettingsFeature && _commonProperties.IsFeatureEnabled("Footer_Button_Settings") && _commonProperties.IsFeatureEnabled("posSettingsFeature"))
     {
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
@@ -99,7 +86,6 @@
             @Localizer["Settings"]
         </MudButton>
     }
-    @* } *@
 </MudStack>
 
 <SettingsDrawer @bind-Open="_drawerOpen">

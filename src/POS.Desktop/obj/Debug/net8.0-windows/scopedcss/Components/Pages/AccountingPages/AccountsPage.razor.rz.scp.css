@@ -1,0 +1,117 @@
+.accounts-container[b-bpp25tcqql] {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background: #f0f2f5;
+    overflow: hidden;
+}
+
+.accounts-header[b-bpp25tcqql] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+}
+
+.title-section[b-bpp25tcqql], .filter-section[b-bpp25tcqql] {
+    display: flex;
+    align-items: center;
+}
+
+.accounts-content[b-bpp25tcqql] {
+    flex: 1;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.custom-table[b-bpp25tcqql] {
+    background: transparent !important;
+}
+
+.table-row[b-bpp25tcqql] {
+    background: white !important;
+    margin-bottom: 5px !important;
+    border-radius: 8px !important;
+}
+
+.text-green[b-bpp25tcqql] {
+    color: #10b981 !important;
+    font-weight: 600;
+}
+
+.text-blue[b-bpp25tcqql] {
+    color: #3b82f6 !important;
+    font-weight: 600;
+}
+
+.text-orange[b-bpp25tcqql] {
+    color: #f59e0b !important;
+    font-weight: 600;
+}
+
+.accounts-footer[b-bpp25tcqql] {
+    margin-top: 15px;
+    background: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+}
+
+.footer-stat[b-bpp25tcqql] {
+    display: flex;
+    flex-direction: column;
+}
+
+    .footer-stat .label[b-bpp25tcqql] {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .footer-stat .value[b-bpp25tcqql] {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #1e293b;
+    }
+
+.empty-state[b-bpp25tcqql] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    color: #94a3b8;
+}
+
+.glass[b-bpp25tcqql] {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+}
+
+.fade-in[b-bpp25tcqql] {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@@keyframes fadeIn {
+    from[b-bpp25tcqql] {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to[b-bpp25tcqql] {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

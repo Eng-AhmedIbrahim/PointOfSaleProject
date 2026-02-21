@@ -148,35 +148,6 @@ public class DineInOrderController : ControllerBase
         }
     }
 
-    [HttpPost("void-order")]
-    public async Task<ActionResult<bool>> VoidOrder([FromBody] VoidOrderRequest request)
-    {
-        try
-        {
-            var result = await _dineInOrderService.VoidDineInOrderAsync(request.OrderId, request.Reason, request.VoidBy, request.VoidByName);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error voiding DineIn order {OrderId}", request.OrderId);
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    [HttpPost("void-items")]
-    public async Task<ActionResult<bool>> VoidItems([FromBody] VoidItemsRequest request)
-    {
-        try
-        {
-            var result = await _dineInOrderService.VoidDineInItemsAsync(request.OrderId, request.ItemsToVoid, request.Reason, request.VoidBy, request.VoidByName);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error voiding items from DineIn order {OrderId}", request.OrderId);
-            return StatusCode(500, "Internal server error");
-        }
-    }
 
     [HttpPost("{dineInOrderId}/items")]
     public async Task<ActionResult<bool>> AddItemsToDineInOrder(int dineInOrderId, [FromBody] List<OrderItemsDetailsDto> itemsDto)

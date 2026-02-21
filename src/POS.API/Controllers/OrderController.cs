@@ -1,14 +1,5 @@
 ﻿using POS.Core.Services.Contract.DineInOrderServices;
-using POS.Contract.Dtos.OrderDtos;
-using POS.Contract.Dtos.DineIn;
-using Microsoft.AspNetCore.SignalR;
-using POS.API.Hubs;
-using System.Text.Json;
-using System.Text;
-using POS.API.Helpers;
-using POS.Contract.Dtos.OrderDto;
-using POS.Core.Services.Contract.DeliveryServices;
-using POS.Core.Entities.Delivery;
+using POS.Core.Specifications;
 
 namespace POS.API.Controllers;
 
@@ -163,7 +154,7 @@ public class OrderController : BaseApiController
                                 createdOrder.OrderState = OrderStates.SentToBranch;
                                 if (branchOrderDto != null)
                                 {
-                                    createdOrder.CallCenterOrderId = branchOrderDto.OrderId; // Store Branch ID in CallCenterOrderId field on Central side
+                                    createdOrder.CallCenterOrderId = branchOrderDto.Id; // Store Branch PK ID in CallCenterOrderId field on Central side
                                 }
                                 await _orderService.UpdateOrderAsync(createdOrder);
 
@@ -278,8 +269,8 @@ public class OrderController : BaseApiController
             }
         }
         
-        // Ensure the mapped order has the correct OrderID for lookup
-        order.OrderID = orderDto.OrderId; 
+        // Ensure the mapped order has the correct Id for lookup
+        order.Id = orderDto.Id; 
 
         var updatedOrder = await _orderService.FullUpdateOrderAsync(order);
 
@@ -320,7 +311,7 @@ public class OrderController : BaseApiController
 
         var order = BackupMainOrderDetails(orderDto);
         BackupDeliveryOrder(orderDto, order); // Ensure delivery details are backed up
-        order.CallCenterOrderId = orderDto.OrderId; // Store Call Center ID in CallCenterOrderId field on Branch side
+        order.CallCenterOrderId = orderDto.Id; // Store Call Center PK ID in CallCenterOrderId field on Branch side
 
         var createdOrder = await _orderService.CreateOrderAsync(order);
 
@@ -355,8 +346,8 @@ public class OrderController : BaseApiController
         if (orderDto == null || orderDto.CallCenterOrderId == null)
             return BadRequest("Invalid order update data.");
 
-        // Find the order in call center database using CallCenterOrderId (which is the original call center order ID)
-        var order = await _orderService.GetOrderByOrderIdAsync(orderDto.CallCenterOrderId.Value);
+        // Find the order in call center database using the original ID (stored in CallCenterOrderId)
+        var order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
 
         if (order == null)
         {
@@ -366,8 +357,8 @@ public class OrderController : BaseApiController
                 Log.Information("Received new addition order from branch for Parent Order {ParentId}", orderDto.ParentOrderId);
                 var additionOrder = _mapper.Map<OrderDto, Orders>(orderDto);
                 additionOrder.OrderType = OrderTypes.Delivery;
-                // Important: Here CallCenterOrderId on the central side will store the Branch's OrderID
-                additionOrder.CallCenterOrderId = orderDto.OrderId; 
+                // Important: Here CallCenterOrderId on the central side will store the Branch's PK Id
+                additionOrder.CallCenterOrderId = orderDto.Id; 
                 
                 var createdAddition = await _orderService.CreateOrderAsync(additionOrder);
                 return Ok(_mapper.Map<OrderDto>(createdAddition));
@@ -398,143 +389,154 @@ public class OrderController : BaseApiController
 
         Log.Information("Order {OrderId} updated in call center from branch. State: {State}", order.OrderID, order.OrderState);
 
+        // Notify CC UI
+        await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
+
         return Ok(_mapper.Map<OrderDto>(order));
     }
 
-    [HttpGet("{orderId}")]
-    public async Task<ActionResult<OrderDto>> GetOrderByIdAsync(int orderId)
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpPut("receiveUpdateFromCallCenter")]
+    public async Task<IActionResult> ReceiveUpdateFromCallCenter([FromBody] OrderDto orderDto)
     {
-        var order = await _orderService.GetOrderByOrderIdAsync(orderId);
+        if (orderDto == null || orderDto.Id <= 0)
+            return BadRequest("Invalid order update data.");
+
+        // On branch side, we find order where CallCenterOrderId matches the incoming Id (which is CC's PK)
+        var order = await _orderService.GetOrderByCallCenterIdAsync(orderDto.Id);
+
+        if (order == null)
+        {
+            Log.Warning("Order {OrderId} not found in branch database for update from Call Center.", orderDto.OrderId);
+            return NotFound(new ApiResponse(404, "Order not found in branch database."));
+        }
+
+        bool wasAlreadyVoided = order.OrderState == OrderStates.Voided;
+        
+        // Update basic tracking fields
+        order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
+        order.DriverID = orderDto.DriverID ?? order.DriverID;
+        order.DriverName = orderDto.DriverName ?? order.DriverName;
+        order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
+        order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
+        order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
+        
+        if (order.OrderState == OrderStates.Voided)
+        {
+            order.VoidBy = orderDto.VoidBy;
+            order.VoidByName = orderDto.VoidByName;
+            order.VoidReason = orderDto.VoidReason;
+            order.VoidTime = orderDto.VoidTime ?? DateTime.Now;
+            order.VoidAmount = orderDto.VoidAmount;
+            order.TotalVoid = orderDto.TotalVoid;
+            
+            // If it just became voided, trigger kitchen print
+            if (!wasAlreadyVoided)
+            {
+                var resultDto = _mapper.Map<OrderDto>(order);
+                var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
+                
+                // Trigger kitchen void print locally at the branch
+                // We'll use a local helper to avoid circular dependency if possible, but actually we can just call it
+                await PrintVoidToKitchen(resultDto, order.OrderDetails?.ToList());
+            }
+        }
+
+        await _orderService.UpdateOrderAsync(order);
+
+        // Notify UI (Dispatcher etc)
+        await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
+
+        return Ok(true);
+    }
+
+    private async Task PrintVoidToKitchen(OrderDto orderDto, List<OrderItemsDetails>? itemsToVoid)
+    {
+        try 
+        {
+            if (itemsToVoid == null || !itemsToVoid.Any()) return;
+
+            var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
+            var kitchenItems = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(itemsToVoid);
+
+            var groupedItems = kitchenItems
+                .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
+                .GroupBy(item => item.ItemKitchenTypeId ?? item.CategoryKitchenTypeId!.Value)
+                .Join(kitchens,
+                      g => g.Key,
+                      k => k.Id,
+                      (g, k) => new
+                      {
+                          KitchenName = k.KitchenName ?? $"Kitchen_{k.Id}",
+                          Items = g.ToList(),
+                          Printers = k.KitchenPrinters
+                      });
+
+            foreach (var group in groupedItems)
+            {
+                var receipt = new KitchenReceipt()
+                {
+                    Id = orderDto.OrderId,
+                    CashierName = orderDto.CashierName ?? "System",
+                    OrderType = orderDto.OrderType ?? "Unknown",
+                    DateCreated = DateTimeOffset.Now,
+                    Items = group.Items,
+                    KitchenNote = $"*** VOID FROM CC/ملغي من الكول سنتر ***\nReason: {orderDto.VoidReason}",
+                    KitchenType = group.KitchenName,
+                    TableId = orderDto.TableId,
+                    TableName = orderDto.TableName,
+                    IsVoid = true
+                };
+
+                var document = new KitchenReceiptDocument(receipt, group.Items);
+                var timestamp = DateTimeOffset.Now.ToString("yyyyMMdd_HHmmss");
+                var outputPath = Path.Combine(_reportsFolder, $"VOID_SYNC_{timestamp}_{receipt.Id}.pdf");
+                document.GeneratePdf(outputPath);
+
+                var printers = group.Printers;
+                for (int i = 1; i <= 3; i++)
+                {
+                    var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                    if (!string.IsNullOrEmpty(printerName))
+                    {
+                        await _printerServices.PrintPdfAsync(outputPath, printerName);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error printing void sync to kitchen for order {OrderId}", orderDto.OrderId);
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<OrderDto>> GetOrderByIdAsync(int id)
+    {
+        var order = await _orderService.GetOrderByIdAsync(id);
         if (order == null) return NotFound();
         return Ok(_mapper.Map<OrderDto>(order));
     }
 
-    [HttpPut("void/{orderId}")]
-    public async Task<ActionResult<bool>> VoidOrder(int orderId, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
-    {
-        try
-        {
-            var order = await _orderService.GetOrderByOrderIdAsync(orderId);
-            if (order == null) return NotFound();
 
-            // Permission Check for Delivery
-            if (order.OrderType == OrderTypes.Delivery)
-            {
-                var settings = await _orderService.GetOrderSettingAsync(OrderTypes.Delivery, order.MachineName);
-                if (settings != null)
-                {
-                    bool canVoid = _callCenterSettings.IsCentralCallCenter 
-                        ? (settings.CanVoidFromCallCenter ?? true) 
-                        : (settings.CanVoidFromBranch ?? true);
-
-                    if (!canVoid)
-                        return BadRequest(new ApiResponse(403, "Voiding from this device is disabled by settings."));
-                }
-            }
-
-            var result = await _orderService.VoidOrderAsync(orderId, reason, voidBy, voidByName);
-            if (result)
-            {
-                // Sync with Call Center if needed
-                if (order.OrderType == OrderTypes.Delivery)
-                {
-                    var orderDto = _mapper.Map<OrderDto>(order);
-                    orderDto.OrderState = OrderStates.Voided.ToString();
-                    orderDto.VoidReason = reason;
-                    orderDto.VoidBy = voidBy;
-                    orderDto.VoidByName = voidByName;
-                    
-                    if (!_callCenterSettings.IsCentralCallCenter)
-                    {
-                        await SendUpdateToCallCenter(orderDto);
-                    }
-                    else if (!string.IsNullOrEmpty(order.DeliveryBranchUrl))
-                    {
-                        // If we are at Call Center, notify the branch
-                        await SendUpdateToBranch(orderDto, order.DeliveryBranchUrl, "receiveOrderUpdate");
-                    }
-                }
-
-                return Ok(result);
-            }
-            else
-                return BadRequest(new ApiResponse(400, "Failed to void order"));
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error voiding order {OrderId}", orderId);
-            return StatusCode(500, new ApiResponse(500, "Internal server error"));
-        }
-    }
     
-    [HttpPut("incrementPrintCount/{orderId}")]
-    public async Task<ActionResult<int>> IncrementPrintCount(int orderId)
+    [HttpPut("incrementPrintCount/{id}")]
+    public async Task<ActionResult<int>> IncrementPrintCount(int id)
     {
         try
         {
-            var result = await _orderService.IncrementPrintCountAsync(orderId);
+            var result = await _orderService.IncrementPrintCountAsync(id);
             return Ok(result);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error incrementing print count for order {OrderId}", orderId);
+            Log.Error(ex, "Error incrementing print count for order {Id}", id);
             return StatusCode(500, new ApiResponse(500, "Internal server error"));
         }
     }
     
-    [HttpPut("void-items/{orderId}")]
-    public async Task<ActionResult<bool>> VoidOrderItems(int orderId, [FromBody] List<OrderItemVoidDto> itemsToVoid, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
-    {
-        try
-        {
-            var order = await _orderService.GetOrderByOrderIdAsync(orderId);
-            if (order == null) return NotFound();
 
-            // Permission Check for Delivery
-            if (order.OrderType == OrderTypes.Delivery)
-            {
-                var settings = await _orderService.GetOrderSettingAsync(OrderTypes.Delivery, order.MachineName);
-                if (settings != null)
-                {
-                    bool canVoid = _callCenterSettings.IsCentralCallCenter 
-                        ? (settings.CanVoidFromCallCenter ?? true) 
-                        : (settings.CanVoidFromBranch ?? true);
-
-                    if (!canVoid)
-                        return BadRequest(new ApiResponse(403, "Modifying items from this device is disabled by settings."));
-                }
-            }
-
-            var result = await _orderService.VoidOrderItemsAsync(orderId, itemsToVoid, reason, voidBy, voidByName);
-            if (result)
-            {
-                // Sync updated order
-                var updatedOrder = await _orderService.GetOrderByOrderIdAsync(orderId);
-                var orderDto = _mapper.Map<OrderDto>(updatedOrder);
-
-                if (order.OrderType == OrderTypes.Delivery)
-                {
-                    if (!_callCenterSettings.IsCentralCallCenter)
-                    {
-                        await SendUpdateToCallCenter(orderDto);
-                    }
-                    else if (!string.IsNullOrEmpty(order.DeliveryBranchUrl))
-                    {
-                        await SendUpdateToBranch(orderDto, order.DeliveryBranchUrl, "receiveOrderUpdate");
-                    }
-                }
-
-                return Ok(result);
-            }
-            else
-                return BadRequest(new ApiResponse(400, "Failed to void items"));
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error voiding items from order {OrderId}", orderId);
-            return StatusCode(500, new ApiResponse(500, "Internal server error"));
-        }
-    }
 
     private async Task printDineInReceipts(OrderDto dineInOrder, List<string> branchDetails)
     {
@@ -611,6 +613,7 @@ public class OrderController : BaseApiController
         
         return new Orders
         {
+            Id = OrderDto.Id,
             OrderID = OrderDto.OrderId,
             BranchID = OrderDto.BranchId,
             BranchName = OrderDto.BranchName,
@@ -618,7 +621,7 @@ public class OrderController : BaseApiController
             CashierName = OrderDto.CashierName,
             OrderDate = OrderDto.OrderDate,
             PaymentMethod = OrderDto.PaymentMethod,
-            OrderState = Enum.TryParse<OrderStates>(OrderDto.OrderState, out var state) ? state : (orderType == OrderTypes.DineIn ? OrderStates.Pending : OrderStates.Completed),
+            OrderState = DetermineInitialState(OrderDto, orderType),
             Discount = OrderDto.TotalOrderDiscount,
             DiscountByName = OrderDto.DiscountByName,
             DiscountReason = OrderDto.DiscountReason,
@@ -721,6 +724,21 @@ public class OrderController : BaseApiController
         order.TakerID = OrderDto.TakerID;
         order.TakerName = OrderDto.TakerName;
         order.DeliveryFees = OrderDto.DeliveryFees;
+    }
+
+    private static OrderStates DetermineInitialState(OrderDto orderDto, OrderTypes orderType)
+    {
+        if (!Enum.TryParse<OrderStates>(orderDto.OrderState, out var state))
+        {
+            state = (orderType == OrderTypes.DineIn ? OrderStates.Pending : OrderStates.Completed);
+        }
+
+        if ((orderDto.VoidAmount ?? 0) > 0 && state != OrderStates.Dispatched && state != OrderStates.Canceled)
+        {
+            return OrderStates.Voided;
+        }
+
+        return state;
     }
     private async Task<List<string>> GetLogoPath(int branchId)
     {
@@ -961,7 +979,7 @@ public class OrderController : BaseApiController
             return BadRequest(new ApiResponse(400, "Parent Order ID is required for additional items."));
 
         // Get parent order
-        var parentOrder = await _orderService.GetOrderByOrderIdAsync(orderDto.ParentOrderId.Value);
+        var parentOrder = await _orderService.GetOrderByIdAsync(orderDto.ParentOrderId.Value);
         if (parentOrder == null) return NotFound(new ApiResponse(404, "Parent order not found."));
 
         // Permission Check
@@ -1046,7 +1064,7 @@ public class OrderController : BaseApiController
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error syncing update to Call Center for order {OrderId}", orderDto.OrderId);
+            Log.Error(ex, "Error syncing update to Call Center for order {OrderId}", orderDto.Id);
         }
     }
 
@@ -1076,7 +1094,7 @@ public class OrderController : BaseApiController
 
         var receipt = new DeliveryReceipt()
         {
-            Id = deliveryOrder.ParentOrderId ?? createdOrder.OrderID,
+            Id = createdOrder.OrderID,
             ParentOrderId = deliveryOrder.ParentOrderId,
             StoreName = deliveryOrder.BranchName!,
             CashierName = deliveryOrder.CashierName!,

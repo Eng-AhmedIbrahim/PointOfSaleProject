@@ -1,0 +1,106 @@
+@page "/all-orders"
+@layout MainLayout
+@inject IReportingErpService ReportingService
+@inject IAppDateService AppDateService
+@inject LocalizationService Localizer
+@inject CommonProperties _commonProperties
+@inject ISnackbar Snackbar
+@inject NavigationManager _navigationManager
+@namespace POS.Desktop.Components.Pages.AllOrdersPages
+
+<div class="orders-container" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")" style="padding-bottom: 0;">
+    <div class="orders-header fade-in">
+        <div class="title-section d-flex align-center">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Default" OnClick="GoBack" Class="mr-4 hover-back" />
+            <MudIcon Icon="@Icons.Material.Filled.Checklist" Size="Size.Large" Class="mr-2" />
+            <MudText Typo="Typo.h5" Style="font-weight: 700;">@Localizer["TodayOrders"]</MudText>
+        </div>
+
+        <div class="filter-section">
+            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToInnerViews="true" Class="custom-tabs" @bind-ActivePanelIndex="_activeTab">
+                <MudTabPanel Text="@Localizer["All"]" Icon="@Icons.Material.Filled.AllInclusive" />
+                <MudTabPanel Text="@Localizer["DineIn"]" Icon="@Icons.Material.Filled.TableRestaurant" />
+                <MudTabPanel Text="@Localizer["Delivery"]" Icon="@Icons.Material.Filled.DeliveryDining" />
+                <MudTabPanel Text="@Localizer["TakeAway"]" Icon="@Icons.Material.Filled.DirectionsRun" />
+            </MudTabs>
+            
+            <MudTextField @bind-Value="_searchText" Placeholder="@Localizer["SearchByOrderOrPhone"]" Variant="Variant.Outlined" Margin="Margin.Dense" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="ml-4" Style="width: 250px;" />
+            
+            <div class="d-flex gap-2 ml-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadOrders">@Localizer["Refresh"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.ExitToApp" OnClick="GoBack">@Localizer["Close"]</MudButton>
+            </div>
+        </div>
+    </div>
+
+    <div class="orders-content glass fade-in" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+        <MudTable Items="@FilteredOrders" Hover="true" Dense="true" Loading="@_isLoading" Elevation="0" Height="calc(100vh - 110px)" FixedHeader="true" Class="custom-table">
+            <HeaderContent>
+                <MudTh>#</MudTh>
+                <MudTh>@Localizer["OrderId"]</MudTh>
+                <MudTh>@Localizer["Time"]</MudTh>
+                <MudTh>@Localizer["Type"]</MudTh>
+                <MudTh>@Localizer["Customer"]</MudTh>
+                <MudTh>@Localizer["Status"]</MudTh>
+                <MudTh>@Localizer["Subtotal"]</MudTh>
+                <MudTh>@Localizer["Discount"]</MudTh>
+                <MudTh>@Localizer["Total"]</MudTh>
+                <MudTh>@Localizer["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@(Orders.IndexOf(context) + 1)</MudTd>
+                <MudTd><MudChip T="string" Color="Color.Default" Size="Size.Small">#@context.OrderId</MudChip></MudTd>
+                <MudTd>@context.OrderDate?.ToString("hh:mm tt")</MudTd>
+                <MudTd>
+                    <MudChip T="string" Color="@GetOrderTypeColor(context.OrderType)" Variant="Variant.Filled" Size="Size.Small">
+                        @Localizer[context.OrderType ?? ""]
+                    </MudChip>
+                </MudTd>
+                <MudTd>
+                    <div class="customer-info">
+                        <span class="name">@(context.CustomerName ?? "-")</span>
+                        <span class="phone">@context.Phone1</span>
+                    </div>
+                </MudTd>
+                <MudTd>
+                    <MudChip T="string" Color="@GetStatusColor(context.OrderState)" Size="Size.Small">@Localizer[context.OrderState ?? ""]</MudChip>
+                </MudTd>
+                <MudTd>@context.SubTotal?.ToString("0.##")</MudTd>
+                <MudTd Class="text-red">@context.TotalDiscount?.ToString("0.##")</MudTd>
+                <MudTd><b class="total-text">@context.GrandTotal?.ToString("0.##")</b></MudTd>
+                <MudTd>
+                    <MudMenu TransformOrigin="Origin.TopRight" AnchorOrigin="Origin.BottomRight" Dense="false">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled" Color="Color.Default" StartIcon="@Icons.Material.Filled.Settings" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large">
+                                @Localizer["Actions"]
+                            </MudButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            @if (_canViewOrder)
+                            {
+                                <MudMenuItem OnClick="@(() => ViewOrder(context))" Icon="@Icons.Material.Filled.Visibility" IconColor="Color.Info" Class="action-menu-item">
+                                    <MudText Typo="Typo.subtitle1">@Localizer["View"]</MudText>
+                                </MudMenuItem>
+                            }
+                            @if (_canPrintOrder)
+                            {
+                                <MudMenuItem OnClick="@(() => PrintCustomerOrderReceipt(context))" Icon="@Icons.Material.Filled.Receipt" IconColor="Color.Primary" Class="action-menu-item">
+                                    <MudText Typo="Typo.subtitle1">@Localizer["CustomerReceipt"]</MudText>
+                                </MudMenuItem>
+                                <MudMenuItem OnClick="@(() => PrintBackupOrderReceipt(context))" Icon="@Icons.Material.Filled.Restaurant" IconColor="Color.Warning" Class="action-menu-item">
+                                    <MudText Typo="Typo.subtitle1">@Localizer["KitchenReceipt"]</MudText>
+                                </MudMenuItem>
+                            }
+                            @if (_canVoidOrder && context.OrderState != "Voided")
+                            {
+                                <MudMenuItem OnClick="@(() => VoidOrder(context))" Icon="@Icons.Material.Filled.Block" IconColor="Color.Error" Class="action-menu-item">
+                                    <MudText Typo="Typo.subtitle1">@Localizer["Void"]</MudText>
+                                </MudMenuItem>
+                            }
+                        </ChildContent>
+                    </MudMenu>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+</div>

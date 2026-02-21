@@ -1,100 +1,464 @@
-@using POS.Contract.Dtos.OrderDtos
+@using POS.Contract.Dtos.VoidDtos
 @inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
+@inject ISnackbar Snackbar
 
-<MudDialog DisableSidePadding="true">
+<MudDialog DisableSidePadding="true" Style="min-width: 90vw;">
     <TitleContent>
-        <div class="d-flex align-center gap-2 px-4 py-2" style="background: #f43f5e; color: white;">
-            <MudIcon Icon="@Icons.Material.Filled.EventBusy" />
-            <MudText Typo="Typo.h6">@Localizer["Distribution_VoidHistory"] (@PosDate.ToString("yyyy-MM-dd"))</MudText>
+        <div class="void-report-header">
+            <div class="void-report-title-left">
+                <MudIcon Icon="@Icons.Material.Filled.EventBusy" Style="font-size: 1.8rem;" />
+                <div>
+                    <div style="font-size: 1.1rem; font-weight: 700;">@Localizer["VoidReport_Title"]</div>
+                    <div style="font-size: 0.8rem; opacity: 0.9;">@SelectedDate.ToString("yyyy-MM-dd")</div>
+                </div>
+            </div>
+            <div class="void-report-stats">
+                <div class="stat-badge stat-total">
+                    <span class="stat-label">@Localizer["VoidReport_TotalOrders"]</span>
+                    <span class="stat-value">@Report.Count</span>
+                </div>
+                <div class="stat-badge stat-full">
+                    <span class="stat-label">@Localizer["VoidReport_FullyVoided"]</span>
+                    <span class="stat-value">@Report.Count(r => r.IsFullyVoided)</span>
+                </div>
+                <div class="stat-badge stat-partial">
+                    <span class="stat-label">@Localizer["VoidReport_PartialVoid"]</span>
+                    <span class="stat-value">@Report.Count(r => !r.IsFullyVoided)</span>
+                </div>
+                <div class="stat-badge stat-amount">
+                    <span class="stat-label">@Localizer["VoidReport_TotalAmount"]</span>
+                    <span class="stat-value">@Report.Sum(r => r.VoidedAmount ?? 0).ToString("N2")</span>
+                </div>
+            </div>
         </div>
     </TitleContent>
+
     <DialogContent>
-        <MudPaper Elevation="0" Class="pa-4 bg-gray-50" Style="max-height: 70vh; overflow-y: auto;">
-            @if (VoidedOrders == null || !VoidedOrders.Any())
+        <div class="void-report-container">
+            <!-- Filter Bar -->
+            <div class="void-filter-bar">
+                <MudDatePicker @bind-Date="_selectedDateNullable"
+                               Placeholder="@Localizer["SelectDate"]"
+                               DateFormat="yyyy-MM-dd"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               Style="width: 180px;"
+                               AdornmentColor="Color.Error"
+                               Editable="true" />
+                <MudSelect T="string" @bind-Value="_filterOrderType" Dense="true" Variant="Variant.Outlined"
+                           Margin="Margin.Dense" Style="width: 150px;" Placeholder="@Localizer["AllTypes"]"
+                           Clearable="true">
+                    <MudSelectItem Value="@("DineIn")">@Localizer["DineIn"]</MudSelectItem>
+                    <MudSelectItem Value="@("Delivery")">@Localizer["Delivery"]</MudSelectItem>
+                    <MudSelectItem Value="@("TakeAway")">@Localizer["TakeAway"]</MudSelectItem>
+                </MudSelect>
+                <MudSelect T="string" @bind-Value="_filterVoidStatus" Dense="true" Variant="Variant.Outlined"
+                           Margin="Margin.Dense" Style="width: 160px;" Placeholder="@Localizer["AllStatuses"]"
+                           Clearable="true">
+                    <MudSelectItem Value="@("full")">@Localizer["VoidReport_FullyVoided"]</MudSelectItem>
+                    <MudSelectItem Value="@("partial")">@Localizer["VoidReport_PartialVoid"]</MudSelectItem>
+                </MudSelect>
+                <MudTextField @bind-Value="_searchText" Placeholder="@Localizer["Search"]"
+                              Variant="Variant.Outlined" Margin="Margin.Dense"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                              Style="width: 200px;" />
+                <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small"
+                           OnClick="LoadReport" StartIcon="@Icons.Material.Filled.Refresh"
+                           Class="void-refresh-btn">
+                    @Localizer["Refresh"]
+                </MudButton>
+            </div>
+
+            @if (_isLoading)
             {
-                <div class="d-flex flex-column align-center justify-center py-12 text-gray-400">
-                    <MudIcon Icon="@Icons.Material.Filled.History" Size="Size.Large" Class="mb-2" />
-                    <MudText>@Localizer["Distribution_NoVoidedHistory"]</MudText>
+                <div class="void-loading">
+                    <MudProgressCircular Color="Color.Error" Indeterminate="true" Size="Size.Large" />
+                    <MudText Class="mt-4 text-gray-500">@Localizer["Loading"]...</MudText>
+                </div>
+            }
+            else if (!FilteredReport.Any())
+            {
+                <div class="void-empty">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Style="font-size: 4rem; opacity: 0.3;" />
+                    <MudText Typo="Typo.h6" Class="mt-3 text-gray-400">@Localizer["VoidReport_NoData"]</MudText>
                 </div>
             }
             else
             {
-                <MudTable Items="VoidedOrders" Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+                <MudTable Items="@FilteredReport"
+                          Hover="true"
+                          Dense="true"
+                          Elevation="2"
+                          Class="void-main-table"
+                          RowClassFunc="@GetRowClass"
+                          @ref="_table">
                     <HeaderContent>
-                        <MudTh></MudTh>
-                        <MudTh>@Localizer["OrderID"]</MudTh>
-                        <MudTh>@Localizer["CustomerName"]</MudTh>
-                        <MudTh>@Localizer["OrderState"]</MudTh>
-                        <MudTh>@Localizer["VoidBy"]</MudTh>
-                        <MudTh>@Localizer["VoidTime"]</MudTh>
+                        <MudTh Style="width:40px;"></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.OrderId))">@Localizer["OrderID"]</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.OrderType ?? ""))">@Localizer["OrderType"]</MudTableSortLabel></MudTh>
+                        <MudTh>@Localizer["Customer"]</MudTh>
+                        <MudTh>@Localizer["CashierName"]</MudTh>
+                        <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.VoidByName ?? ""))">@Localizer["VoidBy"]</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.VoidTime ?? DateTime.MinValue))">@Localizer["VoidTime"]</MudTableSortLabel></MudTh>
                         <MudTh>@Localizer["VoidReason"]</MudTh>
+                        <MudTh Style="text-align:right;">@Localizer["VoidReport_OriginalTotal"]</MudTh>
+                        <MudTh Style="text-align:right;">@Localizer["VoidReport_VoidedAmount"]</MudTh>
+                        <MudTh Style="text-align:right;">@Localizer["VoidReport_RemainingTotal"]</MudTh>
+                        <MudTh Style="text-align:center;">@Localizer["Status"]</MudTh>
+                        <MudTh Style="text-align:center;">@Localizer["VoidCount"]</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd>
-                            <MudIconButton Icon="@(IsExpanded(context.OrderId) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" 
-                                           OnClick="@(() => ToggleDetails(context.OrderId))" />
+                            <MudIconButton Icon="@(IsExpanded(context.OrderDbId) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                           Size="Size.Small"
+                                           Color="Color.Default"
+                                           OnClick="@(() => ToggleRow(context.OrderDbId))" />
                         </MudTd>
-                        <MudTd DataLabel="ID">@context.OrderId</MudTd>
-                        <MudTd DataLabel="Customer">@context.CustomerName</MudTd>
-                        <MudTd DataLabel="State">
-                             <MudChip T="string" Color="@(context.OrderState == "Voided" ? Color.Error : Color.Warning)" Size="Size.Small">
-                                 @Localizer[context.OrderState ?? "Pending"]
-                             </MudChip>
+                        <MudTd DataLabel="Order#">
+                            <span class="order-id-badge">#@context.OrderId</span>
                         </MudTd>
-                        <MudTd DataLabel="By">@context.VoidByName</MudTd>
-                        <MudTd DataLabel="Time">@context.VoidTime?.ToString("hh:mm tt")</MudTd>
-                        <MudTd DataLabel="Reason">@context.VoidReason</MudTd>
+                        <MudTd DataLabel="Type">
+                            <MudChip T="string" Size="Size.Small" Color="@GetOrderTypeColor(context.OrderType)" Variant="Variant.Filled">
+                                <MudIcon Icon="@GetOrderTypeIcon(context.OrderType)" Size="Size.Small" Class="mr-1" />
+                                @Localizer[context.OrderType ?? "Unknown"]
+                            </MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Customer">
+                            <div class="customer-cell">
+                                <span>@(context.CustomerName ?? "-")</span>
+                                @if (!string.IsNullOrEmpty(context.Phone))
+                                {
+                                    <span class="phone-text">@context.Phone</span>
+                                }
+                                @if (!string.IsNullOrEmpty(context.TableName))
+                                {
+                                    <span class="table-badge">🪑 @context.TableName</span>
+                                }
+                            </div>
+                        </MudTd>
+                        <MudTd DataLabel="Cashier">@(context.CashierName ?? "-")</MudTd>
+                        <MudTd DataLabel="VoidBy">
+                            <div class="voidby-cell">
+                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                                @(context.VoidByName ?? "-")
+                            </div>
+                        </MudTd>
+                        <MudTd DataLabel="VoidTime">
+                            <span class="time-text">@context.VoidTime?.ToString("hh:mm:ss tt")</span>
+                        </MudTd>
+                        <MudTd DataLabel="Reason">
+                            <MudTooltip Text="@context.VoidReason" Placement="Placement.Top">
+                                <span class="reason-text">@TruncateText(context.VoidReason, 30)</span>
+                            </MudTooltip>
+                        </MudTd>
+                        <MudTd DataLabel="Original" Style="text-align:right;">
+                            <span class="amount-original">@context.OriginalTotal?.ToString("N2")</span>
+                        </MudTd>
+                        <MudTd DataLabel="Voided" Style="text-align:right;">
+                            <span class="amount-voided">-@context.VoidedAmount?.ToString("N2")</span>
+                        </MudTd>
+                        <MudTd DataLabel="Remaining" Style="text-align:right;">
+                            <span class="@(context.IsFullyVoided ? "amount-zero" : "amount-remaining")">
+                                @context.RemainingTotal?.ToString("N2")
+                            </span>
+                        </MudTd>
+                        <MudTd DataLabel="Status" Style="text-align:center;">
+                            @if (context.IsFullyVoided)
+                            {
+                                <MudChip T="string" Color="Color.Error" Size="Size.Small" Variant="Variant.Filled">
+                                    @Localizer["Voided"]
+                                </MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Color="Color.Warning" Size="Size.Small" Variant="Variant.Filled">
+                                    @Localizer["PartialVoid"]
+                                </MudChip>
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="VoidCount" Style="text-align:center;">
+                            <MudBadge Content="@(context.VoidCount ?? 0)" Color="Color.Error" Overlap="false">
+                                <MudIcon Icon="@Icons.Material.Filled.RemoveCircle" Size="Size.Small" />
+                            </MudBadge>
+                        </MudTd>
                     </RowTemplate>
                     <ChildRowContent>
-                        @if (IsExpanded(context.OrderId))
+                        @if (IsExpanded(context.OrderDbId) && context.VoidedItems.Any())
                         {
                             <MudTr>
-                                <td colspan="7" class="pa-4 bg-white">
-                                    <MudText Typo="Typo.subtitle2" Class="mb-2 font-bold color-error">@Localizer["VoidedItems"]</MudText>
-                                    <MudTable Items="@context.OrderDetails?.Where(d => d.IsVoided == true)" Dense="true" Hover="true" Elevation="0" Style="border: 1px solid #fee2e2;">
-                                        <HeaderContent>
-                                            <MudTh>@Localizer["ItemName"]</MudTh>
-                                            <MudTh Style="text-align: center;">@Localizer["VoidQty"]</MudTh>
-                                            <MudTh Style="text-align: center;">@Localizer["VoidAmount"]</MudTh>
-                                            <MudTh>@Localizer["VoidReason"]</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate Context="item">
-                                            <MudTd>@(_commonProperties.Language == "ar" ? item.NameAr : item.Name)</MudTd>
-                                            <MudTd Style="text-align: center;">@item.VoidAmount</MudTd>
-                                            <MudTd Style="text-align: center;">@item.TotalVoidAmount?.ToString("N2")</MudTd>
-                                            <MudTd>@item.VoidReason</MudTd>
-                                        </RowTemplate>
-                                    </MudTable>
+                                <td colspan="13" style="padding: 0; background: #fef2f2;">
+                                    <div class="void-items-panel">
+                                        <div class="void-items-header">
+                                            <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="mr-1" />
+                                            @Localizer["VoidedItems"] — @Localizer["OrderID"] #@context.OrderId
+                                        </div>
+                                        <table class="void-items-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>@Localizer["ItemName"]</th>
+                                                    <th>@Localizer["Category"]</th>
+                                                    <th style="text-align:center;">@Localizer["UnitPrice"]</th>
+                                                    <th style="text-align:center;">@Localizer["VoidQty"]</th>
+                                                    <th style="text-align:center;">@Localizer["RemainingQty"]</th>
+                                                    <th style="text-align:right;">@Localizer["VoidAmount"]</th>
+                                                    <th>@Localizer["VoidBy"]</th>
+                                                    <th>@Localizer["VoidTime"]</th>
+                                                    <th>@Localizer["VoidReason"]</th>
+                                                    <th style="text-align:center;">@Localizer["Status"]</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in context.VoidedItems)
+                                                {
+                                                    <tr class="@(item.IsFullyVoided ? "item-row-voided" : "item-row-partial")">
+                                                        <td>
+                                                            <strong>@(_commonProperties.Language == "ar" ? item.ItemNameAr : item.ItemName)</strong>
+                                                            @if (_commonProperties.Language != "ar" && !string.IsNullOrEmpty(item.ItemNameAr))
+                                                            {
+                                                                <span class="item-name-ar"> (@item.ItemNameAr)</span>
+                                                            }
+                                                        </td>
+                                                        <td>@(item.CategoryName ?? "-")</td>
+                                                        <td style="text-align:center;">@item.UnitPrice?.ToString("N2")</td>
+                                                        <td style="text-align:center;">
+                                                            <span class="qty-voided">@item.VoidedQuantity</span>
+                                                        </td>
+                                                        <td style="text-align:center;">
+                                                            <span class="@(item.RemainingQuantity == 0 ? "qty-zero" : "qty-remaining")">@item.RemainingQuantity</span>
+                                                        </td>
+                                                        <td style="text-align:right;">
+                                                            <span class="amount-voided">-@item.VoidedValue?.ToString("N2")</span>
+                                                        </td>
+                                                        <td>@(item.VoidByName ?? "-")</td>
+                                                        <td>@item.VoidTime?.ToString("hh:mm tt")</td>
+                                                        <td>
+                                                            <MudTooltip Text="@item.VoidReason">
+                                                                <span>@TruncateText(item.VoidReason, 25)</span>
+                                                            </MudTooltip>
+                                                        </td>
+                                                        <td style="text-align:center;">
+                                                            @if (item.IsFullyVoided)
+                                                            {
+                                                                <span class="item-status-full">●</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="item-status-partial">◑</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="void-items-footer">
+                                                    <td colspan="3"><strong>@Localizer["Total"]</strong></td>
+                                                    <td style="text-align:center;"><strong>@context.VoidedItems.Sum(i => i.VoidedQuantity)</strong></td>
+                                                    <td style="text-align:center;"><strong>@context.VoidedItems.Sum(i => i.RemainingQuantity)</strong></td>
+                                                    <td style="text-align:right;"><strong class="amount-voided">-@context.VoidedAmount?.ToString("N2")</strong></td>
+                                                    <td colspan="4"></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </td>
                             </MudTr>
                         }
                     </ChildRowContent>
+                    <FooterContent>
+                        <MudTd colspan="8" Style="font-weight:700; padding: 8px 16px;">@Localizer["Total"] (@FilteredReport.Count() @Localizer["Orders"])</MudTd>
+                        <MudTd Style="text-align:right; font-weight:700; color: #374151;">@FilteredReport.Sum(r => r.OriginalTotal ?? 0).ToString("N2")</MudTd>
+                        <MudTd Style="text-align:right; font-weight:700; color: #ef4444;">-@FilteredReport.Sum(r => r.VoidedAmount ?? 0).ToString("N2")</MudTd>
+                        <MudTd Style="text-align:right; font-weight:700; color: #10b981;">@FilteredReport.Sum(r => r.RemainingTotal ?? 0).ToString("N2")</MudTd>
+                        <MudTd colspan="2"></MudTd>
+                    </FooterContent>
                 </MudTable>
             }
-        </MudPaper>
+        </div>
     </DialogContent>
+
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="Close" Class="rounded-lg px-8">@Localizer["Close"]</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Close" Class="mr-2">
+            @Localizer["Close"]
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
-@code {
-    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
-    [Parameter] public List<OrderDto> VoidedOrders { get; set; } = new();
-    [Parameter] public DateTime PosDate { get; set; }
-
-    private Dictionary<int, bool> _expandedOrders = new();
-
-    private void ToggleDetails(int orderId)
-    {
-        if (_expandedOrders.ContainsKey(orderId))
-            _expandedOrders[orderId] = !_expandedOrders[orderId];
-        else
-            _expandedOrders[orderId] = true;
+<style>
+    .void-report-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+        padding: 12px 20px;
+        gap: 20px;
+        width: 100%;
     }
 
-    private bool IsExpanded(int orderId) => _expandedOrders.ContainsKey(orderId) && _expandedOrders[orderId];
+    .void-report-title-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-    private void Close() => MudDialog.Cancel();
-}
+    .void-report-stats {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .stat-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 14px;
+        border-radius: 10px;
+        min-width: 80px;
+    }
+
+    .stat-total { background: rgba(255,255,255,0.15); }
+    .stat-full { background: rgba(239,68,68,0.5); }
+    .stat-partial { background: rgba(245,158,11,0.5); }
+    .stat-amount { background: rgba(16,185,129,0.3); }
+
+    .stat-label { font-size: 0.65rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 1.2rem; font-weight: 700; }
+
+    .void-report-container {
+        padding: 16px;
+        background: #f9fafb;
+        min-height: 400px;
+    }
+
+    .void-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        background: white;
+        padding: 12px 16px;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .void-refresh-btn {
+        border-radius: 8px !important;
+        height: 36px !important;
+    }
+
+    .void-loading, .void-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+    }
+
+    .void-main-table {
+        border-radius: 10px !important;
+        overflow: hidden;
+    }
+
+    .order-id-badge {
+        background: #e5e7eb;
+        color: #374151;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .customer-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .phone-text { font-size: 0.75rem; color: #6b7280; }
+
+    .table-badge {
+        font-size: 0.72rem;
+        background: #dbeafe;
+        color: #1d4ed8;
+        padding: 1px 6px;
+        border-radius: 5px;
+        width: fit-content;
+    }
+
+    .voidby-cell {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: #dc2626;
+        font-weight: 500;
+    }
+
+    .time-text { font-size: 0.82rem; color: #374151; font-family: monospace; }
+    .reason-text { font-size: 0.82rem; color: #6b7280; }
+
+    .amount-original { color: #374151; font-weight: 600; }
+    .amount-voided { color: #ef4444; font-weight: 600; }
+    .amount-remaining { color: #10b981; font-weight: 600; }
+    .amount-zero { color: #9ca3af; font-weight: 600; }
+
+    /* Void Items Panel */
+    .void-items-panel {
+        padding: 12px 20px 16px;
+    }
+
+    .void-items-header {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #dc2626;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .void-items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+    }
+
+    .void-items-table th {
+        background: #fecaca;
+        color: #7f1d1d;
+        padding: 6px 10px;
+        text-align: left;
+        font-weight: 700;
+        border-bottom: 2px solid #fca5a5;
+    }
+
+    .void-items-table td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #fee2e2;
+        vertical-align: middle;
+    }
+
+    .item-row-voided { background: #fff5f5; }
+    .item-row-partial { background: #fffbeb; }
+
+    .item-name-ar { font-size: 0.78rem; color: #6b7280; }
+
+    .qty-voided { color: #ef4444; font-weight: 700; font-size: 0.95rem; }
+    .qty-remaining { color: #10b981; font-weight: 700; }
+    .qty-zero { color: #9ca3af; font-weight: 600; }
+
+    .item-status-full { color: #ef4444; font-size: 1.1rem; }
+    .item-status-partial { color: #f59e0b; font-size: 1.1rem; }
+
+    .void-items-footer {
+        background: #fee2e2;
+        border-top: 2px solid #fca5a5;
+    }
+
+    .void-items-footer td { padding: 8px 10px; }
+
+    /* Row highlighting */
+    .row-fully-voided { background-color: #fff5f5 !important; }
+    .row-partially-voided { background-color: #fffbeb !important; }
+</style>

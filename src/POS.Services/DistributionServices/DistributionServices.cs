@@ -30,7 +30,7 @@ public class DistributionServices : IDistributionServices
     {
         if (orderDto == null) return false;
 
-        var spec = new BaseSpecifications<Orders>(o => o.OrderID == orderDto.OrderId && o.BranchID == orderDto.BranchId);
+        var spec = new BaseSpecifications<Orders>(o => o.Id == orderDto.Id && o.BranchID == orderDto.BranchId);
         var order = (await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec)).FirstOrDefault();
         
         if (order == null) return false;
@@ -63,9 +63,9 @@ public class DistributionServices : IDistributionServices
         return await _unitOfWork.CompleteAsync() > 0;
     }
     
-    public async Task<bool> UnDispatchOrderAsync(int orderId)
+    public async Task<bool> UnDispatchOrderAsync(int id)
     {
-        var spec = new BaseSpecifications<Orders>(o => o.OrderID == orderId);
+        var spec = new BaseSpecifications<Orders>(o => o.Id == id);
         var order = (await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec)).FirstOrDefault();
         
         if (order == null) return false;
@@ -120,19 +120,6 @@ public class DistributionServices : IDistributionServices
             .ToList();
     }
 
-    public async Task<bool> VoidOrderAsync(int orderId)
-    {
-        var spec = new BaseSpecifications<Orders>(o => o.OrderID == orderId);
-        var order = (await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec)).FirstOrDefault();
-        
-        if (order == null) return false;
-
-        order.OrderState = OrderStates.Voided;
-        order.VoidTime = DateTime.Now;
-
-        _unitOfWork.Repository<Orders>().Update(order);
-        return await _unitOfWork.CompleteAsync() > 0;
-    }
 
     public async Task<ICollection<Orders>> GetVoidedDeliveryOrdersAsync(DateTime posDate)
     {

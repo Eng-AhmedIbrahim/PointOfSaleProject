@@ -358,5 +358,13 @@
     "ModuleName": "Delivery",
     "ScreenName": "Delivery Actions",
     "Value": true
+  },
+  {
+    "FeatureName": "posSettingsFeature",
+    "NameEn": "Global POS Settings Button",
+    "NameAr": "زر إعدادات النظام العام",
+    "ModuleName": "Layout",
+    "ScreenName": "General",
+    "Value": true
   }
 ]

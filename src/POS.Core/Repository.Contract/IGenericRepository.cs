@@ -7,6 +7,7 @@ public interface IGenericRepository<T> where T : BaseEntity
     Task<T?> GetByIdAsync(int id);
     Task<T?> GetUserSettingByIdAsync(string id);
     Task<T?> GetByIdWithSpecificationAsync(ISpecifications<T> specs);
+    Task<T?> GetByIdWithSpecificationTrackedAsync(ISpecifications<T> specs);
     Task AddAsync(T entity);
     Task AddRangeAsync(IEnumerable<T> entities);
     void Update(T entity);

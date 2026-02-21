@@ -14,65 +14,43 @@
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="action-buttons-grid">
-    @if (_commonProperties.IsFeatureEnabled("POS_Button_Cancel"))
+    @if (_canVoidOrder && _commonProperties.IsFeatureEnabled("POS_Button_Cancel"))
     {
         <MudItem xs="4">
-            <AuthorizeView Policy="CanAccessVoidOrder">
-                <Authorized>
-                    <MudButton Variant="Variant.Filled"
-                               FullWidth="true"
-                               Class="action-btn cancel-btn special-sec4-button"
-                               Size="Size.Small"
-                               StartIcon="@Icons.Material.Filled.Cancel"
-                               OnClick="CancelOrder">
-                        @Localizer["Cancel"]
-                    </MudButton>
-                </Authorized>
-            </AuthorizeView>
+            <MudButton Variant="Variant.Filled"
+                       FullWidth="true"
+                       Class="action-btn cancel-btn special-sec4-button"
+                       Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Cancel"
+                       OnClick="CancelOrder">
+                @Localizer["Cancel"]
+            </MudButton>
         </MudItem>
     }
-    @if (_commonProperties.IsFeatureEnabled("POS_Button_Waiting"))
+    @if (_canWaiting && _commonProperties.IsFeatureEnabled("POS_Button_Waiting"))
     {
         <MudItem xs="4">
-            <AuthorizeView Policy="CanAccessWaiting">
-                <Authorized>
-                    <MudButton Variant="Variant.Filled"
-                               FullWidth="true"
-                               Class="action-btn waiting-btn special-sec4-button"
-                               Size="Size.Small"
-                               StartIcon="@Icons.Material.Filled.HourglassTop"
-                               OnClick="AddOrderToWaitingQueue">
-                        @Localizer["Waiting"]
-                    </MudButton>
-                </Authorized>
-            </AuthorizeView>
+            <MudButton Variant="Variant.Filled"
+                       FullWidth="true"
+                       Class="action-btn waiting-btn special-sec4-button"
+                       Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.HourglassTop"
+                       OnClick="AddOrderToWaitingQueue">
+                @Localizer["Waiting"]
+            </MudButton>
         </MudItem>
     }
-    @if (_commonProperties.IsFeatureEnabled("POS_Button_Print"))
+    @if (_canPrintReceipt && _commonProperties.IsFeatureEnabled("POS_Button_Print"))
     {
         <MudItem xs="4">
-            <AuthorizeView Policy="CanAccessPrintReceipt">
-                <Authorized>
-                    <MudButton Variant="Variant.Filled"
-                               FullWidth="true"
-                               Class="action-btn print-btn special-sec4-button"
-                               Size="Size.Small"
-                               StartIcon="@Icons.Material.Filled.Print"
-                               OnClick="PrintOrder">
-                        @Localizer["Print"]
-                    </MudButton>
-                </Authorized>
-            </AuthorizeView>
+            <MudButton Variant="Variant.Filled"
+                       FullWidth="true"
+                       Class="action-btn print-btn special-sec4-button"
+                       Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Print"
+                       OnClick="PrintOrder">
+                @Localizer["Print"]
+            </MudButton>
         </MudItem>
     }
-    @* <MudItem xs="3">
-        <MudButton Variant="Variant.Filled"
-                   FullWidth="true"
-                   Class="action-btn print-btn special-sec4-button"
-                   Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.History"
-                   OnClick="ReprintOrder">
-            @Localizer["Reprint"]
-        </MudButton>
-    </MudItem> *@
 </MudGrid>

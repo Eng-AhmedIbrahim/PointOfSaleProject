@@ -36,7 +36,7 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : BaseEntity
         Take = take;
     }
 
-    protected void AddThenInclude(string thenIncludeString)
+    public void AddThenInclude(string thenIncludeString)
     {
         ThenIncludes.Add(thenIncludeString);
     }

@@ -2,6 +2,7 @@
 
 public class OrderDetails
 {
+    public int Id { get; set; }
     public int OrderId { get; set; }
     public DateTime? OrderDataTime { get; set; }
     public string? CashierName { get; set; }
@@ -27,12 +28,13 @@ public class OrderDetails
     {
         return new OrderDetails
         {
-            OrderId = this.OrderId,
             OrderDataTime = this.OrderDataTime,
             CashierName = this.CashierName,
             OrderType = this.OrderType,
             Account = this.Account,
             OrderDiscount = this.OrderDiscount,
+            Id = this.Id,
+            OrderId = this.OrderId,
             Tax = this.Tax,
             Service = this.Service,
             Total = this.Total,

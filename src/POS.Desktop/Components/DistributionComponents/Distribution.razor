@@ -78,14 +78,17 @@
                             </MudTd>
                         }
                         <MudTd Class="action-cell">
-                            <MudButton Variant="Variant.Filled"
-                                     Color="Color.Primary"
-                                     Size="Size.Small"
-                                     OnClick="@(() => OpenAssignmentDialog(context))"
-                                     Class="assign-btn"
-                                     DisableElevation="true">
-                                <MudIcon Icon="@(context.DriverID == null ? Icons.Material.Filled.LocalShipping : Icons.Material.Filled.Edit)" Size="Size.Small" />
-                            </MudButton>
+                            @if (_canAssignDriver)
+                            {
+                                <MudButton Variant="Variant.Filled"
+                                         Color="Color.Primary"
+                                         Size="Size.Small"
+                                         OnClick="@(() => OpenAssignmentDialog(context))"
+                                         Class="assign-btn"
+                                         DisableElevation="true">
+                                    <MudIcon Icon="@(context.DriverID == null ? Icons.Material.Filled.LocalShipping : Icons.Material.Filled.Edit)" Size="Size.Small" />
+                                </MudButton>
+                            }
                         </MudTd>
                         <MudTd>
                             <MudText Typo="Typo.subtitle1" Class="font-weight-black">@context.CustomerName</MudText>
@@ -118,45 +121,56 @@
                         }
                         <MudTd Style="text-align: center;">
                             <div class="d-flex justify-center gap-2">
-                                <MudTooltip Text="@Localizer["Distribution_ViewOrder"]">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
-                                                 OnClick="@(() => ViewOrder(context))"
-                                                 Size="Size.Small"
-                                                 Color="Color.Warning"
-                                                 Variant="Variant.Filled" 
-                                                 
-                                                 Class="action-icon-btn" />
-                                </MudTooltip>
+                                @if (_canViewOrder)
+                                {
+                                    <MudTooltip Text="@Localizer["Distribution_ViewOrder"]">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                                     OnClick="@(() => ViewOrder(context))"
+                                                     Size="Size.Small"
+                                                     Color="Color.Warning"
+                                                     Variant="Variant.Filled"
+                                                     Class="action-icon-btn" />
+                                    </MudTooltip>
+                                }
 
-                                <MudTooltip Text="@Localizer["Distribution_VoidOrderTitle"]">
-                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteForever"
-                                                 OnClick="@(() => VoidOrder(context))"
-                                                 Disabled="@IsVoidDisabled(context)"
-                                                 Size="Size.Small"
-                                                 Color="Color.Error"
-                                                  Variant="Variant.Filled"
-                                                 Class="action-icon-btn" />
-                                </MudTooltip>
+                                @if (_canVoidOrder)
+                                {
+                                    <MudTooltip Text="@Localizer["Distribution_VoidOrderTitle"]">
+                                        <MudIconButton Icon="@Icons.Material.Filled.DeleteForever"
+                                                     OnClick="@(() => VoidOrder(context))"
+                                                     Disabled="@IsVoidDisabled(context)"
+                                                     Size="Size.Small"
+                                                     Color="Color.Error"
+                                                      Variant="Variant.Filled"
+                                                     Class="action-icon-btn" />
+                                    </MudTooltip>
+                                }
 
                                 @if (showAssigned)
                                 {
-                                    <MudTooltip Text="@Localizer["Print"]">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Print"
-                                                     OnClick="@(() => PrintOrder(context))"
-                                                     Size="Size.Small"
-                                                     Color="Color.Success"
-                                                      Variant="Variant.Filled"
-                                                     Class="action-icon-btn" />
-                                    </MudTooltip>
-                                    
-                                    <MudTooltip Text="@Localizer["Distribution_Unassigned"]">
-                                         <MudIconButton Icon="@Icons.Material.Filled.Undo"
-                                                     OnClick="@(() => UnDispatchOrder(context))"
-                                                     Size="Size.Small"
-                                                     Color="Color.Default"
-                                                      Variant="Variant.Filled"
-                                                     Class="action-icon-btn" />
-                                    </MudTooltip>
+                                    @if (_canPrintOrder)
+                                    {
+                                        <MudTooltip Text="@Localizer["Print"]">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Print"
+                                                         OnClick="@(() => PrintOrder(context))"
+                                                         Size="Size.Small"
+                                                         Color="Color.Success"
+                                                          Variant="Variant.Filled"
+                                                         Class="action-icon-btn" />
+                                        </MudTooltip>
+                                    }
+
+                                    @if (_canUnDispatch)
+                                    {
+                                        <MudTooltip Text="@Localizer["Distribution_Unassigned"]">
+                                             <MudIconButton Icon="@Icons.Material.Filled.Undo"
+                                                         OnClick="@(() => UnDispatchOrder(context))"
+                                                         Size="Size.Small"
+                                                         Color="Color.Default"
+                                                          Variant="Variant.Filled"
+                                                         Class="action-icon-btn" />
+                                        </MudTooltip>
+                                    }
                                 }
                             </div>
                         </MudTd>
@@ -176,42 +190,54 @@
                                 <MudButton OnClick="RefreshData" StartIcon="@Icons.Material.Filled.Refresh" Class="group-btn" Size="Size.Small">
                                     @Localizer["Distribution_Refresh"]
                                 </MudButton>
-                                <MudButton OnClick="ShowVoidedOrders" StartIcon="@Icons.Material.Filled.EventBusy" Class="group-btn" Size="Size.Small">
-                                    @Localizer["Distribution_VoidHistory"]
-                                </MudButton>
-                                <MudButton OnClick="ShowDriverSettlement" StartIcon="@Icons.Material.Filled.Assignment" Class="group-btn" Size="Size.Small">
-                                    @Localizer["Distribution_DriverSettlement"]
-                                </MudButton>
+                                @if (_canViewVoidHistory)
+                                {
+                                    <MudButton OnClick="ShowVoidedOrders" StartIcon="@Icons.Material.Filled.EventBusy" Class="group-btn" Size="Size.Small">
+                                        @Localizer["Distribution_VoidHistory"]
+                                    </MudButton>
+                                }
+                                @if (_canViewDriverSettlement)
+                                {
+                                    <MudButton OnClick="ShowDriverSettlement" StartIcon="@Icons.Material.Filled.Assignment" Class="group-btn" Size="Size.Small">
+                                        @Localizer["Distribution_DriverSettlement"]
+                                    </MudButton>
+                                }
                             </div>
 
-                            <div class="btn-group shadow-sm mx-2 flex-nowrap" style="flex-shrink: 0;">
-                                <MudButton OnClick="CollectSelected" 
-                                         Disabled="@(!SelectedOrderIds.Any())"
-                                         StartIcon="@Icons.Material.Filled.LibraryAddCheck" 
-                                         Color="Color.Primary"
-                                         Variant="Variant.Filled"
-                                         Class="group-btn primary-group" Size="Size.Small">
-                                    @Localizer["Distribution_CollectSelected"] (@SelectedOrderIds.Count)
-                                </MudButton>
-                                <MudButton OnClick="CollectAll" 
-                                         StartIcon="@Icons.Material.Filled.DoneAll" 
-                                         Color="Color.Primary"
-                                         Variant="Variant.Filled"
-                                         Class="group-btn primary-group" Size="Size.Small">
-                                    @Localizer["Distribution_CollectAll"]
-                                </MudButton>
-                            </div>
+                            @if (_canCollect)
+                            {
+                                <div class="btn-group shadow-sm mx-2 flex-nowrap" style="flex-shrink: 0;">
+                                    <MudButton OnClick="CollectSelected"
+                                             Disabled="@(!SelectedOrderIds.Any())"
+                                             StartIcon="@Icons.Material.Filled.LibraryAddCheck"
+                                             Color="Color.Primary"
+                                             Variant="Variant.Filled"
+                                             Class="group-btn primary-group" Size="Size.Small">
+                                        @Localizer["Distribution_CollectSelected"] (@SelectedOrderIds.Count)
+                                    </MudButton>
+                                    <MudButton OnClick="CollectAll"
+                                             StartIcon="@Icons.Material.Filled.DoneAll"
+                                             Color="Color.Primary"
+                                             Variant="Variant.Filled"
+                                             Class="group-btn primary-group" Size="Size.Small">
+                                        @Localizer["Distribution_CollectAll"]
+                                    </MudButton>
+                                </div>
+                            }
                         }
 
                         @if (!showAssigned)
                         {
                             <div class="btn-group shadow-sm flex-nowrap" style="flex-shrink: 0;">
-                                <MudButton OnClick="ShowAvailableDrivers" StartIcon="@Icons.Material.Filled.PersonPin" Color="Color.Success" Variant="Variant.Text" Class="group-btn text-success" Size="Size.Small">
-                                    @Localizer["Distribution_AvailableDrivers"]
-                                </MudButton>
-                                <MudButton OnClick="ShowUnavailableDrivers" StartIcon="@Icons.Material.Filled.PersonOff" Color="Color.Warning" Variant="Variant.Text" Class="group-btn text-warning" Size="Size.Small">
-                                    @Localizer["Distribution_UnavailableDrivers"]
-                                </MudButton>
+                                @if (_canViewDrivers)
+                                {
+                                    <MudButton OnClick="ShowAvailableDrivers" StartIcon="@Icons.Material.Filled.PersonPin" Color="Color.Success" Variant="Variant.Text" Class="group-btn text-success" Size="Size.Small">
+                                        @Localizer["Distribution_AvailableDrivers"]
+                                    </MudButton>
+                                    <MudButton OnClick="ShowUnavailableDrivers" StartIcon="@Icons.Material.Filled.PersonOff" Color="Color.Warning" Variant="Variant.Text" Class="group-btn text-warning" Size="Size.Small">
+                                        @Localizer["Distribution_UnavailableDrivers"]
+                                    </MudButton>
+                                }
                             </div>
                         }
                     </div>

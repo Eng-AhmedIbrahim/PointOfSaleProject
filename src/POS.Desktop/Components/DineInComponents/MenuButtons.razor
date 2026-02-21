@@ -9,7 +9,7 @@
 @inject CartService _cartService
 
 <MudGrid Spacing="1" Justify="Justify.Center">
-    @if (_commonProperties.IsFeatureEnabled("DineIn_Button_Order"))
+    @if (_canDineInOrder && _commonProperties.IsFeatureEnabled("DineIn_Button_Order"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -24,7 +24,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("DineIn_Button_Receipt"))
+    @if (_canDineInReceipt && _commonProperties.IsFeatureEnabled("DineIn_Button_Receipt"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -39,7 +39,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("DineIn_Button_CloseTable"))
+    @if (_canDineInCloseTable && _commonProperties.IsFeatureEnabled("DineIn_Button_CloseTable"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -55,8 +55,7 @@
         </MudItem>
     }
 
-
-    @if (_commonProperties.IsFeatureEnabled("EnableSplitBill"))
+    @if (_canDineInSplitOrder && _commonProperties.IsFeatureEnabled("EnableSplitBill"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -71,7 +70,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("EnableTableMerge"))
+    @if (_canDineInMergeTable && _commonProperties.IsFeatureEnabled("EnableTableMerge"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -86,7 +85,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("EnableTableTransfer"))
+    @if (_canDineInTransfer && _commonProperties.IsFeatureEnabled("EnableTableTransfer"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -101,7 +100,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("DineIn_Button_Void"))
+    @if (_canDineInVoid && _commonProperties.IsFeatureEnabled("DineIn_Button_Void"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
@@ -116,7 +115,7 @@
         </MudItem>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("EnableGuestCount"))
+    @if (_canDineInGuestCount && _commonProperties.IsFeatureEnabled("EnableGuestCount"))
     {
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"

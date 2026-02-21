@@ -258,19 +258,23 @@ public class ReceiptDocument : IDocument
                             .PaddingRight(45)
                             .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
                             .FontSize(10)
-                            .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
+                            .FontColor(Colors.Red.Medium)
                             .AlignEnd();
                     }
 
                     // Add attributes if available
                     if (item.Attributes?.Any() == true)
                     {
-                        foreach (var attribute in item.Attributes)
+                        var groupedAttrs = item.Attributes
+                            .GroupBy(a => a.Name)
+                            .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
+
+                        foreach (var attr in groupedAttrs)
                         {
                             table.Cell().ColumnSpan(4)
-                            .Element(CellStyle)
+                                .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text(attribute.Name + "<==")
+                                .Text($"{attr.Name} {(attr.Count > 1 ? $"({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }

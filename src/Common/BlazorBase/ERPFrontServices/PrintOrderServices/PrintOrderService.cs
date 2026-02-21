@@ -1,4 +1,7 @@
-﻿namespace BlazorBase.ERPFrontServices.PrintOrderServices;
+﻿using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.ReportingDtos;
+
+namespace BlazorBase.ERPFrontServices.PrintOrderServices;
 
 public class PrintOrderService : IPrintOrderService
 {
@@ -131,7 +134,7 @@ public class PrintOrderService : IPrintOrderService
         return null;
     }
 
-    public async Task<bool> ReprintOrderAsync(int orderId)
+    public async Task<bool> ReprintOrderAsync(int orderId, bool isCopy = false, bool printCustomer = true, bool printKitchen = true)
     {
         // Currently just returning true to satisfy interface.
         // Logic can be expanded if needed for non-desktop scenarios.
@@ -176,5 +179,22 @@ public class PrintOrderService : IPrintOrderService
 
         var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
         return result is not null;
+    }
+
+    public Task PrintVoidReceiptAsync(OrderDto order, List<TableItem> voidedItems)
+    {
+        // Default implementation does nothing or could be implemented if there's a server-side printing mechanism
+        return Task.CompletedTask;
+    }
+
+    public Task PrintDineInVoidReceiptAsync(DineInOrderDto order, List<TableItem> voidedItems)
+    {
+        // Default implementation does nothing
+        return Task.CompletedTask;
+    }
+
+    public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items)
+    {
+        return Task.CompletedTask;
     }
 }

@@ -76,6 +76,8 @@ public partial class DineIn : IDisposable
             _isLoadingOrders = true;
             await LoadOpenOrdersFromDatabase();
             
+            if (_commonProperties == null) return;
+
             // Sync items with common properties state
             if (_commonProperties.CurrentDineInOrder == null)
             {
@@ -87,6 +89,10 @@ public partial class DineIn : IDisposable
             }
 
             await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error in DineIn HandleStateChanged");
         }
         finally
         {
@@ -114,6 +120,8 @@ public partial class DineIn : IDisposable
 
     private void ProcessOpenOrders(IEnumerable<DineInOrderDto>? openOrders)
     {
+        if (_commonProperties == null) return;
+
         // Clear existing in-memory orders first to ensure synchronization
         _commonProperties.DineInOrdersDetails?.Clear();
 
@@ -122,11 +130,14 @@ public partial class DineIn : IDisposable
             foreach (var dbOrder in openOrders)
             {
                 var orderDetails = DineInOrderMapper.MapToDineInOrderDetails(dbOrder);
-                if (!_commonProperties.DineInOrdersDetails!.ContainsKey(dbOrder.TableId))
+                if (_commonProperties.DineInOrdersDetails != null)
                 {
-                    _commonProperties.DineInOrdersDetails[dbOrder.TableId] = new List<DineInOrderDetails>();
+                    if (!_commonProperties.DineInOrdersDetails.ContainsKey(dbOrder.TableId))
+                    {
+                        _commonProperties.DineInOrdersDetails[dbOrder.TableId] = new List<DineInOrderDetails>();
+                    }
+                    _commonProperties.DineInOrdersDetails[dbOrder.TableId].Add(orderDetails);
                 }
-                _commonProperties.DineInOrdersDetails[dbOrder.TableId].Add(orderDetails);
             }
         }
     }
@@ -195,10 +206,17 @@ public partial class DineIn : IDisposable
         }
         if (key is string)
         {
-            _commonProperties!.CurrentDineInOrder!.CaptainId = key.ToString()!;
-            _commonProperties!.CurrentDineInOrder!.CaptainName = keyName;
-            // Also update DineInOrderValues so it shows in the UI card
-            _commonProperties!.DineInOrderValues!.CaptainName = keyName;
+            if (_commonProperties.CurrentDineInOrder != null)
+            {
+                _commonProperties.CurrentDineInOrder.CaptainId = key.ToString()!;
+                _commonProperties.CurrentDineInOrder.CaptainName = keyName;
+            }
+            
+            if (_commonProperties.DineInOrderValues != null)
+            {
+                // Also update DineInOrderValues so it shows in the UI card
+                _commonProperties.DineInOrderValues.CaptainName = keyName;
+            }
         }
 
         stateUpdater(stateDict, key);

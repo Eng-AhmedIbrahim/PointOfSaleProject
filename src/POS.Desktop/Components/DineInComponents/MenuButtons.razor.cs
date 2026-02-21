@@ -2,6 +2,36 @@
 
 public partial class MenuButtons
 {
+    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    private bool _canDineInOrder;
+    private bool _canDineInReceipt;
+    private bool _canDineInCloseTable;
+    private bool _canDineInSplitOrder;
+    private bool _canDineInMergeTable;
+    private bool _canDineInTransfer;
+    private bool _canDineInVoid;
+    private bool _canDineInGuestCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            _canDineInOrder      = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInOrderBtn")).Succeeded;
+            _canDineInReceipt    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInReceiptBtn")).Succeeded;
+            _canDineInCloseTable = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInCloseTableBtn")).Succeeded;
+            _canDineInSplitOrder = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInSplitOrderBtn")).Succeeded;
+            _canDineInMergeTable = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInMergeTableBtn")).Succeeded;
+            _canDineInTransfer   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInTransferBtn")).Succeeded;
+            _canDineInVoid       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInVoidBtn")).Succeeded;
+            _canDineInGuestCount = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInGuestCountBtn")).Succeeded;
+        }
+    }
+
     private async Task CreateDineInOrder()
     {
         var orderDetails = _commonProperties.GetActiveOrder();
@@ -141,7 +171,7 @@ public partial class MenuButtons
         if (orderDetails != null)
         {
             var parameters = new DialogParameters { ["OrderId"] = orderDetails.DatabaseId };
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true }; // Increased size slightly
+            var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Medium, FullWidth = true }; // Increased size slightly
             var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
             var result = await dialog.Result;
 

@@ -158,5 +158,165 @@
     "Name": "CanAccessDeliveryToggleDirectionBtn",
     "NameEn": "Delivery: Toggle Direction Button",
     "NameAr": "التوصيل: تغيير الاتجاه"
+  },
+  {
+    "Name": "CanAccessAllOrdersViewBtn",
+    "NameEn": "All Orders: View Button",
+    "NameAr": "كل الطلبات: زر عرض الطلب"
+  },
+  {
+    "Name": "CanAccessAllOrdersPrintBtn",
+    "NameEn": "All Orders: Print Button",
+    "NameAr": "كل الطلبات: زر طباعة الطلب"
+  },
+  {
+    "Name": "CanAccessAllOrdersVoidBtn",
+    "NameEn": "All Orders: Void Button",
+    "NameAr": "كل الطلبات: زر إلغاء الطلب"
+  },
+  {
+    "Name": "CanAccessFooterDiscountBtn",
+    "NameEn": "Footer: Discount Button",
+    "NameAr": "الفوتر: زر الخصم"
+  },
+  {
+    "Name": "CanAccessFooterCustomerDataBtn",
+    "NameEn": "Footer: Customer Data Button",
+    "NameAr": "الفوتر: زر بيانات العميل"
+  },
+  {
+    "Name": "CanAccessFooterPaymentMethodBtn",
+    "NameEn": "Footer: Payment Method Button",
+    "NameAr": "الفوتر: زر طريقة الدفع"
+  },
+  {
+    "Name": "CanAccessFooterQuickPaymentBtn",
+    "NameEn": "Footer: Quick Payment Button",
+    "NameAr": "الفوتر: زر الدفع السريع"
+  },
+  {
+    "Name": "CanAccessFooterMealsBtn",
+    "NameEn": "Footer: Meals Button",
+    "NameAr": "الفوتر: زر الوجبات"
+  },
+  {
+    "Name": "CanAccessFooterWaitingBtn",
+    "NameEn": "Footer: Waiting Button",
+    "NameAr": "الفوتر: زر الانتظار"
+  },
+  {
+    "Name": "CanAccessFooterSettingsBtn",
+    "NameEn": "Footer: Settings Button",
+    "NameAr": "الفوتر: زر الإعدادات"
+  },
+  {
+    "Name": "CanAccessDineInOrderBtn",
+    "NameEn": "DineIn: Order Button",
+    "NameAr": "داخلي: زر الطلب"
+  },
+  {
+    "Name": "CanAccessDineInReceiptBtn",
+    "NameEn": "DineIn: Receipt Button",
+    "NameAr": "داخلي: زر الفاتورة"
+  },
+  {
+    "Name": "CanAccessDineInCloseTableBtn",
+    "NameEn": "DineIn: Close Table Button",
+    "NameAr": "داخلي: زر إغلاق الطاولة"
+  },
+  {
+    "Name": "CanAccessDineInSplitOrderBtn",
+    "NameEn": "DineIn: Split Order Button",
+    "NameAr": "داخلي: زر تقسيم الأوردر"
+  },
+  {
+    "Name": "CanAccessDineInMergeTableBtn",
+    "NameEn": "DineIn: Merge Table Button",
+    "NameAr": "داخلي: زر دمج الطاولات"
+  },
+  {
+    "Name": "CanAccessDineInTransferBtn",
+    "NameEn": "DineIn: Transfer Table Button",
+    "NameAr": "داخلي: زر نقل الطاولة"
+  },
+  {
+    "Name": "CanAccessDineInVoidBtn",
+    "NameEn": "DineIn: Void Button",
+    "NameAr": "داخلي: زر إلغاء"
+  },
+  {
+    "Name": "CanAccessDineInGuestCountBtn",
+    "NameEn": "DineIn: Guest Count Button",
+    "NameAr": "داخلي: زر عدد الضيوف"
+  },
+  {
+    "Name": "CanAccessDistributionAssignBtn",
+    "NameEn": "Distribution: Assign Button",
+    "NameAr": "التوزيع: زر التعيين"
+  },
+  {
+    "Name": "CanAccessDistributionViewBtn",
+    "NameEn": "Distribution: View Order Button",
+    "NameAr": "التوزيع: زر عرض الطلب"
+  },
+  {
+    "Name": "CanAccessDistributionVoidBtn",
+    "NameEn": "Distribution: Void Order Button",
+    "NameAr": "التوزيع: زر إلغاء الطلب"
+  },
+  {
+    "Name": "CanAccessDistributionPrintBtn",
+    "NameEn": "Distribution: Print Order Button",
+    "NameAr": "التوزيع: زر طباعة الطلب"
+  },
+  {
+    "Name": "CanAccessDistributionUnDispatchBtn",
+    "NameEn": "Distribution: Un-assign Button",
+    "NameAr": "التوزيع: زر إلغاء التعيين"
+  },
+  {
+    "Name": "CanAccessDistributionCollectBtn",
+    "NameEn": "Distribution: Collect Buttons",
+    "NameAr": "التوزيع: أزرار التحصيل"
+  },
+  {
+    "Name": "CanAccessDistributionVoidHistoryBtn",
+    "NameEn": "Distribution: Void History Button",
+    "NameAr": "التوزيع: زر سجل الملغى"
+  },
+  {
+    "Name": "CanAccessDistributionDriverSettlementBtn",
+    "NameEn": "Distribution: Driver Settlement Button",
+    "NameAr": "التوزيع: زر تسوية الطيار"
+  },
+  {
+    "Name": "CanAccessDistributionViewDriversBtn",
+    "NameEn": "Distribution: View Drivers Buttons",
+    "NameAr": "التوزيع: أزرار عرض الطيارين"
+  },
+  {
+    "Name": "CanAccessAccountsViewBtn",
+    "NameEn": "Accounts: View Details Button",
+    "NameAr": "الحسابات: زر التفاصيل"
+  },
+  {
+    "Name": "CanAccessAccountsPrintBtn",
+    "NameEn": "Accounts: Print Report Button",
+    "NameAr": "الحسابات: زر طباعة التقرير"
+  },
+  {
+    "Name": "CanAccessSummaryViewDetailsBtn",
+    "NameEn": "Summary: View Details Button",
+    "NameAr": "الملخص: زر عرض التفاصيل"
+  },
+  {
+    "Name": "CanAccessSummaryPrintBtn",
+    "NameEn": "Summary: Print Report Button",
+    "NameAr": "الملخص: زر طباعة التقرير"
+  },
+  {
+    "Name": "CanAccessPosSettingsFeature",
+    "NameEn": "Global: POS Settings Feature",
+    "NameAr": "عام: خاصية إعدادات النظام"
   }
 ]

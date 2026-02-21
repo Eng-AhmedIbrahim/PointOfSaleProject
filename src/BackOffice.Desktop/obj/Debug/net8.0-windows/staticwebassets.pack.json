@@ -1,0 +1,81 @@
+{
+  "Files": [
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\Debug\\net8.0-windows\\scopedcss\\bundle\\BackOffice.Desktop.styles.css",
+      "PackagePath": "staticwebassets\\BackOffice.Desktop.styles.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\actions-section.css",
+      "PackagePath": "staticwebassets\\actions-section.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\delivery.css",
+      "PackagePath": "staticwebassets\\delivery.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\Logo.png",
+      "PackagePath": "staticwebassets\\images\\Logo.png"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\ReceiptLogo\\logo.png",
+      "PackagePath": "staticwebassets\\images\\ReceiptLogo\\logo.png"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\pos.css",
+      "PackagePath": "staticwebassets\\pos.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\section4-footer.css",
+      "PackagePath": "staticwebassets\\section4-footer.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\settings-styles.css",
+      "PackagePath": "staticwebassets\\settings-styles.css"
+    },
+    {
+      "Id": "f:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\site.js",
+      "PackagePath": "staticwebassets\\site.js"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows\\staticwebassets\\msbuild.BackOffice.Desktop.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows\\staticwebassets\\msbuild.BackOffice.Desktop.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows\\staticwebassets\\msbuild.build.BackOffice.Desktop.props",
+      "PackagePath": "build\\BackOffice.Desktop.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows\\staticwebassets\\msbuild.buildMultiTargeting.BackOffice.Desktop.props",
+      "PackagePath": "buildMultiTargeting\\BackOffice.Desktop.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0-windows\\staticwebassets\\msbuild.buildTransitive.BackOffice.Desktop.props",
+      "PackagePath": "buildTransitive\\BackOffice.Desktop.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

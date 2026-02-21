@@ -1,0 +1,124 @@
+.sales-items-dialog[b-a4e17b8fjf] {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+.dialog-header[b-a4e17b8fjf] {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.search-bar[b-a4e17b8fjf] {
+    margin-top: 8px;
+}
+
+.dialog-scroll-content[b-a4e17b8fjf] {
+    margin: 0 -12px;
+}
+
+.items-table[b-a4e17b8fjf] {
+    background: transparent !important;
+}
+
+[b-a4e17b8fjf] .items-table .mud-table-head {
+    background: #f8fafc !important;
+}
+
+[b-a4e17b8fjf] .items-table .mud-table-head .mud-th {
+    font-weight: 700;
+    color: #475569;
+    font-size: 0.85rem;
+    padding: 16px;
+}
+
+[b-a4e17b8fjf] .items-table .mud-table-cell {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.item-info .name[b-a4e17b8fjf] {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.category-badge[b-a4e17b8fjf] {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-block;
+    letter-spacing: 0.3px;
+}
+
+.qty[b-a4e17b8fjf] {
+    font-weight: 700;
+    color: #4f46e5;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.amount[b-a4e17b8fjf] {
+    font-weight: 800;
+    color: #1e293b;
+    font-family: 'Outfit', sans-serif;
+}
+
+.dialog-footer[b-a4e17b8fjf] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
+}
+
+.total-stats[b-a4e17b8fjf] {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #f1f5f9;
+    padding: 8px 16px;
+    border-radius: 12px;
+}
+
+.total-stats .stat[b-a4e17b8fjf] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.total-stats .label[b-a4e17b8fjf] {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.total-stats .value[b-a4e17b8fjf] {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.total-stats .value.primary[b-a4e17b8fjf] {
+    color: #4f46e5;
+}
+
+.total-stats .divider[b-a4e17b8fjf] {
+    width: 1px;
+    height: 20px;
+    background: #cbd5e1;
+}
+
+.close-btn[b-a4e17b8fjf] {
+    border-radius: 10px;
+    text-transform: none;
+    font-weight: 700;
+    padding: 8px 24px;
+}
+
+.glass[b-a4e17b8fjf] {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+}

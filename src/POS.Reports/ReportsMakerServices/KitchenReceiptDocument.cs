@@ -80,6 +80,29 @@ public class KitchenReceiptDocument : IDocument
                 text.AlignCenter();
             });
 
+        if (receipt.IsVoid)
+        {
+            column.Item()
+                .PaddingTop(6)
+                .Border(2)
+                .BorderColor(Colors.Red.Medium)
+                .AlignCenter()
+                .Text(text =>
+                {
+                    text.Span("X  ملغي  X")
+                        .Bold()
+                        .FontSize(24)
+                        .FontColor(Colors.Red.Medium);
+                });
+            
+            column.Item()
+                .AlignCenter()
+                .Text("VOID")
+                .Bold()
+                .FontSize(14)
+                .FontColor(Colors.Red.Medium);
+        }
+
         if (receipt.ParentOrderId.HasValue)
         {
             column.Item()
@@ -188,17 +211,27 @@ public class KitchenReceiptDocument : IDocument
 
                 foreach (TableItem item in groupedItems)
                 {
-                    table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
-                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+                    table.Cell().Element(CellStyle).AlignRight().Text(text => {
+                        text.Span(item.Name);
+                        if (item.IsVoided == true || receipt.IsVoid) {
+                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
+                        }
+                    });
+                    
+                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString("0.##"));
 
                     if (item.Attributes?.Any() == true)
                     {
-                        foreach (var attribute in item.Attributes)
+                        var groupedAttrs = item.Attributes
+                            .GroupBy(a => a.Name)
+                            .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
+
+                        foreach (var attr in groupedAttrs)
                         {
                             table.Cell().ColumnSpan(2)
                                 .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text(attribute.Name + "<==")
+                                .Text($"{attr.Name} {(attr.Count > 1 ? $"({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }

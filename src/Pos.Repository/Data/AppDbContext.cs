@@ -51,4 +51,6 @@ public class AppDbContext : DbContext
     public DbSet<POS.Core.Entities.ReservationEntity.Reservation> Reservations { get; set; }
     public DbSet<PosFeatureSetting> PosFeatureSettings { get; set; }
     public DbSet<POS.Core.Entities.ComplaintEntity.Complaint> Complaints { get; set; }
+    public DbSet<OrderVoid> OrderVoids { get; set; }
+    public DbSet<OrderVoidItem> OrderVoidItems { get; set; }
 }

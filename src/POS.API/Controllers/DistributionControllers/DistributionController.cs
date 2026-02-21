@@ -104,13 +104,16 @@ public class DistributionController : BaseApiController
 
         try
         {
-            var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.OrderID == orderDto.OrderId);
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == orderDto.Id);
             if (order == null)
             {
                 return NotFound(new ApiResponse(404, "Order not found."));
             }
 
-            order.OrderState = OrderStates.Completed;
+            if (order.OrderState != OrderStates.Voided)
+            {
+                order.OrderState = (order.VoidAmount ?? 0) > 0 ? OrderStates.Voided : OrderStates.Completed;
+            }
             order.BackTime = orderDto.BackTime ?? DateTime.Now;
             order.ClosingTime = DateTime.Now;
             order.CollectorID = orderDto.CollectorID;
@@ -122,7 +125,7 @@ public class DistributionController : BaseApiController
             await transaction.CommitAsync();
 
             // Update orderDto for SignalR
-            orderDto.OrderState = OrderStates.Completed.ToString();
+            orderDto.OrderState = order.OrderState.ToString();
             orderDto.ClosingTime = order.ClosingTime;
             orderDto.BackTime = order.BackTime;
             orderDto.CollectorID = order.CollectorID;
@@ -144,19 +147,19 @@ public class DistributionController : BaseApiController
         }
     }
 
-    [HttpPut("un-dispatch/{orderId}")]
-    public async Task<IActionResult> UnDispatchOrder(int orderId)
+    [HttpPut("un-dispatch/{id}")]
+    public async Task<IActionResult> UnDispatchOrder(int id)
     {
-        var result = await _distributionService.UnDispatchOrderAsync(orderId);
+        var result = await _distributionService.UnDispatchOrderAsync(id);
 
         if (!result)
             return BadRequest(new ApiResponse(500, "Failed to un-dispatch order."));
 
         // Notify via SignalR (we need minimal order info or just the ID)
-        await _hubContext.Clients.All.SendAsync("ReceiveOrderUnDispatched", orderId);
+        await _hubContext.Clients.All.SendAsync("ReceiveOrderUnDispatched", id);
 
         // Fetch order to sync with Call Center
-        var order = await _orderService.GetOrderByOrderIdAsync(orderId);
+        var order = await _orderService.GetOrderByIdAsync(id);
         if (order != null)
         {
             var orderDto = _mapper.Map<OrderDto>(order);
@@ -173,7 +176,10 @@ public class DistributionController : BaseApiController
         
         foreach (var order in orders)
         {
-            order.OrderState = OrderStates.Completed;
+            if (order.OrderState != OrderStates.Voided)
+            {
+                order.OrderState = (order.VoidAmount ?? 0) > 0 ? OrderStates.Voided : OrderStates.Completed;
+            }
             order.ClosingTime = DateTime.Now;
             _dbContext.Orders.Update(order);
         }
@@ -198,7 +204,10 @@ public class DistributionController : BaseApiController
 
         foreach (var order in dispatchedOrders)
         {
-            order.OrderState = OrderStates.Completed;
+            if (order.OrderState != OrderStates.Voided)
+            {
+                order.OrderState = (order.VoidAmount ?? 0) > 0 ? OrderStates.Voided : OrderStates.Completed;
+            }
             order.ClosingTime = DateTime.Now;
             _dbContext.Orders.Update(order);
         }
@@ -259,19 +268,7 @@ public class DistributionController : BaseApiController
         return Ok(settlement);
     }
 
-    [HttpDelete("voidOrder/{orderId}")]
-    public async Task<ActionResult<bool>> VoidOrder(int orderId, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
-    {
-        var result = await _orderService.VoidOrderAsync(orderId, reason, voidBy, voidByName);
-        return Ok(result);
-    }
-
-    [HttpPost("voidItems/{orderId}")]
-    public async Task<ActionResult<bool>> VoidItems(int orderId, [FromBody] List<OrderItemVoidDto> itemsToVoid, [FromQuery] string reason, [FromQuery] string voidBy, [FromQuery] string voidByName)
-    {
-        var result = await _orderService.VoidOrderItemsAsync(orderId, itemsToVoid, reason, voidBy, voidByName);
-        return Ok(result);
-    }
+   
 
     [HttpGet("voided-orders")]
     public async Task<ActionResult<List<OrderDto>>> GetVoidedOrders([FromQuery] DateTime posDate)

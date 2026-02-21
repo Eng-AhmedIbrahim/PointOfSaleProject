@@ -40,8 +40,22 @@ public partial class DineIn
         if (key is int)
         {
             _commonProperties.TableId = Int32.Parse(key.ToString()!);
-            _commonProperties!.CurrentDineInOrder!.RelatedTableId = Int32.Parse(key.ToString()!);
-            _commonProperties!.CurrentDineInOrder!.RelatedTableName = keyName;
+            
+            if (_commonProperties.CurrentDineInOrder == null)
+            {
+                _commonProperties.CurrentDineInOrder = new DineInOrderDetails
+                {
+                    BasicOrderDetails = new BlazorBase.Models.OrderDetails
+                    {
+                        CashierName = _commonProperties.CurrentUser,
+                        OrderDiscount = new()
+                    }
+                };
+            }
+
+            _commonProperties.CurrentDineInOrder.RelatedTableId = Int32.Parse(key.ToString()!);
+            _commonProperties.CurrentDineInOrder.RelatedTableName = keyName;
+            
             if (int.TryParse(key.ToString(), out int keyInt) && _commonProperties.DineInOrdersDetails?.TryGetValue(keyInt, out List<DineInOrderDetails>? orders) == true && orders.Any())
             {
                 if (orders.Count > 1)
@@ -63,8 +77,16 @@ public partial class DineIn
         }
         if (key is string)
         {
-            _commonProperties!.CurrentDineInOrder!.CaptainId = key.ToString()!;
-            _commonProperties!.CurrentDineInOrder!.CaptainName = keyName;
+            if (_commonProperties.CurrentDineInOrder != null)
+            {
+                _commonProperties.CurrentDineInOrder.CaptainId = key.ToString()!;
+                _commonProperties.CurrentDineInOrder.CaptainName = keyName;
+            }
+            
+            if (_commonProperties.DineInOrderValues != null)
+            {
+                _commonProperties.DineInOrderValues.CaptainName = keyName;
+            }
         }
 
         stateUpdater(stateDict, key);

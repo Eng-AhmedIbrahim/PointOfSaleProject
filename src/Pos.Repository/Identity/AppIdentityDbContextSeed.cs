@@ -166,41 +166,108 @@ public static class AppIdentityDbContextSeed
         // Define other roles with comprehensive permissions
         var rolePermissions = new Dictionary<string, List<string>>
         {
-            { "مدير فرع", new List<string> { 
+            { "مدير فرع", new List<string> {
+                // Screens
                 "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", "CanAccessDistribution",
-                "CanAccessOrders", "CanAccessReport", "CanAccessSummary", "CanAccessSettings",
+                "CanAccessOrders", "CanAccessReport", "CanAccessSummary", "CanAccessSettings", "CanAccessAccounts",
+                // POS Actions
                 "CanAccessVoidOrder", "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
                 "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
+                // Admin
                 "CanAccessUsers", "CanAccessRoles", "CanAccessPosSettings", "CanAccessPrintingSettings",
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                // Footer Buttons
+                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
+                "CanAccessFooterQuickPaymentBtn", "CanAccessFooterMealsBtn", "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
+                // DineIn Buttons
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
+                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInTransferBtn",
+                "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
+                // Delivery Buttons
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
                 "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
-                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn"
+                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn",
+                // All Orders Buttons
+                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn", "CanAccessAllOrdersVoidBtn",
+                // Distribution
+                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn", "CanAccessDistributionVoidBtn",
+                "CanAccessDistributionPrintBtn", "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
+                "CanAccessDistributionVoidHistoryBtn", "CanAccessDistributionDriverSettlementBtn", "CanAccessDistributionViewDriversBtn",
+                // Accounts
+                "CanAccessAccountsViewBtn", "CanAccessAccountsPrintBtn",
+                // Summary
+                "CanAccessSummaryViewDetailsBtn", "CanAccessSummaryPrintBtn"
             } },
-            { "مساعد مدير", new List<string> { 
-                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", 
-                "CanAccessOrders", "CanAccessSummary", "CanAccessReport",
+            { "مساعد مدير", new List<string> {
+                // Screens
+                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway",
+                "CanAccessOrders", "CanAccessSummary", "CanAccessReport", "CanAccessAccounts",
+                // POS Actions
                 "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
                 "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
-                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn"
+                // Footer Buttons
+                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
+                "CanAccessFooterQuickPaymentBtn", "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
+                // DineIn Buttons
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
+                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInTransferBtn",
+                "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
+                // Delivery Buttons
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn",
+                // All Orders Buttons
+                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn",
+                // Distribution
+                "CanAccessDistributionViewBtn", "CanAccessDistributionPrintBtn", "CanAccessDistributionCollectBtn",
+                "CanAccessDistributionViewDriversBtn",
+                // Accounts
+                "CanAccessAccountsViewBtn", "CanAccessAccountsPrintBtn"
             } },
-            { "كاشير", new List<string> { 
+            { "كاشير", new List<string> {
+                // Screens
                 "CanAccessTakeAway", "CanAccessDelivery", "CanAccessTables",
-                "CanAccessOrders", "CanAccessDiscount", "CanAccessPrintReceipt", 
-                "CanAccessCloseOrder", "CanAccessWaiting",
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
-                "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn"
+                "CanAccessOrders", "CanAccessWaiting",
+                // POS Actions
+                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder",
+                // Footer Buttons
+                "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
+                "CanAccessFooterQuickPaymentBtn", "CanAccessFooterWaitingBtn",
+                // DineIn Buttons
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
+                "CanAccessDineInGuestCountBtn",
+                // Delivery Buttons
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
+                "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn",
+                // All Orders Buttons
+                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn"
             } },
-            { "كابتن صاله", new List<string> { 
-                "CanAccessTables", "CanAccessOrders", "CanAccessPrintReceipt",
-                "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessWaiting"
+            { "كابتن صاله", new List<string> {
+                // Screens
+                "CanAccessTables", "CanAccessOrders",
+                // POS Actions
+                "CanAccessPrintReceipt", "CanAccessTransferTable", "CanAccessMergeTable",
+                // Footer Buttons
+                "CanAccessFooterCustomerDataBtn", "CanAccessFooterWaitingBtn",
+                // DineIn Buttons
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
+                "CanAccessDineInTransferBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInGuestCountBtn"
             } },
-            { "Call Center", new List<string> { 
+            { "Call Center", new List<string> {
+                // Screens
                 "CanAccessDelivery", "CanAccessDistribution", "CanAccessOrders",
+                // POS Actions
                 "CanAccessPrintReceipt", "CanAccessCloseOrder",
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn", 
+                // Footer Buttons
+                "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
+                // Delivery Buttons
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
                 "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
-                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn"
+                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn",
+                // All Orders Buttons
+                "CanAccessAllOrdersViewBtn",
+                // Distribution
+                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn", "CanAccessDistributionVoidBtn",
+                "CanAccessDistributionPrintBtn", "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
+                "CanAccessDistributionVoidHistoryBtn", "CanAccessDistributionViewDriversBtn"
             } }
         };
 

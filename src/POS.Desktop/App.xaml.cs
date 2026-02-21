@@ -22,6 +22,8 @@ using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.DineInOrderServices;
 using BlazorBase.ERPFrontServices.OrderTrackServices;
 using BlazorBase.ERPFrontServices.ComplaintServices;
+using BlazorBase.ERPFrontServices.VoidServices;
+using BlazorBase.ERPFrontServices.ReportingServices;
 using BlazorBase.API;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -231,6 +233,13 @@ public partial class App : Application
                 AllowAutoRedirect = true
             });
 
+        // Register default HttpClient as well for services that don't specify a name
+        services.AddScoped(sp => 
+        {
+            var factory = sp.GetRequiredService<IHttpClientFactory>();
+            return factory.CreateClient(configuration["ApiSettings:ApiName"]!);
+        });
+
         // Application services
         services.AddSingleton<CommonProperties>();
         services.AddSingleton<HandelDeliveryInvocation>();
@@ -252,6 +261,8 @@ public partial class App : Application
         services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
         services.AddScoped<IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
         services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
+        services.AddScoped<IVoidErpService, VoidErpService>();
+        services.AddScoped<IReportingErpService, ReportingErpService>();
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));
@@ -295,7 +306,18 @@ public partial class App : Application
             foreach (var policy in Permissions.RolePermissions)
             {
                 options.AddPolicy(policy.Key, policyBuilder =>
-                    policyBuilder.RequireClaim("Permission", policy.Value));
+                    policyBuilder.RequireAssertion(context =>
+                    {
+                        var hasPermission = context.User.HasClaim(c => 
+                            c.Type.Equals("Permission", StringComparison.OrdinalIgnoreCase) && 
+                            c.Value == policy.Value);
+                        
+                        var isDenied = context.User.HasClaim(c => 
+                            c.Type.Equals("deny", StringComparison.OrdinalIgnoreCase) && 
+                            c.Value == policy.Value);
+
+                        return hasPermission && !isDenied;
+                    }));
             }
         });
     }

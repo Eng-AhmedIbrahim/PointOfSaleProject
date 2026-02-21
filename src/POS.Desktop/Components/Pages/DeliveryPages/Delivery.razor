@@ -228,7 +228,7 @@
 
                     <RowTemplate Context="order">
                         <MudTd DataLabel="@Localizer["OrderId"]">
-                            <MudText Typo="Typo.body2" Style="font-weight: 700;">#@order.Id</MudText>
+                            <MudText Typo="Typo.body2" Style="font-weight: 700;">#@order.OrderId</MudText>
                         </MudTd>
                         <MudTd DataLabel="@Localizer["Date"]">
                             <MudText Typo="Typo.body2">@order.OrderDate.ToString("dd/MM/yyyy")</MudText>
@@ -297,7 +297,8 @@
     // Customer Order Model
     public class CustomerOrder
     {
-        public int Id { get; set; }
+        public int Id { get; set; } // Database ID
+        public int OrderId { get; set; } // Sequence number for display
         public DateTime OrderDate { get; set; }
         public decimal Total { get; set; }
         public string Status { get; set; } = string.Empty;
@@ -382,7 +383,8 @@
                 {
                     _orders = client.Last10Orders.Select(o => new CustomerOrder
                     {
-                        Id = o.OrderId,
+                        Id = o.Id,
+                        OrderId = o.OrderId,
                         OrderDate = o.OrderDate ?? DateTime.MinValue,
                         Total = o.GrandTotal ?? 0,
                         Status = o.OrderState ?? "Pending",

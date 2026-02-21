@@ -93,7 +93,7 @@ public class DeliveryCustomerController : BaseApiController
             if (activeOrderSummary != null)
             {
                 // Fetch full order details separately since summary doesn't have details
-                var fullActiveOrder = await _orderService.GetOrderByOrderIdAsync(activeOrderSummary.OrderID);
+                var fullActiveOrder = await _orderService.GetOrderByIdAsync(activeOrderSummary.Id);
                 if (fullActiveOrder != null)
                 {
                     customerDto.ActiveOrder = _mapper.Map<OrderDto>(fullActiveOrder);

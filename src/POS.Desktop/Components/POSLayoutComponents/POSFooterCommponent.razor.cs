@@ -6,10 +6,14 @@ namespace POS.Desktop.Components.POSLayoutComponents;
 
 public partial class POSFooterCommponent : IDisposable
 {
-    private bool canAccessDiscount;
-    private bool canAccessMeals;
-    private bool canAccessWaiting;
-    private bool canAccessSettings;
+    private bool _canFooterDiscount;
+    private bool _canFooterCustomerData;
+    private bool _canFooterPaymentMethod;
+    private bool _canFooterQuickPayment;
+    private bool _canFooterMeals;
+    private bool _canFooterWaiting;
+    private bool _canFooterSettings;
+    private bool _canPosSettingsFeature;
 
     [Inject] public required LocalizationService LocalizationService { get; set; }
     private bool _drawerOpen;
@@ -30,17 +34,17 @@ public partial class POSFooterCommponent : IDisposable
 
         if (user.Identity is not { IsAuthenticated: true })
         {
-            canAccessDiscount = false;
-            canAccessMeals = false;
-            canAccessWaiting = false;
-            canAccessSettings = false;
             return;
         }
 
-        canAccessDiscount = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDiscount")).Succeeded;
-        canAccessMeals = (await AuthorizationService.AuthorizeAsync(user, "CanAccessMeals")).Succeeded;
-        canAccessWaiting = (await AuthorizationService.AuthorizeAsync(user, "CanAccessWaiting")).Succeeded;
-        canAccessSettings = (await AuthorizationService.AuthorizeAsync(user, "CanAccessSettings")).Succeeded;
+        _canFooterDiscount       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterDiscountBtn")).Succeeded;
+        _canFooterCustomerData   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterCustomerDataBtn")).Succeeded;
+        _canFooterPaymentMethod  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterPaymentMethodBtn")).Succeeded;
+        _canFooterQuickPayment   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterQuickPaymentBtn")).Succeeded;
+        _canFooterMeals          = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterMealsBtn")).Succeeded;
+        _canFooterWaiting        = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterWaitingBtn")).Succeeded;
+        _canFooterSettings       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterSettingsBtn")).Succeeded;
+        _canPosSettingsFeature   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
     }
 
     private async Task OpenOrderDiscountDialog()

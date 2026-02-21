@@ -6,12 +6,14 @@ using POS.Core.Services.Contract.PosFeatureServices;
 using POS.Services.PosFeatureServices;
 using POS.Core.Services.Contract.PrintingSettings;
 using POS.Services.PrintingSettings;
-using POS.Core.Services.Contract.OrderApiServices;
 using POS.Services.OrderApiServices;
 using POS.Services.DistributionServices;
-using POS.Core.Services.Contract.DistributionServices;
+using POS.Core.Services.Contract.VoidServices;
+using POS.Services.VoidServices;
 using POS.Core.Services.Contract.ComplaintServices;
 using POS.Services.ComplaintServices;
+using POS.Core.Services.Contract.ReportingServices;
+using POS.Services.ReportingServices;
 
 namespace POS.API.Extensions;
 
@@ -45,6 +47,8 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(IDeliveryOrderApiServices), typeof(DeliveryOrderApiServices));
         services.AddScoped(typeof(IDistributionServices), typeof(DistributionServices));
         services.AddScoped(typeof(IComplaintService), typeof(ComplaintService));
+        services.AddScoped<IVoidService, VoidService>();
+        services.AddScoped<IReportingService, ReportingService>();
 
 
         services.AddAutoMapper(typeof(MappingProfiles));

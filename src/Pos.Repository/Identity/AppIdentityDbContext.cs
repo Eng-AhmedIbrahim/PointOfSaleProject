@@ -1,6 +1,4 @@
-﻿using POS.Core.Entities.UserSettings;
-
-namespace Pos.Repository.Identity;
+﻿namespace Pos.Repository.Identity;
 
 public class AppIdentityDbContext : IdentityDbContext<AppUser, ApplicationRole, string>
 {
@@ -26,8 +24,11 @@ public class AppIdentityDbContext : IdentityDbContext<AppUser, ApplicationRole, 
             .WithMany(p => p.RolePermissions)
             .HasForeignKey(rp => rp.PermissionId);
 
-        builder.Entity<AppUser>().Property(u => u.ArabicName).HasColumnType("nvarchar").HasMaxLength(100);
-        builder.Entity<AppUser>().Property(u => u.DisplayName).HasColumnType("nvarchar").HasMaxLength(100);
-        builder.Entity<AppUser>().Property(u => u.ImageUrl).HasColumnType("nvarchar").HasMaxLength(100);
+        builder.Entity<AppUser>().Property(u => u.ArabicName)
+            .HasColumnType("nvarchar").HasMaxLength(100);
+        builder.Entity<AppUser>().Property(u => u.DisplayName)
+            .HasColumnType("nvarchar").HasMaxLength(100);
+        builder.Entity<AppUser>().Property(u => u.ImageUrl)
+            .HasColumnType("nvarchar").HasMaxLength(100);
     }
 }

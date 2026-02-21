@@ -12,4 +12,11 @@ public abstract class ArabicConstStrings
     public const string From = "الكاشير";
     public const string Table = "طاولة";
     public const string SubTotal = "اجمالي فرعي";
+    public const string SalesSummary = "ملخص المبيعات";
+    public const string SalesItems = "بيان الأصناف";
+    public const string Cash = "نقدي";
+    public const string Credit = "فيزا";
+    public const string Category = "القسم";
+    public const string Date = "التاريخ";
+    public const string Voids = "مرتجع / فويد";
 }

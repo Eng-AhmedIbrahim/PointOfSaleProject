@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using POS.Core.Entities;
 using POS.Core.Entities.DineIn;
 using POS.Core.Entities.OrderEntity;
@@ -216,7 +217,9 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.KitchenTypeId : null))
             .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.MenuSalesItem != null ? src.MenuSalesItem.PrintInBackupReceipt : null))
             .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.PrintInBackupReceipt : null))
-            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.OrderItemAttributes.Select(a => new AttributeDto { Id = a.AttributeItemId, Name = a.AttributeName })));
+            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.OrderItemAttributes != null 
+                ? src.OrderItemAttributes.Select(a => new POS.Contract.Models.AttributeDto { Id = a.AttributeItemId, Name = a.AttributeName }).ToList() 
+                : new List<POS.Contract.Models.AttributeDto>()));
 
         // New mappings for DineInOrder and OrderTrack
         CreateMap<OrderItemsDetails, OrderItemsDetailsDto>()

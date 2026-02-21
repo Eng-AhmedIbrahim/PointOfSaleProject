@@ -1,5 +1,5 @@
-﻿@inject LocalizationService Localizer
-@page "/waitingPage"
+﻿@page "/waitingPage"
+@inject LocalizationService Localizer
 @layout WaitingLayout
 @inject CommonProperties _commonProperties
 @inject NavigationManager _navigationManager
@@ -22,7 +22,6 @@
                                 <MudText Class="order-text">@Localizer["WaitingOrder"] @order.Id</MudText>
                             </MudNavLink>
                         }
-
                     </MudNavMenu>
                 </MudPaper>
             </MudGrid>

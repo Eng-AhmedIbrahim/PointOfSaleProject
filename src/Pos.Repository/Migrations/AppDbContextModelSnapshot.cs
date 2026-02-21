@@ -79,7 +79,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("KitchenTypeId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
@@ -155,7 +155,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Company", b =>
@@ -210,7 +210,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.ComplaintEntity.Complaint", b =>
@@ -263,7 +263,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Complaints", (string)null);
+                    b.ToTable("Complaints");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Customer.TakeawayCustomer", b =>
@@ -370,7 +370,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("DeliveryZoneId");
 
-                    b.ToTable("CustomerAddress", (string)null);
+                    b.ToTable("CustomerAddress");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCompanyInfo", b =>
@@ -401,7 +401,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCompanyInfo", (string)null);
+                    b.ToTable("DeliveryCompanyInfo");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerInfo", b =>
@@ -430,7 +430,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCustomerInfo", (string)null);
+                    b.ToTable("DeliveryCustomerInfo");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerTitle", b =>
@@ -448,7 +448,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCustomerTitle", (string)null);
+                    b.ToTable("DeliveryCustomerTitle");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryZone", b =>
@@ -601,7 +601,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TableId", "OrderState");
 
-                    b.ToTable("DineInOrders", (string)null);
+                    b.ToTable("DineInOrders");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.DineIn.Table", b =>
@@ -719,7 +719,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("RelatedMenuItemId");
 
-                    b.ToTable("AttributeItems", (string)null);
+                    b.ToTable("AttributeItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
@@ -739,7 +739,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
@@ -852,7 +852,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("KitchenTypeId");
 
-                    b.ToTable("MenuSalesItems", (string)null);
+                    b.ToTable("MenuSalesItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
@@ -874,7 +874,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("AttributeItemId");
 
-                    b.ToTable("OrderItemAttributes", (string)null);
+                    b.ToTable("OrderItemAttributes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
@@ -1038,7 +1038,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderItemDetailId");
 
-                    b.ToTable("OrderItemComments", (string)null);
+                    b.ToTable("OrderItemComments");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
@@ -1145,7 +1145,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrdersDetails", (string)null);
+                    b.ToTable("OrdersDetails");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderSetting", b =>
@@ -1219,7 +1219,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderSettings", (string)null);
+                    b.ToTable("OrderSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderTrack", b =>
@@ -1274,7 +1274,140 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderTracks", (string)null);
+                    b.ToTable("OrderTracks");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoid", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("DeliveryFeesAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("DeliveryFeesBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("DiscountAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("DiscountBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GrandTotalAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GrandTotalBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsFullVoid")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderStateAtVoid")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OrderType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("ServiceAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ServiceBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("SubtotalAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("SubtotalBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalVoidedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("VoidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VoidedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("VoidedByName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderVoids", (string)null);
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoidItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AmountAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountVoided")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OrderDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderVoidId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityAfter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityBefore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityVoided")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderDetailId");
+
+                    b.HasIndex("OrderVoidId");
+
+                    b.ToTable("OrderVoidItems", (string)null);
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
@@ -1608,7 +1741,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TakeawayCustomerPhone");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.PosFeatureSetting", b =>
@@ -1645,7 +1778,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PosFeatureSettings", (string)null);
+                    b.ToTable("PosFeatureSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.ReservationEntity.Reservation", b =>
@@ -1706,7 +1839,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TableId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Shift.ShiftHandover", b =>
@@ -1961,6 +2094,36 @@ namespace Pos.Repository.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoid", b =>
+                {
+                    b.HasOne("POS.Core.Entities.OrderEntity.Orders", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoidItem", b =>
+                {
+                    b.HasOne("POS.Core.Entities.OrderEntity.OrderItemsDetails", "OrderItem")
+                        .WithMany()
+                        .HasForeignKey("OrderDetailId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.OrderEntity.OrderVoid", "OrderVoid")
+                        .WithMany("VoidItems")
+                        .HasForeignKey("OrderVoidId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderItem");
+
+                    b.Navigation("OrderVoid");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>
                 {
                     b.HasOne("POS.Core.Entities.Delivery.DeliveryCompanyInfo", null)
@@ -2070,6 +2233,11 @@ namespace Pos.Repository.Migrations
                     b.Navigation("OrderItemAttributes");
 
                     b.Navigation("OrderItemComments");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoid", b =>
+                {
+                    b.Navigation("VoidItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.Orders", b =>

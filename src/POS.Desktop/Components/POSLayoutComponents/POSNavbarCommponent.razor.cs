@@ -110,6 +110,21 @@ public partial class POSNavbarCommponent : IDisposable
                     _commonProperties.CurrentPosMode = "DineIn";
                     break;
                 }
+            case "Accounts":
+                {
+                    _commonProperties.CurrentPosMode = "Accounts";
+                    break;
+                }
+            case "Summary":
+                {
+                    _commonProperties.CurrentPosMode = "Summary";
+                    break;
+                }
+            case "AllOrders":
+                {
+                    _commonProperties.CurrentPosMode = "AllOrders";
+                    break;
+                }
         }
         
         _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
@@ -120,6 +135,9 @@ public partial class POSNavbarCommponent : IDisposable
             "Delivery" => "/delivery",
             "Distribution" => "/distribution",
             "DineIn" => "/dinein",
+            "Accounts" => "/accounts",
+            "Summary" => "/summary",
+            "AllOrders" => "/all-orders",
             _ => "/pos"
         };
 

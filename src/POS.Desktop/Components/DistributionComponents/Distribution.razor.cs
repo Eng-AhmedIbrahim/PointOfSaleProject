@@ -1,17 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using POS.Contract.Dtos.OrderDtos;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Options;
-using BlazorBase.Models;
-using System.Threading;
-using BlazorBase.ERPFrontServices.DistributionServices;
-using BlazorBase;
-using ERPFront.HubSettings;
-using MudBlazor;
-using BlazorBase.ERPFrontServices.CartServices;
-using ERPFront.Models;
+﻿using BlazorBase.ERPFrontServices.DistributionServices;
 using POS.Desktop.Components.DineInComponents;
-using BlazorBase.ERPFrontServices.AppDateServices;
 
 namespace POS.Desktop.Components.DistributionComponents;
 
@@ -25,18 +13,33 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     [Inject] public CartService _cartService { get; set; } = default!;
     [Inject] public ISnackbar Snackbar { get; set; } = default!;
     [Inject] public IDialogService _dialogService { get; set; } = default!;
-    [Inject] public BlazorBase.ERPFrontServices.PrintOrderServices.IPrintOrderService _printOrderService { get; set; } = default!;
+    [Inject] public IPrintOrderService _printOrderService { get; set; } = default!;
     [Inject] public IAppDateService _appDateService { get; set; } = default!;
+    [Inject] public IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] public AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+
+    // Permission flags
+    private bool _canAssignDriver;
+    private bool _canViewOrder;
+    private bool _canVoidOrder;
+    private bool _canPrintOrder;
+    private bool _canUnDispatch;
+    private bool _canCollect;
+    private bool _canViewVoidHistory;
+    private bool _canViewDriverSettlement;
+    private bool _canViewDrivers;
+    private bool _canPosSettingsFeature;
+
 
     private async Task ShowDriverSettlement()
     {
         var appDate = await _appDateService.GetAppDate();
         var settlements = await _distributionService.GetDriverSettlement(appDate.PosDate);
-        
+
         var parameters = new DialogParameters<DriversSettlementDialog>();
         parameters.Add("Settlements", settlements);
         parameters.Add("PosDate", appDate.PosDate);
-        
+
         await _dialogService.ShowAsync<DriversSettlementDialog>(Localizer["Distribution_DriverSettlement"], parameters);
     }
 
@@ -57,7 +60,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private bool SelectAllOrders = false;
     private bool showAssigned = false;
 
-    private IEnumerable<OrderDto> SelectedOrders => FilteredOrders.Where(o => SelectedOrderIds.Contains(o.OrderId));
+    private IEnumerable<OrderDto> SelectedOrders => FilteredOrders.Where(o => SelectedOrderIds.Contains(o.Id));
 
     private string? _selectedDriverId;
     private List<OrderDto> BusyDrivers => Orders.Where(o => !string.IsNullOrEmpty(o.DriverID))
@@ -83,6 +86,23 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        // Load permissions
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            _canAssignDriver          = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionAssignBtn")).Succeeded;
+            _canViewOrder             = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewBtn")).Succeeded;
+            _canVoidOrder             = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidBtn")).Succeeded;
+            _canPrintOrder            = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionPrintBtn")).Succeeded;
+            _canUnDispatch            = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionUnDispatchBtn")).Succeeded;
+            _canCollect               = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionCollectBtn")).Succeeded;
+            _canViewVoidHistory       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidHistoryBtn")).Succeeded;
+            _canViewDriverSettlement  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionDriverSettlementBtn")).Succeeded;
+            _canViewDrivers           = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewDriversBtn")).Succeeded;
+            _canPosSettingsFeature    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
+        }
 
         await ConnectToExternalHubs();
 
@@ -126,7 +146,8 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             connection.On<OrderDto>("ReceiveNewDeliveryOrder", orderDto =>
             {
                 Console.WriteLine($"New external order from {hubUrl}: {orderDto.OrderId}");
-                InvokeAsync(() => {
+                InvokeAsync(() =>
+                {
                     AddNewDeliveryOrder(orderDto);
                     UpdateDriverStatus();
                 });
@@ -135,17 +156,19 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             connection.On<OrderDto>("ReceiveOrderDispatched", orderDto =>
             {
                 Console.WriteLine($"Order dispatched: {orderDto.OrderId} to driver {orderDto.DriverName}");
-                InvokeAsync(() => {
+                InvokeAsync(() =>
+                {
                     UpdateOrderStatus(orderDto);
                     UpdateDriverStatus();
                 });
             });
 
-            connection.On<int>("ReceiveOrderUnDispatched", orderId =>
+            connection.On<int>("ReceiveOrderUnDispatched", id =>
             {
-                Console.WriteLine($"Order un-dispatched: {orderId}");
-                InvokeAsync(() => {
-                    var order = Orders.FirstOrDefault(o => o.OrderId == orderId);
+                Console.WriteLine($"Order un-dispatched: {id}");
+                InvokeAsync(() =>
+                {
+                    var order = Orders.FirstOrDefault(o => o.Id == id);
                     if (order != null)
                     {
                         order.DriverID = null;
@@ -160,9 +183,10 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
             connection.On<OrderDto>("ReceiveOrderCollected", orderDto =>
             {
-                Console.WriteLine($"Order collected: {orderDto.OrderId}");
-                InvokeAsync(() => {
-                    RemoveOrder(orderDto.OrderId);
+                Console.WriteLine($"Order collected: {orderDto.Id}");
+                InvokeAsync(() =>
+                {
+                    RemoveOrder(orderDto.Id);
                     UpdateDriverStatus();
                 });
             });
@@ -182,7 +206,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void AddNewDeliveryOrder(OrderDto newOrder)
     {
-        if (!Orders.Any(o => o.OrderId == newOrder.OrderId))
+        if (!Orders.Any(o => o.Id == newOrder.Id))
         {
             if (string.IsNullOrEmpty(newOrder.DriverName))
                 newOrder.DriverName = null;
@@ -195,7 +219,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void UpdateOrderStatus(OrderDto updatedOrder)
     {
-        var existingOrder = Orders.FirstOrDefault(o => o.OrderId == updatedOrder.OrderId);
+        var existingOrder = Orders.FirstOrDefault(o => o.Id == updatedOrder.Id);
         if (existingOrder != null)
         {
             existingOrder.DriverName = updatedOrder.DriverName;
@@ -208,16 +232,16 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         }
     }
 
-    private void RemoveOrder(int orderId)
+    private void RemoveOrder(int id)
     {
-        Orders.RemoveAll(o => o.OrderId == orderId);
+        Orders.RemoveAll(o => o.Id == id);
         UpdateDriverStatus();
         InvokeAsync(StateHasChanged);
     }
 
     private void UpdateDriverStatus()
     {
-        try 
+        try
         {
             var busyDriverIds = Orders
                 .Where(o => !string.IsNullOrEmpty(o.DriverID))
@@ -244,7 +268,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void OnOrderCollectedHandler(OrderDto collectedOrder)
     {
-        Orders.RemoveAll(o => o.OrderId == collectedOrder.OrderId);
+        Orders.RemoveAll(o => o.Id == collectedOrder.Id);
         StateHasChanged();
     }
 
@@ -252,7 +276,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     {
         SelectAllOrders = value;
         if (value)
-            SelectedOrderIds = new HashSet<int>(FilteredOrders.Select(o => o.OrderId));
+            SelectedOrderIds = new HashSet<int>(FilteredOrders.Select(o => o.Id));
         else
             SelectedOrderIds.Clear();
     }
@@ -260,9 +284,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private void ToggleOrderSelection(OrderDto order, bool value)
     {
         if (value)
-            SelectedOrderIds.Add(order.OrderId);
+            SelectedOrderIds.Add(order.Id);
         else
-            SelectedOrderIds.Remove(order.OrderId);
+            SelectedOrderIds.Remove(order.Id);
 
         SelectAllOrders = SelectedOrderIds.Count == FilteredOrders.Count() && FilteredOrders.Any();
     }
@@ -298,9 +322,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         if (string.IsNullOrEmpty(driverId)) return;
 
         var ordersToCollect = Orders.Where(o => o.DriverID == driverId && o.OrderState == "Dispatched" || o.OrderState == "Delivering").ToList();
-        if(!ordersToCollect.Any())
+        if (!ordersToCollect.Any())
         {
-             ordersToCollect = Orders.Where(o => o.DriverID == driverId).ToList();
+            ordersToCollect = Orders.Where(o => o.DriverID == driverId).ToList();
         }
 
         foreach (var order in ordersToCollect)
@@ -328,7 +352,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         Orders.Clear();
         foreach (var order in orders)
             AddNewDeliveryOrder(order);
-        
+
         SelectedOrderIds.Clear();
         SelectAllOrders = false;
         showDriversDialog = false;
@@ -339,7 +363,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private async Task UnDispatchOrder(OrderDto order)
     {
-        var result = await _distributionService.UnDispatchOrder(order.OrderId);
+        var result = await _distributionService.UnDispatchOrder(order.Id);
         if (result)
         {
             order.DriverID = null;
@@ -407,7 +431,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private bool IsVoidDisabled(OrderDto order)
     {
-        if (!_dispatcherSettings.Value.AllowDeliveryVoidAtBranch)
+        if (!_dispatcherSettings.Value.AllowDeliveryVoidFromBranch)
             return true;
 
         if (order.OrderState == "Dispatched" || order.OrderState == "Delivering")
@@ -426,31 +450,22 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private async Task VoidOrder(OrderDto order)
     {
         var parameters = new DialogParameters<VoidOrderDialog>();
-        parameters.Add(x => x.OrderId, order.OrderId);
-        parameters.Add(x => x.IsDistribution, true);
+        parameters.Add(x => x.OrderId, order.Id);
+        parameters.Add(x => x.IsDistribution, order.OrderState == "Assigned" ? false : true);
         parameters.Add(x => x.IsDineIn, false);
 
-        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false };
         var dialog = await _dialogService.ShowAsync<VoidOrderDialog>(Localizer["Distribution_VoidOrderTitle"], parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled)
-        {
+        if (!result!.Canceled)
             await RefreshData();
-        }
     }
 
     private async Task ShowVoidedOrders()
     {
-        var appDate = await _appDateService.GetAppDate();
-        var voidedOrders = await _distributionService.GetVoidedOrders(appDate.PosDate);
-
-        var parameters = new DialogParameters<VoidedOrdersDialog>();
-        parameters.Add(x => x.VoidedOrders, voidedOrders);
-        parameters.Add(x => x.PosDate, appDate.PosDate);
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
-        await _dialogService.ShowAsync<VoidedOrdersDialog>(Localizer["Distribution_VoidHistory"], parameters, options);
+        var options = new DialogOptions { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, CloseButton = true };
+        await _dialogService.ShowAsync<VoidedOrdersDialog>(Localizer["Distribution_VoidHistory"], options);
     }
 
     private async Task ViewOrder(OrderDto context)

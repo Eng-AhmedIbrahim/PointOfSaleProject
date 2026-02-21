@@ -5,6 +5,36 @@ namespace POS.Desktop.Components.DeliveryComponent;
 
 public partial class DeliveryButtons
 {
+    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    private bool _canOrder;
+    private bool _canAddNew;
+    private bool _canClear;
+    private bool _canComplaints;
+    private bool _canSearch;
+    private bool _canBranchMgmt;
+    private bool _canDistribution;
+    private bool _canToggleDir;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            _canOrder        = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryOrderBtn")).Succeeded;
+            _canAddNew       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryAddNewBtn")).Succeeded;
+            _canClear        = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryClearBtn")).Succeeded;
+            _canComplaints   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryComplaintsBtn")).Succeeded;
+            _canSearch       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliverySearchBtn")).Succeeded;
+            _canBranchMgmt   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryBranchManagementBtn")).Succeeded;
+            _canDistribution = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryDistributionBtn")).Succeeded;
+            _canToggleDir    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryToggleDirectionBtn")).Succeeded;
+        }
+    }
+
     private async Task ShowComplaints()
     {
         if (string.IsNullOrEmpty(_commonProperties?.CustomerDetails?.CustomerName))
@@ -65,6 +95,28 @@ public partial class DeliveryButtons
 
     private async Task AddCustomer()
     {
+        if (string.IsNullOrWhiteSpace(_commonProperties.CustomerDetails?.CustomerName))
+        {
+            _snackbar.Add(Localizer["CustomerNameRequired"], Severity.Warning);
+            return;
+        }
+
+        if ((_commonProperties.CustomerDetails?.ZoneID ?? 0) == 0 && string.IsNullOrWhiteSpace(_commonProperties.CustomerDetails?.ZoneName))
+        {
+             _snackbar.Add(Localizer["ZoneRequired"], Severity.Warning);
+             return;
+        }
+
+        // Ensure Branch info is set if missing
+        if (string.IsNullOrEmpty(_commonProperties.CustomerDetails!.BranchName))
+        {
+            if (_commonProperties.BranchDetails != null)
+            {
+                 _commonProperties.CustomerDetails.BranchName = _commonProperties.BranchDetails.Name;
+                 _commonProperties.CustomerDetails.BranchId = _commonProperties.BranchDetails.Id;
+            }
+        }
+
         var client = await _deliveryServices.GetClientByPhoneNumberAsync(_commonProperties!.CustomerDetails!.FirstPhoneNumber!);
         if (client.Id == 0)
         {

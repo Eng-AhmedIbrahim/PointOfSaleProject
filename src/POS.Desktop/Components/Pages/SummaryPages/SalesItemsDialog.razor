@@ -1,0 +1,81 @@
+@inject LocalizationService Localizer
+@inject CommonProperties _commonProperties
+
+<MudDialog Class="sales-items-dialog glass">
+    <TitleContent>
+        <div class="dialog-header">
+            <MudIcon Icon="@Icons.Material.Filled.Analytics" Color="Color.Primary" Class="mr-2" />
+            <MudText Typo="Typo.h6">@Localizer["SalesItemsSummary"]</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Default" Size="Size.Small" />
+        </div>
+        <div class="search-bar">
+            <MudTextField @bind-Value="_searchText" 
+                         Placeholder="@Localizer["SearchItems"]" 
+                         Adornment="Adornment.Start" 
+                         AdornmentIcon="@Icons.Material.Filled.Search" 
+                         Variant="Variant.Outlined" 
+                         Margin="Margin.Dense"
+                         FullWidth="true" />
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="dialog-scroll-content">
+            <MudTable Items="FilteredItems" Hover="true" Dense="true" Elevation="0" FixedHeader="true" Height="400px" Class="items-table">
+                <HeaderContent>
+                    <MudTh>@Localizer["Item"]</MudTh>
+                    <MudTh>@Localizer["Category"]</MudTh>
+                    <MudTh>@Localizer["Qty"]</MudTh>
+                    <MudTh>@Localizer["Total"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <div class="item-info">
+                            <span class="name">@context.ItemName</span>
+                        </div>
+                    </MudTd>
+                    <MudTd>
+                        <span class="category-badge">@context.CategoryName</span>
+                    </MudTd>
+                    <MudTd>
+                        <span class="qty">@context.Quantity.ToString("0.##")</span>
+                    </MudTd>
+                    <MudTd>
+                        <span class="amount">@context.TotalAmount.ToString("0.##")</span>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <div class="dialog-footer">
+            <div class="total-stats">
+                <div class="stat">
+                    <span class="label">@Localizer["TotalQty"]</span>
+                    <span class="value">@Items.Sum(x => x.Quantity).ToString("0.##")</span>
+                </div>
+                <div class="divider"></div>
+                <div class="stat">
+                    <span class="label">@Localizer["TotalSales"]</span>
+                    <span class="value primary">@Items.Sum(x => x.TotalAmount).ToString("0.##")</span>
+                </div>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Close" Class="close-btn">@Localizer["Close"]</MudButton>
+        </div>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public List<SalesItemSummaryDto> Items { get; set; } = new();
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    private string _searchText = "";
+
+    private IEnumerable<SalesItemSummaryDto> FilteredItems => 
+        string.IsNullOrWhiteSpace(_searchText) 
+            ? Items 
+            : Items.Where(i => i.ItemName.Contains(_searchText, StringComparison.OrdinalIgnoreCase) || 
+                               i.CategoryName.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
+
+    private void Close() => MudDialog.Close();
+}

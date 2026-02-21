@@ -65,7 +65,18 @@ builder.Services.AddAuthorization(options =>
     foreach (var policy in Permissions.RolePermissions)
     {
         options.AddPolicy(policy.Key, policyBuilder =>
-            policyBuilder.RequireClaim("Permission", policy.Value));
+            policyBuilder.RequireAssertion(context =>
+            {
+                var hasPermission = context.User.HasClaim(c => 
+                    c.Type.Equals("Permission", StringComparison.OrdinalIgnoreCase) && 
+                    c.Value == policy.Value);
+                
+                var isDenied = context.User.HasClaim(c => 
+                    c.Type.Equals("deny", StringComparison.OrdinalIgnoreCase) && 
+                    c.Value == policy.Value);
+
+                return hasPermission && !isDenied;
+            }));
     }
 });
 

@@ -22,3 +22,5 @@ global using POS.Core.Entities.Customer;
 global using POS.Core.Entities.Shift;
 global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;
 global using POS.Core.Entities.Categorie;
+global using POS.Contract.Dtos.OrderDtos;
+global using POS.Contract.Dtos.DineIn;

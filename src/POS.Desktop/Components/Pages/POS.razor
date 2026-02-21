@@ -1,20 +1,18 @@
 @page "/pos"
-@using BlazorBase.ERPFrontServices.PrintOrderServices
-@using global::POS.Core.Services.Contract.PosFeatureServices
 @layout PosScreenLayout
 @inject CommonProperties _commonProperties
+@inject Section4ButtonsServices _section4ButtonsServices
+@inject CartService _cartService
+@inject HandelDeliveryInvocation _handelDeliveryInvocation
+@inject LocalizationService Localizer
 @inject ICategoryServices _categoryServices
 @inject IJSRuntime JsRuntime
 @inject ICustomizationSettingsService CustomizationSettingsService
-@inject Section4ButtonsServices _section4ButtonsServices
-@inject CartService _cartService
 @inject IAppDateService _appDate
 @inject IOrderSettingsService _orderSettingsService
-@inject HandelDeliveryInvocation _handelDeliveryInvocation
 @inject IBranchService _branchService
 @inject IPrintOrderService _printOrderService
 @inject IPosFeatureSettingsService _featureSettingsService
-@inject LocalizationService Localizer
 @inject IDialogService DialogService
 @implements IDisposable
 

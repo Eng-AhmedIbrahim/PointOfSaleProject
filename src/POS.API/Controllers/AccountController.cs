@@ -84,7 +84,7 @@ public class AccountController : BaseApiController
             return Unauthorized(new ApiResponse(401));
 
         var roles = await _userManager.GetRolesAsync(user);
-        var claims = new List<Claim>();
+        var allClaims = new List<Claim>();
 
         foreach (var role in roles)
         {
@@ -92,16 +92,23 @@ public class AccountController : BaseApiController
             if (roleObj != null)
             {
                 var roleClaims = await _roleManager.GetClaimsAsync(roleObj);
-                claims.AddRange(roleClaims); // ✅ Collect role-based claims here
+                // Include both "Permission" and "deny" claims so JWT carries full authorization info
+                allClaims.AddRange(roleClaims);
             }
         }
 
-        var token = await _authService!.CreateTokenAsync(user, roles, claims); // ✅ Pass roles & claims
+        // Also include user-level claims (if any)
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        allClaims.AddRange(userClaims);
+
+        var token = await _authService!.CreateTokenAsync(user, roles, allClaims);
 
         var userDto = _mapper.Map<UserDto>(user);
         userDto.Token = token;
         userDto.Roles = roles.ToList();
-        userDto.Permissions = claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
+        userDto.Permissions = allClaims
+            .Where(c => c.Type.Equals("Permission", StringComparison.OrdinalIgnoreCase))
+            .Select(c => c.Value).ToList();
 
         return Ok(userDto);
     }

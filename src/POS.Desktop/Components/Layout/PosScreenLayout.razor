@@ -1,5 +1,3 @@
-@using POS.Core.Services.Contract.PosFeatureServices
-@using global::POS.Desktop.Components.Auth
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject CommonProperties _commonProperties
@@ -104,16 +102,12 @@
         await _fontSizeService.LoadStoredFontSizes();
 
         if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
-        {
             _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
-        }
     }
 
     public void Dispose()
     {
         if (_stateChangedHandler != null)
-        {
             _commonProperties.OnChange -= _stateChangedHandler;
-        }
     }
 }

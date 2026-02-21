@@ -82,9 +82,16 @@
                                 (-@(context.TotalDiscountPrice?.ToString("N2")))
                             </p>
                         }
-                        @foreach (var attr in context.Attributes ?? new())
+                        @{
+                            var groupedAttrs = (context.Attributes ?? new())
+                                .GroupBy(a => a.Name)
+                                .Select(g => new { Name = g.Key, Count = g.Count() * context.Quantity });
+                        }
+                        @foreach (var attr in groupedAttrs)
                         {
-                            <p class="attribute-name" style="margin-right: 0px; margin-bottom: 5px;font-weight:bold">➤ @attr.Name</p>
+                            <p class="attribute-name" style="margin-right: 0px; margin-bottom: 5px;font-weight:bold">
+                                ➤ @attr.Name @(attr.Count > 1 ? $"({attr.Count})" : "")
+                            </p>
                         }
                     </div>
                 </MudTd>

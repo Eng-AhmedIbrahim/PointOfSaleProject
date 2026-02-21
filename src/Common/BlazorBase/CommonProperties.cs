@@ -171,7 +171,6 @@ public class CommonProperties
     #endregion
 
     public bool IsFeatureEnabled(string featureName)
-    {
-        return FeatureSettings?.FirstOrDefault(s => s.FeatureName == featureName)?.Value ?? true;
-    }
+        => FeatureSettings?
+        .FirstOrDefault(s => s.FeatureName == featureName)?.Value ?? true;
 }

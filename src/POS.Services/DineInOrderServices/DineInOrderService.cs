@@ -27,7 +27,7 @@ public class DineInOrderService : IDineInOrderService
 
         // 1. Filter active items
         var activeItems = order.OrderDetails
-            .Where(i => i.Quantity > 0 && (i.IsVoided == null || i.IsVoided == false))
+            .Where(i => i.Quantity > 0)
             .Distinct(ReferenceEqualityComparer.Instance)
             .Cast<OrderItemsDetails>()
             .ToList();
@@ -193,7 +193,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the order creation
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "Created",
                     UserName = order.CashierName,
@@ -283,7 +283,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the order update
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "Updated",
                     UserName = order.CashierName,
@@ -424,124 +424,7 @@ public class DineInOrderService : IDineInOrderService
     }
     });
 }
-    public async Task<bool> VoidDineInOrderAsync(int orderId, string reason, string voidBy, string voidByName)
-    {
-        var strategy = _unitOfWork.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
-        {
-        using (var transaction = _unitOfWork.BeginTransaction())
-        {
-            try
-            {
-                var orders = await _unitOfWork.Repository<Orders>()
-                    .GetAllWithSpecificationAsync(new DineInOrderByIdSpec(orderId));
-                
-                var order = orders.FirstOrDefault();
-                if (order is null)
-                    return false;
 
-                DateTime voidTime = DateTime.Now;
-
-                order.OrderState = OrderStates.Voided;
-                order.ClosingTime = voidTime;
-                order.VoidTime = voidTime;
-                order.VoidByName = voidByName;
-                order.VoidBy = voidBy;
-                order.VoidReason = reason;
-
-                decimal totalVoidedValue = 0;
-                int totalVoidedCount = 0;
-
-                // Mark all items as voided and track their details
-                if (order.OrderDetails != null)
-                {
-                    foreach (var item in order.OrderDetails)
-                    {
-                        if (item.IsVoided == true) continue;
-
-                        decimal itemValue = item.TotalAmount ?? 0;
-                        int itemQty = item.Quantity ?? 0;
-
-                        item.IsVoided = true;
-                        item.VoidAmount = (item.VoidAmount ?? 0) + itemQty;
-                        item.TotalVoidAmount = (item.TotalVoidAmount ?? 0) + itemValue;
-                        item.VoidBy = voidBy;
-                        item.VoidByName = voidByName;
-                        item.VoidTime = voidTime;
-                        item.VoidReason = reason;
-                        
-                        item.Quantity = 0;
-                        item.TotalAmount = 0;
-                        item.TotalAfterDiscount = 0;
-
-                        totalVoidedValue += itemValue;
-                        totalVoidedCount += itemQty;
-
-                        _unitOfWork.Repository<OrderItemsDetails>().Update(item);
-                    }
-                }
-
-                order.TotalVoid = (order.TotalVoid ?? 0) + totalVoidedValue;
-                order.VoidCount = (order.VoidCount ?? 0) + totalVoidedCount;
-                order.VoidAmount = (order.VoidAmount ?? 0) + totalVoidedValue; // Using both since user showed both in image
-
-                _unitOfWork.Repository<Orders>().Update(order);
-
-                // Update table state back to Available if this was the last open order
-                if (order.TableID.HasValue)
-                {
-                    var table = await _unitOfWork.Repository<Table>().GetByIdAsync(order.TableID.Value);
-                    if (table != null)
-                    {
-                        // Check if other open orders exist
-                        var openOrdersSpec = new BaseSpecifications<Orders>(o => 
-                            o.TableID == order.TableID && 
-                            o.OrderState == OrderStates.Pending && 
-                            o.OrderID != orderId);
-                        
-                        var otherOpenOrdersCount = await _unitOfWork.Repository<Orders>().GetCountAsync(openOrdersSpec);
-                        if (otherOpenOrdersCount == 0)
-                        {
-                            table.TableState = TableState.Available;
-                            _unitOfWork.Repository<Table>().Update(table);
-                        }
-                    }
-                }
-
-                var result = await _unitOfWork.CompleteAsync();
-                if (result < 0) // result might be zero if no changes (e.g. already voided), but technically we added updates
-                {
-                    transaction.Rollback();
-                    return false;
-                }
-
-                // Track the void action
-                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
-                {
-                    OrderId = order.OrderID,
-                    OrderType = "DineIn",
-                    Action = "Voided",
-                    UserName = voidByName,
-                    UserId = voidBy,
-                    MachineName = Environment.MachineName,
-                    TableId = order.TableID,
-                    TableName = order.TableName,
-                    Details = $"Order voided. Total: {totalVoidedValue}. Reason: {reason}",
-                    ActionDateTime = voidTime
-                });
-
-                transaction.Commit();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                Log.Error(ex, "An error occurred while voiding the DineIn order.");
-                return false;
-            }
-        }
-        });
-    }
 
     public async Task<bool> AddItemsToDineInOrderAsync(int orderId, List<OrderItemsDetails> items)
     {
@@ -645,7 +528,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the item addition
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "ItemsAdded",
                     UserName = order.CashierName,
@@ -719,7 +602,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the discount update
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "DiscountApplied",
                     UserName = order.CashierName,
@@ -768,7 +651,7 @@ public class DineInOrderService : IDineInOrderService
 
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "Transferred",
                     UserName = order.CashierName,
@@ -1211,112 +1094,7 @@ public class DineInOrderService : IDineInOrderService
         });
     }
 
-    public async Task<bool> VoidDineInItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName)
-    {
-        if (itemsToVoid == null || !itemsToVoid.Any())
-            return false;
 
-        var strategy = _unitOfWork.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
-        {
-        using (var transaction = _unitOfWork.BeginTransaction())
-        {
-            try
-            {
-                var spec = new DineInOrderByIdSpec(orderId);
-                var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
-                var order = orders.FirstOrDefault();
-                
-                if (order == null) return false;
-
-                DateTime voidTime = DateTime.Now;
-                decimal voidedTotalValue = 0;
-                int voidedTotalCount = 0;
-
-                foreach (var voidRequest in itemsToVoid)
-                {
-                    var item = order.OrderDetails?.FirstOrDefault(i => i.Id == voidRequest.OrderItemDetailId);
-                    if (item == null || item.Quantity < voidRequest.QuantityToVoid) continue;
-
-                    var unitPrice = (item.TotalAmount ?? 0) / (item.Quantity ?? 1);
-                    var valueToVoid = unitPrice * voidRequest.QuantityToVoid;
-
-                    // Track voided details on item
-                    item.VoidAmount = (item.VoidAmount ?? 0) + voidRequest.QuantityToVoid;
-                    item.TotalVoidAmount = (item.TotalVoidAmount ?? 0) + valueToVoid;
-                    item.VoidBy = voidBy;
-                    item.VoidByName = voidByName;
-                    item.VoidTime = voidTime;
-                    item.VoidReason = reason;
-
-                    item.Quantity -= voidRequest.QuantityToVoid;
-                    item.TotalAmount -= valueToVoid;
-                    // Note: TotalAfterDiscount should also be adjusted
-                    if (item.TotalAfterDiscount.HasValue && item.TotalAfterDiscount > 0)
-                    {
-                        var afterDiscountUnitPrice = item.TotalAfterDiscount.Value / (item.Quantity.Value + voidRequest.QuantityToVoid);
-                        item.TotalAfterDiscount -= afterDiscountUnitPrice * voidRequest.QuantityToVoid;
-                    }
-
-                    item.MenuSalesItem = null;
-                    if (item.Quantity <= 0)
-                    {
-                        item.IsVoided = true;
-                    }
-                    
-                    _unitOfWork.Repository<OrderItemsDetails>().Update(item);
-
-                    voidedTotalValue += valueToVoid;
-                    voidedTotalCount += voidRequest.QuantityToVoid;
-                }
-
-                // Update order totals
-                await RecalculateOrderTotalsAsync(order);
-                
-                // Update order level void tracking (even for partial voids)
-                order.TotalVoid = (order.TotalVoid ?? 0) + voidedTotalValue;
-                order.VoidCount = (order.VoidCount ?? 0) + voidedTotalCount;
-                order.VoidAmount = (order.VoidAmount ?? 0) + voidedTotalValue;
-                
-                // If no items left, void the whole order
-                if (order.OrderDetails == null || !order.OrderDetails.Any(i => i.Quantity > 0 && (i.IsVoided == null || i.IsVoided == false)))
-                {
-                    order.OrderState = OrderStates.Voided;
-                    order.VoidTime = voidTime;
-                    order.VoidReason = reason;
-                    order.VoidByName = voidByName;
-                    order.VoidBy = voidBy;
-                }
-
-                _unitOfWork.Repository<Orders>().Update(order);
-                await _unitOfWork.CompleteAsync();
-
-                await _orderTrackService.TrackOrderActionAsync(new OrderTrack
-                {
-                    OrderId = order.OrderID,
-                    OrderType = "DineIn",
-                    Action = "ItemsVoided",
-                    UserName = voidByName,
-                    UserId = voidBy,
-                    MachineName = Environment.MachineName,
-                    TableId = order.TableID,
-                    TableName = order.TableName,
-                    Details = $"Voided {voidedTotalCount} items (Total: {voidedTotalValue}). Reason: {reason}",
-                    ActionDateTime = voidTime
-                });
-
-                transaction.Commit();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                Log.Error(ex, "Error voiding items from order {OrderId}", orderId);
-                return false;
-            }
-        }
-        });
-    }
     public async Task<int> IncrementPrintCountAsync(int orderId)
     {
         try
@@ -1325,16 +1103,14 @@ public class DineInOrderService : IDineInOrderService
             
             if (order == null)
             {
-                // Fallback: search by display OrderID if PK search fails
-                var spec = new DineInOrderByOrderIdSpec(orderId);
-                // Use a local var for the list to avoid conflict
+                // Fallback: search by database Id if GetByIdAsync failed for some reason (though it shouldn't)
+                var spec = new DineInOrderByIdSpec(orderId);
                 var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
                 order = orders.FirstOrDefault();
                 
                 if (order != null)
                 {
                     // Clear navigation properties to prevent Identity Resolution conflicts during Update
-                    // We only want to update the PrintCount on the Order entity itself
                     order.OrderDetails = null;
                 }
             }
@@ -1446,7 +1222,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the reservation
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = reservationOrder.OrderID,
+                    OrderId = reservationOrder.Id,
                     OrderType = "DineIn",
                     Action = "Reserved",
                     UserName = reservationOrder.CashierName,
@@ -1485,10 +1261,18 @@ public class DineInOrderService : IDineInOrderService
                 var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
                 if (order == null)
                 {
-                    // Try by OrderID (display number)
-                    var spec = new DineInOrderByOrderIdSpec(orderId);
+                    // Try by database Id
+                    var spec = new DineInOrderByIdSpec(orderId);
                     var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
                     order = orders.FirstOrDefault();
+                }
+                
+                if (order == null)
+                {
+                    // Last resort: Try by display OrderID if caller passed the sequence number (backward compatibility or search)
+                    var lastSpec = new DineInOrderByIdSpec(orderId); // We assume orderId might be Id now
+                    var lastOrders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(lastSpec);
+                    order = lastOrders.FirstOrDefault();
                 }
 
                 if (order == null || order.OrderState != OrderStates.Reserved)
@@ -1547,7 +1331,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the cancellation
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "ReservationCanceled",
                     UserName = order.CashierName,
@@ -1584,7 +1368,7 @@ public class DineInOrderService : IDineInOrderService
                 var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(orderId);
                 if (order == null)
                 {
-                    var spec = new DineInOrderByOrderIdSpec(orderId);
+                    var spec = new DineInOrderByIdSpec(orderId);
                     var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
                     order = orders.FirstOrDefault();
                 }
@@ -1637,7 +1421,7 @@ public class DineInOrderService : IDineInOrderService
                 // Track the action
                 await _orderTrackService.TrackOrderActionAsync(new OrderTrack
                 {
-                    OrderId = order.OrderID,
+                    OrderId = order.Id,
                     OrderType = "DineIn",
                     Action = "ReservationSeated",
                     UserName = order.CashierName,

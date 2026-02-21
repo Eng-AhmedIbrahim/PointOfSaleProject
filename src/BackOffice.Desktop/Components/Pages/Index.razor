@@ -1,0 +1,44 @@
+@page "/"
+@using MudBlazor
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Back Office Dashboard</MudText>
+    <MudText Align="Align.Center" Class="mb-10">Welcome to the central management dashboard.</MudText>
+    
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="3" Class="py-4 px-6 rounded-lg pointer">
+                <MudCardContent>
+                    <div class="d-flex align-center mb-4">
+                        <MudIcon Icon="@Icons.Material.Filled.PieChart" Color="Color.Primary" Size="Size.Large" Class="mr-3" />
+                        <MudText Typo="Typo.h5">Reports</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2">View detailed sales, inventory, and performance reports.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="3" Class="py-4 px-6 rounded-lg pointer">
+                <MudCardContent>
+                    <div class="d-flex align-center mb-4">
+                        <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Secondary" Size="Size.Large" Class="mr-3" />
+                        <MudText Typo="Typo.h5">Users</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2">Manage users, roles, and access permissions.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Elevation="3" Class="py-4 px-6 rounded-lg pointer">
+                <MudCardContent>
+                    <div class="d-flex align-center mb-4">
+                        <MudIcon Icon="@Icons.Material.Filled.Settings" Color="Color.Info" Size="Size.Large" Class="mr-3" />
+                        <MudText Typo="Typo.h5">Settings</MudText>
+                    </div>
+                    <MudText Typo="Typo.body2">Configure system settings, printers, and options.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

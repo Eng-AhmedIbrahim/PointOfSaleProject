@@ -43,8 +43,36 @@ public class DeliveryCustomerService : IDeliveryCustomerService
 
     public async Task<DeliveryCustomerInfo> CreateCustomerAsync(DeliveryCustomerInfo customer)
     {
-        customer.CustomerAddresses!.First().BranchId = await GetBranchIdAsync(customer.CustomerAddresses!.First().BranchName!);
-        customer.CustomerAddresses!.First().DeliveryZoneId = await GetZoneIdAsync(customer.CustomerAddresses!.First().ZoneName!);
+        var address = customer.CustomerAddresses!.First();
+        
+        if (address.BranchId == 0)
+        {
+            if (!string.IsNullOrEmpty(address.BranchName))
+            {
+                var branchId = await GetBranchIdAsync(address.BranchName!);
+                if (branchId > 0) address.BranchId = branchId;
+                else throw new Exception($"Branch '{address.BranchName}' not found.");
+            }
+            else
+            {
+                 throw new Exception("Branch is required to create a customer address.");
+            }
+        }
+
+        if (address.DeliveryZoneId == 0)
+        {
+            if (!string.IsNullOrEmpty(address.ZoneName))
+            {
+                var zoneId = await GetZoneIdAsync(address.ZoneName!);
+                if (zoneId > 0) address.DeliveryZoneId = zoneId;
+                else throw new Exception($"Zone '{address.ZoneName}' not found.");
+            }
+            else
+            {
+                 throw new Exception("Delivery Zone is required to create a customer address.");
+            }
+        }
+
         await _unitOfWork.Repository<DeliveryCustomerInfo>().AddAsync(customer);
         await _unitOfWork.CompleteAsync();
         return customer;

@@ -12,6 +12,7 @@ public class KitchenReceipt
     public string? TableName { get; set; }
     public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
     public bool IsFollowUp { get; set; }
+    public bool IsVoid { get; set; }
     public int? ParentOrderId { get; set; }
 
     private List<ReceiptItem> _items = [];

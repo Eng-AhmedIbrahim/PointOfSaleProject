@@ -7,8 +7,28 @@ using Microsoft.Extensions.Logging;
 public partial class Section4Buttons
 {
     [Inject] private ILogger<Section4Buttons> _logger { get; set; } = default!;
+    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
+    private bool _canVoidOrder;
+    private bool _canWaiting;
+    private bool _canPrintReceipt;
 
     private bool _isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            _canVoidOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessVoidOrder")).Succeeded;
+            _canWaiting     = (await AuthorizationService.AuthorizeAsync(user, "CanAccessWaiting")).Succeeded;
+            _canPrintReceipt= (await AuthorizationService.AuthorizeAsync(user, "CanAccessPrintReceipt")).Succeeded;
+        }
+    }
+
 
     private async Task PrintOrder()
     {
@@ -536,7 +556,7 @@ public partial class Section4Buttons
             ["TableItems"] = _commonProperties.TableItems,
             ["IsDineIn"] = false 
         };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Large, FullWidth = true };
         
         var dialog = await _dialogService.ShowAsync<POS.Desktop.Components.DineInComponents.VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
         var result = await dialog.Result;

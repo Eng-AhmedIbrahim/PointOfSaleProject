@@ -1,72 +1,60 @@
-﻿global using System.Text.Json;
-global using StackExchange.Redis;
-global using POS.Core.Services.Contract;
+﻿global using AutoMapper;
+global using Microsoft.AspNetCore.Identity;
 global using Microsoft.Extensions.Caching.Distributed;
 global using Microsoft.Extensions.Caching.StackExchangeRedis;
-
-global using POS.Core.Entities.Company;
-global using POS.Core.Services.Contract.CompanyService;
-
-global using Serilog;
-global using POS.Core.Repository.Contract;
-
-
-global using POS.Core.Services.Contract.CategoryServices;
-
-
-global using POS.Core.Entities.Item;
-global using POS.Core.Services.Contract.ItemServices;
-
-global using POS.Core.Specifications;
-
-global using POS.Core.Specifications.MenuSalesItemsSpecs;
-global using POS.Core.Services.Contract.UserSettingServices;
-global using POS.Core.Entities.UserSettings;
-
-
-global using Microsoft.AspNetCore.Identity;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.IdentityModel.Tokens;
-global using POS.Core.Services.Contract.AccountDomainContracts;
-global using POS.Repository.Data;
-global using System.IdentityModel.Tokens.Jwt;
-global using System.Security.Claims;
-global using System.Text;
-
-
-
-global using POS.Core.Entities.DineIn;
-global using POS.Core.Services.Contract.DineInServices;
-global using POS.Core.Services.Contract.AppDateServices;
-global using POS.Core.Entities.Date;
-
+global using Pos.Repository.Data.DataSeed;
+global using POS.Contract.Dtos;
 global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;
+global using POS.Contract.Dtos.DineIn;
+global using POS.Contract.Dtos.OrderDto;
+global using POS.Contract.Dtos.OrderDtos;
+global using POS.Contract.Dtos.ReportingDtos;
+global using POS.Contract.Models;
+global using POS.Core.Entities.Categorie;
+global using POS.Core.Entities.Company;
+global using POS.Core.Entities.ComplaintEntity;
+global using POS.Core.Entities.Customer;
+global using POS.Core.Entities.Date;
 global using POS.Core.Entities.Delivery;
-global using POS.Core.Services.Contract.DeliveryServices;
-global using POS.Core.Specifications.DeliverySpecs;
-
-global using PdfiumViewer;
+global using POS.Core.Entities.DineIn;
+global using POS.Core.Entities.Item;
 global using POS.Core.Entities.Kitchen;
 global using POS.Core.Entities.OrderEntity;
-global using POS.Core.Services.Contract.PrinterServices;
-global using System.Drawing.Printing;
-global using POS.Core.Services.Contract.KitchenServices;
-global using POS.Core.Specifications.KitchenSpecs;
-global using POS.Core.Services.Contract.DeliveryOrderServices;
-global using POS.Contract.Dtos.DineIn;
-global using POS.Core.Services.Contract.DineInOrderServices;
-global using POS.Core.Services.Contract.OrderTrackServices;
-global using POS.Core.Specifications.DineInSpecs;
-
-global using AutoMapper;
-global using POS.Core.Services.Contract.PosFeatureServices;
-global using POS.Contract.Dtos.OrderDto;
-global using Pos.Repository.Data.DataSeed;
-
-global using POS.Contract.Dtos.OrderDtos;
-global using POS.Core.Services.Contract.DistributionServices;
-
-global using POS.Contract.Dtos;
-global using POS.Core.Entities.ComplaintEntity;
+global using POS.Core.Entities.UserSettings;
+global using POS.Core.Repository.Contract;
+global using POS.Core.Services.Contract;
+global using POS.Core.Services.Contract.AccountDomainContracts;
+global using POS.Core.Services.Contract.AppDateServices;
+global using POS.Core.Services.Contract.CategoryServices;
+global using POS.Core.Services.Contract.CompanyService;
 global using POS.Core.Services.Contract.ComplaintServices;
+global using POS.Core.Services.Contract.DeliveryOrderServices;
+global using POS.Core.Services.Contract.DeliveryServices;
+global using POS.Core.Services.Contract.DineInOrderServices;
+global using POS.Core.Services.Contract.DineInServices;
+global using POS.Core.Services.Contract.DistributionServices;
+global using POS.Core.Services.Contract.ItemServices;
+global using POS.Core.Services.Contract.KitchenServices;
+global using POS.Core.Services.Contract.OrderServices;
+global using POS.Core.Services.Contract.OrderTrackServices;
+global using POS.Core.Services.Contract.PosFeatureServices;
+global using POS.Core.Services.Contract.PrinterServices;
+global using POS.Core.Services.Contract.ReportingServices;
+global using POS.Core.Services.Contract.UserSettingServices;
+global using POS.Core.Specifications;
 global using POS.Core.Specifications.ComplaintSpecs;
+global using POS.Core.Specifications.DeliverySpecs;
+global using POS.Core.Specifications.DineInSpecs;
+global using POS.Core.Specifications.KitchenSpecs;
+global using POS.Core.Specifications.MenuSalesItemsSpecs;
+global using POS.Core.Specifications.OrderSpecs;
+global using Serilog;
+global using StackExchange.Redis;
+global using System.Drawing.Printing;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Linq.Expressions;
+global using System.Security.Claims;
+global using System.Text;
+global using System.Text.Json;

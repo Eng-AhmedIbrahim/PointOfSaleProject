@@ -1,0 +1,25 @@
+﻿<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+    
+    <MudNavGroup Title="Reports" Icon="@Icons.Material.Filled.BarChart" Expanded="true">
+        <MudNavLink Href="/reports/sales" Icon="@Icons.Material.Filled.AttachMoney">Sales Summary</MudNavLink>
+        <MudNavLink Href="/reports/items" Icon="@Icons.Material.Filled.Fastfood">Item Sales</MudNavLink>
+        <MudNavLink Href="/reports/cashier" Icon="@Icons.Material.Filled.PointOfSale">Cashier Summary</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="System Setup" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+        <MudNavLink Href="/system/features" Icon="@Icons.Material.Filled.ToggleOn">Features Setup</MudNavLink>
+        <MudNavLink Href="/system/printers" Icon="@Icons.Material.Filled.Print">Printers</MudNavLink>
+        <MudNavLink Href="/settings/general" Icon="@Icons.Material.Filled.Tune">General Options</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Access Control" Icon="@Icons.Material.Filled.Security" Expanded="true">
+        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.AdminPanelSettings">Roles & Permissions</MudNavLink>
+    </MudNavGroup>
+    
+    <MudNavGroup Title="Inventory" Icon="@Icons.Material.Filled.Inventory" Expanded="true">
+        <MudNavLink Href="/items" Icon="@Icons.Material.Filled.Category">Items Hub</MudNavLink>
+        <MudNavLink Href="/offers" Icon="@Icons.Material.Filled.LocalOffer">Offers</MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>

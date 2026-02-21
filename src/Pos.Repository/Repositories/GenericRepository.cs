@@ -24,6 +24,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     public async Task<T?> GetByIdWithSpecificationAsync(ISpecifications<T> specs)
         => await ApplySpecification(specs).FirstOrDefaultAsync();
 
+    public async Task<T?> GetByIdWithSpecificationTrackedAsync(ISpecifications<T> specs)
+        => await ApplySpecificationTracked(specs).FirstOrDefaultAsync();
+
     public async Task<int> GetCountAsync(ISpecifications<T> spec)
         => await ApplySpecification(spec).CountAsync();
 
@@ -70,6 +73,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     IQueryable<T> ApplySpecification(ISpecifications<T> spec)
         => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsNoTracking(), spec);
+
+    IQueryable<T> ApplySpecificationTracked(ISpecifications<T> spec)
+        => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
 
     public async Task<T?> GetUserSettingByIdAsync(string id)
     => await _dbContext.Set<T>(id).FirstOrDefaultAsync();

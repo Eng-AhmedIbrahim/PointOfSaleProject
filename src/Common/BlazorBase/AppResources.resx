@@ -658,7 +658,10 @@
     <value>Void reason is required</value>
   </data>
   <data name="NoItemsSelectedToVoid" xml:space="preserve">
-    <value>No items selected to void</value>
+    <value>No items selected to be voided.</value>
+  </data>
+  <data name="CannotVoidDispatchedOrder" xml:space="preserve">
+    <value>Cannot void an order that has already been dispatched.</value>
   </data>
   <data name="VoidOperationSuccessful" xml:space="preserve">
     <value>Void operation successful</value>
@@ -723,9 +726,6 @@
   <data name="OrderDate" xml:space="preserve">
     <value>Order Date</value>
   </data>
-  <data name="TotalAmount" xml:space="preserve">
-    <value>Total Amount</value>
-  </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -735,20 +735,11 @@
   <data name="Item" xml:space="preserve">
     <value>Item</value>
   </data>
-  <data name="Qty" xml:space="preserve">
-    <value>Qty</value>
-  </data>
-  <data name="Price" xml:space="preserve">
-    <value>Price</value>
-  </data>
   <data name="NoItems" xml:space="preserve">
     <value>No items in this order</value>
   </data>
   <data name="CreateNewOrder" xml:space="preserve">
     <value>Create New Order</value>
-  </data>
-  <data name="EditExistingOrder" xml:space="preserve">
-    <value>Edit Existing Order</value>
   </data>
   <data name="LoadingActiveOrder" xml:space="preserve">
     <value>Loading active order...</value>
@@ -847,13 +838,13 @@
     <value>Dispatch Time</value>
   </data>
   <data name="Distribution_Show" xml:space="preserve">
-    <value>Show</value>
+    <value>Details</value>
   </data>
   <data name="Distribution_AvailableDrivers" xml:space="preserve">
     <value>Available Drivers</value>
   </data>
   <data name="Distribution_UnavailableDrivers" xml:space="preserve">
-    <value>Unavailable Drivers</value>
+    <value>Busy Drivers</value>
   </data>
   <data name="Distribution_ViewOrder" xml:space="preserve">
     <value>View Order</value>
@@ -865,7 +856,7 @@
     <value>Address</value>
   </data>
   <data name="Distribution_Time" xml:space="preserve">
-    <value>Time</value>
+    <value>Order Time</value>
   </data>
   <data name="Distribution_AssignOrderToDriverTitle" xml:space="preserve">
     <value>Assign Order to Driver</value>
@@ -928,43 +919,16 @@
     <value>Collect All</value>
   </data>
   <data name="Distribution_CollectDriver" xml:space="preserve">
-    <value>Collect orders of</value>
-  </data>
-  <data name="Distribution_AssignDriver" xml:space="preserve">
-    <value>Assign</value>
-  </data>
-  <data name="Distribution_Address" xml:space="preserve">
-    <value>Address</value>
+    <value>Settlement for</value>
   </data>
   <data name="Distribution_AddressNotes" xml:space="preserve">
-    <value>Notes</value>
-  </data>
-  <data name="Distribution_Time" xml:space="preserve">
-    <value>Order Time</value>
-  </data>
-  <data name="Distribution_DispatchTime" xml:space="preserve">
-    <value>Dispatch Time</value>
-  </data>
-  <data name="Distribution_Show" xml:space="preserve">
-    <value>Show</value>
-  </data>
-  <data name="Back" xml:space="preserve">
-    <value>Back</value>
-  </data>
-  <data name="Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>Address Notes</value>
   </data>
   <data name="Distribution_SelectDriver" xml:space="preserve">
-    <value>Select Driver to Collect</value>
+    <value>Select a Driver</value>
   </data>
   <data name="Distribution_DriverSettlement" xml:space="preserve">
-    <value>Drivers Settlement</value>
-  </data>
-  <data name="TotalAmount" xml:space="preserve">
-    <value>Total Amount</value>
-  </data>
-  <data name="OrderCount" xml:space="preserve">
-    <value>Order Count</value>
+    <value>Driver Settlement</value>
   </data>
   <data name="TotalDeliveryFees" xml:space="preserve">
     <value>Total Fees</value>
@@ -987,12 +951,6 @@
   <data name="Distribution_VoidFailed" xml:space="preserve">
     <value>Failed to void order</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>No</value>
-  </data>
   <data name="Distribution_VoidHistory" xml:space="preserve">
     <value>Void History</value>
   </data>
@@ -1002,7 +960,106 @@
   <data name="VoidedItems" xml:space="preserve">
     <value>Voided Items</value>
   </data>
-  <data name="VoidQty" xml:space="preserve">
-    <value>Void Qty</value>
+  <data name="OrderBefore" xml:space="preserve">
+    <value>Before</value>
+  </data>
+  <data name="OrderAfter" xml:space="preserve">
+    <value>After</value>
+  </data>
+  <data name="QtyBefore" xml:space="preserve">
+    <value>Qty Before</value>
+  </data>
+  <data name="QtyToVoid" xml:space="preserve">
+    <value>Qty to Void</value>
+  </data>
+  <data name="QtyAfter" xml:space="preserve">
+    <value>Qty After</value>
+  </data>
+  <data name="TotalBefore" xml:space="preserve">
+    <value>Total Before</value>
+  </data>
+  <data name="TotalAfter" xml:space="preserve">
+    <value>Total After</value>
+  </data>
+  <data name="EnterVoidReason" xml:space="preserve">
+    <value>Enter Void Reason</value>
+  </data>
+  <data name="TypeReasonHere" xml:space="preserve">
+    <value>Type reason here...</value>
+  </data>
+  <data name="TotalToVoid" xml:space="preserve">
+    <value>Total to Void</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="ItemName" xml:space="preserve">
+    <value>Item Name</value>
+  </data>
+  <data name="TodayOrders" xml:space="preserve">
+    <value>Today's Orders</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="SearchByOrderOrPhone" xml:space="preserve">
+    <value>Order ID or Phone...</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="OrderPrintedLocally" xml:space="preserve">
+    <value>Order printed successfully</value>
+  </data>
+  <data name="posSettingsFeature" xml:space="preserve">
+    <value>POS Settings Button</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="VoidOrder" xml:space="preserve">
+    <value>Void Order</value>
+  </data>
+  <data name="VoidReason" xml:space="preserve">
+    <value>Void Reason</value>
+  </data>
+  <data name="DineIn" xml:space="preserve">
+    <value>DineIn</value>
+  </data>
+  <data name="SalesSummary" xml:space="preserve">
+    <value>Sales Summary</value>
+  </data>
+  <data name="EditExistingOrder" xml:space="preserve">
+    <value>Edit Existing Order</value>
+  </data>
+  <data name="Credit" xml:space="preserve">
+    <value>Credit</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="TotalQty" xml:space="preserve">
+    <value>Total Qty</value>
+  </data>
+  <data name="TotalSales" xml:space="preserve">
+    <value>Total Sales</value>
+  </data>
+  <data name="SearchItems" xml:space="preserve">
+    <value>Search Items...</value>
+  </data>
+  <data name="SalesItemsSummary" xml:space="preserve">
+    <value>Sales Items Summary</value>
+  </data>
+  <data name="CustomerReceipt" xml:space="preserve">
+    <value>Customer Receipt</value>
+  </data>
+  <data name="KitchenReceipt" xml:space="preserve">
+    <value>Kitchen Receipt</value>
   </data>
 </root>
