@@ -57,7 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>44660</FileLength>
-      <LastWriteTime>Sun, 08 Mar 2026 01:43:10 GMT</LastWriteTime>
+      <LastWriteTime>Sun, 08 Mar 2026 02:53:00 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))">
@@ -72,12 +72,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>hx70enr109</Fingerprint>
-      <Integrity>2117MhDKRe3B0vJk9WTrzpgovn0e+s4ie3837N6FppU=</Integrity>
+      <Fingerprint>5frq5xcfue</Fingerprint>
+      <Integrity>rymtq5YxUD3alEeST9R3OrLwiwlJ11o/lOcnr1IlA9w=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>1639</FileLength>
-      <LastWriteTime>Mon, 02 Mar 2026 01:42:00 GMT</LastWriteTime>
+      <FileLength>2385</FileLength>
+      <LastWriteTime>Sun, 08 Mar 2026 21:18:13 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\complaintmanagement.css'))">
@@ -112,12 +112,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>wlzlz8e3ma</Fingerprint>
-      <Integrity>fJWeDVAXrz7QuYCFSDpNiPjZ4PKCS1aTzhQouunZpsg=</Integrity>
+      <Fingerprint>4fo2v3e6fm</Fingerprint>
+      <Integrity>4ExE6uQMDAP0U3DcV3RQ0+N48O5TfXkinYA6ETSnszM=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>1753</FileLength>
-      <LastWriteTime>Mon, 02 Mar 2026 01:40:49 GMT</LastWriteTime>
+      <FileLength>2357</FileLength>
+      <LastWriteTime>Sun, 08 Mar 2026 21:17:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\itemmanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\zonemanagement.css'))">

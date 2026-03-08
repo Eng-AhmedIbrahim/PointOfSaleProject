@@ -4,69 +4,219 @@
 @inject ISnackbar Snackbar
 @inject LocalizationService Localizer
 
-<MudDialog>
-    <TitleContent>
-        <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Center">
-            <MudIcon Icon="@GetIcon()" Color="@GetColor()" Size="Size.Large" />
-            <MudText Typo="Typo.h5" Class="brand-font">@GetTitle()</MudText>
-        </MudStack>
-    </TitleContent>
+<MudDialog Class="custom-inventory-dialog">
     <DialogContent>
-        <div class="pa-4 glass-dialog-content">
-            <MudStack Spacing="4">
-                <MudAlert Severity="Severity.Info" Variant="MudBlazor.Variant.Outlined" Class="rounded-lg">
-                    <MudStack Spacing="0">
-                        <MudText Typo="Typo.subtitle2">@(Localizer.GetCurrentLanguage() == "ar" ? "الصنف الحالي:" : "Current Item:")</MudText>
-                        <MudText Typo="Typo.h6" Color="Color.Primary">@(Localizer.GetCurrentLanguage() == "ar" ? Item?.ItemNameAr : Item?.ItemNameEn)</MudText>
-                        <MudText Typo="Typo.body2">@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد الحالي:" : "Current Stock:") @Item?.CurrentQuantity.ToString("N2") @Item?.Unit</MudText>
-                    </MudStack>
-                </MudAlert>
+        <div class="p-0" dir="@(Localizer.GetCurrentLanguage() == "ar" ? "rtl" : "ltr")">
+            
+            <!-- Premium Header Section -->
+            <div class="dialog-header-section" style="background: @GetHeaderBackground(); border-bottom: 2px solid @GetHeaderBorder();">
+                <div class="header-icon-box" style="background: white; border: 1.5px solid @GetHeaderBorder();">
+                    <RadzenIcon Icon="@GetIcon()" Style="@($"color: {GetHexColor()}; font-size: 1.8rem;")" />
+                </div>
+                <div class="header-info flex-grow-1">
+                    <h3 class="dialog-title">@GetTitle()</h3>
+                    <div class="item-name-badge">
+                         <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "الصنف:" : "Item:")</span>
+                         <span class="value">@(Localizer.GetCurrentLanguage() == "ar" ? Item?.ItemNameAr : Item?.ItemNameEn)</span>
+                    </div>
+                </div>
+            </div>
 
-                @if (Mode == DialogMode.Adjustment)
-                {
-                <MudNumericField @bind-Value="QuantityChange" 
-                Label="@(Localizer.GetCurrentLanguage() == "ar" ? "كمية التعديل (+ للإضافة، - للحذف)" : "Adjustment Quantity (+ to add, - to remove)")" 
-                                     Variant="MudBlazor.Variant.Outlined" 
-                                     Margin="Margin.Normal"
-                                     HelperText="@GetAdjustmentHelper()" />
-                }
-                else if (Mode == DialogMode.PhysicalCount)
-                {
-                    <MudNumericField @bind-Value="NewQuantity" 
-                                     Label="@(Localizer.GetCurrentLanguage() == "ar" ? "الكمية الفعلية المكتشفة" : "Actual Physical Quantity")"
-                                     Variant="MudBlazor.Variant.Outlined"
-                                     Margin="Margin.Normal" />
-                }
-                else if (Mode == DialogMode.OpeningStock)
-                {
-                    <MudNumericField @bind-Value="NewQuantity" 
-                                     Label="@(Localizer.GetCurrentLanguage() == "ar" ? "رصيد أول المدة" : "Opening Stock Quantity")"
-                                     Variant="MudBlazor.Variant.Outlined"
-                                     Margin="Margin.Normal" />
-                }
+            <div class="dialog-scroll-content p-4">
+                <!-- Current Stock Alert Card -->
+                <div class="current-stock-card mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                         <div class="d-flex align-items-center gap-2">
+                             <RadzenIcon Icon="warehouse" Style="color: #64748b; font-size: 1.1rem;" />
+                             <span class="stock-label">@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد الحالي بالمخزن" : "Current Warehouse Stock")</span>
+                         </div>
+                         <div class="stock-value-wrap">
+                             <span class="stock-qty">@Item?.CurrentQuantity.ToString("N2")</span>
+                             <span class="stock-unit">@(Localizer.GetCurrentLanguage() == "ar" ? Item?.UnitNameAr : Item?.UnitNameEn)</span>
+                         </div>
+                    </div>
+                    @if (Mode == DialogMode.Adjustment && QuantityChange != 0)
+                    {
+                        <div class="expected-stock-row mt-2 pt-2 border-top">
+                             <span class="expected-label">@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد المتوقع بعد التعديل:" : "Expected Total After Adjustment:")</span>
+                             <span class="expected-value">@((Item?.CurrentQuantity ?? 0) + QuantityChange)</span>
+                        </div>
+                    }
+                    <div class="reorder-level-row mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                         <span class="stock-label" style="font-size: 0.8rem;">@(Localizer.GetCurrentLanguage() == "ar" ? "حد الطلب الحالي:" : "Current Reorder Level:")</span>
+                         <span style="font-weight: 800; color: #f59e0b;">@Item?.MinimumQuantity.ToString("N2")</span>
+                    </div>
+                </div>
 
-                <MudTextField @bind-Value="Notes" 
-                             Label="@(Localizer.GetCurrentLanguage() == "ar" ? "ملاحظات" : "Notes")" 
-                             Variant="MudBlazor.Variant.Outlined" 
-                             Lines="3" />
-            </MudStack>
+                <div class="d-flex flex-column gap-4">
+                    <!-- Quantity Input Section -->
+                     <div class="input-premium-card">
+                          <label class="field-label">@GetInputLabel()</label>
+                          <div class="d-flex align-items-center gap-3">
+                              @if (Mode == DialogMode.Adjustment)
+                              {
+                                  <RadzenNumeric @bind-Value="QuantityChange" TValue="decimal" 
+                                                Style="width: 100%; border: none; background: transparent; font-weight: 800; font-size: 1.5rem; height: auto;" 
+                                                ShowUpDown="true" AutoComplete="false" Placeholder="0.00" Class="numeric-rtl-flip" />
+                              }
+                              else
+                              {
+                                  <RadzenNumeric @bind-Value="NewQuantity" TValue="decimal" 
+                                                Style="width: 100%; border: none; background: transparent; font-weight: 800; font-size: 1.5rem; height: auto;" 
+                                                ShowUpDown="true" AutoComplete="false" Placeholder="0.00" Class="numeric-rtl-flip" />
+                              }
+                          </div>
+                     </div>
+
+                     <!-- Reorder Level Adjust Section -->
+                     <div class="input-premium-card" style="border-color: #fca5a550; background: #fffafb;">
+                          <label class="field-label" style="color: #ef4444;">@(Localizer.GetCurrentLanguage() == "ar" ? "الحد الأدنى (حد الطلب)" : "Minimum Quantity (Reorder Level)")</label>
+                          <div class="d-flex align-items-center gap-3">
+                              <RadzenNumeric @bind-Value="MinQuantity" TValue="decimal" 
+                                            Style="width: 100%; border: none; background: transparent; font-weight: 800; font-size: 1.2rem; height: auto;" 
+                                            ShowUpDown="true" AutoComplete="false" Placeholder="0.00" Class="numeric-rtl-flip" />
+                          </div>
+                     </div>
+
+                    <!-- Notes Section -->
+                    <div class="input-premium-card">
+                         <label class="field-label">@(Localizer.GetCurrentLanguage() == "ar" ? "ملاحظات العملية" : "Transaction Notes")</label>
+                         <div class="d-flex align-items-start gap-3">
+                             <div class="input-icon-wrap" style="margin-top: 4px;">
+                                 <RadzenIcon Icon="description" Style="color: #64748b; font-size: 1.2rem;" />
+                             </div>
+                             <RadzenTextArea @bind-Value="Notes" Placeholder="@(Localizer.GetCurrentLanguage() == "ar" ? "اكتب تفاصيل إضافية عن العملية هنا..." : "Write additional details here...")"
+                                             Style="width: 100%; border: none; background: transparent; font-weight: 600; font-size: 0.95rem; resize: none; min-height: 80px;" />
+                         </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Class="px-6">@(Localizer.GetCurrentLanguage() == "ar" ? "إلغاء" : "Cancel")</MudButton>
-        <MudButton Color="@GetColor()" Variant="MudBlazor.Variant.Filled" OnClick="Submit" Class="px-8 py-2 rounded-lg" Disabled="@IsProcessing">
-            @if (IsProcessing)
-            {
-                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-            }
-            @(Localizer.GetCurrentLanguage() == "ar" ? "حفظ" : "Save")
-        </MudButton>
+        <div class="d-flex justify-content-end p-4 gap-3 border-top w-100" dir="@(Localizer.GetCurrentLanguage() == "ar" ? "rtl" : "ltr")">
+            <RadzenButton Click="Cancel" Text="@(Localizer.GetCurrentLanguage() == "ar" ? "إغلاق" : "Close")" 
+                          ButtonStyle="ButtonStyle.Light" Style="border-radius: 12px; font-weight: 800; height: 46px; padding: 0 25px;" />
+            
+            <RadzenButton Click="Submit" ButtonStyle="ButtonStyle.Primary" Disabled="@IsProcessing"
+                          Style="@($"background: {GetHexColor()}; border: none; border-radius: 12px; font-weight: 900; height: 46px; min-width: 140px; box-shadow: 0 4px 12px {GetShadowColor()};")">
+                @if (IsProcessing)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Inherit" Class="me-2" />
+                    <span>@(Localizer.GetCurrentLanguage() == "ar" ? "جاري الحفظ..." : "Saving...")</span>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center gap-2">
+                        <RadzenIcon Icon="save" Style="font-size: 1.1rem;" />
+                        <span>@(Localizer.GetCurrentLanguage() == "ar" ? "تأكيد العملية" : "Confirm Action")</span>
+                    </div>
+                }
+            </RadzenButton>
+        </div>
     </DialogActions>
 </MudDialog>
 
 <style>
-    .brand-font { font-family: 'Outfit', 'Noto Sans Arabic', sans-serif; font-weight: 700; }
-    .glass-dialog-content { background: #fafafa; border-radius: 12px; }
+    .custom-inventory-dialog .mud-dialog-title { display: none; }
+    .custom-inventory-dialog .mud-dialog-content { padding: 0 !important; overflow: hidden; }
+    
+    .dialog-header-section {
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .dialog-title {
+        font-weight: 900;
+        font-size: 1.4rem;
+        color: #1e293b;
+        margin: 0 0 4px 0;
+        letter-spacing: -0.02em;
+    }
+
+    .item-name-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+    .item-name-badge .label { color: #64748b; font-weight: 600; }
+    .item-name-badge .value { color: #2563eb; font-weight: 850; }
+
+    .current-stock-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+    }
+    .stock-label { font-size: 0.85rem; font-weight: 700; color: #64748b; }
+    .stock-qty { font-size: 1.25rem; font-weight: 900; color: #0f172a; }
+    .stock-unit { font-size: 0.85rem; font-weight: 800; color: #94a3b8; margin-inline-start: 4px; }
+
+    .expected-label { font-size: 0.8rem; font-weight: 700; color: #94a3b8; }
+    .expected-value { font-size: 0.95rem; font-weight: 900; color: #10b981; margin-inline-start: 8px; }
+
+    .input-premium-card {
+        background: white;
+        border: 2px solid #f1f5f9;
+        border-radius: 14px;
+        padding: 1rem;
+        transition: all 0.2s;
+    }
+    .input-premium-card:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08); }
+
+    .field-label {
+        display: block;
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+    }
+
+    .input-icon-wrap {
+        width: 36px;
+        height: 36px;
+        background: #f8fafc;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Radzen Overrides */
+    .rz-numeric-input, .rz-textarea { color: #1e293b !important; }
+    .rz-numeric-input:focus, .rz-textarea:focus { outline: none !important; }
+    .rz-spinner-button { background: #f1f5f9 !important; color: #64748b !important; border-radius: 6px !important; }
+
+    /* RTL Numeric Flip: Arrows Left, Number Right */
+    .numeric-rtl-flip { 
+        display: flex !important; 
+        flex-direction: row-reverse !important; 
+    }
+    .numeric-rtl-flip .rz-numeric-input { 
+        text-align: right !important; 
+        flex-grow: 1 !important;
+        padding-right: 12px !important;
+    }
+    .numeric-rtl-flip .rz-spinner {
+        display: flex !important;
+        flex-direction: column !important;
+    }
 </style>
 
 @code {
@@ -76,8 +226,17 @@
 
     private decimal QuantityChange { get; set; }
     private decimal NewQuantity { get; set; }
+    private decimal MinQuantity { get; set; }
     private string Notes { get; set; } = "";
     private bool IsProcessing = false;
+
+    protected override void OnInitialized()
+    {
+        if (Item != null)
+        {
+            MinQuantity = Item.MinimumQuantity;
+        }
+    }
 
     public enum DialogMode { Adjustment, PhysicalCount, OpeningStock }
 
@@ -92,33 +251,51 @@
         };
     }
 
-    private string GetIcon()
+    private string GetInputLabel()
     {
         return Mode switch
         {
-            DialogMode.Adjustment => Icons.Material.Filled.Tune,
-            DialogMode.PhysicalCount => Icons.Material.Filled.FactCheck,
-            DialogMode.OpeningStock => Icons.Material.Filled.PlayCircleFilled,
-            _ => Icons.Material.Filled.Inventory
+            DialogMode.Adjustment => (Localizer.GetCurrentLanguage() == "ar" ? "الكمية المضافة / المخصومة" : "Adjustment Quantity (+/-)"),
+            DialogMode.PhysicalCount => (Localizer.GetCurrentLanguage() == "ar" ? "الكمية الفعلية المكتشفة" : "Actual Physical Quantity"),
+            DialogMode.OpeningStock => (Localizer.GetCurrentLanguage() == "ar" ? "رصيد أول المدة" : "Opening Stock Quantity"),
+            _ => "Quantity"
         };
     }
 
-    private Color GetColor()
-    {
-        return Mode switch
-        {
-            DialogMode.Adjustment => Color.Info,
-            DialogMode.PhysicalCount => Color.Success,
-            DialogMode.OpeningStock => Color.Primary,
-            _ => Color.Default
-        };
-    }
+    private string GetIcon() => Mode switch {
+        DialogMode.Adjustment => "tune",
+        DialogMode.PhysicalCount => "fact_check",
+        DialogMode.OpeningStock => "play_circle_filled",
+        _ => "inventory_2"
+    };
 
-    private string GetAdjustmentHelper()
-    {
-        var result = (Item?.CurrentQuantity ?? 0) + QuantityChange;
-        return (Localizer.GetCurrentLanguage() == "ar" ? "الرصيد المتوقع بعد الحفظ: " : "Expected total: ") + result.ToString("N2");
-    }
+    private string GetHexColor() => Mode switch {
+        DialogMode.Adjustment => "#0ea5e9", // Sky 500
+        DialogMode.PhysicalCount => "#10b981", // Emerald 500
+        DialogMode.OpeningStock => "#6366f1", // Indigo 500
+        _ => "#64748b"
+    };
+
+    private string GetHeaderBackground() => Mode switch {
+        DialogMode.Adjustment => "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+        DialogMode.PhysicalCount => "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+        DialogMode.OpeningStock => "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)",
+        _ => "#f8fafc"
+    };
+
+    private string GetHeaderBorder() => Mode switch {
+        DialogMode.Adjustment => "#bae6fd",
+        DialogMode.PhysicalCount => "#bbf7d0",
+        DialogMode.OpeningStock => "#c7d2fe",
+        _ => "#e2e8f0"
+    };
+
+    private string GetShadowColor() => Mode switch {
+        DialogMode.Adjustment => "rgba(14, 165, 233, 0.25)",
+        DialogMode.PhysicalCount => "rgba(16, 185, 129, 0.25)",
+        DialogMode.OpeningStock => "rgba(99, 102, 241, 0.25)",
+        _ => "rgba(0,0,0,0.1)"
+    };
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -146,7 +323,7 @@
                 response = await InventoryService.SetPhysicalStockAsync(new UpdateStockDto
                 {
                     MenuSalesItemId = Item.MenuSalesItemId,
-                    QuantityChange = NewQuantity, // Serves as absolute value in this endpoint
+                    QuantityChange = NewQuantity,
                     Notes = Notes
                 });
             }
@@ -158,6 +335,13 @@
                     QuantityChange = NewQuantity,
                     Notes = Notes
                 });
+            }
+
+            // Also update Minimum Quantity if it changed
+            if (MinQuantity != Item.MinimumQuantity)
+            {
+                Item.MinimumQuantity = MinQuantity;
+                await InventoryService.InitializeInventoryAsync(Item);
             }
 
             if (response.Success)

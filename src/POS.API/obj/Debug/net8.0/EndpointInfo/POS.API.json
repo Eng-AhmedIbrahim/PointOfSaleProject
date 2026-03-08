@@ -5795,6 +5795,44 @@
         }
       }
     },
+    "/api/Item/GetItemTypes": {
+      "get": {
+        "tags": [
+          "Item"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemTypeDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemTypeDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemTypeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/KitchenPrinters": {
       "get": {
         "tags": [
@@ -8872,6 +8910,9 @@
           "invisible": {
             "type": "boolean"
           },
+          "isInventory": {
+            "type": "boolean"
+          },
           "kitchenTypeId": {
             "type": "integer",
             "format": "int32",
@@ -8913,6 +8954,9 @@
             "nullable": true
           },
           "invisible": {
+            "type": "boolean"
+          },
+          "isInventory": {
             "type": "boolean"
           },
           "printInBackupReceipt": {
@@ -9766,9 +9810,43 @@
           "trackInventory": {
             "type": "boolean"
           },
+          "itemTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "itemTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasRecipe": {
+            "type": "boolean"
+          },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ItemTypeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "arabicName": {
+            "type": "string",
+            "nullable": true
+          },
+          "englishName": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -10131,6 +10209,11 @@
           "invisible": {
             "type": "boolean"
           },
+          "itemTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "creationDate": {
             "type": "string",
             "format": "date-time"
@@ -10162,6 +10245,9 @@
             "nullable": true
           },
           "byWeight": {
+            "type": "boolean"
+          },
+          "isInventory": {
             "type": "boolean"
           }
         },
@@ -10310,6 +10396,14 @@
           },
           "byWeight": {
             "type": "boolean"
+          },
+          "isInventory": {
+            "type": "boolean"
+          },
+          "itemTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -12268,6 +12362,12 @@
           "invisible": {
             "type": "boolean"
           },
+          "isInventory": {
+            "type": "boolean"
+          },
+          "byWeight": {
+            "type": "boolean"
+          },
           "kitchenTypeId": {
             "type": "integer",
             "format": "int32",
@@ -12404,6 +12504,11 @@
           "invisible": {
             "type": "boolean"
           },
+          "itemTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "updatedDate": {
             "type": "string",
             "format": "date-time"
@@ -12436,6 +12541,9 @@
             "nullable": true
           },
           "byWeight": {
+            "type": "boolean"
+          },
+          "isInventory": {
             "type": "boolean"
           }
         },

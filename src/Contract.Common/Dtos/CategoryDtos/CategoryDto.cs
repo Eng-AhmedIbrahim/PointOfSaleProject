@@ -9,6 +9,7 @@ public class CategoryDto
     public string? EnglishName { get; set; }
     public string? ItemsFont { get; set; }
     public bool Invisible { get; set; } = false;
+    public bool IsInventory { get; set; } = false;
     public int? KitchenTypeId { get; set; }
     public bool? PrintInBackupReceipt { get; set; } = true;
     public DateTime CreationDate { get; set; }

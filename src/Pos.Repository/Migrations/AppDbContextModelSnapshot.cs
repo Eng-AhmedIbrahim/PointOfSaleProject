@@ -50,6 +50,9 @@ namespace Pos.Repository.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsInventory")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ItemsFont")
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar");
@@ -806,6 +809,12 @@ namespace Pos.Repository.Migrations
                     b.Property<string>("ItemNameEn")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ItemTypeCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ItemTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MenuSalesItemId")
                         .HasColumnType("int");
 
@@ -873,6 +882,28 @@ namespace Pos.Repository.Migrations
                     b.HasIndex("InventoryItemId");
 
                     b.ToTable("InventoryTransactions");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.ItemType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemTypes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.ItemsClassifications", b =>
@@ -953,6 +984,12 @@ namespace Pos.Repository.Migrations
                     b.Property<bool>("Invisible")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsInventory")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("KitchenTypeId")
                         .HasColumnType("int");
 
@@ -1000,6 +1037,8 @@ namespace Pos.Repository.Migrations
                     b.HasIndex("BranchId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ItemTypeId");
 
                     b.HasIndex("KitchenTypeId");
 
@@ -2417,6 +2456,10 @@ namespace Pos.Repository.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("POS.Core.Entities.Item.ItemType", "ItemType")
+                        .WithMany("MenuSalesItems")
+                        .HasForeignKey("ItemTypeId");
+
                     b.HasOne("POS.Core.Entities.Kitchen.KitchenType", "KitchenType")
                         .WithMany("Items")
                         .HasForeignKey("KitchenTypeId");
@@ -2431,6 +2474,8 @@ namespace Pos.Repository.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("Category");
+
+                    b.Navigation("ItemType");
 
                     b.Navigation("KitchenType");
 
@@ -2679,6 +2724,11 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Item.InventoryItem", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.ItemType", b =>
+                {
+                    b.Navigation("MenuSalesItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>

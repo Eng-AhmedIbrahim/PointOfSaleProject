@@ -66,6 +66,7 @@ public class MappingProfiles : Profile
 
         CreateMap<AttributeItemDto, AttributeItem>();
         CreateMap<ItemsClassifications, ItemsClassificationsDto>().ReverseMap();
+        CreateMap<ItemType, ItemTypeDto>();
 
         CreateMap<MenuSalesItemsDto, MenuSalesItems>()
             .ForMember(s => s.ImagePath, s => s.Ignore())

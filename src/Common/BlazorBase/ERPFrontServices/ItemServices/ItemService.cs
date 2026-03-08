@@ -232,4 +232,26 @@ public class ItemService : IItemService
                 : ServiceResponseHelpers.Success(item, responseMessage);
         }, "Failed to Link Attribute");
     }
+
+    public async Task<ServiceResponse<IReadOnlyList<ItemTypeDto>>> GetItemTypesAsync()
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.GetAsync($"{ConstStringsHelper.ItemAPIUrl}/GetItemTypes"));
+            
+            if (response is null)
+                return ServiceResponseHelpers.Failure<IReadOnlyList<ItemTypeDto>>("Failed to connect to the API");
+
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Item types loaded successfully");
+
+            var types = response.IsSuccessStatusCode ?
+                    ApiRequestHelpers.DeserializeResponseContent<IReadOnlyList<ItemTypeDto>>(
+                        await response.Content.ReadAsStringAsync()) : [];
+
+            return types == null
+                ? ServiceResponseHelpers.Failure<IReadOnlyList<ItemTypeDto>>(responseMessage)
+                : ServiceResponseHelpers.Success(types, responseMessage);
+
+        }, "Failed to Load Item Types");
+    }
 }

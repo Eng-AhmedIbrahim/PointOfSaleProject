@@ -50,6 +50,7 @@
                             AllowPaging="true" 
                             PagerHorizontalAlign="Radzen.HorizontalAlign.Left" 
                             ShowPagingSummary="true"
+                            Responsive="true"
                             Style="height: 100%; border: none; font-family: inherit;">
                 <Columns>
                     <RadzenDataGridColumn TItem="MenuSalesItemsToReturnDto" Property="Id" Title="@(IsArabic ? "الكود" : "ID")" Width="80px" TextAlign="Radzen.TextAlign.Center">
@@ -85,11 +86,24 @@
                         <Template Context="item">
                             @if (item.Invisible)
                             {
-                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Warning" Text="@(IsArabic ? "مخفي" : "Hidden")" />
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Error" Style="font-weight: 900;">@(IsArabic ? "مخفي" : "Hidden")</MudChip>
                             }
                             else
                             {
-                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Success" Text="@(IsArabic ? "ظاهر" : "Visible")" />
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Success" Style="font-weight: 900;">@(IsArabic ? "ظاهر" : "Visible")</MudChip>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="MenuSalesItemsToReturnDto" Property="IsInventory" Title="@(IsArabic ? "تتبع المخزن" : "Inventory Tracking")" Width="140px" TextAlign="Radzen.TextAlign.Center">
+                        <Template Context="item">
+                            @if (item.IsInventory)
+                            {
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Success" Style="font-weight: 900;">true</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="MudBlazor.Color.Error" Style="font-weight: 900;">false</MudChip>
                             }
                         </Template>
                     </RadzenDataGridColumn>

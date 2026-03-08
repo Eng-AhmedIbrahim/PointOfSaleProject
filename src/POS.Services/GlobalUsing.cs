@@ -67,3 +67,4 @@ global using POS.Contract.Dtos.Common;
 global using POS.Core.Services.Contract.EncryptionServices;
 global using Pos.Repository.Data;
 global using System.Data;
+global using POS.Core.Specifications.InventorySpecs;

@@ -7,11 +7,13 @@ namespace POS.API.Controllers;
 public class InventoryController : BaseApiController
 {
     private readonly IInventoryService _inventoryService;
+    private readonly IRecipeService _recipeService;
     private readonly IMapper _mapper;
 
-    public InventoryController(IInventoryService inventoryService, IMapper mapper)
+    public InventoryController(IInventoryService inventoryService, IRecipeService recipeService, IMapper mapper)
     {
         _inventoryService = inventoryService;
+        _recipeService = recipeService;
         _mapper = mapper;
     }
 
@@ -19,6 +21,9 @@ public class InventoryController : BaseApiController
     public async Task<IActionResult> GetAllInventory()
     {
         var items = await _inventoryService.GetAllInventoryItemsAsync();
+        var recipes = await _recipeService.GetAllRecipesAsync();
+        var recipeItemIds = recipes.Select(r => r.MenuSalesItemId).ToHashSet();
+
         // Since we don't have automapper config for this new entity yet, we'll map manually or just return mapped DTOs if possible
         var dtos = items.Select(i => new InventoryItemDto
         {
@@ -36,6 +41,9 @@ public class InventoryController : BaseApiController
             CategoryNameAr = i.CategoryNameAr,
             CategoryNameEn = i.CategoryNameEn,
             TrackInventory = i.TrackInventory,
+            ItemTypeId = i.ItemTypeId,
+            ItemTypeCode = i.ItemTypeCode,
+            HasRecipe = recipeItemIds.Contains(i.MenuSalesItemId),
             UpdatedAt = i.UpdatedAt ?? i.CreatedAt
         }).ToList();
 
@@ -64,6 +72,8 @@ public class InventoryController : BaseApiController
             CategoryNameAr = item.CategoryNameAr,
             CategoryNameEn = item.CategoryNameEn,
             TrackInventory = item.TrackInventory,
+            ItemTypeId = item.ItemTypeId,
+            ItemTypeCode = item.ItemTypeCode,
             UpdatedAt = item.UpdatedAt ?? item.CreatedAt
         });
     }
@@ -109,7 +119,8 @@ public class InventoryController : BaseApiController
             initDto.MenuSalesItemId, 
             initDto.CurrentQuantity, 
             initDto.MinimumQuantity, 
-            initDto.UnitId
+            initDto.UnitId,
+            initDto.TrackInventory
         );
         return Ok(result != null);
     }

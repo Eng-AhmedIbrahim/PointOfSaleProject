@@ -1,3 +1,10 @@
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.csproj.AssemblyReference.cache
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\MainWindow.g.cs
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\App.g.cs
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_Content.g.cs
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_MarkupCompile.cache
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_MarkupCompile.lref
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\wwwroot\actions-section.css
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\wwwroot\app.css
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\wwwroot\basicdata\categorymanagement.css
@@ -200,13 +207,6 @@ F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\POS.Author
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\POS.Core.pdb
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\POS.Reports.pdb
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\ar\BlazorBase.resources.dll
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.csproj.AssemblyReference.cache
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\MainWindow.g.cs
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\App.g.cs
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_Content.g.cs
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_MarkupCompile.cache
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop_MarkupCompile.lref
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\MainWindow.baml
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.g.resources
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\rpswa.dswa.cache.json
@@ -239,10 +239,10 @@ F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticweba
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildMultiTargeting.BackOffice.Desktop.props
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildTransitive.BackOffice.Desktop.props
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.pack.json
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffi.95758648.Up2Date
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\refint\BackOffice.Desktop.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.pdb
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.genruntimeconfig.cache
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\ref\BackOffice.Desktop.dll
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt

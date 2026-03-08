@@ -26,6 +26,7 @@ using BlazorBase.ERPFrontServices.VoidServices;
 using BlazorBase.ERPFrontServices.ReportingServices;
 using BlazorBase.ERPFrontServices.PaymentMethodServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
+using BlazorBase.ERPFrontServices.InventoryServices;
 using BlazorBase.API;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -267,6 +268,9 @@ public partial class App : Application
         services.AddScoped<IReportingErpService, ReportingErpService>();
         services.AddScoped<IPaymentMethodServices, BlazorBase.ERPFrontServices.PaymentMethodServices.PaymentMethodServices>();
         services.AddScoped<ISystemSettingsServices, SystemSettingsServices>();
+        services.AddScoped<IInventoryFrontService, InventoryFrontService>();
+        services.AddScoped<IRecipeFrontService, RecipeFrontService>();
+        services.AddScoped<IUnitFrontService, UnitFrontService>();
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));

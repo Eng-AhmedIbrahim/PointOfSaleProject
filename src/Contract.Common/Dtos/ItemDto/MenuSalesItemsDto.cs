@@ -21,6 +21,7 @@ public class MenuSalesItemsDto
     public string? TextColor { get; set; }
     public int? TextSize { get; set; } // px or pt
     public bool Invisible { get; set; } = false;
+    public int? ItemTypeId { get; set; } = 1;
     public DateTime CreationDate { get; set; }
 
     public int? BranchId { get; set; } = 1;
@@ -31,6 +32,7 @@ public class MenuSalesItemsDto
     public int? KitchenTypeId { get; set; }
     public bool? PrintInBackupReceipt { get; set; } = true;
     public bool ByWeight { get; set; } = false;
+    public bool IsInventory { get; set; } = true;
     public MenuSalesItemsDto()
     {
         CreationDate = DateTime.Now;

@@ -59,6 +59,22 @@
                             <RadzenSwitch @bind-Value="model.Invisible" Name="Invisible" Style="--rz-switch-checked-background-color: #f59e0b;" />
                         </div>
                     </div>
+
+                    <!-- IsInventory Toggle -->
+                    <div class="col-12 mt-2">
+                        <div class="invisible-toggle-card d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-stat-box me-3" style="background: #10b981;">
+                                    <RadzenIcon Icon="inventory_2" Style="color: white;" />
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <RadzenLabel Text="@(IsArabic ? "تتبع المخزون" : "Inventory Tracking")" Style="font-weight: 700; color: #1e293b; font-size: 0.95rem;" />
+                                    <small class="text-muted">@(IsArabic ? (model.IsInventory ? "يتم تتبع مخزون هذا القسم" : "القسم غير مرتبط بالمخزن") : (model.IsInventory ? "Inventory tracked" : "Not tracked"))</small>
+                                </div>
+                            </div>
+                            <RadzenSwitch @bind-Value="model.IsInventory" Name="IsInventory" Style="--rz-switch-checked-background-color: #10b981;" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -185,6 +201,7 @@
         public string ArabicName { get; set; } = string.Empty;
         public string EnglishName { get; set; } = string.Empty;
         public bool Invisible { get; set; }
+        public bool IsInventory { get; set; }
     }
 
     protected override void OnInitialized()
@@ -195,6 +212,7 @@
             model.ArabicName = CategoryToEdit.ArabicName ?? string.Empty;
             model.EnglishName = CategoryToEdit.EnglishName ?? string.Empty;
             model.Invisible = CategoryToEdit.Invisible;
+            model.IsInventory = CategoryToEdit.IsInventory;
         }
         else
         {
@@ -222,6 +240,7 @@
                     ArabicName = model.ArabicName,
                     EnglishName = model.EnglishName,
                     Invisible = model.Invisible,
+                    IsInventory = model.IsInventory,
                     ItemsFont = "regular",
                     CreationDate = DateTime.Now
                 };
@@ -245,6 +264,7 @@
                     ArabicName = model.ArabicName,
                     EnglishName = model.EnglishName,
                     Invisible = model.Invisible,
+                    IsInventory = model.IsInventory,
                     ItemsFont = CategoryToEdit.ItemsFont ?? "regular"
                 };
 

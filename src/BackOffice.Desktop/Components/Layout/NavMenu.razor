@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject POS.Core.Services.Contract.PosFeatureServices.IPosFeatureSettingsService FeatureSettingsService
 
-<div class="top-nav-professional" dir="rtl">
+<div class="top-nav-professional" dir="@(LocalizerService.GetCurrentLanguage() == "ar" ? "rtl" : "ltr")">
     <!-- Brand Section -->
     <div class="nav-brand">
         <div class="logo-circle">
@@ -154,7 +154,12 @@
                     </div>
                 </ActivatorContent>
                 <ChildContent>
-                    <MudMenuItem Href="/basicdata/inventory"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Inventory" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إدارة المخازن" : "Inventory Management")</div></MudMenuItem>
+                    <MudMenuItem Href="/basicdata/inventory"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Inventory" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "رصيد المخزن العام" : "General Stock")</div></MudMenuItem>
+                    <MudDivider Class="my-2" />
+                    <MudMenuItem Href="/inventory/raw-materials"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Kitchen" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إدارة المواد الخام" : "Raw Materials")</div></MudMenuItem>
+                    <MudMenuItem Href="/inventory/semi-finished"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Science" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "أصناف نصف مصنعة" : "Semi-Finished Items")</div></MudMenuItem>
+                    <MudMenuItem Href="/inventory/recipes"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.MenuBook" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إدارة الريسيبي (BOM)" : "Recipe Management")</div></MudMenuItem>
+                    <MudDivider Class="my-2" />
                     <MudMenuItem Href="/basicdata/units"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Straighten" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "تعريف الوحدات" : "Units Definition")</div></MudMenuItem>
                 </ChildContent>
             </MudMenu>

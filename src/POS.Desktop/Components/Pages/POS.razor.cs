@@ -118,6 +118,40 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
+        // Check if Stop Sale on Min Quantity is enabled for this machine
+        string computerName = Environment.MachineName;
+        bool isStopEnabled = await _featureSettingsService.IsFeatureEnabledAsync("EnableMinQuantityStop", computerName);
+        
+        if (isStopEnabled)
+        {
+            var response = await _inventoryService.GetInventoryByItemIdAsync(selectedMenuItem.Id);
+            if (response.Success && response.Data != null)
+            {
+                var inventory = response.Data;
+                if (inventory.TrackInventory)
+                {
+                    // Calculate what's already in the cart for this item
+                    decimal currentCartQty = _commonProperties.TableItems
+                        .Where(i => i.Id == selectedMenuItem.Id && !i.IsReadOnly && !i.IsVoided)
+                        .Sum(i => i.Quantity);
+
+                    // If we are adding 1 more (or weight 1), check if it exceeds limit
+                    if (inventory.CurrentQuantity - (currentCartQty + 1) < inventory.MinimumQuantity)
+                    {
+                        decimal availableToSell = inventory.CurrentQuantity - inventory.MinimumQuantity - currentCartQty;
+                        if (availableToSell < 0) availableToSell = 0;
+
+                        string msg = Localizer.GetCurrentLanguage() == "ar" 
+                            ? $"عذراً، لا يمكن إضافة المزيد من '{selectedMenuItem.ArabicName}'. المتاح للبيع حالياً: {availableToSell:0.##}"
+                            : $"Sorry, cannot add more of '{selectedMenuItem.EnglishName}'. Available to sell: {availableToSell:0.##}";
+                        
+                        _snackbar.Add(msg, Severity.Error);
+                        return;
+                    }
+                }
+            }
+        }
+
         // If item is sold by weight, show weight selection dialog first
         if (selectedMenuItem.ByWeight)
         {

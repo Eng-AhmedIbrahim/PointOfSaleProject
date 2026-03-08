@@ -28,4 +28,6 @@ public class MenuSalesItemsToReturnDto
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }
     public bool ByWeight { get; set; } = false;
+    public bool IsInventory { get; set; } = true;
+    public int? ItemTypeId { get; set; }
 }

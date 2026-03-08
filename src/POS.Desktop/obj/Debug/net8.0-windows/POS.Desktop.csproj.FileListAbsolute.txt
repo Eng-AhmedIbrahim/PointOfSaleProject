@@ -5,6 +5,10 @@ F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop_Conte
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop_MarkupCompile.cache
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop_MarkupCompile.lref
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\MainWindow.baml
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.dll
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\refint\POS.Desktop.dll
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.pdb
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\wwwroot\actions-section.css
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\wwwroot\app.css
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\wwwroot\bootstrap\bootstrap.min.css
@@ -198,7 +202,6 @@ F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\POS.Authorization
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\POS.Core.pdb
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\POS.Reports.pdb
 F:\PointOfSaleProject\src\POS.Desktop\bin\Debug\net8.0-windows\ar\BlazorBase.resources.dll
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\MainWindow.baml
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.g.resources
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\rpswa.dswa.cache.json
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.GeneratedMSBuildEditorConfig.editorconfig
@@ -239,8 +242,5 @@ F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\m
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.pack.json
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desk.5A2F66C5.Up2Date
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.dll
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\refint\POS.Desktop.dll
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.pdb
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.genruntimeconfig.cache
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\ref\POS.Desktop.dll

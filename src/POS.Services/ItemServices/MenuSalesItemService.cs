@@ -22,6 +22,36 @@ public class MenuSalesItemService : IMenuSalesItemService
             if (result <= 0)
                 return null;
 
+            // Automatically create the initial InventoryItem record to ensure stock deduction happens
+            if (item.IsInventory)
+            {
+                var inventory = new InventoryItem
+                {
+                    MenuSalesItemId = item.Id,
+                    CurrentQuantity = 0,
+                    MinimumQuantity = 0,
+                    TrackInventory = item.IsInventory,
+                    CreatedAt = DateTime.UtcNow,
+                    BranchId = item.BranchId,
+                    ItemTypeId = item.ItemTypeId
+                };
+                await _unitOfWork.Repository<InventoryItem>().AddAsync(inventory);
+                
+                // --- UPWARD SYNC ---
+                // If item is inventory tracked, ensure its category is also marked as inventory tracked
+                if (item.CategoryId.HasValue)
+                {
+                    var category = await _unitOfWork.Repository<Category>().GetByIdAsync(item.CategoryId.Value);
+                    if (category != null && !category.IsInventory)
+                    {
+                        category.IsInventory = true;
+                        _unitOfWork.Repository<Category>().Update(category);
+                    }
+                }
+                
+                await _unitOfWork.CompleteAsync();
+            }
+
             return item;
         }
         catch (Exception ex)
@@ -224,15 +254,86 @@ public class MenuSalesItemService : IMenuSalesItemService
             if (newItem.Invisible != oldItem.Invisible)
                 oldItem.Invisible = newItem.Invisible;
 
+            if (newItem.ItemTypeId != oldItem.ItemTypeId)
+                oldItem.ItemTypeId = newItem.ItemTypeId;
+
             if (newItem.KitchenTypeId != oldItem.KitchenTypeId)
                 oldItem.KitchenTypeId = newItem.KitchenTypeId;
 
             if (newItem.PrintInBackupReceipt.HasValue && newItem.PrintInBackupReceipt != oldItem.PrintInBackupReceipt)
                 oldItem.PrintInBackupReceipt = newItem.PrintInBackupReceipt;
+            
+            if (newItem.ByWeight != oldItem.ByWeight)
+                oldItem.ByWeight = newItem.ByWeight;
+
+            if (newItem.IsInventory != oldItem.IsInventory)
+                oldItem.IsInventory = newItem.IsInventory;
+
+            // Clear navigation properties to prevent EF from syncing the related entities
+            // and overriding the modified foreign keys (e.g. CategoryId).
+            oldItem.Category = null;
+            oldItem.MainCategory = null;
+            oldItem.ItemType = null;
+            oldItem.KitchenType = null;
+            oldItem.Attribute = null;
+            oldItem.Branch = null;
+            oldItem.OrderDetails = null;
 
             _unitOfWork.Repository<MenuSalesItems>().Update(oldItem);
-
             await _unitOfWork.CompleteAsync();
+
+            // Sync InventoryItem.TrackInventory with the item's IsInventory flag
+            var invSpec = new InventoryItemByMenuSalesItemIdSpecification(oldItem.Id);
+            var inventoryItem = await _unitOfWork.Repository<InventoryItem>().GetByIdWithSpecificationTrackedAsync(invSpec);
+
+            if (inventoryItem == null && oldItem.IsInventory)
+            {
+                // No inventory record exists yet – create one so deductions can fire
+                var newInventory = new InventoryItem
+                {
+                    MenuSalesItemId = oldItem.Id,
+                    CurrentQuantity = 0,
+                    MinimumQuantity = 0,
+                    TrackInventory = true,
+                    CreatedAt = DateTime.UtcNow,
+                    BranchId = oldItem.BranchId,
+                    ItemTypeId = oldItem.ItemTypeId
+                };
+                await _unitOfWork.Repository<InventoryItem>().AddAsync(newInventory);
+                
+                // --- UPWARD SYNC ---
+                // If item is inventory tracked, ensure its category is also marked as inventory tracked
+                if (oldItem.CategoryId.HasValue)
+                {
+                    var category = await _unitOfWork.Repository<Category>().GetByIdAsync(oldItem.CategoryId.Value);
+                    if (category != null && !category.IsInventory)
+                    {
+                        category.IsInventory = true;
+                        _unitOfWork.Repository<Category>().Update(category);
+                    }
+                }
+                
+                await _unitOfWork.CompleteAsync();
+            }
+            else if (inventoryItem != null && (inventoryItem.TrackInventory != oldItem.IsInventory))
+            {
+                // Record exists but TrackInventory is out of sync – fix it
+                inventoryItem.TrackInventory = oldItem.IsInventory;
+                _unitOfWork.Repository<InventoryItem>().Update(inventoryItem);
+                
+                // --- UPWARD SYNC (on update) ---
+                if (oldItem.IsInventory && oldItem.CategoryId.HasValue)
+                {
+                    var category = await _unitOfWork.Repository<Category>().GetByIdAsync(oldItem.CategoryId.Value);
+                    if (category != null && !category.IsInventory)
+                    {
+                        category.IsInventory = true;
+                        _unitOfWork.Repository<Category>().Update(category);
+                    }
+                }
+                
+                await _unitOfWork.CompleteAsync();
+            }
 
             return oldItem;
         }
@@ -275,7 +376,7 @@ public class MenuSalesItemService : IMenuSalesItemService
     {
         try
         {
-            var itemSpecs = new MenuSalesItemsWithIncludeSpec(c=>c.CategoryId == catId);
+            var itemSpecs = new MenuSalesItemsWithIncludeSpec(c => c.CategoryId == catId);
             var items = await _unitOfWork.Repository<MenuSalesItems>().GetAllWithSpecificationAsync(itemSpecs);
 
 
@@ -286,6 +387,18 @@ public class MenuSalesItemService : IMenuSalesItemService
         catch (Exception ex)
         {
             Log.Error(ex.Message);
+            return null;
+        }
+    }
+    public async Task<IReadOnlyList<ItemType>?> GetAllItemTypesAsync()
+    {
+        try
+        {
+            return await _unitOfWork.Repository<ItemType>().GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading item types");
             return null;
         }
     }

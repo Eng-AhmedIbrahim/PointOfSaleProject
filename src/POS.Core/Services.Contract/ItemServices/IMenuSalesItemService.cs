@@ -14,4 +14,5 @@ public interface IMenuSalesItemService
     public Task<ItemsClassifications?> UpdateClassificationAsync(ItemsClassifications oldClassification, ItemsClassifications newClassification);
     public Task<bool> DeleteClassification(ItemsClassifications classification);
     public Task<MenuSalesItems?> AddAttributeToItem(int attributeId,int itemId);
+    public Task<IReadOnlyList<ItemType>?> GetAllItemTypesAsync();
 }

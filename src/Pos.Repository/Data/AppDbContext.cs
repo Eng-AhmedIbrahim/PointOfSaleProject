@@ -65,4 +65,5 @@ public class AppDbContext : DbContext
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     public DbSet<Unit> Units { get; set; }
+    public DbSet<ItemType> ItemTypes { get; set; }
 }

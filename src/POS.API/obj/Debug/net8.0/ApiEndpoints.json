@@ -3224,6 +3224,26 @@
   },
   {
     "ContainingType": "POS.API.Controllers.ItemController",
+    "Method": "GetItemTypes",
+    "RelativePath": "api/Item/GetItemTypes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[POS.Contract.Dtos.ItemDto.ItemTypeDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ItemController",
     "Method": "UpdateClassification",
     "RelativePath": "api/Item/UpdateClassification",
     "HttpMethod": "PUT",

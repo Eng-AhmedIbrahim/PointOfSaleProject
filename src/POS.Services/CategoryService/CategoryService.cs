@@ -1,4 +1,7 @@
 ﻿using POS.Core.Entities.Categorie;
+using POS.Core.Entities.Item;
+using POS.Core.Specifications;
+using POS.Core.Specifications.InventorySpecs;
 
 namespace POS.Services.CategoryService;
 
@@ -110,8 +113,11 @@ public class CategoryService : ICategoryService
             if (newCategory.KitchenTypeId != oldCategory.KitchenTypeId)
                 oldCategory.KitchenTypeId = newCategory.KitchenTypeId;
 
-            if (newCategory.PrintInBackupReceipt != oldCategory.PrintInBackupReceipt)
+            if (newCategory.PrintInBackupReceipt.HasValue && newCategory.PrintInBackupReceipt != oldCategory.PrintInBackupReceipt)
                 oldCategory.PrintInBackupReceipt = newCategory.PrintInBackupReceipt;
+
+            if (newCategory.IsInventory != oldCategory.IsInventory)
+                oldCategory.IsInventory = newCategory.IsInventory;
 
              _unitOfWork.Repository<Category>().Update(oldCategory);
             var result = await _unitOfWork.CompleteAsync();

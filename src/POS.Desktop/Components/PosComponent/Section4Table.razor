@@ -3,6 +3,8 @@
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
 @inject CartService _cartService
+@inject IInventoryFrontService _inventoryService
+@inject IPosFeatureSettingsService _featureSettingsService
 
 <MudTable Items="Items ?? []" Dense="true" Hover="true" FixedHeader="true"
           RowEditTrigger="@(IsReadOnly ? TableEditTrigger.EditButton : TableEditTrigger.RowClick)"

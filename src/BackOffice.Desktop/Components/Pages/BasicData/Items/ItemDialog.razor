@@ -54,6 +54,17 @@
                         </div>
                     </div>
 
+                    @if (_isInventoryEnabled)
+                    {
+                        <!-- Item Type Dropdown -->
+                        <div class="dropdown-field-wrap">
+                            <RadzenDropDown TValue="int?" Data="@ItemTypes" TextProperty="@(IsArabic ? "ArabicName" : "EnglishName")" ValueProperty="Id"
+                                            @bind-Value="model.ItemTypeId" Change="@OnItemTypeChanged"
+                                            Style="width: 100%; border-radius: 12px; height: 52px; border: 2px solid #e2e8f0; font-weight: 800;"
+                                            Placeholder="@(IsArabic ? "اختر نوع الصنف..." : "Select Item Type...")" />
+                        </div>
+                    }
+
                     <!-- Classification Dropdown -->
                     <div class="dropdown-field-wrap">
                         <RadzenDropDown TValue="int?" Data="@Classifications" TextProperty="@(IsArabic ? "ArabicName" : "Name")" ValueProperty="Id"
@@ -127,6 +138,22 @@
                             </div>
                             <RadzenSwitch @bind-Value="model.HasAttribute" Name="HasAttribute" />
                         </div>
+                        @if (_isInventoryEnabled)
+                        {
+                            <div class="field-divider"></div>
+                            <div class="field-row justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="vis-icon-circle" style="background: @(model.IsInventory ? "#f0fdf4" : "#fef2f2"); border: 1.5px solid @(model.IsInventory ? "#86efac" : "#fecaca");">
+                                        <RadzenIcon Icon="@(model.IsInventory ? "inventory_2" : "inventory")" Style="@($"color: {(model.IsInventory ? "#16a34a" : "#dc2626")}; font-size: 1.2rem;")" />
+                                    </span>
+                                    <div>
+                                        <div style="font-weight: 900; font-size: 1rem; color: #1e293b;">@(IsArabic ? "تتبع كمخزون" : "Track as Inventory")</div>
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: @(model.IsInventory ? "#16a34a" : "#dc2626");">@(IsArabic ? (model.IsInventory ? "نعم" : "لا") : (model.IsInventory ? "Yes" : "No"))</div>
+                                    </div>
+                                </div>
+                                <RadzenSwitch @bind-Value="model.IsInventory" Name="IsInventory" />
+                            </div>
+                        }
                     </div>
 
                     @if (model.HasAttribute)
@@ -601,7 +628,9 @@
 
 @using POS.Core.Entities.Item
 @using POS.Core.Services.Contract.ItemServices
+@using POS.Core.Services.Contract.PosFeatureServices
 @inject IAttributeService AttributeService
+@inject IPosFeatureSettingsService FeatureSettingsService
 
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = null!;
@@ -612,7 +641,27 @@
     private bool _isSaving = false;
     private bool _stayOpen = false;
     private bool _showAdvanced = false;
+    private bool _isInventoryEnabled = false;
     private ItemFormModel model = new();
+
+    private void OnItemTypeChanged(object value)
+    {
+        if (value is int newTypeId)
+        {
+            var selectedType = ItemTypes.FirstOrDefault(t => t.Id == newTypeId);
+            if (selectedType != null)
+            {
+                if (selectedType.Code != "SaleItem" && selectedType.Code != "Service")
+                {
+                    model.Invisible = true;
+                }
+                else
+                {
+                    model.Invisible = false;
+                }
+            }
+        }
+    }
 
     private bool HasAdvancedSettings => model.Tax.HasValue || !string.IsNullOrEmpty(model.BackColor)
         || !string.IsNullOrEmpty(model.TextColor) || model.TextSize.HasValue || model.ByWeight;
@@ -622,6 +671,7 @@
     private List<CategoryToReturnDto> Categories = new();
     private List<ItemsClassificationsDto> Classifications = new();
     private List<Attributes> AttributesList = new();
+    private List<ItemTypeDto> ItemTypes = new();
 
     public class ItemFormModel
     {
@@ -636,17 +686,20 @@
         public int? MainCategoryId { get; set; }
         public bool HasAttribute { get; set; }
         public int? AttributeId { get; set; }
+        public int? ItemTypeId { get; set; }
         // Design settings
         public string? BackColor { get; set; }
         public string? TextColor { get; set; }
         public int? TextSize { get; set; }
         // Weight pricing
         public bool ByWeight { get; set; } = false;
+        public bool IsInventory { get; set; } = true;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.WhenAll(LoadCategories(), LoadClassifications(), LoadAttributes());
+        _isInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
+        await Task.WhenAll(LoadCategories(), LoadClassifications(), LoadAttributes(), LoadItemTypes());
 
         if (ItemToEdit != null)
         {
@@ -663,6 +716,8 @@
             model.TextColor = ItemToEdit.TextColor;
             model.TextSize = ItemToEdit.TextSize;
             model.ByWeight = ItemToEdit.ByWeight;
+            model.ItemTypeId = ItemToEdit.ItemTypeId;
+            model.IsInventory = ItemToEdit.IsInventory;
 
             model.HasAttribute = ItemToEdit.AttributeId.HasValue;
             model.AttributeId = ItemToEdit.AttributeId;
@@ -673,6 +728,8 @@
         else
         {
             SetNextId();
+            // Default to SaleItem using code lookup
+            model.ItemTypeId = ItemTypes.FirstOrDefault(x => x.Code == "SaleItem")?.Id ?? 1;
         }
     }
 
@@ -705,6 +762,15 @@
         if (result != null) AttributesList = result.ToList();
     }
 
+    private async Task LoadItemTypes()
+    {
+        var response = await ItemService.GetItemTypesAsync();
+        if (response != null && response.Success && response.Data != null)
+        {
+            ItemTypes = response.Data.ToList();
+        }
+    }
+
     private void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
     {
         Snackbar.Add(IsArabic ? "يرجى التحقق من البيانات المطلوبة" : "Please check required fields", Severity.Warning);
@@ -735,6 +801,8 @@
                     TextColor = model.TextColor,
                     TextSize = model.TextSize,
                     ByWeight = model.ByWeight,
+                    ItemTypeId = model.ItemTypeId,
+                    IsInventory = model.IsInventory,
                     BranchId = 1,
                     CreationDate = DateTime.Now
                 };
@@ -779,6 +847,8 @@
                     TextColor = model.TextColor,
                     TextSize = model.TextSize,
                     ByWeight = model.ByWeight,
+                    ItemTypeId = model.ItemTypeId,
+                    IsInventory = model.IsInventory,
                     BranchId = ItemToEdit.BranchId ?? 1
                 };
 

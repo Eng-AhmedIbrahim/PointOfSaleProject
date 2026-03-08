@@ -1,4 +1,5 @@
 @page "/pos"
+@using BlazorBase.ERPFrontServices.InventoryServices
 @layout PosScreenLayout
 @inject CommonProperties _commonProperties
 @inject Section4ButtonsServices _section4ButtonsServices
@@ -13,6 +14,7 @@
 @inject IBranchService _branchService
 @inject IPrintOrderService _printOrderService
 @inject IPosFeatureSettingsService _featureSettingsService
+@inject IInventoryFrontService _inventoryService
 @inject IDialogService DialogService
 @implements IDisposable
 

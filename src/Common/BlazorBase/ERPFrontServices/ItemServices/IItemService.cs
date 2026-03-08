@@ -14,4 +14,5 @@ public interface IItemService
     Task<ServiceResponse<MenuSalesItemsToReturnDto>> UpdateItemAsync(UpdatedItemDto updatedItem);
     Task<ServiceResponse<bool>> DeleteItemAsync(int itemId);
     Task<ServiceResponse<MenuSalesItemsToReturnDto>> AddAttributeToItemAsync(int attributeId, int itemId);
+    Task<ServiceResponse<IReadOnlyList<ItemTypeDto>>> GetItemTypesAsync();
 }

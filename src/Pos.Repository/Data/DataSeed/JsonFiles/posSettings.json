@@ -368,6 +368,14 @@
     "Value": true
   },
   {
+    "FeatureName": "EnableMinQuantityStop",
+    "NameEn": "Stop Sale on Min Stock",
+    "NameAr": "منع البيع عند حد الطلب",
+    "ModuleName": "Inventory",
+    "ScreenName": "Inventory Management",
+    "Value": false
+  },
+  {
     "FeatureName": "EnableInventoryTracking",
     "NameEn": "Enable Inventory Tracking",
     "NameAr": "تفعيل نظام المخازن",

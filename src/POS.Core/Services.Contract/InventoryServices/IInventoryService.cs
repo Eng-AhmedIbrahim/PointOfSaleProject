@@ -13,7 +13,7 @@ public interface IInventoryService
     
     Task ConsumeItemStockAsync(int menuSalesItemId, decimal quantity, TransactionType type = TransactionType.Sale, string? referenceId = null);
     
-    Task<InventoryItem> InitializeInventoryAsync(int menuSalesItemId, decimal initialQuantity, decimal minQuantity, int? unitId);
+    Task<InventoryItem> InitializeInventoryAsync(int menuSalesItemId, decimal initialQuantity, decimal minQuantity, int? unitId, bool? trackInventory = null);
     Task InitializeAllItemsAsync();
     
     Task<IReadOnlyList<InventoryTransaction>> GetTransactionsByItemIdAsync(int menuSalesItemId);

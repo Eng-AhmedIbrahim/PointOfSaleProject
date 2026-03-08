@@ -7,6 +7,7 @@ public class Category : BaseEntity
     public string? NormalizedEnglishName { get; set; }
     public string? ItemsFont { get; set; }
     public bool Invisible { get; set; } = false;
+    public bool IsInventory { get; set; } = false;
     public bool? PrintInBackupReceipt { get; set; } = true;
 
     public DateTime CreationDate { get; set; }

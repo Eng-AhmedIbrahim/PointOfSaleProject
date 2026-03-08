@@ -49,6 +49,12 @@ public class InventoryService : IInventoryService
 
     public async Task ConsumeItemStockAsync(int menuSalesItemId, decimal quantity, TransactionType type = TransactionType.Sale, string? referenceId = null)
     {
+        await ConsumeRecursiveInternal(menuSalesItemId, quantity, type, referenceId, 0);
+    }
+
+    private async Task ConsumeRecursiveInternal(int menuSalesItemId, decimal quantity, TransactionType type, string? referenceId, int depth)
+    {
+        if (depth > 5) return; // Prevention for infinite recipe loops
         if (!await _featureSettings.IsFeatureEnabledAsync("EnableInventoryTracking")) return;
 
         try 
@@ -58,30 +64,59 @@ public class InventoryService : IInventoryService
             string actionWord = type == TransactionType.Void ? "Returned" : "Consumed";
             decimal factor = type == TransactionType.Void ? 1 : -1;
 
+            // 1. Deduct the item itself if it's tracked
+            var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
+            if (inventory != null && inventory.TrackInventory)
+            {
+                await UpdateStockAsync(
+                    menuSalesItemId, 
+                    quantity * factor, 
+                    type, 
+                    referenceId, 
+                    $"Item {actionWord.ToLower()} x {quantity}");
+            }
+
+            // 2. Deduct ingredients if there's a recipe
             if (recipe != null && recipe.Ingredients.Any())
             {
                 foreach (var ingredient in recipe.Ingredients)
                 {
                     decimal totalRequiredAction = ingredient.Quantity * quantity;
-                    await UpdateStockAsync(
-                        ingredient.MenuSalesIngredientId, 
-                        totalRequiredAction * factor, 
-                        type, 
-                        referenceId, 
-                        $"{actionWord} for {recipe.RecipeName} x {quantity}");
-                }
-            }
-            else 
-            {
-                var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
-                if (inventory != null && inventory.TrackInventory)
-                {
-                    await UpdateStockAsync(
-                        menuSalesItemId, 
-                        quantity * factor, 
-                        type, 
-                        referenceId, 
-                        $"Item {actionWord.ToLower()} x {quantity}");
+                    
+                    // Check if this ingredient itself has a recipe (Recursive deduction)
+                    var ingredientRecipe = await _recipeService.GetRecipeByItemIdAsync(ingredient.MenuSalesIngredientId);
+                    var ingredientInventory = await GetInventoryByItemIdAsync(ingredient.MenuSalesIngredientId);
+
+                    // --- UNIT CONVERSION LOGIC ---
+                    Unit? ingredientUnit = ingredient.Unit;
+                    if (ingredientUnit == null && ingredient.UnitId.HasValue)
+                        ingredientUnit = await _unitOfWork.Repository<Unit>().GetByIdAsync(ingredient.UnitId.Value);
+
+                    Unit? inventoryUnit = null;
+                    if (ingredientInventory != null && ingredientInventory.UnitId.HasValue)
+                        inventoryUnit = await _unitOfWork.Repository<Unit>().GetByIdAsync(ingredientInventory.UnitId.Value);
+
+                    // Convert required amount based on Recipe Unit -> Inventory Unit
+                    totalRequiredAction = UnitConverter.Convert(totalRequiredAction, ingredientUnit, inventoryUnit);
+                    // -----------------------------
+
+                    // If ingredient has a recipe, we always process it recursively to handle multi-level recipes.
+                    if (ingredientRecipe != null && ingredientRecipe.Ingredients.Any())
+                    {
+                        // Note: ConsumeRecursiveInternal handles checking if the ingredient itself is tracked
+                        // so we don't need to call UpdateStockAsync here for the ingredient.
+                        await ConsumeRecursiveInternal(ingredient.MenuSalesIngredientId, totalRequiredAction, type, referenceId, depth + 1);
+                    }
+                    else
+                    {
+                        // If no recipe, just update the stock of the ingredient itself
+                        await UpdateStockAsync(
+                            ingredient.MenuSalesIngredientId, 
+                            totalRequiredAction * factor, 
+                            type, 
+                            referenceId, 
+                            $"{actionWord} for {recipe.RecipeName} x {quantity}");
+                    }
                 }
             }
         }
@@ -125,7 +160,7 @@ public class InventoryService : IInventoryService
         }
     }
 
-    public async Task<InventoryItem> InitializeInventoryAsync(int menuSalesItemId, decimal initialQuantity, decimal minQuantity, int? unitId)
+    public async Task<InventoryItem> InitializeInventoryAsync(int menuSalesItemId, decimal initialQuantity, decimal minQuantity, int? unitId, bool? trackInventory = null)
     {
         var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
         
@@ -145,7 +180,7 @@ public class InventoryService : IInventoryService
                 CurrentQuantity = initialQuantity,
                 MinimumQuantity = minQuantity,
                 UnitId = unitId,
-                TrackInventory = true,
+                TrackInventory = item?.IsInventory ?? true,
                 CreatedAt = DateTime.UtcNow,
                 BranchId = branchId
             };
@@ -166,6 +201,7 @@ public class InventoryService : IInventoryService
         {
             inventory.UnitId = unitId;
             inventory.MinimumQuantity = minQuantity;
+            inventory.TrackInventory = trackInventory ?? inventory.TrackInventory;
         }
 
         // Keep metadata updated
@@ -186,6 +222,16 @@ public class InventoryService : IInventoryService
         {
             inventory.UnitNameAr = unit.ArabicName;
             inventory.UnitNameEn = unit.EnglishName;
+        }
+
+        if (item != null)
+        {
+            inventory.ItemTypeId = item.ItemTypeId;
+            if (item.ItemTypeId.HasValue)
+            {
+                var type = await _unitOfWork.Repository<ItemType>().GetByIdAsync(item.ItemTypeId.Value);
+                inventory.ItemTypeCode = type?.Code;
+            }
         }
 
         if (inventory.Id > 0)
@@ -215,20 +261,78 @@ public class InventoryService : IInventoryService
             var existingInventory = await _unitOfWork.Repository<InventoryItem>().GetAllAsync();
             var inventoryMap = existingInventory.ToDictionary(x => x.MenuSalesItemId);
 
+            // Load all item types to identify services
+            var allItemTypes = await _unitOfWork.Repository<ItemType>().GetAllAsync();
+            var serviceTypeIds = allItemTypes.Where(t => t.Code == "Service").Select(t => t.Id).ToList();
+
+            Console.WriteLine($"[INVENTORY] Starting InitializeAllItemsAsync. Found {allItems.Count} items.");
             foreach (var item in allItems)
             {
+                // Skip service items
+                if (item.ItemTypeId.HasValue && serviceTypeIds.Contains(item.ItemTypeId.Value))
+                {
+                    Console.WriteLine($"[INVENTORY] Skipping service item: {item.ArabicName}");
+                    continue;
+                }
+
+                // If IsInventory is false, we only skip if it's NOT a new record being created.
+                // This ensures existing items get an inventory record if they don't have one.
+                if (!item.IsInventory && inventoryMap.ContainsKey(item.Id))
+                {
+                     // If it's already in inventory but marked as NOT inventory now, we could skip or keep.
+                     // For now, let's just keep it if it exists.
+                }
+
                 if (!inventoryMap.TryGetValue(item.Id, out var inventory))
                 {
+                    Console.WriteLine($"[INVENTORY] Creating new inventory record for: {item.ArabicName}");
                     inventory = new InventoryItem
                     {
                         MenuSalesItemId = item.Id,
                         CurrentQuantity = 0,
                         MinimumQuantity = 0,
-                        TrackInventory = true,
+                        TrackInventory = item.IsInventory,
                         CreatedAt = DateTime.UtcNow,
-                        BranchId = branchId
+                        BranchId = branchId,
+                        ItemTypeId = item.ItemTypeId ?? 1 // Default to SaleItem if NULL
                     };
+
+                    // Set TypeCode based on ID
+                    if (inventory.ItemTypeId.HasValue)
+                    {
+                        var type = allItemTypes.FirstOrDefault(t => t.Id == inventory.ItemTypeId.Value);
+                        inventory.ItemTypeCode = type?.Code;
+                    }
+
                     await _unitOfWork.Repository<InventoryItem>().AddAsync(inventory);
+                }
+                else
+                {
+                    // Update existing records that have NULL values
+                    bool changed = false;
+                    if (!inventory.ItemTypeId.HasValue)
+                    {
+                        inventory.ItemTypeId = item.ItemTypeId ?? 1;
+                        changed = true;
+                    }
+                    
+                    if (string.IsNullOrEmpty(inventory.ItemTypeCode) && inventory.ItemTypeId.HasValue)
+                    {
+                        var type = allItemTypes.FirstOrDefault(t => t.Id == inventory.ItemTypeId.Value);
+                        inventory.ItemTypeCode = type?.Code;
+                        changed = true;
+                    }
+
+                    if (inventory.TrackInventory != item.IsInventory)
+                    {
+                        inventory.TrackInventory = item.IsInventory;
+                        changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        _unitOfWork.Repository<InventoryItem>().Update(inventory);
+                    }
                 }
 
                 // Always update metadata to keep it in sync
@@ -246,6 +350,15 @@ public class InventoryService : IInventoryService
                 {
                     inventory.UnitNameAr = unit.ArabicName;
                     inventory.UnitNameEn = unit.EnglishName;
+                }
+
+                // Update ItemType denormalized fields
+                inventory.ItemTypeId = item.ItemTypeId;
+                if (item.ItemTypeId.HasValue && allItemTypes.Any())
+                {
+                    var type = allItemTypes.FirstOrDefault(t => t.Id == item.ItemTypeId.Value);
+                    if (type != null)
+                        inventory.ItemTypeCode = type.Code;
                 }
                 
                 if (inventory.Id > 0)

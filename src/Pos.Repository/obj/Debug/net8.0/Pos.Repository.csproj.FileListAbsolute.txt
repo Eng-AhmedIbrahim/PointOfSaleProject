@@ -6,6 +6,7 @@ F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFile
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\company.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\DeliveryCustomerTitle.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\ItemsClassifications.json
+F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\itemTypes.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\kitchenPrinters.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\kitchenTypes.json
 F:\PointOfSaleProject\src\Pos.Repository\bin\Debug\net8.0\Data\DataSeed\JsonFiles\orderSettings.json

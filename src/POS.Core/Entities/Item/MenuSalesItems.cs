@@ -20,6 +20,8 @@ public class MenuSalesItems : BaseEntity
     public string? TextColor { get; set; }
     public int? TextSize { get; set; }
     public bool Invisible { get; set; } = false;
+    public int? ItemTypeId { get; set; } = 1;
+    public ItemType? ItemType { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
 
@@ -37,5 +39,6 @@ public class MenuSalesItems : BaseEntity
     public int? KitchenTypeId { get; set; }
     public KitchenType? KitchenType { get; set; }
     public bool? PrintInBackupReceipt { get; set; }
+    public bool IsInventory { get; set; } = true;
     public bool ByWeight { get; set; } = false;
 }

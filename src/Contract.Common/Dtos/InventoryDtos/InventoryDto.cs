@@ -16,6 +16,9 @@ public class InventoryItemDto
     public string? CategoryNameAr { get; set; }
     public string? CategoryNameEn { get; set; }
     public bool TrackInventory { get; set; }
+    public int? ItemTypeId { get; set; }
+    public string? ItemTypeCode { get; set; }
+    public bool HasRecipe { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }
 

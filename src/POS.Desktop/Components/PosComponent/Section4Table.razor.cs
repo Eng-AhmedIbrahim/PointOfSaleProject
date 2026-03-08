@@ -8,6 +8,9 @@ public partial class Section4Table
     [Parameter] public EventCallback OnItemsChanged { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public bool IsReadOnly { get; set; } = false; // New Parameter
+    
+    [Inject] public IInventoryFrontService InventoryService { get; set; } = default!;
+    [Inject] public IPosFeatureSettingsService FeatureSettingsService { get; set; } = default!;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -68,23 +71,92 @@ public partial class Section4Table
         Snackbar.Add("Item Has Been Committed Handler Invoked");
     }
 
-    private void UpdateQuantity(TableItem item, decimal newQuantity)
+    private async void UpdateQuantity(TableItem item, decimal newQuantity)
     {
+        if (newQuantity > item.Quantity)
+        {
+            // Check inventory if increasing
+            bool isStopEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableMinQuantityStop", Environment.MachineName);
+            if (isStopEnabled)
+            {
+                var response = await InventoryService.GetInventoryByItemIdAsync(item.Id);
+                if (response.Success && response.Data != null)
+                {
+                    var inventory = response.Data;
+                    if (inventory.TrackInventory)
+                    {
+                        // Calculate total items in cart excluding this line
+                        decimal otherCartQty = Items?
+                            .Where(i => i.Id == item.Id && i != item && !i.IsReadOnly && !i.IsVoided)
+                            .Sum(i => i.Quantity) ?? 0;
+
+                        if (inventory.CurrentQuantity - (otherCartQty + newQuantity) < inventory.MinimumQuantity)
+                        {
+                            decimal availableForThisLine = inventory.CurrentQuantity - inventory.MinimumQuantity - otherCartQty;
+                            if (availableForThisLine < 0) availableForThisLine = 0;
+
+                            string msg = Localizer.GetCurrentLanguage() == "ar"
+                                ? $"الكمية المطلوبة ({newQuantity}) غير متوفرة. المتاح لهذا الصنف: {availableForThisLine:0.##}"
+                                : $"Quantity ({newQuantity}) not available. Available: {availableForThisLine:0.##}";
+                            
+                            Snackbar.Add(msg, Severity.Error);
+                            await InvokeAsync(StateHasChanged); // Force UI refresh to reset value
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         item.Quantity = newQuantity;
         _cartService.RecalculateItemTotals(item);
         _cartService.CalculateSection4Table();
     }
 
-    private void UpdateWeightQty(TableItem item, decimal newWeightKg)
+    private async void UpdateWeightQty(TableItem item, decimal newWeightKg)
     {
         if (newWeightKg <= 0) return;
+
+        if (newWeightKg > (item.WeightQty ?? 0))
+        {
+             // Check inventory if increasing weight
+             bool isStopEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableMinQuantityStop", Environment.MachineName);
+             if (isStopEnabled)
+             {
+                 var response = await InventoryService.GetInventoryByItemIdAsync(item.Id);
+                 if (response.Success && response.Data != null)
+                 {
+                     var inventory = response.Data;
+                     if (inventory.TrackInventory)
+                     {
+                         decimal otherCartQty = Items?
+                             .Where(i => i.Id == item.Id && i != item && !i.IsReadOnly && !i.IsVoided)
+                             .Sum(i => i.Quantity) ?? 0;
+
+                         if (inventory.CurrentQuantity - (otherCartQty + newWeightKg) < inventory.MinimumQuantity)
+                         {
+                             decimal availableForThisLine = inventory.CurrentQuantity - inventory.MinimumQuantity - otherCartQty;
+                             if (availableForThisLine < 0) availableForThisLine = 0;
+
+                             string msg = Localizer.GetCurrentLanguage() == "ar"
+                                 ? $"الوزن المطلوب ({newWeightKg}) غير متوفر. المتاح: {availableForThisLine:0.###} كجم"
+                                 : $"Weight ({newWeightKg}) not available. Available: {availableForThisLine:0.###} kg";
+                             
+                             Snackbar.Add(msg, Severity.Error);
+                             await InvokeAsync(StateHasChanged);
+                             return;
+                         }
+                     }
+                 }
+             }
+        }
 
         item.WeightQty = newWeightKg;
         item.Quantity = newWeightKg;
 
         _cartService.RecalculateItemTotals(item);
         _cartService.CalculateSection4Table();
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     private void SelectItem(TableItem item)

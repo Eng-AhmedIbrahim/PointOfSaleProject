@@ -9,16 +9,19 @@ public class OrderService : IOrderService
     private readonly IMapper _mapper;
 
     private readonly IInventoryService _inventoryService;
+    private readonly IPosFeatureSettingsService _featureSettings;
 
     public OrderService(IUnitOfWork unitOfWork, 
         IAppDateService appDateService, 
         IMapper mapper,
-        IInventoryService inventoryService)
+        IInventoryService inventoryService,
+        IPosFeatureSettingsService featureSettings)
     {
         _unitOfWork = unitOfWork;
         _appDateService = appDateService;
         _mapper = mapper;
         _inventoryService = inventoryService;
+        _featureSettings = featureSettings;
     }
     public async Task<Orders?> CreateOrderAsync(Orders order)
     {
@@ -86,17 +89,40 @@ public class OrderService : IOrderService
                 await _unitOfWork.Repository<Orders>().AddAsync(order);
 
                 // Inventory deduction
-                if (order.OrderDetails != null && order.OrderDetails.Any())
+                if (await _featureSettings.IsFeatureEnabledAsync("EnableInventoryTracking"))
                 {
-                    foreach (var item in order.OrderDetails)
+                    if (order.OrderDetails != null && order.OrderDetails.Any())
                     {
-                        if (item.MenuSalesItemId.HasValue)
+                        foreach (var item in order.OrderDetails)
                         {
-                            await _inventoryService.ConsumeItemStockAsync(
-                                item.MenuSalesItemId.Value, 
-                                item.Quantity ?? 0, 
-                                TransactionType.Sale,
-                                order.OrderID.ToString());
+                            if (item.MenuSalesItemId.HasValue)
+                            {
+                                await _inventoryService.ConsumeItemStockAsync(
+                                    item.MenuSalesItemId.Value, 
+                                    item.Quantity ?? 0, 
+                                    TransactionType.Sale,
+                                    order.OrderID.ToString());
+                            }
+
+                            // Deduct for Attributes if they are linked to menu items
+                            if (item.OrderItemAttributes != null && item.OrderItemAttributes.Any())
+                            {
+                                foreach (var attr in item.OrderItemAttributes)
+                                {
+                                    if (attr.AttributeItemId.HasValue)
+                                    {
+                                        var attributeItem = await _unitOfWork.Repository<AttributeItem>().GetByIdAsync(attr.AttributeItemId.Value);
+                                        if (attributeItem != null && attributeItem.RelatedMenuItemId > 0)
+                                        {
+                                            await _inventoryService.ConsumeItemStockAsync(
+                                                attributeItem.RelatedMenuItemId,
+                                                item.Quantity ?? 1, // Usually 1 attribute per item unless quantity is different
+                                                TransactionType.Sale,
+                                                order.OrderID.ToString());
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -320,13 +346,36 @@ public class OrderService : IOrderService
                     foreach (var detail in existingOrder.OrderDetails.ToList())
                     {
                         // Reverse inventory consumption
-                        if (detail.MenuSalesItemId.HasValue)
+                        if (await _featureSettings.IsFeatureEnabledAsync("EnableInventoryTracking"))
                         {
-                            await _inventoryService.ConsumeItemStockAsync(
-                                detail.MenuSalesItemId.Value, 
-                                detail.Quantity ?? 0, 
-                                TransactionType.Void, 
-                                existingOrder.OrderID.ToString());
+                            if (detail.MenuSalesItemId.HasValue)
+                            {
+                                await _inventoryService.ConsumeItemStockAsync(
+                                    detail.MenuSalesItemId.Value, 
+                                    detail.Quantity ?? 0, 
+                                    TransactionType.Void, 
+                                    existingOrder.OrderID.ToString());
+                            }
+
+                            // Reverse attributes for deleted items
+                            if (detail.OrderItemAttributes != null && detail.OrderItemAttributes.Any())
+                            {
+                                foreach (var attr in detail.OrderItemAttributes)
+                                {
+                                    if (attr.AttributeItemId.HasValue)
+                                    {
+                                        var attributeItem = await _unitOfWork.Repository<AttributeItem>().GetByIdAsync(attr.AttributeItemId.Value);
+                                        if (attributeItem != null && attributeItem.RelatedMenuItemId > 0)
+                                        {
+                                            await _inventoryService.ConsumeItemStockAsync(
+                                                attributeItem.RelatedMenuItemId,
+                                                detail.Quantity ?? 1,
+                                                TransactionType.Void,
+                                                existingOrder.OrderID.ToString());
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         detail.MenuSalesItem = null;
@@ -380,13 +429,36 @@ public class OrderService : IOrderService
                         await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(item);
                         
                         // Consume inventory for new items
-                        if (item.MenuSalesItemId.HasValue)
+                        if (await _featureSettings.IsFeatureEnabledAsync("EnableInventoryTracking"))
                         {
-                            await _inventoryService.ConsumeItemStockAsync(
-                                item.MenuSalesItemId.Value, 
-                                item.Quantity ?? 0, 
-                                TransactionType.Sale, 
-                                existingOrder.OrderID.ToString());
+                            if (item.MenuSalesItemId.HasValue)
+                            {
+                                await _inventoryService.ConsumeItemStockAsync(
+                                    item.MenuSalesItemId.Value, 
+                                    item.Quantity ?? 0, 
+                                    TransactionType.Sale, 
+                                    existingOrder.OrderID.ToString());
+                            }
+
+                            // Deduct for Attributes in full update
+                            if (item.OrderItemAttributes != null && item.OrderItemAttributes.Any())
+                            {
+                                foreach (var attr in item.OrderItemAttributes)
+                                {
+                                    if (attr.AttributeItemId.HasValue)
+                                    {
+                                        var attributeItem = await _unitOfWork.Repository<AttributeItem>().GetByIdAsync(attr.AttributeItemId.Value);
+                                        if (attributeItem != null && attributeItem.RelatedMenuItemId > 0)
+                                        {
+                                            await _inventoryService.ConsumeItemStockAsync(
+                                                attributeItem.RelatedMenuItemId,
+                                                item.Quantity ?? 1,
+                                                TransactionType.Sale,
+                                                existingOrder.OrderID.ToString());
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

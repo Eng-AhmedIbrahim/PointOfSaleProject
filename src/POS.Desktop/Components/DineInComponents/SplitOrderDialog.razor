@@ -36,7 +36,7 @@
                                 <td>
                                     <MudNumericField T="decimal" 
                                                     Value="@GetSplitQty(item.DatabaseId, splitIndex)" 
-                                                    ValueChanged="@(val => SetSplitQty(item.DatabaseId, splitIndex, val, item.Quantity ?? 0))"
+                                                    ValueChanged="@(val => SetSplitQty(item.DatabaseId, splitIndex, val, item?.Quantity ?? 0))"
                                                     Min="0" Max="@item.Quantity" 
                                                     Variant="Variant.Outlined" 
                                                     Margin="Margin.Dense" 

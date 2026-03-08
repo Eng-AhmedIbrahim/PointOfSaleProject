@@ -251,4 +251,15 @@ public class ItemController : BaseApiController
         return Ok(mappedItems);
     }
 
+    [ProducesResponseType(typeof(IReadOnlyList<ItemTypeDto>), StatusCodes.Status200OK)]
+    [HttpGet("GetItemTypes")]
+    public async Task<IActionResult> GetItemTypes()
+    {
+        var types = await _itemService.GetAllItemTypesAsync();
+        if (types is null)
+            return NotFound(new ApiResponse(404));
+
+        var mapped = _mapper.Map<IReadOnlyList<ItemType>, IReadOnlyList<ItemTypeDto>>(types);
+        return Ok(mapped);
+    }
 }

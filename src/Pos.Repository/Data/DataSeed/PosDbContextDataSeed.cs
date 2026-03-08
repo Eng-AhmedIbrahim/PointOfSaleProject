@@ -160,6 +160,28 @@ public static class PosDbContextDataSeed
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        if (!_dbContext.ItemTypes.Any())
+        {
+            var itemTypes = await GetDataFromJsonFile<ItemType>("itemTypes.json");
+            if (itemTypes != null && itemTypes.Any())
+            {
+                using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    await _dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT ItemTypes ON");
+                    await _dbContext.ItemTypes.AddRangeAsync(itemTypes);
+                    await _dbContext.SaveChangesAsync();
+                    await _dbContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT ItemTypes OFF");
+                    await transaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
     }
 
     private static string FindValidFilePath(List<string> paths, string fileName)
