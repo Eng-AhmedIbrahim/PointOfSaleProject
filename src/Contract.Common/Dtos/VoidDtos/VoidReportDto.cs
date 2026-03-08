@@ -29,7 +29,7 @@ public class VoidReportDto
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
-    public int? VoidCount { get; set; }         // Number of void operations on this order
+    public decimal? VoidCount { get; set; }         // Number of void operations on this order
 
     // Financial
     public decimal? OriginalTotal { get; set; }  // Grand total before void
@@ -53,8 +53,8 @@ public class VoidItemReportDto
     public decimal? UnitPrice { get; set; }
 
     // Void quantities
-    public int VoidedQuantity { get; set; }    // How many were voided
-    public int RemainingQuantity { get; set; } // Active quantity left
+    public decimal VoidedQuantity { get; set; }    // How many were voided
+    public decimal RemainingQuantity { get; set; } // Active quantity left
     public decimal? VoidedValue { get; set; }  // Total value of voided qty
     public bool IsFullyVoided { get; set; }
 

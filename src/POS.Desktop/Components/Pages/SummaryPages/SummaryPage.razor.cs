@@ -1,4 +1,5 @@
-﻿namespace POS.Desktop.Components.Pages.SummaryPages;
+﻿using global::POS.Contract.Dtos.ReportingDtos;
+namespace POS.Desktop.Components.Pages.SummaryPages;
 
 public partial class SummaryPage
 {
@@ -22,9 +23,8 @@ public partial class SummaryPage
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canViewDetails = (await AuthorizationService.AuthorizeAsync(user, "CanAccessSummaryViewDetailsBtn")).Succeeded;
-            _canPrint = (await AuthorizationService.AuthorizeAsync(user, "CanAccessSummaryPrintBtn")).Succeeded;
-            _canPosSettingsFeature = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
+            _canViewDetails = (await AuthorizationService.AuthorizeAsync(user, "CanViewSummaryDetails")).Succeeded;
+            _canPrint = (await AuthorizationService.AuthorizeAsync(user, "CanPrintSummaryReport")).Succeeded;
         }
 
         try
@@ -71,12 +71,22 @@ public partial class SummaryPage
         try
         {
             var items = await ReportingService.GetSalesItemsSummary(SelectedDate);
-            await PrintOrderService.PrintSalesSummaryAsync(_summaryData, items);
-            Snackbar.Add("Printing Summary...", Severity.Info);
+            
+            var parameters = new DialogParameters
+            {
+                ["ReportTitle"] = Localizer["SalesItemsSummary"],
+                ["BranchName"] = _commonProperties.StoreName,
+                ["ReportDate"] = SelectedDate,
+                ["Items"] = items,
+                ["SummaryData"] = _summaryData
+            };
+            
+            var options = new DialogOptions { FullScreen = true, CloseButton = false, NoHeader = true };
+            await DialogService.ShowAsync<ReportPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Error printing summary: " + ex.Message, Severity.Error);
+            Snackbar.Add("Error preparing preview: " + ex.Message, Severity.Error);
         }
     }
 }

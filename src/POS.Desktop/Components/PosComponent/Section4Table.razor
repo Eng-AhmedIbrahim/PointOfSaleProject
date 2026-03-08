@@ -27,14 +27,30 @@
         <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style" @onclick="() => SelectItem(context)">
             @if (context.IsVoided)
             {
-                <MudText Typo="Typo.body1" Class="table-style text-decoration-line-through opacity-50">@context.Quantity</MudText>
+                <MudText Typo="Typo.body1" Class="table-style text-decoration-line-through opacity-50">
+                    @(context.ByWeight && context.WeightQty.HasValue
+                        ? $"{context.WeightQty:0.###} كجم"
+                        : context.Quantity.ToString())
+                </MudText>
+            }
+            else if (context.ByWeight)
+            {
+                <div class="weight-qty-cell">
+                    <MudNumericField T="decimal" Value="@(context.WeightQty ?? 0)"
+                                     Min="0.001m" Max="999m" Step="0.125m"
+                                     Format="0.###"
+                                     Style="width: 80px;" Immediate="false"
+                                     ValueChanged="(val) => UpdateWeightQty(context, val)"
+                                     Disabled="context.IsReadOnly" />
+                    <span class="weight-qty-unit">كجم</span>
+                </div>
             }
             else
             {
-                <MudNumericField T="int" Value="context.Quantity" Min="1"
+                <MudNumericField T="decimal" Value="context.Quantity" Min="0.1m"
                                  Style="width: 60px;" Immediate="true"
                                  ValueChanged="(val) => UpdateQuantity(context, val)"
-                                 Disabled="context.IsReadOnly" /> 
+                                 Disabled="context.IsReadOnly" />
             }
         </MudTd>
         <MudTd DataLabel="Name" Class="table-style">
@@ -50,12 +66,12 @@
         </MudTd>
         <MudTd DataLabel="Price" Class="table-style">
              <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
-                @context.Price
+                @context.Price?.ToString("0.##")
              </MudText>
         </MudTd>
         <MudTd DataLabel="Total" Class="table-style">
              <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
-                @context.TotalAmount?.ToString("N2")
+                @context.TotalAmount?.ToString("0.##")
              </MudText>
         </MudTd>
     </RowTemplate>
@@ -78,8 +94,8 @@
                         @if (context.HasDiscount)
                         {
                             <p class="discount-name" style="margin-right: 0px; margin-bottom: 5px; color: darkred; font-weight: bold;">
-                                ➤ @Localizer["Discount"]: @(context.DiscountPercentage > 0 ? $"{context.DiscountPercentage}%" : context.TotalDiscountPrice?.ToString("N2")) 
-                                (-@(context.TotalDiscountPrice?.ToString("N2")))
+                                ➤ @Localizer["Discount"]: @(context.DiscountPercentage > 0 ? $"{context.DiscountPercentage}%" : context.TotalDiscountPrice?.ToString("0.##")) 
+                                (-@(context.TotalDiscountPrice?.ToString("0.##")))
                             </p>
                         }
                         @{
@@ -99,7 +115,6 @@
         }
     </ChildRowContent>
 </MudTable>
-
 
 
 <style>
@@ -142,5 +157,21 @@
         font-weight: 800 !important;
         font-size: 1.1rem !important;
         color: #0f171f !important;
+    }
+
+    /* Weight qty field */
+    .weight-qty-cell {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .weight-qty-unit {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #0369a1;
+        white-space: nowrap;
+        background: #e0f2fe;
+        padding: 2px 6px;
+        border-radius: 6px;
     }
 </style>

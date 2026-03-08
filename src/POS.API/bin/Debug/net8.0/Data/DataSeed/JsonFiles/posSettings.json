@@ -366,5 +366,13 @@
     "ModuleName": "Layout",
     "ScreenName": "General",
     "Value": true
+  },
+  {
+    "FeatureName": "EnableInventoryTracking",
+    "NameEn": "Enable Inventory Tracking",
+    "NameAr": "تفعيل نظام المخازن",
+    "ModuleName": "Inventory",
+    "ScreenName": "Inventory Management",
+    "Value": true
   }
 ]

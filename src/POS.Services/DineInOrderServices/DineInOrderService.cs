@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using POS.Core.Services.Contract.InventoryServices;
+using POS.Core.Entities.Item;
 namespace POS.Services.DineInOrderServices;
 
 public class DineInOrderService : IDineInOrderService
@@ -6,14 +8,17 @@ public class DineInOrderService : IDineInOrderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOrderTrackService _orderTrackService;
     private readonly IAppDateService _appDateService;
+    private readonly IInventoryService _inventoryService;
 
     public DineInOrderService(IUnitOfWork unitOfWork, 
         IOrderTrackService orderTrackService, 
-        IAppDateService appDateService)
+        IAppDateService appDateService,
+        IInventoryService inventoryService)
     {
         _unitOfWork = unitOfWork;
         _orderTrackService = orderTrackService;
         _appDateService = appDateService;
+        _inventoryService = inventoryService;
     }
 
     private async Task RecalculateOrderTotalsAsync(Orders order, OrderSetting? settings = null)
@@ -177,6 +182,16 @@ public class DineInOrderService : IDineInOrderService
                         
                         // Ensure OrderId is not set yet for new items to avoid confusion
                         item.OrderId = 0;
+
+                        // Deduct from inventory
+                        if (item.MenuSalesItemId.HasValue)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                item.Quantity ?? 0, 
+                                POS.Core.Entities.Item.TransactionType.Sale, 
+                                order.OrderID.ToString());
+                        }
                     }
                 }
                 
@@ -425,7 +440,6 @@ public class DineInOrderService : IDineInOrderService
     });
 }
 
-
     public async Task<bool> AddItemsToDineInOrderAsync(int orderId, List<OrderItemsDetails> items)
     {
         if (items is null || !items.Any())
@@ -436,80 +450,87 @@ public class DineInOrderService : IDineInOrderService
         {
         using (var transaction = _unitOfWork.BeginTransaction())
         {
-            try
-            {
-                decimal itemsTotal = 0;
-                var spec = new DineInOrderByIdSpec(orderId);
-                var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
-                var order = orders.FirstOrDefault();
-                
-                if (order is null)
-                    return false;
-
-                // Clear navigation properties on all existing items to prevent tracking conflicts
-                if (order.OrderDetails != null)
+                try
                 {
-                    foreach (var existingOrderItem in order.OrderDetails)
-                    {
-                        if (existingOrderItem.MenuSalesItem != null)
-                        {
-                            existingOrderItem.MenuSalesItem.Category = null;
-                            existingOrderItem.MenuSalesItem = null;
-                        }
-                    }
-                }
+                    decimal itemsTotal = 0;
+                    var spec = new DineInOrderByIdSpec(orderId);
+                    var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+                    var order = orders.FirstOrDefault();
 
-                foreach (var newItem in items)
-                {
-                    newItem.OrderType = OrderTypes.DineIn;
+                    if (order is null)
+                        return false;
 
-                    // Ensure denormalized fields are populated
-                    if (newItem.MenuSalesItemId.HasValue && (string.IsNullOrEmpty(newItem.ItemName) || (newItem.UnitPrice ?? 0) == 0))
+                    // Clear navigation properties on all existing items to prevent tracking conflicts
+                    if (order.OrderDetails != null)
                     {
-                        var product = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(newItem.MenuSalesItemId.Value);
-                        if (product != null)
+                        foreach (var existingOrderItem in order.OrderDetails)
                         {
-                            newItem.ItemName = string.IsNullOrEmpty(newItem.ItemName) ? product.EnglishName : newItem.ItemName;
-                            newItem.ItemNameAr = string.IsNullOrEmpty(newItem.ItemNameAr) ? product.ArabicName : newItem.ItemNameAr;
-                            newItem.UnitPrice = (newItem.UnitPrice ?? 0) == 0 ? product.Price : newItem.UnitPrice;
-                            newItem.CategoryId = newItem.CategoryId ?? product.CategoryId;
+                            if (existingOrderItem.MenuSalesItem != null)
+                            {
+                                existingOrderItem.MenuSalesItem.Category = null;
+                                existingOrderItem.MenuSalesItem = null;
+                            }
                         }
                     }
-                    
-                    var existingItem = order.OrderDetails?.FirstOrDefault(i => AreItemsSame(i, newItem));
-                    if (existingItem != null)
+
+                    foreach (var newItem in items)
                     {
-                        var oldQty = existingItem.Quantity ?? 0;
-                        var newQty = oldQty + (newItem.Quantity ?? 0);
-                        
-                        existingItem.Quantity = newQty;
-                        existingItem.TotalAmount = (existingItem.TotalAmount ?? 0) + (newItem.TotalAmount ?? 0);
-                        existingItem.TotalAfterDiscount = (existingItem.TotalAfterDiscount ?? existingItem.TotalAmount ?? 0) + (newItem.TotalAfterDiscount ?? newItem.TotalAmount ?? 0);
-                        
-                        existingItem.TotalDiscountPrice = (existingItem.TotalDiscountPrice ?? 0) + (newItem.TotalDiscountPrice ?? 0);
-                        existingItem.TotalDiscountAmount = (existingItem.TotalDiscountAmount ?? 0) + (newItem.TotalDiscountAmount ?? 0);
-                        
-                        // Update denormalized data on existing item if missing
-                        existingItem.ItemName ??= newItem.ItemName;
-                        existingItem.ItemNameAr ??= newItem.ItemNameAr;
-                        existingItem.UnitPrice ??= newItem.UnitPrice;
-                        
-                        _unitOfWork.Repository<OrderItemsDetails>().Update(existingItem);
-                    }
-                    else
-                    {
-                        // Clear navigation properties on new item to prevent tracking conflicts
-                        newItem.MenuSalesItem = null;
-                        newItem.Order = null; // Don't link via navigation - use OrderId instead
-                        newItem.OrderId = order.Id;
-                        await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(newItem);
-                        
-                        order.OrderDetails ??= new List<OrderItemsDetails>();
-                        if (!order.OrderDetails.Any(i => i == newItem))
+                        newItem.OrderType = OrderTypes.DineIn;
+
+                        // Ensure denormalized fields are populated
+                        if (newItem.MenuSalesItemId.HasValue && (string.IsNullOrEmpty(newItem.ItemName) || (newItem.UnitPrice ?? 0) == 0))
                         {
-                            order.OrderDetails.Add(newItem);
+                            var product = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(newItem.MenuSalesItemId.Value);
+                            if (product != null)
+                            {
+                                newItem.ItemName = string.IsNullOrEmpty(newItem.ItemName) ? product.EnglishName : newItem.ItemName;
+                                newItem.ItemNameAr = string.IsNullOrEmpty(newItem.ItemNameAr) ? product.ArabicName : newItem.ItemNameAr;
+                                newItem.UnitPrice = (newItem.UnitPrice ?? 0) == 0 ? product.Price : newItem.UnitPrice;
+                                newItem.CategoryId = newItem.CategoryId ?? product.CategoryId;
+                            }
                         }
+
+                        var existingItem = order.OrderDetails?.FirstOrDefault(i => AreItemsSame(i, newItem));
+                        if (existingItem != null)
+                        {
+                            var oldQty = existingItem.Quantity ?? 0;
+                            var newQty = oldQty + (newItem.Quantity ?? 0);
+
+                            existingItem.Quantity = newQty;
+                            existingItem.TotalAmount = (existingItem.TotalAmount ?? 0) + (newItem.TotalAmount ?? 0);
+                            existingItem.TotalAfterDiscount = (existingItem.TotalAfterDiscount ?? existingItem.TotalAmount ?? 0) + (newItem.TotalAfterDiscount ?? newItem.TotalAmount ?? 0);
+
+                            existingItem.TotalDiscountPrice = (existingItem.TotalDiscountPrice ?? 0) + (newItem.TotalDiscountPrice ?? 0);
+                            existingItem.TotalDiscountAmount = (existingItem.TotalDiscountAmount ?? 0) + (newItem.TotalDiscountAmount ?? 0);
+
+                            // Update denormalized data on existing item if missing
+                            existingItem.ItemName ??= newItem.ItemName;
+                            existingItem.ItemNameAr ??= newItem.ItemNameAr;
+                            existingItem.UnitPrice ??= newItem.UnitPrice;
+
+                            _unitOfWork.Repository<OrderItemsDetails>().Update(existingItem);
+                        }
+                        else
+                        {
+                            // Clear navigation properties on new item to prevent tracking conflicts
+                            newItem.MenuSalesItem = null;
+                            newItem.Order = null; // Don't link via navigation - use OrderId instead
+                            newItem.OrderId = order.Id;
+                            await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(newItem);
+
+                            order.OrderDetails!.Add(newItem);
+                        }
+
+                    // Deduct from inventory for the new items (whether merged or new)
+                    if (newItem.MenuSalesItemId.HasValue)
+                    {
+                        await _inventoryService.ConsumeItemStockAsync(
+                            newItem.MenuSalesItemId.Value, 
+                            newItem.Quantity ?? 0, 
+                            POS.Core.Entities.Item.TransactionType.Sale, 
+                            order.OrderID.ToString());
                     }
+
                     itemsTotal += newItem.TotalAmount ?? 0;
                 }
 
@@ -552,6 +573,7 @@ public class DineInOrderService : IDineInOrderService
         }
         });
     }
+    
 
     public async Task<bool> UpdateDineInOrderDiscountAsync(int orderId, decimal? discountAmount, decimal? discountPercentage, string? discountType, string? discountReason)
     {
@@ -953,7 +975,7 @@ public class DineInOrderService : IDineInOrderService
                     };
 
                     await _unitOfWork.Repository<Orders>().AddAsync(targetOrder);
-                    // Removed intermediate CompleteAsync() - will link items via navigation property instead
+                    await _unitOfWork.CompleteAsync(); // Save to generate real Id
                     
                     decimal targetMovedTotal = 0;
 

@@ -195,7 +195,8 @@ public class ReceiptDocument : IDocument
                     IsVoided = first.IsVoided,
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
-                    TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0)
+                    TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0),
+                    ByWeight = first.ByWeight
                 };
             }).ToList();
 
@@ -243,8 +244,11 @@ public class ReceiptDocument : IDocument
                 {
                     table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
-                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+                    table.Cell().Element(CellStyle).Text(item.NameAr ?? item.Name).AlignEnd();
+                    
+                    var qtyText = item.Quantity.ToString("0.##");
+                    if (item.ByWeight) qtyText += " كجم";
+                    table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
 
                     // Add Discount if available
                     if (item.HasDiscount)

@@ -16,22 +16,42 @@ public class AttributeService : IAttributeService
             if (attribute is null)
                 return null;
 
-            var attributeItems = await GetAllAttributeAsync();
-            int newId;
+            // 1. Handle Manual ID for Attributes parent
+            var existingAttributes = await _unitOfWork.Repository<Attributes>().GetAllAsync();
+            int nextAttrId = (existingAttributes != null && existingAttributes.Any()) 
+                ? existingAttributes.Max(attr => attr.Id) + 1 
+                : 1;
+            attribute.Id = nextAttrId;
 
-            if (attributeItems is not null && attributeItems.Any())
+            // 2. Handle Manual ID for AttributeItem children (Identity was removed from DB)
+            var allAttrItems = await _unitOfWork.Repository<AttributeItem>().GetAllAsync();
+            int nextItemId = (allAttrItems != null && allAttrItems.Any())
+                ? allAttrItems.Max(x => x.Id) + 1
+                : 1;
+
+            foreach (var item in attribute.AttributeItems)
             {
-                newId = attributeItems.Max(attr => attr.Id) + 1;
-            }
-            else
-            {
-                newId = 1;
+                item.Id = nextItemId++;
+                item.AttributeId = attribute.Id; 
+
+                // If the item is linked to a group by reference (new group)
+                if (item.AttributeGroup != null && (item.AttributeGroupId == null || item.AttributeGroupId == 0))
+                {
+                    // Find the actual group in the collection that matches the reference or DisplayOrder
+                    var actualGroup = attribute.AttributeGroups.FirstOrDefault(g => 
+                        g == item.AttributeGroup || 
+                        (g.DisplayOrder == item.AttributeGroup.DisplayOrder && g.ArabicName == item.AttributeGroup.ArabicName));
+                    
+                    if (actualGroup != null)
+                    {
+                        item.AttributeGroup = actualGroup; // Establish relationship for EF to resolve FK
+                    }
+                }
             }
 
-            attribute.Id = newId;
+            // Note: AttributeGroups STILL has Identity in DB, so we leave Id=0 for them.
 
             await _unitOfWork.Repository<Attributes>().AddAsync(attribute);
-            await AddAttributeItems(attribute.AttributeItems);
 
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0)
@@ -105,37 +125,81 @@ public class AttributeService : IAttributeService
     {
         try
         {
-            oldAttribute.Id = newAttribute.Id;
-            if (!string.IsNullOrEmpty(newAttribute.ArabicName))
-                oldAttribute.ArabicName = newAttribute.ArabicName;
-            if (!string.IsNullOrEmpty(newAttribute.EnglishName))
-                oldAttribute.EnglishName = newAttribute.EnglishName;
+            // 1. Fetch tracked version with all inclusions
+            var spec = new POS.Core.Specifications.AttributeSpecs.AttributeWithIncludeSpecs(newAttribute.Id);
+            var trackedAttribute = await _unitOfWork.Repository<Attributes>().GetByIdWithSpecificationTrackedAsync(spec);
 
-            var itemsIds = oldAttribute.AttributeItems.Select(x => x.RelatedMenuItemId).ToHashSet(); // 2 3 
-            //int deletedItemId; 
-            foreach (var newAtt in newAttribute.AttributeItems)
+            if (trackedAttribute == null)
             {
-                if (itemsIds.Contains(newAtt.RelatedMenuItemId))  // 2 , 3  5
-                    continue;
+                Log.Warning("Attribute with Id {id} not found for update", newAttribute.Id);
+                return null;
+            }
+
+            // 2. Update basic info
+            trackedAttribute.ArabicName = newAttribute.ArabicName;
+            trackedAttribute.EnglishName = newAttribute.EnglishName;
+
+            // 3. Sync AttributeGroups (Identity based)
+            var groupsToRemove = trackedAttribute.AttributeGroups
+                .Where(oldG => !newAttribute.AttributeGroups.Any(newG => newG.Id > 0 && newG.Id == oldG.Id))
+                .ToList();
+            foreach (var g in groupsToRemove) trackedAttribute.AttributeGroups.Remove(g);
+
+            foreach (var newG in newAttribute.AttributeGroups)
+            {
+                if (newG.Id == 0)
+                {
+                    trackedAttribute.AttributeGroups.Add(newG);
+                }
                 else
                 {
-                    //var attributeItem = await _unitOfWork.Repository<AttributeItem>().GetByIdAsync()
-                    //_unitOfWork.Repository<AttributeItem>().Delete()
-                    oldAttribute.AttributeItems.Add(newAtt);
+                    var existingG = trackedAttribute.AttributeGroups.FirstOrDefault(g => g.Id == newG.Id);
+                    if (existingG != null)
+                    {
+                        existingG.ArabicName = newG.ArabicName;
+                        existingG.EnglishName = newG.EnglishName;
+                        existingG.DisplayOrder = newG.DisplayOrder;
+                        existingG.Uid = newG.Uid;
+                    }
                 }
             }
 
-            _unitOfWork.Repository<Attributes>().Update(oldAttribute);
+            // 4. Sync AttributeItems (Manual ID based)
+            trackedAttribute.AttributeItems.Clear();
 
-            var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0)
-                return null;
+            var allAttrItems = await _unitOfWork.Repository<AttributeItem>().GetAllAsync();
+            int nextItemId = (allAttrItems != null && allAttrItems.Any())
+                ? allAttrItems.Max(x => x.Id) + 1
+                : 1;
 
-            return oldAttribute ?? null;
+            foreach (var item in newAttribute.AttributeItems)
+            {
+                var newItem = new AttributeItem
+                {
+                    Id = nextItemId++,
+                    AttributeId = trackedAttribute.Id,
+                    AppearanceIndex = item.AppearanceIndex,
+                    RelatedMenuItemId = item.RelatedMenuItemId,
+                    ExtraPrice = item.ExtraPrice,
+                    TempGroupUid = item.TempGroupUid
+                };
+
+                if (newItem.TempGroupUid.HasValue)
+                {
+                    newItem.AttributeGroup = trackedAttribute.AttributeGroups
+                        .FirstOrDefault(g => g.Uid == newItem.TempGroupUid);
+                }
+
+                trackedAttribute.AttributeItems.Add(newItem);
+                await _unitOfWork.Repository<AttributeItem>().AddAsync(newItem);
+            }
+
+            await _unitOfWork.CompleteAsync();
+            return trackedAttribute;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error Occur During Update Attribute That Have Id {attributeId}", oldAttribute.Id);
+            Log.Error(ex, "Error Occur During Update Attribute That Have Id {attributeId}", newAttribute.Id);
             return null;
         }
     }

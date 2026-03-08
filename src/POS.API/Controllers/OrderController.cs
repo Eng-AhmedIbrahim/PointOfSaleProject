@@ -1,5 +1,4 @@
 ﻿using POS.Core.Services.Contract.DineInOrderServices;
-using POS.Core.Specifications;
 
 namespace POS.API.Controllers;
 
@@ -463,15 +462,20 @@ public class OrderController : BaseApiController
             var groupedItems = kitchenItems
                 .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
                 .GroupBy(item => item.ItemKitchenTypeId ?? item.CategoryKitchenTypeId!.Value)
-                .Join(kitchens,
-                      g => g.Key,
-                      k => k.Id,
-                      (g, k) => new
-                      {
-                          KitchenName = k.KitchenName ?? $"Kitchen_{k.Id}",
-                          Items = g.ToList(),
-                          Printers = k.KitchenPrinters
-                      });
+                .Select(g => 
+                {
+                    var kitchen = kitchens.FirstOrDefault(k => k.Id == g.Key);
+                    var printers = kitchen?.KitchenPrinters?
+                        .FirstOrDefault(p => p.DeviceName == (orderDto.MachineName ?? Environment.MachineName));
+                    
+                    return new
+                    {
+                        KitchenName = kitchen?.KitchenName ?? $"Kitchen_{g.Key}",
+                        Items = g.ToList(),
+                        Printers = printers
+                    };
+                })
+                .Where(x => x.Printers != null);
 
             foreach (var group in groupedItems)
             {
@@ -658,6 +662,7 @@ public class OrderController : BaseApiController
                 CategoryKitchenTypeId = detail.CategoryKitchenTypeId,
                 PrintInBackupReceiptFromCategory = detail.PrintInBackupReceiptFromCategory,
                 PrintInBackupReceiptFromItem = detail.PrintInBackupReceiptFromItem,
+                ByWeight = detail.ByWeight,
                 TotalDiscountPrice = detail.TotalDiscountPrice ?? 0M,
                 TotalAfterDiscount = detail.TotalAfterDiscount,
                 IsVoided = detail.IsVoided,
@@ -674,9 +679,10 @@ public class OrderController : BaseApiController
                 .Where(a => a.Id < 5000)
                 .Select(a => new OrderItemAttributes
                 {
-                    OrderItemId = detail.Id,
+                    OrderItemId = 0, // Reset to 0, EF will link it to the parent correctly
                     AttributeItemId = a.Id,
-                    AttributeName = a.Name ?? string.Empty
+                    AttributeName = a.Name ?? string.Empty,
+                    ExtraPrice = a.ExtraPrice
                 })
                 .ToList() ?? new List<OrderItemAttributes>()
             }).ToList()
@@ -920,16 +926,21 @@ public class OrderController : BaseApiController
         var groupedItemsWithKitchenNameAndId = items
             .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
             .GroupBy(item => item.ItemKitchenTypeId ?? item.CategoryKitchenTypeId!.Value)
-            .Join(kitchens,
-                  g => g.Key,
-                  k => k.Id,
-                  (g, k) => new
-                  {
-                      KitchenId = k.Id,
-                      KitchenName = k.KitchenName ?? $"Kitchen_{k.Id}",
-                      Items = g.ToList(),
-                      Printers = k.KitchenPrinters
-                  })
+            .Select(g => 
+            {
+                var kitchen = kitchens.FirstOrDefault(k => k.Id == g.Key);
+                var printers = kitchen?.KitchenPrinters?
+                    .FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName));
+                
+                return new
+                {
+                    KitchenId = g.Key,
+                    KitchenName = kitchen?.KitchenName ?? $"Kitchen_{g.Key}",
+                    Items = g.ToList(),
+                    Printers = printers
+                };
+            })
+            .Where(x => x.Printers != null)
             .ToList();
 
         foreach (var kitchenGroup in groupedItemsWithKitchenNameAndId)

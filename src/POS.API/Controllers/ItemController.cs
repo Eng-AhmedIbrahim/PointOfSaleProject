@@ -16,7 +16,7 @@ public class ItemController : BaseApiController
     [ProducesResponseType(typeof(MenuSalesItemsToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<IActionResult> CreateMenuItemAsync([FromQuery] MenuSalesItemsDto itemDto)
+    public async Task<IActionResult> CreateMenuItemAsync([FromBody] MenuSalesItemsDto itemDto)
     {
         string logoPath = "";
         if (itemDto is null)
@@ -73,6 +73,55 @@ public class ItemController : BaseApiController
         return Ok(aggregatedItems);
     }
 
+    [ProducesResponseType(typeof(IReadOnlyList<ItemsClassificationsDto>), StatusCodes.Status200OK)]
+    [HttpGet("GetClassifications")]
+    public async Task<IActionResult> GetClassifications()
+    {
+        var classifications = await _itemService.GetAllClassificationsAsync();
+        if (classifications is null)
+            return NotFound(new ApiResponse(404));
+
+        var mapped = _mapper.Map<IReadOnlyList<ItemsClassifications>, IReadOnlyList<ItemsClassificationsDto>>(classifications);
+        return Ok(mapped);
+    }
+
+    [ProducesResponseType(typeof(ItemsClassificationsDto), StatusCodes.Status200OK)]
+    [HttpPost("CreateClassification")]
+    public async Task<IActionResult> CreateClassification([FromBody] ItemsClassificationsDto classificationDto)
+    {
+        if (classificationDto is null) return BadRequest(new ApiResponse(400));
+        var mapped = _mapper.Map<ItemsClassificationsDto, ItemsClassifications>(classificationDto);
+        var result = await _itemService.CreateClassificationAsync(mapped);
+        if (result is null) return BadRequest(new ApiResponse(400, "Failed to create classification"));
+        return Ok(_mapper.Map<ItemsClassifications, ItemsClassificationsDto>(result));
+    }
+
+    [ProducesResponseType(typeof(ItemsClassificationsDto), StatusCodes.Status200OK)]
+    [HttpPut("UpdateClassification")]
+    public async Task<IActionResult> UpdateClassification([FromBody] ItemsClassificationsDto classificationDto)
+    {
+        if (classificationDto is null) return BadRequest(new ApiResponse(400));
+        var old = await _itemService.GetClassificationByIdAsync(classificationDto.Id);
+        if (old is null) return NotFound(new ApiResponse(404));
+
+        var mapped = _mapper.Map<ItemsClassificationsDto, ItemsClassifications>(classificationDto);
+        var result = await _itemService.UpdateClassificationAsync(old, mapped);
+        if (result is null) return BadRequest(new ApiResponse(400, "Failed to update classification"));
+        return Ok(_mapper.Map<ItemsClassifications, ItemsClassificationsDto>(result));
+    }
+
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [HttpDelete("DeleteClassification/{id}")]
+    public async Task<IActionResult> DeleteClassification(int id)
+    {
+        var old = await _itemService.GetClassificationByIdAsync(id);
+        if (old is null) return NotFound(new ApiResponse(404));
+
+        var result = await _itemService.DeleteClassification(old);
+        if (result) return Ok(true);
+        return BadRequest(new ApiResponse(400, "Failed to delete classification"));
+    }
+
     [ProducesResponseType(typeof(IReadOnlyList<MenuSalesItemsToReturnDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{itemId}")]
@@ -102,25 +151,31 @@ public class ItemController : BaseApiController
     [ProducesResponseType(typeof(MenuSalesItemsToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult?> UpdateItem(UpdatedItemDto newItem)
+    public async Task<IActionResult?> UpdateItem([FromBody] UpdatedItemDto newItem)
     {
         string logoPath = "";
+        
+        // Try to get the existing item - use spec with includes for update
         var oldItem = await _itemService.GetItemByIdAsync(newItem.ItemId);
+        
+        // If spec-based lookup fails (might fail if no Attribute relation), try simple lookup
         if (oldItem is null)
-            return NotFound(new ApiResponse(404));
+        {
+            // Fallback: search by ID without spec
+            return NotFound(new ApiResponse(404, $"Item with ID {newItem.ItemId} not found"));
+        }
 
         var mappedNewItem = _mapper.Map<UpdatedItemDto, MenuSalesItems>(newItem);
         if (newItem.Image is not null)
         {
-            DocumentSetting.DeleteFile(oldItem?.ImagePath??string.Empty);
+            DocumentSetting.DeleteFile(oldItem?.ImagePath ?? string.Empty);
             logoPath = DocumentSetting.UploadFile(newItem.Image, "Imgs");
             mappedNewItem.ImagePath = logoPath;
         }
 
-
-        var item = await _itemService.UpdateItemAsync(oldItem??new(), mappedNewItem);
+        var item = await _itemService.UpdateItemAsync(oldItem ?? new(), mappedNewItem);
         if (item is null)
-            return null;
+            return BadRequest(new ApiResponse(400, "Failed to update item"));
 
         var itemToReturn = _mapper.Map<MenuSalesItems, MenuSalesItemsToReturnDto>(item);
 

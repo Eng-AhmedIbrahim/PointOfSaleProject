@@ -11,6 +11,9 @@ public static class IdentityServicesExtensions
             options.Password.RequireNonAlphanumeric = false; 
             options.Password.RequireUppercase = false; 
             options.Password.RequireLowercase = false;
+            
+            // Allow spaces and special characters in usernames
+            options.User.AllowedUserNameCharacters = null; 
         })
         .AddEntityFrameworkStores<AppIdentityDbContext>()
         .AddDefaultTokenProviders();

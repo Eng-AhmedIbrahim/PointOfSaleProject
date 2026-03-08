@@ -1,25 +1,238 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
-    
-    <MudNavGroup Title="Reports" Icon="@Icons.Material.Filled.BarChart" Expanded="true">
-        <MudNavLink Href="/reports/sales" Icon="@Icons.Material.Filled.AttachMoney">Sales Summary</MudNavLink>
-        <MudNavLink Href="/reports/items" Icon="@Icons.Material.Filled.Fastfood">Item Sales</MudNavLink>
-        <MudNavLink Href="/reports/cashier" Icon="@Icons.Material.Filled.PointOfSale">Cashier Summary</MudNavLink>
-    </MudNavGroup>
+﻿@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BlazorBase.Services.LocalizationService LocalizerService
+@inject NavigationManager NavigationManager
+@inject POS.Core.Services.Contract.PosFeatureServices.IPosFeatureSettingsService FeatureSettingsService
 
-    <MudNavGroup Title="System Setup" Icon="@Icons.Material.Filled.Settings" Expanded="true">
-        <MudNavLink Href="/system/features" Icon="@Icons.Material.Filled.ToggleOn">Features Setup</MudNavLink>
-        <MudNavLink Href="/system/printers" Icon="@Icons.Material.Filled.Print">Printers</MudNavLink>
-        <MudNavLink Href="/settings/general" Icon="@Icons.Material.Filled.Tune">General Options</MudNavLink>
-    </MudNavGroup>
+<div class="top-nav-professional" dir="rtl">
+    <!-- Brand Section -->
+    <div class="nav-brand">
+        <div class="logo-circle">
+            <MudIcon Icon="@Icons.Material.Filled.PointOfSale" Color="Color.Info" Size="Size.Medium" />
+        </div>
+        <div class="brand-info">
+            <span class="brand-name">نيو تك</span>
+            <span class="brand-tag">نقطة البيع</span>
+        </div>
+    </div>
 
-    <MudNavGroup Title="Access Control" Icon="@Icons.Material.Filled.Security" Expanded="true">
-        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
-        <MudNavLink Href="/roles" Icon="@Icons.Material.Filled.AdminPanelSettings">Roles & Permissions</MudNavLink>
-    </MudNavGroup>
-    
-    <MudNavGroup Title="Inventory" Icon="@Icons.Material.Filled.Inventory" Expanded="true">
-        <MudNavLink Href="/items" Icon="@Icons.Material.Filled.Category">Items Hub</MudNavLink>
-        <MudNavLink Href="/offers" Icon="@Icons.Material.Filled.LocalOffer">Offers</MudNavLink>
-    </MudNavGroup>
-</MudNavMenu>
+    <!-- Main Navigation Tabs -->
+    <div class="nav-tabs-container">
+        <div class="tab-item @(ActiveTab == "dashboard" ? "active" : "")" @onclick='() => NavigateTo("/")'>
+            <MudIcon Icon="@Icons.Material.Rounded.Dashboard" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Dashboard"]</span>
+        </div>
+
+        <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" ListClass="pa-2" PopoverClass="settings-menu-popover">
+            <ActivatorContent>
+                <div class="tab-item @(ActiveTab == "settings" ? "active" : "")">
+                    <MudIcon Icon="@Icons.Material.Rounded.Settings" Size="Size.Small" Class="tab-icon" />
+                    <span class="tab-text">@LocalizerService["BasicSettings"]</span>
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Class="dropdown-arrow" />
+                </div>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                    <ActivatorContent>
+                        <MudMenuItem Class="px-3" Style="border-radius:12px;">
+                            <div class="menu-item-content d-flex align-center gap-2">
+                                <span class="d-flex align-center gap-3">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Business" Size="Size.Small" /> 
+                                    @LocalizerService["CompanySettings"]
+                                </span>
+                                <MudIcon Icon="@(LocalizerService.GetCurrentLanguage() == "ar" ? Icons.Material.Rounded.ChevronLeft : Icons.Material.Rounded.ChevronRight)" Size="Size.Small" Class="text-muted" />
+                            </div>
+                        </MudMenuItem>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/settings/company"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Domain" Size="Size.Small" /> @LocalizerService["CompanyManagement"]</div></MudMenuItem>
+                        <MudMenuItem Href="/settings/branches"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Store" Size="Size.Small" /> @LocalizerService["Branches"]</div></MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/settings/ordersettings"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.ReceiptLong" Size="Size.Small" /> @LocalizerService["OrderSettings"]</div></MudMenuItem>
+                <MudMenuItem Href="/settings/printersettings"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Print" Size="Size.Small" /> @LocalizerService["PrintSettings"]</div></MudMenuItem>
+                <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                    <ActivatorContent>
+                        <MudMenuItem Class="px-3" Style="border-radius:12px;">
+                            <div class="menu-item-content d-flex align-center gap-2">
+                                <span class="d-flex align-center gap-3">
+                                    <MudIcon Icon="@Icons.Material.Rounded.SettingsApplications" Size="Size.Small" /> 
+                                    @(LocalizerService.GetCurrentLanguage() == "ar" ? "إعدادات النظام" : "System Settings")
+                                </span>
+                                <MudIcon Icon="@(LocalizerService.GetCurrentLanguage() == "ar" ? Icons.Material.Rounded.ChevronLeft : Icons.Material.Rounded.ChevronRight)" Size="Size.Small" Class="text-muted" />
+                            </div>
+                        </MudMenuItem>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/settings/system"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.LocalShipping" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إعدادات الموزع" : "Dispatcher Settings")</div></MudMenuItem>
+                        <MudMenuItem Href="/settings/features"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.FeaturedPlayList" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "خصائص ومميزات السيستم" : "System Feature Settings")</div></MudMenuItem>
+                        @* يمكنك إضافة إعدادات نظام أخرى هنا مستقبلاً *@
+                    </ChildContent>
+                </MudMenu>
+                <MudDivider Class="my-2" />
+                <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Tune" Size="Size.Small" /> @LocalizerService["GeneralSettings"]</div></MudMenuItem>
+                <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.PointOfSale" Size="Size.Small" /> @LocalizerService["POSSettings"]</div></MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Language" Size="Size.Small" /> @LocalizerService["LanguageSettings"]</div></MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/settings/datasync"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Sync" Size="Size.Small" /> @LocalizerService["DataUpdate"]</div></MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+        
+        <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" ListClass="pa-2" PopoverClass="settings-menu-popover">
+            <ActivatorContent>
+                <div class="tab-item">
+                    <MudIcon Icon="@Icons.Material.Rounded.Badge" Size="Size.Small" Class="tab-icon" />
+                    <span class="tab-text">@LocalizerService["BasicData"]</span>
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Class="dropdown-arrow" />
+                </div>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                    <ActivatorContent>
+                        <MudMenuItem Class="px-3" Style="border-radius:12px;">
+                            <div class="menu-item-content d-flex align-center gap-2">
+                                <span class="d-flex align-center gap-3">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Security" Size="Size.Small" /> 
+                                    @LocalizerService["SecurityPermissions"]
+                                </span>
+                                <MudIcon Icon="@(LocalizerService.GetCurrentLanguage() == "ar" ? Icons.Material.Rounded.ChevronLeft : Icons.Material.Rounded.ChevronRight)" Size="Size.Small" Class="text-muted" />
+                            </div>
+                        </MudMenuItem>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/basicdata/users"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.People" Size="Size.Small" /> @LocalizerService["Users"]</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/roles"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.AdminPanelSettings" Size="Size.Small" /> @LocalizerService["Roles"]</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/permissions"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Policy" Size="Size.Small" /> @LocalizerService["Polices"]</div></MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+
+                <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                    <ActivatorContent>
+                        <MudMenuItem Class="px-3" Style="border-radius:12px;">
+                            <div class="menu-item-content d-flex align-center gap-2">
+                                <span class="d-flex align-center gap-3">
+                                    <MudIcon Icon="@Icons.Material.Rounded.ShoppingBasket" Size="Size.Small" /> 
+                                    @LocalizerService["ItemsSettings"]
+                                </span>
+                                <MudIcon Icon="@(LocalizerService.GetCurrentLanguage() == "ar" ? Icons.Material.Rounded.ChevronLeft : Icons.Material.Rounded.ChevronRight)" Size="Size.Small" Class="text-muted" />
+                            </div>
+                        </MudMenuItem>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/basicdata/classifications"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Class" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "أقسام الفئات" : "Category Classifications")</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/categories"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Category" Size="Size.Small" /> @LocalizerService["Categories"]</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/items"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.ShoppingBag" Size="Size.Small" /> @LocalizerService["SalesItems"]</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/attributes"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.ListAlt" Size="Size.Small" /> @LocalizerService["AttributesManagement"]</div></MudMenuItem>
+                        <MudMenuItem Href="/basicdata/attribute/assignment"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Link" Size="Size.Small" /> @LocalizerService["AttributeAssignment"]</div></MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/basicdata/item/printerassignment"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Print" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إعداد طباعة الأصناف" : "Item Printer Assignment")</div></MudMenuItem>
+                <MudMenuItem Href="/basicdata/category/printerassignment"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Print" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إعداد طباعة الفئات" : "Category Printer Assignment")</div></MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/basicdata/zones"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Map" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "مناطق التوصيل" : "Delivery Zones")</div></MudMenuItem>
+                <MudMenuItem Href="/basicdata/complaints"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.SupportAgent" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "شكاوى الكول سنتر" : "Call Center Complaints")</div></MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Href="/basicdata/tablegroups"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Layers" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "مجموعات الطاولات" : "Table Groups")</div></MudMenuItem>
+                <MudMenuItem Href="/basicdata/tables"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.TableBar" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "الطاولات" : "Tables")</div></MudMenuItem>
+                <MudDivider Class="my-2" />
+                
+                <MudMenuItem Href="/basicdata/paymentmethods"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.AccountBalanceWallet" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "طرق الدفع" : "Payment Methods")</div></MudMenuItem>
+                <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.MoreHoriz" Size="Size.Small" /> @LocalizerService["Miscellaneous"]</div></MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+
+        @if (IsInventoryEnabled)
+        {
+            <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                <ActivatorContent>
+                    <div class="tab-item @(ActiveTab == "inventory" ? "active" : "")">
+                        <MudIcon Icon="@Icons.Material.Rounded.Warehouse" Size="Size.Small" Class="tab-icon" />
+                        <span class="tab-text">@(LocalizerService.GetCurrentLanguage() == "ar" ? "المخازن" : "Inventory")</span>
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Class="dropdown-arrow" />
+                    </div>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="/basicdata/inventory"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Inventory" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "إدارة المخازن" : "Inventory Management")</div></MudMenuItem>
+                    <MudMenuItem Href="/basicdata/units"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Straighten" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "تعريف الوحدات" : "Units Definition")</div></MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        }
+
+        <div class="tab-item">
+            <MudIcon Icon="@Icons.Material.Rounded.SwapHoriz" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Transactions"]</span>
+        </div>
+
+        <div class="tab-item">
+            <MudIcon Icon="@Icons.Material.Rounded.Search" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Queries"]</span>
+        </div>
+
+        <div class="tab-item" @onclick='() => NavigateTo("/reports/sales")'>
+            <MudIcon Icon="@Icons.Material.Rounded.Assessment" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Reports"]</span>
+        </div>
+
+        <div class="tab-item">
+            <MudIcon Icon="@Icons.Material.Rounded.AppRegistration" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Registration"]</span>
+        </div>
+
+        <div class="tab-item">
+            <MudIcon Icon="@Icons.Material.Rounded.Lock" Size="Size.Small" Class="tab-icon" />
+            <span class="tab-text">@LocalizerService["Closing"]</span>
+        </div>
+    </div>
+
+    <!-- User & Exit Section -->
+    <div class="nav-actions">
+        <div class="user-pill">
+            <div class="user-avatar">AD</div>
+            <span class="user-name">المدير العام</span>
+        </div>
+        
+        <div class="logout-action" @onclick="Logout" title="تسجيل الخروج">
+            <MudIcon Icon="@Icons.Material.Rounded.Logout" Size="Size.Medium" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private string ActiveTab = "dashboard";
+    private bool IsInventoryEnabled = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
+        UpdateActiveTab();
+        NavigationManager.LocationChanged += (s, e) => {
+            UpdateActiveTab();
+            InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private void UpdateActiveTab()
+    {
+        var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (string.IsNullOrEmpty(uri) || uri == "/") ActiveTab = "dashboard";
+        else if (uri.Contains("settings")) ActiveTab = "settings";
+        else if (uri.Contains("inventory") || uri.Contains("units")) ActiveTab = "inventory";
+        else ActiveTab = "";
+    }
+
+    private void NavigateTo(string path)
+    {
+        NavigationManager.NavigateTo(path);
+    }
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+        await LocalStorage.RemoveItemAsync("AppSettingDTOList");
+        await LocalStorage.RemoveItemAsync("CurrentUser");
+        
+        System.Diagnostics.Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName);
+        Environment.Exit(0);
+    }
+}

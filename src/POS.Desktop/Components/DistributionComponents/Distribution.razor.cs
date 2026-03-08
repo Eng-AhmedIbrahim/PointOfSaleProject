@@ -1,4 +1,6 @@
 ﻿using BlazorBase.ERPFrontServices.DistributionServices;
+using BlazorBase.ERPFrontServices.SettingsServices;
+using POS.Contract.Dtos.SettingsDtos;
 using POS.Desktop.Components.DineInComponents;
 
 namespace POS.Desktop.Components.DistributionComponents;
@@ -7,7 +9,8 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 {
     [Inject] public IDistributionErpService _distributionService { get; set; } = default!;
     [Inject] public CallCenterHubSettings _hubSettings { get; set; } = default!;
-    [Inject] public IOptions<DispatcherSettings> _dispatcherSettings { get; set; } = default!;
+    [Inject] public ISystemSettingsServices _systemSettingsServices { get; set; } = default!;
+    private DispatcherSettingsDto _dynamicDispatcherSettings = new();
     [Inject] public CommonProperties _commonProperties { get; set; } = default!;
     [Inject] public NavigationManager navigationManager { get; set; } = default!;
     [Inject] public CartService _cartService { get; set; } = default!;
@@ -120,13 +123,15 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
         UpdateDriverStatus();
 
+        _dynamicDispatcherSettings = await _systemSettingsServices.GetDispatcherSettingsAsync();
+
         _timer = new Timer(_ =>
         {
             InvokeAsync(() =>
             {
                 StateHasChanged();
             });
-        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(_dispatcherSettings.Value.RefreshTimeForDeliveryOrderColorsPerSecond));
+        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(_dynamicDispatcherSettings.RefreshTimeForDeliveryOrderColorsPerSecond));
     }
 
     private async Task ConnectToExternalHubs()
@@ -431,16 +436,16 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private bool IsVoidDisabled(OrderDto order)
     {
-        if (!_dispatcherSettings.Value.AllowDeliveryVoidFromBranch)
+        if (!_dynamicDispatcherSettings.AllowDeliveryVoidFromBranch)
             return true;
 
         if (order.OrderState == "Dispatched" || order.OrderState == "Delivering")
             return true;
 
-        if (_dispatcherSettings.Value.AllowVoidLimitMinutesForDeliveryOrder && order.OrderDate.HasValue)
+        if (_dynamicDispatcherSettings.AllowVoidLimitMinutesForDeliveryOrder && order.OrderDate.HasValue)
         {
             var timeDiff = DateTime.Now.TimeOfDay - order.OrderDate.Value.TimeOfDay;
-            if (timeDiff.TotalMinutes > _dispatcherSettings.Value.VoidLimitMinutesForDeliveryOrder)
+            if (timeDiff.TotalMinutes > _dynamicDispatcherSettings.VoidLimitMinutesForDeliveryOrder)
                 return true;
         }
 
@@ -504,9 +509,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         if (timeDiff.TotalMinutes < 0)
             timeDiff = timeDiff.Add(TimeSpan.FromDays(1));
 
-        if (timeDiff.TotalMinutes >= _dispatcherSettings.Value.CriticalTimeForDeliveryOrderPerMinute)
+        if (timeDiff.TotalMinutes >= _dynamicDispatcherSettings.CriticalTimeForDeliveryOrderPerMinute)
             return "bg-red-100";
-        else if (timeDiff.TotalMinutes >= _dispatcherSettings.Value.WarningTimeForDeliveryOrderPerMinute)
+        else if (timeDiff.TotalMinutes >= _dynamicDispatcherSettings.WarningTimeForDeliveryOrderPerMinute)
             return "bg-yellow-100";
 
         return string.Empty;

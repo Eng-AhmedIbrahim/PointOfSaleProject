@@ -27,11 +27,13 @@
 
             <div class="login-form">
                 <div class="form-group">
-                    <select @onchange="HandelOnChange" class="form-control-custom select-user">
-                        <option disabled selected>@Localizer["SelectUser"]</option>
+                    <select dir="rtl" @onchange="HandelOnChange" class="form-control-custom select-user">
+                        <option dir="rtl" disabled selected>@Localizer["SelectUser"]</option>
                         @foreach (var user in Users)
                         {
-                            <option value="@user.UserName">@user.UserName</option>
+                            <option dir="rtl" value="@user.DisplayName">
+                                @user.DisplayName
+                            </option>
                         }
                     </select>
                 </div>

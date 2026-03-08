@@ -239,6 +239,15 @@ public class DesktopPrintOrderService : IPrintOrderService
         BackupMainOrderDtoDetails(customerName, customerPhone, paid, paymentMethod);
 
         _commonProperties.OrderDto!.SkipPrintingOnServer = true;
+
+        // Guard: لا ترسل طلب فاضي للـ API
+        if (_commonProperties.OrderDto.OrderDetails == null || !_commonProperties.OrderDto.OrderDetails.Any())
+        {
+            Log.Warning("PrintTakeAwayOrder: OrderDetails is empty! TableItems count={Count}. Cannot create order.",
+                _commonProperties.TableItems?.Count ?? 0);
+            return false;
+        }
+
         var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
 
         if (result is null)
@@ -368,7 +377,8 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.OrderDate = DateTime.Now;
         _commonProperties.OrderDto.OrderState = "Completed";
         _commonProperties.OrderDto.OrderNotice = _commonProperties.OrderNote;
-        _commonProperties.OrderDto.OrderDetails = _commonProperties.TableItems;
+        _commonProperties.OrderDto.OrderDetails = _commonProperties.TableItems?.ToList() ?? new List<TableItem>();
+
         _commonProperties.OrderDto.TakeAwayCustomerName = customerName;
         _commonProperties.OrderDto.TakeawayCustomerPhone = customerPhone;
         _commonProperties.OrderDto.CustomerName = customerName;
@@ -741,7 +751,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             _commonProperties.OrderDto.OrderState = "Pending";
         
         _commonProperties.OrderDto.OrderNotice = _commonProperties.OrderNote;
-        _commonProperties.OrderDto.OrderDetails = _commonProperties.TableItems;
+        _commonProperties.OrderDto.OrderDetails = _commonProperties.TableItems?.ToList() ?? new List<TableItem>();
+
 
         _commonProperties.OrderDto.CustomerName = _commonProperties.CustomerDetails?.CustomerName;
         _commonProperties.OrderDto.Phone1 = _commonProperties.CustomerDetails?.FirstPhoneNumber;
@@ -1112,22 +1123,28 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
-    public async Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items)
+    public async Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true)
     {
         try
         {
             var branch = await _branchService.GetBranches();
             var currentBranch = branch.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
             
-            var document = new SalesSummaryDocument(summary, items, currentBranch?.Name ?? "Store", LogoPath);
+            var format = useA4 ? ReportPageFormat.A4 : ReportPageFormat.Cashier;
+            var document = new SalesSummaryDocument(summary, items, currentBranch?.Name ?? "Store", LogoPath, format, isArabic);
             
             var reportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
             Directory.CreateDirectory(reportsFolder);
-            var outputPath = Path.Combine(reportsFolder, $"SalesSummary_{summary.PosDate:yyyyMMdd}_{DateTime.Now:HHmmss}.pdf");
+            var formatSuffix = useA4 ? "A4" : "Cashier";
+            var langSuffix = isArabic ? "AR" : "EN";
+            var outputPath = Path.Combine(reportsFolder, $"SalesSummary_{summary.PosDate:yyyyMMdd}_{formatSuffix}_{langSuffix}_{DateTime.Now:HHmmss}.pdf");
             
             document.GeneratePdf(outputPath);
             
-            string? printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
+            if (string.IsNullOrEmpty(printerName))
+            {
+                printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
+            }
             
             if (string.IsNullOrEmpty(printerName))
             {
@@ -1138,7 +1155,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             if (!string.IsNullOrEmpty(printerName))
             {
-                Log.Information("Printing Sales Summary to: {Printer}", printerName);
+                Log.Information("Printing Sales Summary ({Format}) to: {Printer}", formatSuffix, printerName);
                 await _printerServices.PrintPdfAsync(outputPath, printerName);
             }
             else
@@ -1150,5 +1167,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             Log.Error(ex, "Failed to print sales summary");
         }
+    }
+
+    public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null)
+    {
+        // TODO: Implement driver settlement printing when needed
+        Log.Warning("PrintDriverSettlementAsync called but not yet implemented for BackOffice desktop.");
+        return Task.CompletedTask;
     }
 }

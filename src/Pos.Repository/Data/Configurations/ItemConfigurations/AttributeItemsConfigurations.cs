@@ -6,6 +6,10 @@ public class AttributeItemsConfigurations : IEntityTypeConfiguration<AttributeIt
     private readonly int MinLength = 70;
     public void Configure(EntityTypeBuilder<AttributeItem> builder)
     {
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+
         builder.Property(c => c.AppearanceIndex)
            .HasColumnType("int");
 

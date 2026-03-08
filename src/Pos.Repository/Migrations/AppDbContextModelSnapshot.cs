@@ -25,10 +25,7 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -696,7 +693,7 @@ namespace Pos.Repository.Migrations
                     b.ToTable("TableGroups", (string)null);
                 });
 
-            modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
+            modelBuilder.Entity("POS.Core.Entities.Item.AttributeGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -704,16 +701,51 @@ namespace Pos.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EnglishName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Uid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttributeId");
+
+                    b.ToTable("AttributeGroups");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<int>("AppearanceIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttributeGroupId")
                         .HasColumnType("int");
 
                     b.Property<int>("AttributeId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("ExtraPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("RelatedMenuItemId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttributeGroupId");
 
                     b.HasIndex("AttributeId");
 
@@ -742,13 +774,130 @@ namespace Pos.Repository.Migrations
                     b.ToTable("Attributes");
                 });
 
-            modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
+            modelBuilder.Entity("POS.Core.Entities.Item.InventoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryNameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CategoryNameEn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CurrentQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ItemNameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemNameEn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MenuSalesItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MinimumQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("TrackInventory")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitNameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnitNameEn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuSalesItemId");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("InventoryItems");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.InventoryTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InventoryItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("QuantityChange")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReferenceId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ResultingQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryItemId");
+
+                    b.ToTable("InventoryTransactions");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.ItemsClassifications", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ArabicName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ItemsClassifications");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -757,9 +906,6 @@ namespace Pos.Repository.Migrations
 
                     b.Property<int?>("AttributeId")
                         .HasColumnType("int");
-
-                    b.Property<decimal?>("AttributePrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("BackColor")
                         .HasMaxLength(7)
@@ -770,6 +916,11 @@ namespace Pos.Repository.Migrations
 
                     b.Property<int?>("BranchId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("ByWeight")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
@@ -805,8 +956,8 @@ namespace Pos.Repository.Migrations
                     b.Property<int?>("KitchenTypeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("MainCategoryId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("MainCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("NormalizedEnglishName")
                         .IsRequired()
@@ -852,6 +1003,8 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("KitchenTypeId");
 
+                    b.HasIndex("MainCategoryId");
+
                     b.ToTable("MenuSalesItems");
                 });
 
@@ -867,6 +1020,9 @@ namespace Pos.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<decimal?>("ExtraPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
@@ -875,6 +1031,102 @@ namespace Pos.Repository.Migrations
                     b.HasIndex("AttributeItemId");
 
                     b.ToTable("OrderItemAttributes");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.Recipe", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MenuSalesItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecipeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuSalesItemId");
+
+                    b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.RecipeIngredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MenuSalesIngredientId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuSalesIngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("RecipeIngredients");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EnglishName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
@@ -1049,6 +1301,9 @@ namespace Pos.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool?>("ByWeight")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -1096,10 +1351,10 @@ namespace Pos.Repository.Migrations
                     b.Property<bool?>("PrintInBackupReceiptFromItem")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<decimal?>("Quantity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(1m);
 
                     b.Property<decimal?>("TotalAfterDiscount")
                         .HasColumnType("decimal(18,2)");
@@ -1122,8 +1377,8 @@ namespace Pos.Repository.Migrations
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("VoidAmount")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("VoidAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("VoidBy")
                         .HasColumnType("nvarchar(max)");
@@ -1388,14 +1643,14 @@ namespace Pos.Repository.Migrations
                     b.Property<int>("OrderVoidId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuantityAfter")
-                        .HasColumnType("int");
+                    b.Property<decimal>("QuantityAfter")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("QuantityBefore")
-                        .HasColumnType("int");
+                    b.Property<decimal>("QuantityBefore")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("QuantityVoided")
-                        .HasColumnType("int");
+                    b.Property<decimal>("QuantityVoided")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(500)
@@ -1687,8 +1942,8 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)");
 
-                    b.Property<int?>("VoidCount")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("VoidCount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("VoidReason")
                         .HasMaxLength(500)
@@ -1781,6 +2036,32 @@ namespace Pos.Repository.Migrations
                     b.ToTable("PosFeatureSettings");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Payment.PaymentMethodEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethods");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.ReservationEntity.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -1840,6 +2121,90 @@ namespace Pos.Repository.Migrations
                     b.HasIndex("TableId");
 
                     b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Settings.DispatcherSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowDeliveryVoidFromBranch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AllowVoidLimitMinutesForDeliveryOrder")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ComputerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CriticalTimeForDeliveryOrderPerMinute")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDispatcher")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RefreshTimeForDeliveryOrderColorsPerSecond")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VoidLimitMinutesForDeliveryOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarningTimeForDeliveryOrderPerMinute")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DispatcherSettings");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Settings.HqSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConnectTimeout")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DatabaseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Encrypt")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastSyncDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TrustServerCertificate")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("UseIntegratedSecurity")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HqSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Shift.ShiftHandover", b =>
@@ -1970,8 +2335,23 @@ namespace Pos.Repository.Migrations
                     b.Navigation("TableGroup");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.Item.AttributeGroup", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.Attributes", "Attribute")
+                        .WithMany("AttributeGroups")
+                        .HasForeignKey("AttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attribute");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
                 {
+                    b.HasOne("POS.Core.Entities.Item.AttributeGroup", "AttributeGroup")
+                        .WithMany("AttributeItems")
+                        .HasForeignKey("AttributeGroupId");
+
                     b.HasOne("POS.Core.Entities.Item.Attributes", "Attribute")
                         .WithMany("AttributeItems")
                         .HasForeignKey("AttributeId")
@@ -1986,7 +2366,38 @@ namespace Pos.Repository.Migrations
 
                     b.Navigation("Attribute");
 
+                    b.Navigation("AttributeGroup");
+
                     b.Navigation("RelatedMenuItem");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.InventoryItem", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "MenuSalesItem")
+                        .WithMany()
+                        .HasForeignKey("MenuSalesItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.Item.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("MenuSalesItem");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.InventoryTransaction", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.InventoryItem", "InventoryItem")
+                        .WithMany("Transactions")
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InventoryItem");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
@@ -2010,6 +2421,11 @@ namespace Pos.Repository.Migrations
                         .WithMany("Items")
                         .HasForeignKey("KitchenTypeId");
 
+                    b.HasOne("POS.Core.Entities.Item.ItemsClassifications", "MainCategory")
+                        .WithMany()
+                        .HasForeignKey("MainCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Attribute");
 
                     b.Navigation("Branch");
@@ -2017,6 +2433,8 @@ namespace Pos.Repository.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("KitchenType");
+
+                    b.Navigation("MainCategory");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
@@ -2036,6 +2454,43 @@ namespace Pos.Repository.Migrations
                     b.Navigation("AttributeItem");
 
                     b.Navigation("OrderItem");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.Recipe", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "MenuSalesItem")
+                        .WithMany()
+                        .HasForeignKey("MenuSalesItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuSalesItem");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.RecipeIngredient", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "MenuSalesIngredient")
+                        .WithMany()
+                        .HasForeignKey("MenuSalesIngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.Item.Recipe", "Recipe")
+                        .WithMany("Ingredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.Item.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("MenuSalesIngredient");
+
+                    b.Navigation("Recipe");
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
@@ -2209,14 +2664,31 @@ namespace Pos.Repository.Migrations
                     b.Navigation("Tables");
                 });
 
-            modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
+            modelBuilder.Entity("POS.Core.Entities.Item.AttributeGroup", b =>
                 {
                     b.Navigation("AttributeItems");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
+                {
+                    b.Navigation("AttributeGroups");
+
+                    b.Navigation("AttributeItems");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.InventoryItem", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Item.Recipe", b =>
+                {
+                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenType", b =>

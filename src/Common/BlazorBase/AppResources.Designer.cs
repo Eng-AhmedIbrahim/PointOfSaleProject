@@ -97,6 +97,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string Active {
+            get {
+                return ResourceManager.GetString("Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Active Device.
+        /// </summary>
+        public static string ActiveDevice {
+            get {
+                return ResourceManager.GetString("ActiveDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active Order.
         /// </summary>
         public static string ActiveOrder {
@@ -124,6 +142,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Active Orders.
+        /// </summary>
+        public static string ActiveOrders {
+            get {
+                return ResourceManager.GetString("ActiveOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Branch.
+        /// </summary>
+        public static string AddBranch {
+            get {
+                return ResourceManager.GetString("AddBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Discount.
         /// </summary>
         public static string AddDiscount {
@@ -133,11 +169,38 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add New Kitchen.
+        /// </summary>
+        public static string AddKitchen {
+            get {
+                return ResourceManager.GetString("AddKitchen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add New.
         /// </summary>
         public static string AddNew {
             get {
                 return ResourceManager.GetString("AddNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Printer.
+        /// </summary>
+        public static string AddPrinter {
+            get {
+                return ResourceManager.GetString("AddPrinter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        public static string Address {
+            get {
+                return ResourceManager.GetString("Address", resourceCulture);
             }
         }
         
@@ -169,6 +232,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advanced Control Options.
+        /// </summary>
+        public static string AdvancedControlSection {
+            get {
+                return ResourceManager.GetString("AdvancedControlSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         public static string All {
@@ -192,6 +264,51 @@ namespace BlazorBase {
         public static string AllOrders {
             get {
                 return ResourceManager.GetString("AllOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Adding Items from Branch.
+        /// </summary>
+        public static string AllowAddFromBranch {
+            get {
+                return ResourceManager.GetString("AllowAddFromBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Adding Items from Call Center.
+        /// </summary>
+        public static string AllowAddFromCallCenter {
+            get {
+                return ResourceManager.GetString("AllowAddFromCallCenter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Closing Without Printing.
+        /// </summary>
+        public static string AllowCloseWithoutPrint {
+            get {
+                return ResourceManager.GetString("AllowCloseWithoutPrint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Voiding from Branch.
+        /// </summary>
+        public static string AllowVoidFromBranch {
+            get {
+                return ResourceManager.GetString("AllowVoidFromBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Voiding from Call Center.
+        /// </summary>
+        public static string AllowVoidFromCallCenter {
+            get {
+                return ResourceManager.GetString("AllowVoidFromCallCenter", resourceCulture);
             }
         }
         
@@ -241,6 +358,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arabic Name.
+        /// </summary>
+        public static string ArabicName {
+            get {
+                return ResourceManager.GetString("ArabicName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         public static string Back {
@@ -259,11 +385,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Basic Data.
+        /// </summary>
+        public static string BasicData {
+            get {
+                return ResourceManager.GetString("BasicData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Basic Information.
         /// </summary>
         public static string BasicInfo {
             get {
                 return ResourceManager.GetString("BasicInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Basic Settings.
+        /// </summary>
+        public static string BasicSettings {
+            get {
+                return ResourceManager.GetString("BasicSettings", resourceCulture);
             }
         }
         
@@ -286,6 +430,33 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Branch Management.
+        /// </summary>
+        public static string BranchManagement {
+            get {
+                return ResourceManager.GetString("BranchManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Branch Name.
+        /// </summary>
+        public static string BranchName {
+            get {
+                return ResourceManager.GetString("BranchName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Branch.
+        /// </summary>
+        public static string BranchSelectLabel {
+            get {
+                return ResourceManager.GetString("BranchSelectLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -304,11 +475,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string cancelled {
+            get {
+                return ResourceManager.GetString("cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel Reservation.
         /// </summary>
         public static string CancelReservation {
             get {
                 return ResourceManager.GetString("CancelReservation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot delete default kitchen types (Cash/Backup).
+        /// </summary>
+        public static string CannotDeleteDefaultKitchen {
+            get {
+                return ResourceManager.GetString("CannotDeleteDefaultKitchen", resourceCulture);
             }
         }
         
@@ -363,6 +552,15 @@ namespace BlazorBase {
         public static string Categories {
             get {
                 return ResourceManager.GetString("Categories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category.
+        /// </summary>
+        public static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
             }
         }
         
@@ -457,6 +655,78 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Closing.
+        /// </summary>
+        public static string Closing {
+            get {
+                return ResourceManager.GetString("Closing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table Closing Invoices.
+        /// </summary>
+        public static string ClosingReceiptCountLabel {
+            get {
+                return ResourceManager.GetString("ClosingReceiptCountLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collected.
+        /// </summary>
+        public static string Collected {
+            get {
+                return ResourceManager.GetString("Collected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include Service in Item Price.
+        /// </summary>
+        public static string CombineServiceWithPrice {
+            get {
+                return ResourceManager.GetString("CombineServiceWithPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company.
+        /// </summary>
+        public static string Company {
+            get {
+                return ResourceManager.GetString("Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company &amp; Branches.
+        /// </summary>
+        public static string CompanyAndBranches {
+            get {
+                return ResourceManager.GetString("CompanyAndBranches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company Management.
+        /// </summary>
+        public static string CompanyManagement {
+            get {
+                return ResourceManager.GetString("CompanyManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company Settings.
+        /// </summary>
+        public static string CompanySettings {
+            get {
+                return ResourceManager.GetString("CompanySettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Complaint Details.
         /// </summary>
         public static string ComplaintDetails {
@@ -538,6 +808,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string completed {
+            get {
+                return ResourceManager.GetString("completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Complete Order.
         /// </summary>
         public static string CompleteOrder {
@@ -606,6 +885,15 @@ namespace BlazorBase {
         public static string Credit {
             get {
                 return ResourceManager.GetString("Credit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currency.
+        /// </summary>
+        public static string Currency {
+            get {
+                return ResourceManager.GetString("Currency", resourceCulture);
             }
         }
         
@@ -709,11 +997,65 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Customer Receipt.
+        /// </summary>
+        public static string CustomerReceipt {
+            get {
+                return ResourceManager.GetString("CustomerReceipt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Customer Invoices.
+        /// </summary>
+        public static string CustomerReceiptCountLabel {
+            get {
+                return ResourceManager.GetString("CustomerReceiptCountLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dashboard.
+        /// </summary>
+        public static string Dashboard {
+            get {
+                return ResourceManager.GetString("Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data Update.
+        /// </summary>
+        public static string DataUpdate {
+            get {
+                return ResourceManager.GetString("DataUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         public static string Date {
             get {
                 return ResourceManager.GetString("Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decimals.
+        /// </summary>
+        public static string Decimals {
+            get {
+                return ResourceManager.GetString("Decimals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default Job Title on Receipt.
+        /// </summary>
+        public static string DefaultReceiptJob {
+            get {
+                return ResourceManager.GetString("DefaultReceiptJob", resourceCulture);
             }
         }
         
@@ -727,11 +1069,47 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete Branch.
+        /// </summary>
+        public static string DeleteBranch {
+            get {
+                return ResourceManager.GetString("DeleteBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this branch?.
+        /// </summary>
+        public static string DeleteBranchConfirm {
+            get {
+                return ResourceManager.GetString("DeleteBranchConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleted successfully.
+        /// </summary>
+        public static string Deleted {
+            get {
+                return ResourceManager.GetString("Deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delivery.
         /// </summary>
         public static string Delivery {
             get {
                 return ResourceManager.GetString("Delivery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delivery Companies.
+        /// </summary>
+        public static string DeliveryCompanies {
+            get {
+                return ResourceManager.GetString("DeliveryCompanies", resourceCulture);
             }
         }
         
@@ -750,6 +1128,15 @@ namespace BlazorBase {
         public static string DepositAmount {
             get {
                 return ResourceManager.GetString("DepositAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer Device Name.
+        /// </summary>
+        public static string DeviceNameLabel {
+            get {
+                return ResourceManager.GetString("DeviceNameLabel", resourceCulture);
             }
         }
         
@@ -786,6 +1173,15 @@ namespace BlazorBase {
         public static string DiscountReasonRequired {
             get {
                 return ResourceManager.GetString("DiscountReasonRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discount Types.
+        /// </summary>
+        public static string DiscountTypes {
+            get {
+                return ResourceManager.GetString("DiscountTypes", resourceCulture);
             }
         }
         
@@ -1213,11 +1609,47 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Branch.
+        /// </summary>
+        public static string EditBranch {
+            get {
+                return ResourceManager.GetString("EditBranch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Existing Order.
         /// </summary>
         public static string EditExistingOrder {
             get {
                 return ResourceManager.GetString("EditExistingOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Ingredients.
+        /// </summary>
+        public static string EditIngredients {
+            get {
+                return ResourceManager.GetString("EditIngredients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Kitchen.
+        /// </summary>
+        public static string EditKitchen {
+            get {
+                return ResourceManager.GetString("EditKitchen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Printer.
+        /// </summary>
+        public static string EditPrinter {
+            get {
+                return ResourceManager.GetString("EditPrinter", resourceCulture);
             }
         }
         
@@ -1231,11 +1663,47 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email Settings.
+        /// </summary>
+        public static string EmailSettings {
+            get {
+                return ResourceManager.GetString("EmailSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Captain Tips Deduction.
+        /// </summary>
+        public static string EnableCaptainTipsDeduction {
+            get {
+                return ResourceManager.GetString("EnableCaptainTipsDeduction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to English.
         /// </summary>
         public static string English {
             get {
                 return ResourceManager.GetString("English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to English Name.
+        /// </summary>
+        public static string EnglishName {
+            get {
+                return ResourceManager.GetString("EnglishName", resourceCulture);
             }
         }
         
@@ -1276,6 +1744,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred while saving..
+        /// </summary>
+        public static string ErrorSaving {
+            get {
+                return ResourceManager.GetString("ErrorSaving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exit.
         /// </summary>
         public static string Exit {
@@ -1290,6 +1767,15 @@ namespace BlazorBase {
         public static string ExitApp {
             get {
                 return ResourceManager.GetString("ExitApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expense Types.
+        /// </summary>
+        public static string ExpenseTypes {
+            get {
+                return ResourceManager.GetString("ExpenseTypes", resourceCulture);
             }
         }
         
@@ -1348,6 +1834,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General Settings.
+        /// </summary>
+        public static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Guest count must be at least 1.
         /// </summary>
         public static string GuestCountAtLeastOne {
@@ -1375,6 +1870,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Receipt Header &amp; Footer.
+        /// </summary>
+        public static string HeaderAndFooterSection {
+            get {
+                return ResourceManager.GetString("HeaderAndFooterSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home Delivery.
+        /// </summary>
+        public static string HomeDelivery {
+            get {
+                return ResourceManager.GetString("HomeDelivery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home Number.
         /// </summary>
         public static string HomeNumber {
@@ -1389,6 +1902,24 @@ namespace BlazorBase {
         public static string Id {
             get {
                 return ResourceManager.GetString("Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inactive.
+        /// </summary>
+        public static string Inactive {
+            get {
+                return ResourceManager.GetString("Inactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial Items.
+        /// </summary>
+        public static string InitialItems {
+            get {
+                return ResourceManager.GetString("InitialItems", resourceCulture);
             }
         }
         
@@ -1429,6 +1960,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item Properties.
+        /// </summary>
+        public static string ItemProperties {
+            get {
+                return ResourceManager.GetString("ItemProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Recipes.
+        /// </summary>
+        public static string ItemRecipes {
+            get {
+                return ResourceManager.GetString("ItemRecipes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item Section.
         /// </summary>
         public static string ItemSection {
@@ -1447,11 +1996,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item Visibility.
+        /// </summary>
+        public static string ItemVisibility {
+            get {
+                return ResourceManager.GetString("ItemVisibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kitchen Issue.
         /// </summary>
         public static string KitchenIssue {
             get {
                 return ResourceManager.GetString("KitchenIssue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kitchen Name.
+        /// </summary>
+        public static string KitchenNameLabel {
+            get {
+                return ResourceManager.GetString("KitchenNameLabel", resourceCulture);
             }
         }
         
@@ -1465,11 +2032,65 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Kitchen Receipt.
+        /// </summary>
+        public static string KitchenReceipt {
+            get {
+                return ResourceManager.GetString("KitchenReceipt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kitchen Invoice (Full).
+        /// </summary>
+        public static string KitchenReceiptCountLabel {
+            get {
+                return ResourceManager.GetString("KitchenReceiptCountLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Kitchen.
+        /// </summary>
+        public static string KitchenSelectLabel {
+            get {
+                return ResourceManager.GetString("KitchenSelectLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kitchen Settings.
+        /// </summary>
+        public static string KitchenSettingsTab {
+            get {
+                return ResourceManager.GetString("KitchenSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kitchens Management.
+        /// </summary>
+        public static string KitchensSection {
+            get {
+                return ResourceManager.GetString("KitchensSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
         public static string Language {
             get {
                 return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language Settings.
+        /// </summary>
+        public static string LanguageSettings {
+            get {
+                return ResourceManager.GetString("LanguageSettings", resourceCulture);
             }
         }
         
@@ -1519,6 +2140,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Link Sections.
+        /// </summary>
+        public static string LinkSections {
+            get {
+                return ResourceManager.GetString("LinkSections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading active order....
         /// </summary>
         public static string LoadingActiveOrder {
@@ -1546,11 +2176,65 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logo.
+        /// </summary>
+        public static string Logo {
+            get {
+                return ResourceManager.GetString("Logo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logo Height.
+        /// </summary>
+        public static string LogoHeight {
+            get {
+                return ResourceManager.GetString("LogoHeight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logo Width.
+        /// </summary>
+        public static string LogoWidth {
+            get {
+                return ResourceManager.GetString("LogoWidth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Main Order.
         /// </summary>
         public static string MainOrder {
             get {
                 return ResourceManager.GetString("MainOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage all your branches, addresses, and individual branch settings..
+        /// </summary>
+        public static string ManageBranchesDesc {
+            get {
+                return ResourceManager.GetString("ManageBranchesDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure your company information and manage all your branches in one place..
+        /// </summary>
+        public static string ManageCompanyAndBranchesDesc {
+            get {
+                return ResourceManager.GetString("ManageCompanyAndBranchesDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure your main company profile and contact information..
+        /// </summary>
+        public static string ManageCompanyDesc {
+            get {
+                return ResourceManager.GetString("ManageCompanyDesc", resourceCulture);
             }
         }
         
@@ -1573,6 +2257,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Menu Styles.
+        /// </summary>
+        public static string MenuStyles {
+            get {
+                return ResourceManager.GetString("MenuStyles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Merge Tables.
         /// </summary>
         public static string MergeTables {
@@ -1582,11 +2275,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Miscellaneous.
+        /// </summary>
+        public static string Miscellaneous {
+            get {
+                return ResourceManager.GetString("Miscellaneous", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mistake in Order.
         /// </summary>
         public static string MistakeOrder {
             get {
                 return ResourceManager.GetString("MistakeOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mobile Number.
+        /// </summary>
+        public static string MobileNumber {
+            get {
+                return ResourceManager.GetString("MobileNumber", resourceCulture);
             }
         }
         
@@ -1618,6 +2329,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No additional constraints for this mode.
+        /// </summary>
+        public static string NoAdditionalConstraints {
+            get {
+                return ResourceManager.GetString("NoAdditionalConstraints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No branches found..
+        /// </summary>
+        public static string NoBranchesFound {
+            get {
+                return ResourceManager.GetString("NoBranchesFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No items in this order.
         /// </summary>
         public static string NoItems {
@@ -1632,6 +2361,15 @@ namespace BlazorBase {
         public static string NoItemsSelectedToVoid {
             get {
                 return ResourceManager.GetString("NoItemsSelectedToVoid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Orders Found.
+        /// </summary>
+        public static string NoOrdersFound {
+            get {
+                return ResourceManager.GetString("NoOrdersFound", resourceCulture);
             }
         }
         
@@ -1659,6 +2397,15 @@ namespace BlazorBase {
         public static string OpenTime {
             get {
                 return ResourceManager.GetString("OpenTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operating Sections.
+        /// </summary>
+        public static string OperatingSections {
+            get {
+                return ResourceManager.GetString("OperatingSections", resourceCulture);
             }
         }
         
@@ -1771,6 +2518,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order Settings.
+        /// </summary>
+        public static string OrderSettings {
+            get {
+                return ResourceManager.GetString("OrderSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order Type Settings.
+        /// </summary>
+        public static string OrderSettingsTitle {
+            get {
+                return ResourceManager.GetString("OrderSettingsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Payment.
         /// </summary>
         public static string Payment {
@@ -1812,6 +2577,24 @@ namespace BlazorBase {
         public static string Percentage {
             get {
                 return ResourceManager.GetString("Percentage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone 1.
+        /// </summary>
+        public static string Phone1 {
+            get {
+                return ResourceManager.GetString("Phone1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone 2.
+        /// </summary>
+        public static string Phone2 {
+            get {
+                return ResourceManager.GetString("Phone2", resourceCulture);
             }
         }
         
@@ -1870,6 +2653,24 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Polices.
+        /// </summary>
+        public static string Polices {
+            get {
+                return ResourceManager.GetString("Polices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to POS Settings.
+        /// </summary>
+        public static string POSSettings {
+            get {
+                return ResourceManager.GetString("POSSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to POS Settings Button.
         /// </summary>
         public static string posSettingsFeature {
@@ -1902,6 +2703,60 @@ namespace BlazorBase {
         public static string Print {
             get {
                 return ResourceManager.GetString("Print", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Printer Configuration (Copies Setup).
+        /// </summary>
+        public static string PrinterCopiesSetup {
+            get {
+                return ResourceManager.GetString("PrinterCopiesSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer Settings.
+        /// </summary>
+        public static string PrinterSettings {
+            get {
+                return ResourceManager.GetString("PrinterSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printer Settings.
+        /// </summary>
+        public static string PrinterSettingsTab {
+            get {
+                return ResourceManager.GetString("PrinterSettingsTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Printers Configuration.
+        /// </summary>
+        public static string PrintersSection {
+            get {
+                return ResourceManager.GetString("PrintersSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Print Settings.
+        /// </summary>
+        public static string PrintSettings {
+            get {
+                return ResourceManager.GetString("PrintSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotional Offers.
+        /// </summary>
+        public static string PromotionalOffers {
+            get {
+                return ResourceManager.GetString("PromotionalOffers", resourceCulture);
             }
         }
         
@@ -1942,6 +2797,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Queries.
+        /// </summary>
+        public static string Queries {
+            get {
+                return ResourceManager.GetString("Queries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Calculation.
         /// </summary>
         public static string QuickPayment {
@@ -1969,6 +2833,33 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Print Copy Configuration.
+        /// </summary>
+        public static string ReceiptCountsSection {
+            get {
+                return ResourceManager.GetString("ReceiptCountsSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Receipt Footer Message.
+        /// </summary>
+        public static string ReceiptFooterNote {
+            get {
+                return ResourceManager.GetString("ReceiptFooterNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Registration.
+        /// </summary>
+        public static string Registration {
+            get {
+                return ResourceManager.GetString("Registration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remaining Change.
         /// </summary>
         public static string RemainingChange {
@@ -1992,6 +2883,15 @@ namespace BlazorBase {
         public static string RemoveOrder {
             get {
                 return ResourceManager.GetString("RemoveOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reports.
+        /// </summary>
+        public static string Reports {
+            get {
+                return ResourceManager.GetString("Reports", resourceCulture);
             }
         }
         
@@ -2185,11 +3085,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roles.
+        /// </summary>
+        public static string Roles {
+            get {
+                return ResourceManager.GetString("Roles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sales Items.
         /// </summary>
         public static string SalesItems {
             get {
                 return ResourceManager.GetString("SalesItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sales Items Summary.
+        /// </summary>
+        public static string SalesItemsSummary {
+            get {
+                return ResourceManager.GetString("SalesItemsSummary", resourceCulture);
             }
         }
         
@@ -2208,6 +3126,24 @@ namespace BlazorBase {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved successfully!.
+        /// </summary>
+        public static string SavedSuccessfully {
+            get {
+                return ResourceManager.GetString("SavedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string SaveSettingsBtn {
+            get {
+                return ResourceManager.GetString("SaveSettingsBtn", resourceCulture);
             }
         }
         
@@ -2239,6 +3175,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search Items....
+        /// </summary>
+        public static string SearchItems {
+            get {
+                return ResourceManager.GetString("SearchItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Secondary Phone.
         /// </summary>
         public static string SecondaryPhone {
@@ -2262,6 +3207,15 @@ namespace BlazorBase {
         public static string Section4 {
             get {
                 return ResourceManager.GetString("Section4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Security &amp; Permissions.
+        /// </summary>
+        public static string SecurityPermissions {
+            get {
+                return ResourceManager.GetString("SecurityPermissions", resourceCulture);
             }
         }
         
@@ -2356,11 +3310,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Kitchen Invoice (Separate).
+        /// </summary>
+        public static string SeparateKitchenReceiptCountLabel {
+            get {
+                return ResourceManager.GetString("SeparateKitchenReceiptCountLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Service.
         /// </summary>
         public static string Service {
             get {
                 return ResourceManager.GetString("Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Charge (%).
+        /// </summary>
+        public static string ServicePercentage {
+            get {
+                return ResourceManager.GetString("ServicePercentage", resourceCulture);
             }
         }
         
@@ -2419,6 +3391,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stores.
+        /// </summary>
+        public static string Stores {
+            get {
+                return ResourceManager.GetString("Stores", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Submit.
         /// </summary>
         public static string Submit {
@@ -2451,6 +3432,42 @@ namespace BlazorBase {
         public static string SumOfAllGuests {
             get {
                 return ResourceManager.GetString("SumOfAllGuests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suppliers.
+        /// </summary>
+        public static string Suppliers {
+            get {
+                return ResourceManager.GetString("Suppliers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syncing settings....
+        /// </summary>
+        public static string SyncingSettings {
+            get {
+                return ResourceManager.GetString("SyncingSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System Settings.
+        /// </summary>
+        public static string SystemSettings {
+            get {
+                return ResourceManager.GetString("SystemSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System Update.
+        /// </summary>
+        public static string SystemUpdate {
+            get {
+                return ResourceManager.GetString("SystemUpdate", resourceCulture);
             }
         }
         
@@ -2491,11 +3508,38 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Taxes &amp; Service Settings.
+        /// </summary>
+        public static string TaxesAndFeesSection {
+            get {
+                return ResourceManager.GetString("TaxesAndFeesSection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tax (VAT %).
+        /// </summary>
+        public static string TaxPercentage {
+            get {
+                return ResourceManager.GetString("TaxPercentage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Time.
         /// </summary>
         public static string Time {
             get {
                 return ResourceManager.GetString("Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default Tips Amount.
+        /// </summary>
+        public static string TipsAmount {
+            get {
+                return ResourceManager.GetString("TipsAmount", resourceCulture);
             }
         }
         
@@ -2514,6 +3558,15 @@ namespace BlazorBase {
         public static string TodayOrders {
             get {
                 return ResourceManager.GetString("TodayOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Direction.
+        /// </summary>
+        public static string ToggleDirection {
+            get {
+                return ResourceManager.GetString("ToggleDirection", resourceCulture);
             }
         }
         
@@ -2590,11 +3643,47 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Total Qty.
+        /// </summary>
+        public static string TotalQty {
+            get {
+                return ResourceManager.GetString("TotalQty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Revenue.
+        /// </summary>
+        public static string TotalRevenue {
+            get {
+                return ResourceManager.GetString("TotalRevenue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Sales.
+        /// </summary>
+        public static string TotalSales {
+            get {
+                return ResourceManager.GetString("TotalSales", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total to Void.
         /// </summary>
         public static string TotalToVoid {
             get {
                 return ResourceManager.GetString("TotalToVoid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transactions.
+        /// </summary>
+        public static string Transactions {
+            get {
+                return ResourceManager.GetString("Transactions", resourceCulture);
             }
         }
         
@@ -2626,11 +3715,29 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uncollected.
+        /// </summary>
+        public static string Uncollected {
+            get {
+                return ResourceManager.GetString("Uncollected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unit Price.
         /// </summary>
         public static string UnitPrice {
             get {
                 return ResourceManager.GetString("UnitPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        public static string Users {
+            get {
+                return ResourceManager.GetString("Users", resourceCulture);
             }
         }
         
@@ -2685,6 +3792,15 @@ namespace BlazorBase {
         public static string VoidAllItems {
             get {
                 return ResourceManager.GetString("VoidAllItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Void Count.
+        /// </summary>
+        public static string VoidCount {
+            get {
+                return ResourceManager.GetString("VoidCount", resourceCulture);
             }
         }
         
@@ -2761,6 +3877,15 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Voids.
+        /// </summary>
+        public static string Voids {
+            get {
+                return ResourceManager.GetString("Voids", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Waiting.
         /// </summary>
         public static string Waiting {
@@ -2797,11 +3922,56 @@ namespace BlazorBase {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warehouse Management.
+        /// </summary>
+        public static string WarehouseManagement {
+            get {
+                return ResourceManager.GetString("WarehouseManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        public static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Website.
+        /// </summary>
+        public static string Website {
+            get {
+                return ResourceManager.GetString("Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Welcome.
         /// </summary>
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WhatsApp Settings.
+        /// </summary>
+        public static string WhatsAppSettings {
+            get {
+                return ResourceManager.GetString("WhatsAppSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wholesale Customers.
+        /// </summary>
+        public static string WholesaleCustomers {
+            get {
+                return ResourceManager.GetString("WholesaleCustomers", resourceCulture);
             }
         }
         

@@ -26,5 +26,6 @@ public interface IPrintOrderService
     public Task PrintDispatchOrderAsync(OrderDto order);
     public Task PrintVoidReceiptAsync(OrderDto order, List<TableItem> voidedItems);
     public Task PrintDineInVoidReceiptAsync(DineInOrderDto order, List<TableItem> voidedItems);
-    public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items);
+    public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true);
+    public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null);
 }

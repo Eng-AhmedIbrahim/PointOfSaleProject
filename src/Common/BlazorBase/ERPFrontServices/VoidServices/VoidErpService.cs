@@ -14,15 +14,15 @@ public class VoidErpService : IVoidErpService
         _httpClient = httpClientFactory.CreateClient(apiSettings.ApiName!);
     }
 
-    public async Task<bool> VoidOrder(int orderId, string reason, string voidBy, string voidByName)
+    public async Task<bool> VoidOrder(int orderId, string reason, string voidBy, string voidByName, bool returnToStock = false)
     {
-        var response = await _httpClient.DeleteAsync($"/api/Void/voidOrder/{orderId}?reason={Uri.EscapeDataString(reason)}&voidBy={voidBy}&voidByName={Uri.EscapeDataString(voidByName)}");
+        var response = await _httpClient.DeleteAsync($"/api/Void/voidOrder/{orderId}?reason={Uri.EscapeDataString(reason)}&voidBy={voidBy}&voidByName={Uri.EscapeDataString(voidByName)}&returnToStock={returnToStock}");
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> VoidItems(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName)
+    public async Task<bool> VoidItems(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName, bool returnToStock = false)
     {
-        var response = await _httpClient.PostAsJsonAsync($"/api/Void/voidItems/{orderId}?reason={Uri.EscapeDataString(reason)}&voidBy={voidBy}&voidByName={Uri.EscapeDataString(voidByName)}", itemsToVoid);
+        var response = await _httpClient.PostAsJsonAsync($"/api/Void/voidItems/{orderId}?reason={Uri.EscapeDataString(reason)}&voidBy={voidBy}&voidByName={Uri.EscapeDataString(voidByName)}&returnToStock={returnToStock}", itemsToVoid);
         return response.IsSuccessStatusCode;
     }
 

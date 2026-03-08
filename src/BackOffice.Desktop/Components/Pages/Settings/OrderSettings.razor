@@ -1,0 +1,339 @@
+@page "/settings/ordersettings"
+@using Radzen
+@using Radzen.Blazor
+@inject NotificationService NotificationService
+@inject LocalizationService Localizer
+@inject IOrderSettingsService OrderSettingsService
+
+<div class="orders-settings-wrapper" dir="rtl">
+    <header class="settings-header">
+        <div class="header-main-info">
+            <div class="icon-box-modern d-flex align-center justify-center">
+                <RadzenIcon Icon="settings_suggest" IconColor="var(--rz-primary)" Style="font-size:28px;" />
+            </div>
+            <div class="text-group">
+                <RadzenText TextStyle="TextStyle.H5" Class="rz-m-0 title-bold">@Localizer["OrderSettingsTitle"]</RadzenText>
+                <div class="status-indicator d-flex align-center">
+                    <span class="dot"></span>
+                    <RadzenText TextStyle="TextStyle.Caption" Class="rz-m-0 rz-ml-1">@Localizer["ActiveDevice"]: <b>@_computerName</b></RadzenText>
+                </div>
+            </div>
+        </div>
+
+        <div style="direction:ltr;">
+            <RadzenTabs @bind-SelectedIndex="_activeTab" Change="@(() => OnTabChanged())" RenderMode="TabRenderMode.Client" Class="header-tabs">
+                <Tabs>
+                    <RadzenTabsItem Text="@Localizer["TakeAway"]" Icon="shopping_bag" />
+                    <RadzenTabsItem Text="@Localizer["Delivery"]" Icon="local_shipping" />
+                    <RadzenTabsItem Text="@Localizer["Tables"]" Icon="chair" />
+                </Tabs>
+            </RadzenTabs>
+        </div>
+    </header>
+
+    <main class="main-content">
+        @if (_isLoading)
+        {
+            <div class="loading-state">
+                <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large" />
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mt-4 pulse-text">@Localizer["SyncingSettings"]</RadzenText>
+            </div>
+        }
+        else if (_currentModel != null)
+        {
+            <div class="cards-grid">
+
+                <!-- Card 1: Header & Footer -->
+                <div class="glass-card border-top-blue">
+                    <div class="c-header">
+                        <RadzenIcon Icon="receipt_long" />
+                        <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0">@Localizer["HeaderAndFooterSection"]</RadzenText>
+                    </div>
+                    <div class="c-body flex-column-gap">
+                        <RadzenFormField Text="@Localizer["ReceiptFooterNote"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
+                            <RadzenTextArea @bind-Value="_currentModel.OrderStatment" Rows="3" Style="width:100%" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="@Localizer["DefaultReceiptJob"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
+                            <RadzenDropDown TValue="string" Value="@(_currentModel?.JobID?.ToString())"
+                                            Change="@(v => { if(_currentModel != null) _currentModel.JobID = int.TryParse(v?.ToString(), out var i) ? i : null; })"
+                                            Data="@_roles" TextProperty="Name" ValueProperty="Id"
+                                            Style="width:100%" />
+                        </RadzenFormField>
+                    </div>
+                </div>
+
+                <!-- Card 2: Taxes & Fees -->
+                <div class="glass-card border-top-green">
+                    <div class="c-header">
+                        <RadzenIcon Icon="payments" />
+                        <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0">@Localizer["TaxesAndFeesSection"]</RadzenText>
+                    </div>
+                    <div class="c-body">
+                        <div class="grid-fields-container">
+                            <RadzenFormField Text="@($"{Localizer["ServicePercentage"]} %")" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="decimal?" @bind-Value="_currentModel.Service" Style="width:100%" />
+                            </RadzenFormField>
+                            <RadzenFormField Text="@($"{Localizer["TaxPercentage"]} %")" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="decimal?" @bind-Value="_currentModel.Tax" Style="width:100%" />
+                            </RadzenFormField>
+                            <RadzenFormField Text="@($"{Localizer["TipsAmount"]} EGP")" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="decimal?" @bind-Value="_currentModel.Tips" Style="width:100%" />
+                            </RadzenFormField>
+                            <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem" Class="rz-p-2">
+                                <RadzenSwitch @bind-Value="_addServiceBool" />
+                                <RadzenLabel Text="@Localizer["CombineServiceWithPrice"]" />
+                            </RadzenStack>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Receipt Counts -->
+                <div class="glass-card border-top-orange">
+                    <div class="c-header">
+                        <RadzenIcon Icon="print" />
+                        <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0">@Localizer["ReceiptCountsSection"]</RadzenText>
+                    </div>
+                    <div class="c-body">
+                        <div class="grid-fields-container">
+                            <RadzenFormField Text="@Localizer["CustomerReceiptCountLabel"]" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="int?" @bind-Value="_currentModel.CustomerReceiptCount" Min="0" Style="width:100%" />
+                            </RadzenFormField>
+                            <RadzenFormField Text="@Localizer["KitchenReceiptCountLabel"]" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="int?" @bind-Value="_currentModel.FullKitchenReceiptCount" Min="0" Style="width:100%" />
+                            </RadzenFormField>
+                            <RadzenFormField Text="@Localizer["SeparateKitchenReceiptCountLabel"]" Variant="Radzen.Variant.Outlined">
+                                <RadzenNumeric TValue="int?" @bind-Value="_currentModel.SeparateReceiptCount" Min="0" Style="width:100%" />
+                            </RadzenFormField>
+                            @if (_activeTab == 2)
+                            {
+                                <RadzenFormField Text="@Localizer["ClosingReceiptCountLabel"]" Variant="Radzen.Variant.Outlined">
+                                    <RadzenNumeric TValue="int?" @bind-Value="_currentModel.ClosingReceiptCount" Min="0" Style="width:100%" />
+                                </RadzenFormField>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Advanced Control -->
+                <div class="glass-card border-top-purple">
+                    <div class="c-header">
+                        <RadzenIcon Icon="admin_panel_settings" />
+                        <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-m-0">@Localizer["AdvancedControlSection"]</RadzenText>
+                    </div>
+                    <div class="c-body">
+                        @if (_activeTab == 2)
+                        {
+                            <div class="stack-options">
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenCheckBox @bind-Value="_canCloseWithoutPrintBool" Name="chk1" />
+                                    <RadzenLabel Text="@Localizer["AllowCloseWithoutPrint"]" Component="chk1" />
+                                </RadzenStack>
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenCheckBox @bind-Value="_deductCaptainBool" Name="chk2" />
+                                    <RadzenLabel Text="@Localizer["EnableCaptainTipsDeduction"]" Component="chk2" />
+                                </RadzenStack>
+                                @if (_currentModel.DeductCaptainTips == true)
+                                {
+                                    <RadzenFormField Text="@Localizer["Amount"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
+                                        <RadzenNumeric TValue="decimal?" @bind-Value="_currentModel.CaptainTipsAmount" Style="width:100%" />
+                                    </RadzenFormField>
+                                }
+                            </div>
+                        }
+                        else if (_activeTab == 1)
+                        {
+                            <div class="stack-options">
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenSwitch @bind-Value="_addFromBranchBool" />
+                                    <RadzenLabel Text="@Localizer["AllowAddFromBranch"]" />
+                                </RadzenStack>
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenSwitch @bind-Value="_addFromCCBool" />
+                                    <RadzenLabel Text="@Localizer["AllowAddFromCallCenter"]" />
+                                </RadzenStack>
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenSwitch @bind-Value="_voidFromBranchBool" />
+                                    <RadzenLabel Text="@Localizer["AllowVoidFromBranch"]" />
+                                </RadzenStack>
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
+                                    <RadzenSwitch @bind-Value="_voidFromCCBool" />
+                                    <RadzenLabel Text="@Localizer["AllowVoidFromCallCenter"]" />
+                                </RadzenStack>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-modern">
+                                <RadzenIcon Icon="info" Style="color:#64748b;" />
+                                <RadzenText TextStyle="TextStyle.Caption" Class="rz-m-0">@Localizer["NoAdditionalConstraints"]</RadzenText>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <footer class="sticky-footer">
+                <RadzenButton ButtonStyle="ButtonStyle.Primary"
+                              Size="ButtonSize.Medium"
+                              Click="SaveSettings"
+                              Disabled="_isSaving"
+                              Class="save-btn-premium rz-shadow-6">
+                    <ChildContent>
+                        <div class="d-flex align-center gap-2 px-4">
+                            @if (_isSaving)
+                            {
+                                <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"
+                                                           Size="ProgressBarCircularSize.Small" />
+                                <span>@Localizer["SyncingSettings"]</span>
+                            }
+                            else
+                            {
+                                <RadzenIcon Icon="save" />
+                                <span style="font-weight: 800; font-size: 1.1rem; white-space: nowrap;">@Localizer["SaveSettingsBtn"]</span>
+                            }
+                        </div>
+                    </ChildContent>
+                </RadzenButton>
+            </footer>
+        }
+    </main>
+</div>
+
+<style>
+    :root { --bg-soft: #f8fafc; --border-color: #e2e8f0; --primary-main: #2563eb; }
+
+    .orders-settings-wrapper { background-color: var(--bg-soft); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    .settings-header {
+        background: white; padding: 8px 24px;
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .header-main-info { display: flex; align-items: center; gap: 14px; }
+    .icon-box-modern { width: 44px; height: 44px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; }
+    .title-bold { font-weight: 800; color: #1e293b; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; }
+    .status-indicator { gap: 6px; }
+
+    ::deep .header-tabs .rz-tabview-nav { border-bottom: none !important; }
+
+    .main-content { padding: 12px 24px; flex: 1; overflow-y: auto; }
+    .loading-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; padding-bottom: 100px; }
+
+    .glass-card { background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+    .c-header { padding: 10px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .c-body { padding: 14px 16px; flex: 1; }
+    .flex-column-gap { display: flex; flex-direction: column; gap: 16px; }
+    .grid-fields-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .stack-options { display: flex; flex-direction: column; gap: 14px; }
+    .empty-state-modern { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; }
+
+    .border-top-blue { border-top: 4px solid #3b82f6; }
+    .border-top-green { border-top: 4px solid #10b981; }
+    .border-top-orange { border-top: 4px solid #f59e0b; }
+    .border-top-purple { border-top: 4px solid #8b5cf6; }
+
+    .sticky-footer {
+        position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+        width: auto; min-width: 300px;
+        background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+        padding: 8px 16px; border-radius: 20px;
+        display: flex; justify-content: center; align-items: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .save-btn-premium { border-radius: 10px !important; min-height: 38px !important; }
+
+    .pulse-text { animation: pulse 1.5s ease-in-out infinite; }
+    @@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+</style>
+
+@code {
+    private bool _isLoading = true;
+    private bool _isSaving = false;
+    private int _activeTab = 0;
+    private string _computerName = Environment.MachineName;
+    private List<RoleToReturnDto> _roles = new();
+    private OrderSettingToReturnDto _currentModel = new();
+
+    // Bool bridges for nullable bools with RadzenSwitch/RadzenCheckBox
+    private bool _addServiceBool;
+    private bool _canCloseWithoutPrintBool;
+    private bool _deductCaptainBool;
+    private bool _addFromBranchBool;
+    private bool _addFromCCBool;
+    private bool _voidFromBranchBool;
+    private bool _voidFromCCBool;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roles = await OrderSettingsService.GetRolesAsync() ?? new();
+        await OnTabChanged();
+    }
+
+    private async Task OnTabChanged()
+    {
+        _isLoading = true;
+        await InvokeAsync(StateHasChanged);
+        try
+        {
+            int orderType = _activeTab switch { 0 => 1, 1 => 2, 2 => 3, _ => 1 };
+            var res = await OrderSettingsService.GetOrderSettingAsync(orderType, _computerName);
+            _currentModel = res ?? new OrderSettingToReturnDto
+            {
+                OrderType = orderType.ToString(),
+                ComputerName = _computerName,
+                CanAddItemsFromBranch = true,
+                CanAddItemsFromCallCenter = true,
+                CanVoidFromBranch = true,
+                CanVoidFromCallCenter = true
+            };
+            SyncBools();
+        }
+        finally
+        {
+            _isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void SyncBools()
+    {
+        _addServiceBool = _currentModel.AddServiceToItemPrice == true;
+        _canCloseWithoutPrintBool = _currentModel.CanCloseWithoutPrint == true;
+        _deductCaptainBool = _currentModel.DeductCaptainTips == true;
+        _addFromBranchBool = _currentModel.CanAddItemsFromBranch == true;
+        _addFromCCBool = _currentModel.CanAddItemsFromCallCenter == true;
+        _voidFromBranchBool = _currentModel.CanVoidFromBranch == true;
+        _voidFromCCBool = _currentModel.CanVoidFromCallCenter == true;
+    }
+
+    private async Task SaveSettings()
+    {
+        _isSaving = true;
+
+        // Sync local bools back to model
+        _currentModel.AddServiceToItemPrice = _addServiceBool;
+        _currentModel.CanCloseWithoutPrint = _canCloseWithoutPrintBool;
+        _currentModel.DeductCaptainTips = _deductCaptainBool;
+        _currentModel.CanAddItemsFromBranch = _addFromBranchBool;
+        _currentModel.CanAddItemsFromCallCenter = _addFromCCBool;
+        _currentModel.CanVoidFromBranch = _voidFromBranchBool;
+        _currentModel.CanVoidFromCallCenter = _voidFromCCBool;
+
+        int orderType = _activeTab switch { 0 => 1, 1 => 2, 2 => 3, _ => 1 };
+        var res = await OrderSettingsService.UpdateOrderSettingAsync(orderType, _currentModel, _computerName);
+        NotificationService.Notify(new NotificationMessage
+        {
+            Severity = res != null ? NotificationSeverity.Success : NotificationSeverity.Error,
+            Summary = res != null ? Localizer["SavedSuccessfully"] : Localizer["ErrorSaving"]
+        });
+        if (res != null) _currentModel = res;
+        _isSaving = false;
+    }
+}

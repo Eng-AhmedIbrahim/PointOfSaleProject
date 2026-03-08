@@ -14,6 +14,12 @@ using POS.Core.Services.Contract.ComplaintServices;
 using POS.Services.ComplaintServices;
 using POS.Core.Services.Contract.ReportingServices;
 using POS.Services.ReportingServices;
+using POS.Core.Services.Contract.PaymentServices;
+using POS.Services.PaymentServices;
+using POS.Core.Services.Contract.EncryptionServices;
+using POS.Services.EncryptionServices;
+using POS.Core.Services.Contract.InventoryServices;
+using POS.Services.InventoryServices;
 
 namespace POS.API.Extensions;
 
@@ -49,6 +55,12 @@ public static class ApplicationServicesExtensions
         services.AddScoped(typeof(IComplaintService), typeof(ComplaintService));
         services.AddScoped<IVoidService, VoidService>();
         services.AddScoped<IReportingService, ReportingService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+        services.AddScoped<POS.Core.Services.Contract.DataSyncServices.IDataSyncService, POS.Services.DataSyncServices.DataSyncService>();
+        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IUnitService, UnitService>();
+        services.AddSingleton<IEncryptionService, EncryptionService>();
 
 
         services.AddAutoMapper(typeof(MappingProfiles));

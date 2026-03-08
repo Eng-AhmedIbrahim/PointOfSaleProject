@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "0fOpqmveUIk=",
+  "dgSpecHash": "Adf9r7mK43s=",
   "success": true,
   "projectFilePath": "F:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
   "expectedPackageFiles": [
@@ -23,6 +23,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.jsinterop\\8.0.13\\microsoft.jsinterop.8.0.13.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\mudblazor\\8.2.0\\mudblazor.8.2.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\questpdf\\2025.1.3\\questpdf.2025.1.3.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\serilog\\4.0.2\\serilog.4.0.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512"
   ],
   "logs": []

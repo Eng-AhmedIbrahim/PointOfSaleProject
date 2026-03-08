@@ -42,13 +42,14 @@
 
 .overall-summary-card {
     flex: 1;
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     gap: 16px;
     background: transparent;
     border: none;
     box-shadow: none;
+    overflow-y: auto;
 }
 
 /* Left Panel */
@@ -61,8 +62,8 @@
 .top-panel {
     background: white !important;
     color: #1e293b;
-    border-radius: 24px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 2px 5px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     border: 1px solid #f1f5f9;
 }
@@ -71,7 +72,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
 }
 
 .revenue-item {
@@ -102,10 +103,11 @@
 }
 
 .revenue-item .value {
-    font-size: 2.8rem;
+    font-size: 2.0rem;
     font-weight: 800;
     font-family: 'Outfit', sans-serif;
     letter-spacing: -1.5px;
+    margin: 0;
 }
 
 .revenue-item.primary .value {
@@ -121,13 +123,13 @@
 }
 
 .pending-breakdown {
-    margin-top: 5px;
+    margin-top: 2px;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
     background: #fffbeb;
-    padding: 8px 12px;
+    padding: 4px 8px;
     border-radius: 8px;
     border: 1px dashed #fcd34d;
 }
@@ -306,23 +308,26 @@
 .sidebar-actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 10px;
+    width: 100%;
 }
 
 .actions-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    width: 100%;
 }
 
 .action-btn {
-    height: 36px;
-    border-radius: 8px;
+    height: 55px;
+    border-radius: 12px;
     text-transform: none;
-    font-weight: 700;
-    font-size: 0.9rem;
+    font-weight: 800;
+    font-size: 1.1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .action-btn:hover {

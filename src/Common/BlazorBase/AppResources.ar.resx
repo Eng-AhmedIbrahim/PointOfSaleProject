@@ -678,24 +678,6 @@
   <data name="DeliveryService" xml:space="preserve">
     <value>خدمة الدليفري</value>
   </data>
-  <data name="Voids" xml:space="preserve">
-    <value>المرتجع / الفويد</value>
-  </data>
-  <data name="VoidCount" xml:space="preserve">
-    <value>عدد حالات الفويد</value>
-  </data>
-  <data name="TotalRevenue" xml:space="preserve">
-    <value>إجمالي الإيراد</value>
-  </data>
-  <data name="Collected" xml:space="preserve">
-    <value>المحصل</value>
-  </data>
-  <data name="Uncollected" xml:space="preserve">
-    <value>غير محصل</value>
-  </data>
-  <data name="ActiveOrders" xml:space="preserve">
-    <value>طلبات نشطة</value>
-  </data>
   <data name="CustomerInfo" xml:space="preserve">
     <value>بيانات العميل</value>
   </data>
@@ -1053,24 +1035,6 @@
   <data name="SalesSummary" xml:space="preserve">
     <value>ملخص المبيعات</value>
   </data>
-  <data name="Currency" xml:space="preserve">
-    <value>ج.م</value>
-  </data>
-  <data name="NoOrdersFound" xml:space="preserve">
-    <value>لا توجد طلبات</value>
-  </data>
-  <data name="completed" xml:space="preserve">
-    <value>مكتمل</value>
-  </data>
-  <data name="cancelled" xml:space="preserve">
-    <value>ملغي</value>
-  </data>
-  <data name="BranchManagement" xml:space="preserve">
-    <value>إدارة الفروع</value>
-  </data>
-  <data name="ToggleDirection" xml:space="preserve">
-    <value>عكس الاتجاه</value>
-  </data>
   <data name="EditExistingOrder" xml:space="preserve">
     <value>تعديل الطلب الحالي</value>
   </data>
@@ -1097,5 +1061,392 @@
   </data>
   <data name="KitchenReceipt" xml:space="preserve">
     <value>إيصال مطبخ</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="BasicSettings" xml:space="preserve">
+    <value>الإعدادات الأساسية</value>
+  </data>
+  <data name="SystemSettings" xml:space="preserve">
+    <value>إعدادات النظام</value>
+  </data>
+  <data name="WarehouseManagement" xml:space="preserve">
+    <value>إدارة المستودعات</value>
+  </data>
+  <data name="OperatingSections" xml:space="preserve">
+    <value>أقسام التشغيل</value>
+  </data>
+  <data name="InitialItems" xml:space="preserve">
+    <value>أصناف أولية</value>
+  </data>
+  <data name="OrderSettings" xml:space="preserve">
+    <value>إعدادات الطلبات</value>
+  </data>
+  <data name="PrintSettings" xml:space="preserve">
+    <value>إعدادات الطباعة</value>
+  </data>
+  <data name="ItemVisibility" xml:space="preserve">
+    <value>ظهور الأصناف</value>
+  </data>
+  <data name="Decimals" xml:space="preserve">
+    <value>الكسور العشرية</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>الإعدادات العامة</value>
+  </data>
+  <data name="POSSettings" xml:space="preserve">
+    <value>إعدادات نقطة البيع</value>
+  </data>
+  <data name="ExpenseTypes" xml:space="preserve">
+    <value>أنواع المصروفات</value>
+  </data>
+  <data name="WhatsAppSettings" xml:space="preserve">
+    <value>إعدادات WhatsApp</value>
+  </data>
+  <data name="EmailSettings" xml:space="preserve">
+    <value>إعدادات البريد</value>
+  </data>
+  <data name="MenuStyles" xml:space="preserve">
+    <value>أشكال القوائم</value>
+  </data>
+  <data name="LanguageSettings" xml:space="preserve">
+    <value>إعدادات اللغة</value>
+  </data>
+  <data name="DataUpdate" xml:space="preserve">
+    <value>تحديث البيانات</value>
+  </data>
+  <data name="SystemUpdate" xml:space="preserve">
+    <value>تحديث النظام</value>
+  </data>
+  <data name="BasicData" xml:space="preserve">
+    <value>البيانات الأساسية</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>المستخدمين</value>
+  </data>
+  <data name="ItemProperties" xml:space="preserve">
+    <value>خصائص أصناف البيع</value>
+  </data>
+  <data name="EditIngredients" xml:space="preserve">
+    <value>تعديل المكونات</value>
+  </data>
+  <data name="PromotionalOffers" xml:space="preserve">
+    <value>العروض الترويجية</value>
+  </data>
+  <data name="LinkSections" xml:space="preserve">
+    <value>ربط الأقسام</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>المخازن</value>
+  </data>
+  <data name="ItemRecipes" xml:space="preserve">
+    <value>وصفات الأصناف</value>
+  </data>
+  <data name="HomeDelivery" xml:space="preserve">
+    <value>التوصيل للمنازل</value>
+  </data>
+  <data name="DeliveryCompanies" xml:space="preserve">
+    <value>شركات التوصيل</value>
+  </data>
+  <data name="WholesaleCustomers" xml:space="preserve">
+    <value>عملاء الجملة</value>
+  </data>
+  <data name="Suppliers" xml:space="preserve">
+    <value>الموردين</value>
+  </data>
+  <data name="DiscountTypes" xml:space="preserve">
+    <value>أنواع الخصومات</value>
+  </data>
+  <data name="SecurityPermissions" xml:space="preserve">
+    <value>الأمن و الصلاحيات</value>
+  </data>
+  <data name="Miscellaneous" xml:space="preserve">
+    <value>متنوع</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>المعاملات</value>
+  </data>
+  <data name="Queries" xml:space="preserve">
+    <value>الاستعلامات</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="Registration" xml:space="preserve">
+    <value>تسجيل</value>
+  </data>
+  <data name="Closing" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="CompanyAndBranches" xml:space="preserve">
+    <value>الشركة والفروع</value>
+  </data>
+  <data name="CompanyManagement" xml:space="preserve">
+    <value>إدارة الشركة</value>
+  </data>
+  <data name="BranchManagement" xml:space="preserve">
+    <value>إدارة الفروع</value>
+  </data>
+  <data name="EnglishName" xml:space="preserve">
+    <value>الاسم بالإنجليزية</value>
+  </data>
+  <data name="ArabicName" xml:space="preserve">
+    <value>الاسم بالعربية</value>
+  </data>
+  <data name="MobileNumber" xml:space="preserve">
+    <value>رقم الموبايل</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>الموقع الإلكتروني</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="BranchName" xml:space="preserve">
+    <value>اسم الفرع</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>الشعار</value>
+  </data>
+  <data name="LogoWidth" xml:space="preserve">
+    <value>عرض الشعار</value>
+  </data>
+  <data name="LogoHeight" xml:space="preserve">
+    <value>ارتفاع الشعار</value>
+  </data>
+  <data name="Phone1" xml:space="preserve">
+    <value>هاتف 1</value>
+  </data>
+  <data name="Phone2" xml:space="preserve">
+    <value>هاتف 2</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="AddBranch" xml:space="preserve">
+    <value>إضافة فرع</value>
+  </data>
+  <data name="EditBranch" xml:space="preserve">
+    <value>تعديل الفرع</value>
+  </data>
+  <data name="DeleteBranch" xml:space="preserve">
+    <value>حذف الفرع</value>
+  </data>
+  <data name="ManageCompanyAndBranchesDesc" xml:space="preserve">
+    <value>قم بتهيئة معلومات شركتك وإدارة جميع فروعك في مكان واحد.</value>
+  </data>
+  <data name="CompanySettings" xml:space="preserve">
+    <value>إعدادات الشركة</value>
+  </data>
+  <data name="ManageCompanyDesc" xml:space="preserve">
+    <value>قم بتحديث بيانات الشركة الأساسية ومعلومات التواصل.</value>
+  </data>
+  <data name="ManageBranchesDesc" xml:space="preserve">
+    <value>إدارة كافة الفروع وأرقام الهواتف التابعة للشركة.</value>
+  </data>
+  <data name="SavedSuccessfully" xml:space="preserve">
+    <value>تم الحفظ بنجاح!</value>
+  </data>
+  <data name="ErrorSaving" xml:space="preserve">
+    <value>حدث خطأ أثناء الحفظ.</value>
+  </data>
+  <data name="NoBranchesFound" xml:space="preserve">
+    <value>لا توجد فروع مضافة.</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="DeleteBranchConfirm" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في حذف هذا الفرع؟</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>تحذير</value>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="OrderSettingsTitle" xml:space="preserve">
+    <value>إعدادات أنماط الطلبات</value>
+  </data>
+  <data name="ActiveDevice" xml:space="preserve">
+    <value>الجهاز النشط حالياً</value>
+  </data>
+  <data name="HeaderAndFooterSection" xml:space="preserve">
+    <value>نصوص بيانات الإيصال</value>
+  </data>
+  <data name="ReceiptFooterNote" xml:space="preserve">
+    <value>رسالة تذييل الفاتورة</value>
+  </data>
+  <data name="DefaultReceiptJob" xml:space="preserve">
+    <value>المسمى الوظيفي الافتراضي بالإيصال</value>
+  </data>
+  <data name="TaxesAndFeesSection" xml:space="preserve">
+    <value>إعدادات الضرائب والخدمة</value>
+  </data>
+  <data name="ServicePercentage" xml:space="preserve">
+    <value>نسبة رسوم الخدمة</value>
+  </data>
+  <data name="TaxPercentage" xml:space="preserve">
+    <value>نسبة ضريبة القيمة المضافة</value>
+  </data>
+  <data name="TipsAmount" xml:space="preserve">
+    <value>مبلغ الإكرامية الافتراضي</value>
+  </data>
+  <data name="CombineServiceWithPrice" xml:space="preserve">
+    <value>تضمين الخدمة في سعر المنتج</value>
+  </data>
+  <data name="ReceiptCountsSection" xml:space="preserve">
+    <value>عدد فواتير الطباعة التلقائية</value>
+  </data>
+  <data name="CustomerReceiptCountLabel" xml:space="preserve">
+    <value>فواتير العميل</value>
+  </data>
+  <data name="KitchenReceiptCountLabel" xml:space="preserve">
+    <value>فاتورة المطبخ (مجمعة)</value>
+  </data>
+  <data name="SeparateKitchenReceiptCountLabel" xml:space="preserve">
+    <value>فاتورة المطبخ (لكل صنف)</value>
+  </data>
+  <data name="ClosingReceiptCountLabel" xml:space="preserve">
+    <value>فواتير إغلاق الطاولة</value>
+  </data>
+  <data name="AdvancedControlSection" xml:space="preserve">
+    <value>خيارات وصلاحيات التحكم</value>
+  </data>
+  <data name="SaveSettingsBtn" xml:space="preserve">
+    <value>حفظ </value>
+  </data>
+  <data name="SyncingSettings" xml:space="preserve">
+    <value>جاري مزامنة الإعدادات...</value>
+  </data>
+  <data name="AllowCloseWithoutPrint" xml:space="preserve">
+    <value>السماح بالإغلاق بدون طباعة</value>
+  </data>
+  <data name="EnableCaptainTipsDeduction" xml:space="preserve">
+    <value>تفعيل خصم تبس الكابتن</value>
+  </data>
+  <data name="AllowAddFromBranch" xml:space="preserve">
+    <value>السماح بالإضافة من الفرع</value>
+  </data>
+  <data name="AllowAddFromCallCenter" xml:space="preserve">
+    <value>السماح بالإضافة من الكول سنتر</value>
+  </data>
+  <data name="AllowVoidFromBranch" xml:space="preserve">
+    <value>السماح بالمرتجع من الفرع</value>
+  </data>
+  <data name="AllowVoidFromCallCenter" xml:space="preserve">
+    <value>السماح بالمرتجع من الكول سنتر</value>
+  </data>
+  <data name="NoAdditionalConstraints" xml:space="preserve">
+    <value>لا توجد قيود إضافية لهذا النمط</value>
+  </data>
+  <data name="PrinterSettings" xml:space="preserve">
+    <value>إعدادات الطباعة</value>
+  </data>
+  <data name="KitchensSection" xml:space="preserve">
+    <value>إدارة المطابخ</value>
+  </data>
+  <data name="PrintersSection" xml:space="preserve">
+    <value>إعدادات الطابعات</value>
+  </data>
+  <data name="AddKitchen" xml:space="preserve">
+    <value>إضافة مطبخ جديد</value>
+  </data>
+  <data name="KitchenNameLabel" xml:space="preserve">
+    <value>اسم المطبخ</value>
+  </data>
+  <data name="DeviceNameLabel" xml:space="preserve">
+    <value>اسم طابعة الجهاز</value>
+  </data>
+  <data name="KitchenSelectLabel" xml:space="preserve">
+    <value>اختر المطبخ</value>
+  </data>
+  <data name="EditKitchen" xml:space="preserve">
+    <value>تعديل المطبخ</value>
+  </data>
+  <data name="AddPrinter" xml:space="preserve">
+    <value>إضافة طابعة</value>
+  </data>
+  <data name="EditPrinter" xml:space="preserve">
+    <value>تعديل الطابعة</value>
+  </data>
+  <data name="CannotDeleteDefaultKitchen" xml:space="preserve">
+    <value>لا يمكن حذف المطابخ الافتراضية (Cash/Backup)</value>
+  </data>
+  <data name="Deleted" xml:space="preserve">
+    <value>تم الحذف بنجاح</value>
+  </data>
+  <data name="BranchSelectLabel" xml:space="preserve">
+    <value>اختر الفرع</value>
+  </data>
+  <data name="PrinterCopiesSetup" xml:space="preserve">
+    <value>إعداد الطابعات المحلية (عدد النسخ)</value>
+  </data>
+  <data name="KitchenSettingsTab" xml:space="preserve">
+    <value>إعدادات المطابخ</value>
+  </data>
+  <data name="PrinterSettingsTab" xml:space="preserve">
+    <value>إعدادات الطابعات</value>
+  </data>
+  <data name="Voids" xml:space="preserve">
+    <value>المرتجع / الفويد</value>
+  </data>
+  <data name="VoidCount" xml:space="preserve">
+    <value>عدد حالات الفويد</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>إجمالي الإيراد</value>
+  </data>
+  <data name="Collected" xml:space="preserve">
+    <value>المحصل</value>
+  </data>
+  <data name="Uncollected" xml:space="preserve">
+    <value>غير محصل</value>
+  </data>
+  <data name="ActiveOrders" xml:space="preserve">
+    <value>طلبات نشطة</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>ج.م</value>
+  </data>
+  <data name="NoOrdersFound" xml:space="preserve">
+    <value>لا توجد طلبات</value>
+  </data>
+  <data name="completed" xml:space="preserve">
+    <value>مكتمل</value>
+  </data>
+  <data name="cancelled" xml:space="preserve">
+    <value>ملغي</value>
+  </data>
+  <data name="ToggleDirection" xml:space="preserve">
+    <value>عكس الاتجاه</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>الادوار الوظيفية</value>
+  </data>
+  <data name="Polices" xml:space="preserve">
+    <value>الصلاحيات</value>
+  </data>
+  <data name="ItemsSettings" xml:space="preserve">
+    <value>اعدادات الاصناف</value>
+  </data>
+  <data name="AttributesManagement" xml:space="preserve">
+    <value>إدارة الخصائص</value>
+  </data>
+  <data name="AttributeAssignment" xml:space="preserve">
+    <value>ربط الأصناف بالخصائص</value>
+  </data>
+  <data name="GrandTotal" xml:space="preserve">
+    <value>الإجمالي العام</value>
+  </data>
+  <data name="CreditAmount" xml:space="preserve">
+    <value>مبلغ الفيزا</value>
+  </data>
+  <data name="CashAmount" xml:space="preserve">
+    <value>المبلغ النقدي</value>
   </data>
 </root>

@@ -1,322 +1,482 @@
 [
-  {
-    "Name": "CanAccessTables",
-    "NameEn": "Tables Screen",
-    "NameAr": "شاشة الطاولات"
-  },
-  {
-    "Name": "CanAccessDelivery",
-    "NameEn": "Delivery Screen",
-    "NameAr": "شاشة التوصيل"
-  },
-  {
-    "Name": "CanAccessTakeAway",
-    "NameEn": "Take Away Screen",
-    "NameAr": "شاشة التيك اواي"
-  },
-  {
-    "Name": "CanAccessDistribution",
-    "NameEn": "Distribution Screen",
-    "NameAr": "شاشة التوزيع"
-  },
-  {
-    "Name": "CanAccessOrders",
-    "NameEn": "Order Management",
-    "NameAr": "إدارة الطلبات"
-  },
-  {
-    "Name": "CanAccessKitchen",
-    "NameEn": "Kitchen Display",
-    "NameAr": "شاشة المطبخ"
-  },
-  {
-    "Name": "CanAccessReport",
-    "NameEn": "Reports Screen",
-    "NameAr": "شاشة التقارير"
-  },
-  {
-    "Name": "CanAccessSettings",
-    "NameEn": "General Settings",
-    "NameAr": "الإعدادات العامة"
-  },
-  {
-    "Name": "CanAccessAccounts",
-    "NameEn": "Accounts Screen",
-    "NameAr": "شاشة الحسابات"
-  },
-  {
-    "Name": "CanAccessSummary",
-    "NameEn": "Daily Summary",
-    "NameAr": "الملخص اليومي"
-  },
-  {
-    "Name": "CanAccessVoidOrder",
-    "NameEn": "Void Order",
-    "NameAr": "إلغاء أوردر"
-  },
-  {
-    "Name": "CanAccessTransferTable",
-    "NameEn": "Transfer Table",
-    "NameAr": "نقل طاولة"
-  },
-  {
-    "Name": "CanAccessMergeTable",
-    "NameEn": "Merge Tables",
-    "NameAr": "دمج طاولات"
-  },
-  {
-    "Name": "CanAccessSplitOrder",
-    "NameEn": "Split Order",
-    "NameAr": "تقسيم أوردر"
-  },
-  {
-    "Name": "CanAccessDiscount",
-    "NameEn": "Apply Discount",
-    "NameAr": "إضافة خصم"
-  },
-  {
-    "Name": "CanAccessPrintReceipt",
-    "NameEn": "Print Receipt",
-    "NameAr": "طباعة الفاتورة"
-  },
-  {
-    "Name": "CanAccessCloseOrder",
-    "NameEn": "Close Order",
-    "NameAr": "إغلاق الأوردر"
-  },
-  {
-    "Name": "CanAccessVoidItem",
-    "NameEn": "Void Item",
-    "NameAr": "إلغاء صنف"
-  },
-  {
-    "Name": "CanAccessUsers",
-    "NameEn": "Users Management",
-    "NameAr": "إدارة المستخدمين"
-  },
-  {
-    "Name": "CanAccessRoles",
-    "NameEn": "Roles & Permissions",
-    "NameAr": "الأدوار والصلاحيات"
-  },
-  {
-    "Name": "CanAccessPosSettings",
-    "NameEn": "POS Settings",
-    "NameAr": "إعدادات نقاط البيع"
-  },
-  {
-    "Name": "CanAccessPrintingSettings",
-    "NameEn": "Printing Settings",
-    "NameAr": "إعدادات الطباعة"
-  },
-  {
-    "Name": "CanAccessMeals",
-    "NameEn": "Meals Configuration",
-    "NameAr": "إعداد الوجبات"
-  },
-  {
-    "Name": "CanAccessWaiting",
-    "NameEn": "Waiting List",
-    "NameAr": "قائمة الانتظار"
-  },
-  {
-    "Name": "CanAccessDeliveryOrderBtn",
-    "NameEn": "Delivery: Order Button",
-    "NameAr": "التوصيل: زر طلب جديد"
-  },
-  {
-    "Name": "CanAccessDeliveryAddNewBtn",
-    "NameEn": "Delivery: Add New Button",
-    "NameAr": "التوصيل: زر إضافة جديد"
-  },
-  {
-    "Name": "CanAccessDeliveryClearBtn",
-    "NameEn": "Delivery: Clear Button",
-    "NameAr": "التوصيل: زر مسح"
-  },
-  {
-    "Name": "CanAccessDeliveryComplaintsBtn",
-    "NameEn": "Delivery: Complaints Button",
-    "NameAr": "التوصيل: الشكاوى"
-  },
-  {
-    "Name": "CanAccessDeliverySearchBtn",
-    "NameEn": "Delivery: Search Button",
-    "NameAr": "التوصيل: بحث"
-  },
-  {
-    "Name": "CanAccessDeliveryBranchManagementBtn",
-    "NameEn": "Delivery: Branch Management Button",
-    "NameAr": "التوصيل: إدارة الفروع"
-  },
-  {
-    "Name": "CanAccessDeliveryDistributionBtn",
-    "NameEn": "Delivery: Distribution Button",
-    "NameAr": "التوصيل: التوزيع"
-  },
-  {
-    "Name": "CanAccessDeliveryToggleDirectionBtn",
-    "NameEn": "Delivery: Toggle Direction Button",
-    "NameAr": "التوصيل: تغيير الاتجاه"
-  },
-  {
-    "Name": "CanAccessAllOrdersViewBtn",
-    "NameEn": "All Orders: View Button",
-    "NameAr": "كل الطلبات: زر عرض الطلب"
-  },
-  {
-    "Name": "CanAccessAllOrdersPrintBtn",
-    "NameEn": "All Orders: Print Button",
-    "NameAr": "كل الطلبات: زر طباعة الطلب"
-  },
-  {
-    "Name": "CanAccessAllOrdersVoidBtn",
-    "NameEn": "All Orders: Void Button",
-    "NameAr": "كل الطلبات: زر إلغاء الطلب"
-  },
-  {
-    "Name": "CanAccessFooterDiscountBtn",
-    "NameEn": "Footer: Discount Button",
-    "NameAr": "الفوتر: زر الخصم"
-  },
-  {
-    "Name": "CanAccessFooterCustomerDataBtn",
-    "NameEn": "Footer: Customer Data Button",
-    "NameAr": "الفوتر: زر بيانات العميل"
-  },
-  {
-    "Name": "CanAccessFooterPaymentMethodBtn",
-    "NameEn": "Footer: Payment Method Button",
-    "NameAr": "الفوتر: زر طريقة الدفع"
-  },
-  {
-    "Name": "CanAccessFooterQuickPaymentBtn",
-    "NameEn": "Footer: Quick Payment Button",
-    "NameAr": "الفوتر: زر الدفع السريع"
-  },
-  {
-    "Name": "CanAccessFooterMealsBtn",
-    "NameEn": "Footer: Meals Button",
-    "NameAr": "الفوتر: زر الوجبات"
-  },
-  {
-    "Name": "CanAccessFooterWaitingBtn",
-    "NameEn": "Footer: Waiting Button",
-    "NameAr": "الفوتر: زر الانتظار"
-  },
-  {
-    "Name": "CanAccessFooterSettingsBtn",
-    "NameEn": "Footer: Settings Button",
-    "NameAr": "الفوتر: زر الإعدادات"
-  },
-  {
-    "Name": "CanAccessDineInOrderBtn",
-    "NameEn": "DineIn: Order Button",
-    "NameAr": "داخلي: زر الطلب"
-  },
-  {
-    "Name": "CanAccessDineInReceiptBtn",
-    "NameEn": "DineIn: Receipt Button",
-    "NameAr": "داخلي: زر الفاتورة"
-  },
-  {
-    "Name": "CanAccessDineInCloseTableBtn",
-    "NameEn": "DineIn: Close Table Button",
-    "NameAr": "داخلي: زر إغلاق الطاولة"
-  },
-  {
-    "Name": "CanAccessDineInSplitOrderBtn",
-    "NameEn": "DineIn: Split Order Button",
-    "NameAr": "داخلي: زر تقسيم الأوردر"
-  },
-  {
-    "Name": "CanAccessDineInMergeTableBtn",
-    "NameEn": "DineIn: Merge Table Button",
-    "NameAr": "داخلي: زر دمج الطاولات"
-  },
-  {
-    "Name": "CanAccessDineInTransferBtn",
-    "NameEn": "DineIn: Transfer Table Button",
-    "NameAr": "داخلي: زر نقل الطاولة"
-  },
-  {
-    "Name": "CanAccessDineInVoidBtn",
-    "NameEn": "DineIn: Void Button",
-    "NameAr": "داخلي: زر إلغاء"
-  },
-  {
-    "Name": "CanAccessDineInGuestCountBtn",
-    "NameEn": "DineIn: Guest Count Button",
-    "NameAr": "داخلي: زر عدد الضيوف"
-  },
-  {
-    "Name": "CanAccessDistributionAssignBtn",
-    "NameEn": "Distribution: Assign Button",
-    "NameAr": "التوزيع: زر التعيين"
-  },
-  {
-    "Name": "CanAccessDistributionViewBtn",
-    "NameEn": "Distribution: View Order Button",
-    "NameAr": "التوزيع: زر عرض الطلب"
-  },
-  {
-    "Name": "CanAccessDistributionVoidBtn",
-    "NameEn": "Distribution: Void Order Button",
-    "NameAr": "التوزيع: زر إلغاء الطلب"
-  },
-  {
-    "Name": "CanAccessDistributionPrintBtn",
-    "NameEn": "Distribution: Print Order Button",
-    "NameAr": "التوزيع: زر طباعة الطلب"
-  },
-  {
-    "Name": "CanAccessDistributionUnDispatchBtn",
-    "NameEn": "Distribution: Un-assign Button",
-    "NameAr": "التوزيع: زر إلغاء التعيين"
-  },
-  {
-    "Name": "CanAccessDistributionCollectBtn",
-    "NameEn": "Distribution: Collect Buttons",
-    "NameAr": "التوزيع: أزرار التحصيل"
-  },
-  {
-    "Name": "CanAccessDistributionVoidHistoryBtn",
-    "NameEn": "Distribution: Void History Button",
-    "NameAr": "التوزيع: زر سجل الملغى"
-  },
-  {
-    "Name": "CanAccessDistributionDriverSettlementBtn",
-    "NameEn": "Distribution: Driver Settlement Button",
-    "NameAr": "التوزيع: زر تسوية الطيار"
-  },
-  {
-    "Name": "CanAccessDistributionViewDriversBtn",
-    "NameEn": "Distribution: View Drivers Buttons",
-    "NameAr": "التوزيع: أزرار عرض الطيارين"
-  },
-  {
-    "Name": "CanAccessAccountsViewBtn",
-    "NameEn": "Accounts: View Details Button",
-    "NameAr": "الحسابات: زر التفاصيل"
-  },
-  {
-    "Name": "CanAccessAccountsPrintBtn",
-    "NameEn": "Accounts: Print Report Button",
-    "NameAr": "الحسابات: زر طباعة التقرير"
-  },
-  {
-    "Name": "CanAccessSummaryViewDetailsBtn",
-    "NameEn": "Summary: View Details Button",
-    "NameAr": "الملخص: زر عرض التفاصيل"
-  },
-  {
-    "Name": "CanAccessSummaryPrintBtn",
-    "NameEn": "Summary: Print Report Button",
-    "NameAr": "الملخص: زر طباعة التقرير"
-  },
-  {
-    "Name": "CanAccessPosSettingsFeature",
-    "NameEn": "Global: POS Settings Feature",
-    "NameAr": "عام: خاصية إعدادات النظام"
-  }
+    {
+        "Name": "CanPrintSummaryReport",
+        "PoliceArabicName": "طباعة ملخص المبيعات",
+        "PoliceEnglishNameEn": "Print Sales Summary",
+        "ScreenArabicName": "ملخص مبيعات اليوم",
+        "ScreenEnglishName": "Daily Sales Summary Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanViewSummaryDetails",
+        "PoliceArabicName": "عرض تفاصيل ملخص المبيعات",
+        "PoliceEnglishNameEn": "View Sales Summary Details",
+        "ScreenArabicName": "ملخص مبيعات اليوم",
+        "ScreenEnglishName": "Daily Sales Summary Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryAddNewBtn",
+        "PoliceArabicName": "إضافة عميل جديد",
+        "PoliceEnglishNameEn": "Add New Customer",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryBranchManagementBtn",
+        "PoliceArabicName": "إدارة الفروع",
+        "PoliceEnglishNameEn": "Branch Management",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryClearBtn",
+        "PoliceArabicName": "مسح البيانات",
+        "PoliceEnglishNameEn": "Clear Data",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryComplaintsBtn",
+        "PoliceArabicName": "الشكاوى",
+        "PoliceEnglishNameEn": "Complaints",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryDistributionBtn",
+        "PoliceArabicName": "التوزيع",
+        "PoliceEnglishNameEn": "Distribution",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryOrderBtn",
+        "PoliceArabicName": "طلب توصيل",
+        "PoliceEnglishNameEn": "Delivery Order",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliverySearchBtn",
+        "PoliceArabicName": "بحث توصيل",
+        "PoliceEnglishNameEn": "Delivery Search",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDeliveryToggleDirectionBtn",
+        "PoliceArabicName": "تغيير الاتجاه",
+        "PoliceEnglishNameEn": "Toggle Direction",
+        "ScreenArabicName": "شاشة التوصيل",
+        "ScreenEnglishName": "Delivery Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInCloseTableBtn",
+        "PoliceArabicName": "غلق الطاولة",
+        "PoliceEnglishNameEn": "Close Table",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInGuestCountBtn",
+        "PoliceArabicName": "عدد الضيوف",
+        "PoliceEnglishNameEn": "Guest Count",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInMergeTableBtn",
+        "PoliceArabicName": "دمج الطاولات",
+        "PoliceEnglishNameEn": "Merge Tables",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInOrderBtn",
+        "PoliceArabicName": "طلب صالة",
+        "PoliceEnglishNameEn": "Dine-In Order",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInReceiptBtn",
+        "PoliceArabicName": "طباعة فواتير الصالة",
+        "PoliceEnglishNameEn": "Dine-In Receipt",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInSplitOrderBtn",
+        "PoliceArabicName": "تقسيم الطلب",
+        "PoliceEnglishNameEn": "Split Order",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInTransferBtn",
+        "PoliceArabicName": "تحويل الطاولة",
+        "PoliceEnglishNameEn": "Transfer Table",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDineInVoidBtn",
+        "PoliceArabicName": "إلغاء طلب صالة",
+        "PoliceEnglishNameEn": "Void Dine-In",
+        "ScreenArabicName": "شاشة الصالة",
+        "ScreenEnglishName": "Dine-In Screen",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionAssignBtn",
+        "PoliceArabicName": "تعيين سائق للطلب",
+        "PoliceEnglishNameEn": "Assign Driver",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionCollectBtn",
+        "PoliceArabicName": "تحصيل مبلغ الطلب",
+        "PoliceEnglishNameEn": "Collect Payment",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionDriverSettlementBtn",
+        "PoliceArabicName": "تسوية حساب السائق",
+        "PoliceEnglishNameEn": "Driver Settlement",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionPrintBtn",
+        "PoliceArabicName": "طباعة طلب التوزيع",
+        "PoliceEnglishNameEn": "Print Delivery Order",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionUnDispatchBtn",
+        "PoliceArabicName": "إلغاء إرسال الطلب",
+        "PoliceEnglishNameEn": "Un-Dispatch Order",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionViewBtn",
+        "PoliceArabicName": "عرض تفاصيل طلب التوزيع",
+        "PoliceEnglishNameEn": "View Dispatch Details",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionViewDriversBtn",
+        "PoliceArabicName": "عرض السائقين",
+        "PoliceEnglishNameEn": "View Drivers",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionVoidBtn",
+        "PoliceArabicName": "إلغاء طلب التوزيع",
+        "PoliceEnglishNameEn": "Void Dispatch Order",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistributionVoidHistoryBtn",
+        "PoliceArabicName": "عرض سجل الإلغاءات",
+        "PoliceEnglishNameEn": "View Void History",
+        "ScreenArabicName": "عمليات شاشة التوزيع",
+        "ScreenEnglishName": "Distribution Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessPosSettingsFeature",
+        "PoliceArabicName": "إعدادات النظام المتقدمة",
+        "PoliceEnglishNameEn": "POS Advanced Settings Feature",
+        "ScreenArabicName": "الإعدادات العامة",
+        "ScreenEnglishName": "Global Settings",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanApplyItemDiscount",
+        "PoliceArabicName": "إضافة خصم على صنف",
+        "PoliceEnglishNameEn": "Item Discount",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanDecrementQuantity",
+        "PoliceArabicName": "تقليل الكمية (-)",
+        "PoliceEnglishNameEn": "Decrement Quantity",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanDeleteItem",
+        "PoliceArabicName": "حذف صنف من العربة",
+        "PoliceEnglishNameEn": "Remove Item",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanEditItemComment",
+        "PoliceArabicName": "تعديل ملاحظات الصنف",
+        "PoliceEnglishNameEn": "Edit Item Notes",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanIncrementQuantity",
+        "PoliceArabicName": "زيادة الكمية (+)",
+        "PoliceEnglishNameEn": "Increment Quantity",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanUseKeypad",
+        "PoliceArabicName": "استخدام لوحة الأرقام",
+        "PoliceEnglishNameEn": "Use Keypad",
+        "ScreenArabicName": "أزرار شاشة البيع الجانبية",
+        "ScreenEnglishName": "POS Screen Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterDiscountBtn",
+        "PoliceArabicName": "خصم الأوردر (Footer)",
+        "PoliceEnglishNameEn": "Order Discount Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterCustomerDataBtn",
+        "PoliceArabicName": "بيانات العميل (Footer)",
+        "PoliceEnglishNameEn": "Customer Data Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterMealsBtn",
+        "PoliceArabicName": "زر الوجبات (Footer)",
+        "PoliceEnglishNameEn": "Meals Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterPaymentMethodBtn",
+        "PoliceArabicName": "طرق الدفع (Footer)",
+        "PoliceEnglishNameEn": "Payment Method Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterQuickPaymentBtn",
+        "PoliceArabicName": "دفع سريع (Footer)",
+        "PoliceEnglishNameEn": "Quick Pay Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterSettingsBtn",
+        "PoliceArabicName": "الإعدادات (Footer)",
+        "PoliceEnglishNameEn": "Settings Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessFooterWaitingBtn",
+        "PoliceArabicName": "الانتظار (Footer)",
+        "PoliceEnglishNameEn": "Waiting Button",
+        "ScreenArabicName": "أزرار اسفل شاشة البيع",
+        "ScreenEnglishName": "POS Screen Footer",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessAccounts",
+        "PoliceArabicName": "الحسابات",
+        "PoliceEnglishNameEn": "Accounts",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDelivery",
+        "PoliceArabicName": "شاشة التوصيل",
+        "PoliceEnglishNameEn": "Delivery Screen",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessTables",
+        "PoliceArabicName": "شاشة الصالة",
+        "PoliceEnglishNameEn": "Dine-In Screen",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessDistribution",
+        "PoliceArabicName": "التوزيع",
+        "PoliceEnglishNameEn": "Distribution",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessOrders",
+        "PoliceArabicName": "إدارة الطلبات",
+        "PoliceEnglishNameEn": "Orders Management",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessSummary",
+        "PoliceArabicName": "الملخص اليومي",
+        "PoliceEnglishNameEn": "Daily Summary",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessTakeAway",
+        "PoliceArabicName": "شاشة التيك اواي",
+        "PoliceEnglishNameEn": "Take-Away Screen",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessWaiting",
+        "PoliceArabicName": "قائمة الانتظار",
+        "PoliceEnglishNameEn": "Waiting List",
+        "ScreenArabicName": "قائمة شاشة المبيعات",
+        "ScreenEnglishName": "POS Screen Nav",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanCancelOrder",
+        "PoliceArabicName": "إلغاء الطلب بالكامل",
+        "PoliceEnglishNameEn": "Cancel Entire Order",
+        "ScreenArabicName": "أزرار تنفيذ الطلب (أطراف)",
+        "ScreenEnglishName": "POS Screen Section4 Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanPrintOrder",
+        "PoliceArabicName": "طباعة الطلب",
+        "PoliceEnglishNameEn": "Print Order",
+        "ScreenArabicName": "أزرار تنفيذ الطلب (أطراف)",
+        "ScreenEnglishName": "POS Screen Section4 Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanWaitingOrder",
+        "PoliceArabicName": "إرسال الطلب للانتظار",
+        "PoliceEnglishNameEn": "Send to Waiting",
+        "ScreenArabicName": "أزرار تنفيذ الطلب (أطراف)",
+        "ScreenEnglishName": "POS Screen Section4 Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanPrintStaffAccounts",
+        "PoliceArabicName": "طباعة تقرير حسابات الموظفين",
+        "PoliceEnglishNameEn": "Print Staff Account Report",
+        "ScreenArabicName": "حسابات الموظفين",
+        "ScreenEnglishName": "Staff Accounts Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanViewStaffAccounts",
+        "PoliceArabicName": "عرض تفاصيل حسابات الموظفين",
+        "PoliceEnglishNameEn": "View Staff Account Details",
+        "ScreenArabicName": "حسابات الموظفين",
+        "ScreenEnglishName": "Staff Accounts Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanPrintOrderCustomerReceipt",
+        "PoliceArabicName": "طباعة فاتورة العميل",
+        "PoliceEnglishNameEn": "Print Customer Receipt",
+        "ScreenArabicName": "كل طلبات اليوم",
+        "ScreenEnglishName": "Today Orders Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanPrintOrderKitchenReceipt",
+        "PoliceArabicName": "طباعة طلبية الكيتشن",
+        "PoliceEnglishNameEn": "Print Kitchen Receipt",
+        "ScreenArabicName": "كل طلبات اليوم",
+        "ScreenEnglishName": "Today Orders Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanViewOrderDetails",
+        "PoliceArabicName": "عرض تفاصيل الطلب",
+        "PoliceEnglishNameEn": "View Order Details",
+        "ScreenArabicName": "كل طلبات اليوم",
+        "ScreenEnglishName": "Today Orders Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanVoidOrderFromList",
+        "PoliceArabicName": "إلغاء طلب من القائمة",
+        "PoliceEnglishNameEn": "Void Order from List",
+        "ScreenArabicName": "كل طلبات اليوم",
+        "ScreenEnglishName": "Today Orders Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanCompleteWaitingOrder",
+        "PoliceArabicName": "تفعيل طلب من الانتظار",
+        "PoliceEnglishNameEn": "Complete Waiting Order",
+        "ScreenArabicName": "شاشة الانتظار",
+        "ScreenEnglishName": "Waiting Page Actions",
+        "IsBackOffice": false
+    },
+    {
+        "Name": "CanRemoveWaitingOrder",
+        "PoliceArabicName": "حذف طلب من الانتظار",
+        "PoliceEnglishNameEn": "Remove Waiting Order",
+        "ScreenArabicName": "شاشة الانتظار",
+        "ScreenEnglishName": "Waiting Page Actions",
+        "IsBackOffice": false
+    }
 ]

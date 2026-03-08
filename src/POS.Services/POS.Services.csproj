@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pos.Repository\Pos.Repository.csproj" />
+    <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
     <ProjectReference Include="..\POS.Reports\POS.Reports.csproj" />
     <ProjectReference Include="..\Contract.Common\POS.Contract.csproj" />
   </ItemGroup>

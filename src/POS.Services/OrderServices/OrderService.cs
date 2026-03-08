@@ -1,4 +1,6 @@
 ﻿namespace POS.Services.OrderServices;
+using POS.Core.Services.Contract.InventoryServices;
+using POS.Core.Entities.Item;
 
 public class OrderService : IOrderService
 {
@@ -6,13 +8,17 @@ public class OrderService : IOrderService
     private readonly IAppDateService _appDateService;
     private readonly IMapper _mapper;
 
+    private readonly IInventoryService _inventoryService;
+
     public OrderService(IUnitOfWork unitOfWork, 
         IAppDateService appDateService, 
-        IMapper mapper)
+        IMapper mapper,
+        IInventoryService inventoryService)
     {
         _unitOfWork = unitOfWork;
         _appDateService = appDateService;
         _mapper = mapper;
+        _inventoryService = inventoryService;
     }
     public async Task<Orders?> CreateOrderAsync(Orders order)
     {
@@ -23,6 +29,7 @@ public class OrderService : IOrderService
         {
             try
             {
+                Console.WriteLine($"[ORDER DEBUG] Starting CreateOrderAsync for OrderType: {order.OrderType}");
                 var appDate = await _appDateService.UpdateOrderNumber();
                 order.OrderID = appDate.CurrentOrderNumber;
                 order.OrderDate = appDate.PosDate.Date.Add(DateTime.Now.TimeOfDay);
@@ -56,28 +63,56 @@ public class OrderService : IOrderService
                     order.MachineName = Environment.MachineName;
                 }
 
+                // Ensure IDs are 0 for new order to avoid IDENTITY_INSERT errors
+                order.Id = 0;
+                if (order.OrderDetails != null)
+                {
+                    foreach (var item in order.OrderDetails)
+                    {
+                        item.Id = 0;
+                        item.OrderId = 0; // Let EF handle the relationship
+                        
+                        if (item.OrderItemAttributes != null)
+                        {
+                            foreach (var attr in item.OrderItemAttributes)
+                            {
+                                attr.Id = 0;
+                                attr.OrderItemId = 0;
+                            }
+                        }
+                    }
+                }
+
                 await _unitOfWork.Repository<Orders>().AddAsync(order);
 
+                // Inventory deduction
                 if (order.OrderDetails != null && order.OrderDetails.Any())
                 {
                     foreach (var item in order.OrderDetails)
                     {
-                        await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(item);
+                        if (item.MenuSalesItemId.HasValue)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                item.Quantity ?? 0, 
+                                TransactionType.Sale,
+                                order.OrderID.ToString());
+                        }
                     }
                 }
 
-                var result = await _unitOfWork.CompleteAsync();
-                if (result <= 0)
-                {
-                    transaction.Rollback();
-                    return null;
-                }
-
+                Console.WriteLine($"[ORDER DEBUG] About to call final CompleteAsync for OrderID: {order.OrderID}");
+                await _unitOfWork.CompleteAsync();
+                
+                // Entities are saved (either here or in inventory updates)
                 transaction.Commit();
+                Console.WriteLine($"[ORDER DEBUG] Transaction committed successfully for OrderID: {order.OrderID}");
                 return order;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[ORDER DEBUG] EXCEPTION in CreateOrderAsync: {ex.Message}");
+                Console.WriteLine($"[ORDER DEBUG] StackTrace: {ex.StackTrace}");
                 transaction.Rollback();
                 Log.Error(ex, "An error occurred while creating the order.");
                 return null;
@@ -213,9 +248,6 @@ public class OrderService : IOrderService
     }
 
 
-
-
-
     public async Task<bool> UpdateOrderStatusAsync(int id, OrderStates state)
     {
         var spec = new OrdersByIdSpecs(id);
@@ -230,8 +262,6 @@ public class OrderService : IOrderService
     public async Task<IReadOnlyList<Orders>?> GetFailedDeliveryOrdersAsync()
     {
         var spec = new BaseSpecifications<Orders>(x => x.OrderType == OrderTypes.Delivery && (x.OrderState == OrderStates.FailedToDeliverToBranch || (x.OrderState == OrderStates.Pending && x.BranchID > 0)));
-        // Note: Logic depends on how we identify failed dispatches. 
-        // Adding Pending with BranchID > 0 as a fallback for Central mode orders that didn't move.
         return await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
     }
 
@@ -272,13 +302,12 @@ public class OrderService : IOrderService
                 existingOrder.Paid = order.Paid;
                 existingOrder.Remain = order.Remain;
                 existingOrder.OrderNotice = order.OrderNotice;
-                // Prevent un-voiding an order via regular update
+                
                 if (existingOrder.OrderState != OrderStates.Voided)
                     existingOrder.OrderState = order.OrderState;
                     
                 existingOrder.PaymentMethod = order.PaymentMethod;
                 
-                // Delivery specific
                 existingOrder.CustomerName = order.CustomerName;
                 existingOrder.Phone1 = order.Phone1;
                 existingOrder.StreetName = order.StreetName;
@@ -290,8 +319,16 @@ public class OrderService : IOrderService
                 {
                     foreach (var detail in existingOrder.OrderDetails.ToList())
                     {
-                        // Null navigation properties to avoid tracking conflicts during deletion
-                        // especially for shared entities like Category/MenuSalesItem
+                        // Reverse inventory consumption
+                        if (detail.MenuSalesItemId.HasValue)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                detail.MenuSalesItemId.Value, 
+                                detail.Quantity ?? 0, 
+                                TransactionType.Void, 
+                                existingOrder.OrderID.ToString());
+                        }
+
                         detail.MenuSalesItem = null;
                         detail.DineInOrder = null;
                         detail.Order = null;
@@ -304,7 +341,6 @@ public class OrderService : IOrderService
 
                 if (order.OrderDetails != null)
                 {
-                    // Group and Merge items to prevent duplicates in DB
                     var mergedItems = order.OrderDetails
                         .GroupBy(i => new 
                         { 
@@ -332,8 +368,7 @@ public class OrderService : IOrderService
                     foreach (var item in mergedItems)
                     {
                         item.OrderId = existingOrder.Id;
-                        item.Id = 0; // Ensure it's treated as a new insert
-                        // Clear IDs from attributes to prevent identity insert errors
+                        item.Id = 0; 
                         if (item.OrderItemAttributes != null)
                         {
                             foreach (var attr in item.OrderItemAttributes)
@@ -343,6 +378,16 @@ public class OrderService : IOrderService
                             }
                         }
                         await _unitOfWork.Repository<OrderItemsDetails>().AddAsync(item);
+                        
+                        // Consume inventory for new items
+                        if (item.MenuSalesItemId.HasValue)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                item.Quantity ?? 0, 
+                                TransactionType.Sale, 
+                                existingOrder.OrderID.ToString());
+                        }
                     }
                 }
 
@@ -350,8 +395,6 @@ public class OrderService : IOrderService
                 await _unitOfWork.CompleteAsync();
 
                 transaction.Commit();
-
-                // Re-fetch to get all merged items and includes for the response
                 return await GetOrderByIdAsync(existingOrder.Id);
             }
             catch (Exception ex)

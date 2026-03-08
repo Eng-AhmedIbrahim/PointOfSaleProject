@@ -40,12 +40,21 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     public void Update(T entity)
     {
+        var entry = _dbContext.Entry(entity);
+        if (entry.State != EntityState.Detached)
+        {
+            entry.State = EntityState.Modified;
+            return;
+        }
+
         var local = _dbContext.Set<T>()
             .Local
-            .FirstOrDefault(entry => entry.Id.Equals(entity.Id));
+            .FirstOrDefault(e => e.Id.Equals(entity.Id));
 
         if (local is not null)
+        {
             _dbContext.Entry(local).State = EntityState.Detached;
+        }
 
         _dbContext.Update(entity);
     }
@@ -72,7 +81,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         => await _dbContext.Set<T>().AnyAsync(predicate);
 
     IQueryable<T> ApplySpecification(ISpecifications<T> spec)
-        => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsNoTracking(), spec);
+        => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsNoTrackingWithIdentityResolution(), spec);
 
     IQueryable<T> ApplySpecificationTracked(ISpecifications<T> spec)
         => SpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);

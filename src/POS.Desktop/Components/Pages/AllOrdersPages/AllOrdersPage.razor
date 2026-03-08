@@ -6,6 +6,7 @@
 @inject CommonProperties _commonProperties
 @inject ISnackbar Snackbar
 @inject NavigationManager _navigationManager
+@attribute [Authorize(Policy = "CanAccessOrders")]
 @namespace POS.Desktop.Components.Pages.AllOrdersPages
 
 <div class="orders-container" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")" style="padding-bottom: 0;">
@@ -82,11 +83,14 @@
                                     <MudText Typo="Typo.subtitle1">@Localizer["View"]</MudText>
                                 </MudMenuItem>
                             }
-                            @if (_canPrintOrder)
+                            @if (_canPrintCustomerReceipt)
                             {
                                 <MudMenuItem OnClick="@(() => PrintCustomerOrderReceipt(context))" Icon="@Icons.Material.Filled.Receipt" IconColor="Color.Primary" Class="action-menu-item">
                                     <MudText Typo="Typo.subtitle1">@Localizer["CustomerReceipt"]</MudText>
                                 </MudMenuItem>
+                            }
+                            @if (_canPrintKitchenReceipt)
+                            {
                                 <MudMenuItem OnClick="@(() => PrintBackupOrderReceipt(context))" Icon="@Icons.Material.Filled.Restaurant" IconColor="Color.Warning" Class="action-menu-item">
                                     <MudText Typo="Typo.subtitle1">@Localizer["KitchenReceipt"]</MudText>
                                 </MudMenuItem>

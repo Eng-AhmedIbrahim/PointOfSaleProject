@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+@import url('fonts.css');
 
 html,
 body {
@@ -112,10 +112,17 @@ body {
 
 .sales-grid-container {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
     grid-auto-rows: 100px !important;
     /* Fixed height for each row */
     width: 100% !important;
+    gap: 0 !important;
+}
+
+.sales-grid-container .mud-tooltip-root {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .item-button {
@@ -133,7 +140,8 @@ body {
     cursor: pointer;
     box-shadow: none !important;
     transition: all 0.2s ease;
-    height: 100px !important;
+    height: 100% !important;
+    width: 100% !important;
     /* Fixed height for each button */
 }
 

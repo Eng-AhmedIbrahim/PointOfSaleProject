@@ -31,7 +31,7 @@ public class Section4ButtonsServices : ISection4ButtonsServices
             RemoveAllItems(tableItems);
         }
     }
-    public void RemoveAllItems(List<TableItem> tableItems)
+     public void RemoveAllItems(List<TableItem> tableItems)
     {
         tableItems.Clear();
         

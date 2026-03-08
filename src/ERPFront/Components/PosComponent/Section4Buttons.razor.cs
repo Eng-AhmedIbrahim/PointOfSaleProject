@@ -51,7 +51,43 @@ public partial class Section4Buttons
         throw new NotImplementedException();
     }
 
-   
+    private Action? _stateChangedHandler;
+
+    protected override void OnInitialized()
+    {
+        _stateChangedHandler = async () =>
+        {
+            try
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (ObjectDisposedException) { }
+            catch (Exception) { }
+        };
+
+        _services.OnChanged += () => _stateChangedHandler?.Invoke();
+        _cartService.OnChange += () => _stateChangedHandler?.Invoke();
+    }
+
+    private void CancelOrder()
+    {
+        if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+            _cartService.ClearDineInOrderAttributes();
+        else
+            _cartService.ClearTakeAwayOrderAttributes();
+
+        _cartService.CalculateSection4Table();
+        _services.NotifyStateChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_stateChangedHandler != null)
+        {
+            _services.OnChanged -= () => _stateChangedHandler?.Invoke();
+            _cartService.OnChange -= () => _stateChangedHandler?.Invoke();
+        }
+    }
 
     private bool PrintDineInOrder()
     {
@@ -216,6 +252,4 @@ public partial class Section4Buttons
         else
             _snackbar.Add("Only TakeAway Orders Can Be Added To Waiting Queue", Severity.Info);
     }
-
-    
 }

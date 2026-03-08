@@ -13,7 +13,8 @@
           "Microsoft.AspNetCore.Components.Web": "8.0.13",
           "MudBlazor": "8.2.0",
           "POS.Contract": "1.0.0",
-          "POS.Reports": "1.0.0"
+          "POS.Reports": "1.0.0",
+          "Serilog": "4.0.2"
         },
         "runtime": {
           "BlazorBase.dll": {}
@@ -339,6 +340,14 @@
           }
         }
       },
+      "Serilog/4.0.2": {
+        "runtime": {
+          "lib/net8.0/Serilog.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
+          }
+        }
+      },
       "System.IO.Pipelines/8.0.0": {},
       "POS.Contract/1.0.0": {
         "dependencies": {
@@ -503,6 +512,13 @@
       "sha512": "sha512-ZLQIDzFXlEds8CyDLMxLWfyevDn/aJ6WJW7ZS6aYvKPAqTsPrlnIcSZAvvr4N+z34QQFDyYOi5f/YkszDraydw==",
       "path": "questpdf/2025.1.3",
       "hashPath": "questpdf.2025.1.3.nupkg.sha512"
+    },
+    "Serilog/4.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Vehq4uNYtURe/OnHEpWGvMgrvr5Vou7oZLdn3BuEH5FSCeHXDpNJtpzWoqywXsSvCTuiv0I65mZDRnJSeUvisA==",
+      "path": "serilog/4.0.2",
+      "hashPath": "serilog.4.0.2.nupkg.sha512"
     },
     "System.IO.Pipelines/8.0.0": {
       "type": "package",

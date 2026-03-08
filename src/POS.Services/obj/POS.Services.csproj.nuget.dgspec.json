@@ -73,6 +73,10 @@
             "MudBlazor": {
               "target": "Package",
               "version": "[8.2.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.0.2, )"
             }
           },
           "imports": [
@@ -221,6 +225,10 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.2, )"
             }
           },
           "imports": [
@@ -429,6 +437,9 @@
             "projectReferences": {
               "F:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
                 "projectPath": "F:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              },
+              "F:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "F:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               },
               "F:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
                 "projectPath": "F:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"

@@ -7,147 +7,59 @@ using Microsoft.Extensions.Logging;
 public partial class Section4Buttons
 {
     [Inject] private ILogger<Section4Buttons> _logger { get; set; } = default!;
-    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
-    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
-    private bool _canVoidOrder;
-    private bool _canWaiting;
-    private bool _canPrintReceipt;
+    private bool _canCancelOrder;
+    private bool _canWaitingOrder;
+    private bool _canPrintOrder;
 
     private bool _isProcessing = false;
 
+    private Action? _stateChangedHandler;
+
     protected override async Task OnInitializedAsync()
     {
+        _stateChangedHandler = async () =>
+        {
+            try
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (ObjectDisposedException) { }
+            catch (Exception) { }
+        };
+
+        _services.OnChanged += () => _stateChangedHandler?.Invoke();
+        _cartService.OnChange += () => _stateChangedHandler?.Invoke();
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canVoidOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessVoidOrder")).Succeeded;
-            _canWaiting     = (await AuthorizationService.AuthorizeAsync(user, "CanAccessWaiting")).Succeeded;
-            _canPrintReceipt= (await AuthorizationService.AuthorizeAsync(user, "CanAccessPrintReceipt")).Succeeded;
+            _canCancelOrder  = (await AuthorizationService.AuthorizeAsync(user, "CanCancelOrder")).Succeeded;
+            _canWaitingOrder = (await AuthorizationService.AuthorizeAsync(user, "CanWaitingOrder")).Succeeded;
+            _canPrintOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrder")).Succeeded;
         }
-    }
-
-
-    private async Task PrintOrder()
-    {
-        if (_isProcessing) return;
-        
-        try
-        {
-            _isProcessing = true;
-            if (_commonProperties!.TableItems!.Any())
-        {
-            if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
-            {
-                var result = await _printOrderService.PrintTakeAwayOrder(0, 
-                    _commonProperties.CustomerName ?? "", 
-                    _commonProperties.CustomerPhone ?? "",
-                    _commonProperties.SelectedPaymentMethod);
-
-                if (result is false)
-                    return;
-
-                _cartService.ClearTakeAwayOrderAttributes();
-                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-                _services.NotifyStateChanged();
-            }
-           
-            if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
-            {
-                var result = await PrintDineInOrder();
-                if (result is false)
-                {
-                    if (_commonProperties.UpdateDineInOrder == true && (_commonProperties.AppendedTableItems?.Any() != true))
-                    {
-                         _cartService.ClearDineInOrderAttributes();
-                    }
-                    else return;
-                }
-                else
-                {
-                    var existingOrder = _commonProperties.GetActiveOrder();
-                    if (existingOrder != null)
-                    {
-                        // If this is an update (has appended items), print only the new items
-                        if (_commonProperties.UpdateDineInOrder && _commonProperties.AppendedTableItems?.Any() == true)
-                        {
-                            // Create a temporary order with only the appended items for printing
-                            var appendedOrder = new DineInOrderDetails
-                            {
-                                CaptainId = existingOrder.CaptainId,
-                                CaptainName = existingOrder.CaptainName,
-                                RelatedTableId = existingOrder.RelatedTableId,
-                                RelatedTableName = existingOrder.RelatedTableName,
-                                BasicOrderDetails = new BlazorBase.Models.OrderDetails
-                                {
-                                    OrderId = existingOrder.BasicOrderDetails!.OrderId,
-                                    CashierName = existingOrder.BasicOrderDetails.CashierName,
-                                    Items = _commonProperties.AppendedTableItems.ToList(),
-                                    Total = existingOrder.BasicOrderDetails.Total,
-                                    Service = existingOrder.BasicOrderDetails.Service,
-                                    Tax = existingOrder.BasicOrderDetails.Tax
-                                }
-                            };
-                            await _printOrderService.PrintInitialDineInOrder(appendedOrder, false, true, isClosing: true, isUpdate: true);
-                        }
-                        else
-                        {
-                            // This is a new order, print everything
-                            await _printOrderService.PrintInitialDineInOrder(existingOrder, false, true);
-                        }
-                    }
-                }
-                _cartService.ClearDineInOrderAttributes();
-            }
-
-            if (_commonProperties.CurrentPosMode == PosModes.Delivery.ToString())
-            {
-                await PrintDeliveryOrder();
-            }
-
-            _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
-
-            _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            
-            // Refresh app date to stay in sync
-            var appDate = await _appDateService.GetAppDate();
-            if (appDate != null)
-            {
-                _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
-                _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber + 1;
-            }
-
-            _services.NotifyStateChanged();
-        }
-        else
-            _snackbar.Add("No Order to print", Severity.Info);
-        }
-        finally
-        {
-            _isProcessing = false;
-        }
-    }
-
-    private async Task GetCurrentDayAndTime()
-    {
-        var appDate = await _appDateService.GetAppDate();
-        _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
-        _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber;
     }
 
     private void CancelOrder()
     {
         if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
-        {
             _cartService.ClearDineInOrderAttributes();
-        }
         else
-        {
             _cartService.ClearTakeAwayOrderAttributes();
-        }
+
+        _cartService.CalculateSection4Table();
         _services.NotifyStateChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_stateChangedHandler != null)
+        {
+            _services.OnChanged -= () => _stateChangedHandler?.Invoke();
+            _cartService.OnChange -= () => _stateChangedHandler?.Invoke();
+        }
     }
     private async Task PrintDeliveryOrder()
     {
@@ -162,7 +74,105 @@ public partial class Section4Buttons
         _services.NotifyStateChanged();
     }
 
-   
+    private async Task PrintOrder()
+    {
+        if (_isProcessing) return;
+
+        try
+        {
+            _isProcessing = true;
+            if (_commonProperties!.TableItems!.Any())
+            {
+                if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
+                {
+                    var result = await _printOrderService.PrintTakeAwayOrder(0,
+                        _commonProperties.CustomerName ?? "",
+                        _commonProperties.CustomerPhone ?? "",
+                        _commonProperties.SelectedPaymentMethod);
+
+                    if (result is false)
+                        return;
+
+                    _cartService.ClearTakeAwayOrderAttributes();
+                    _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                    _services.NotifyStateChanged();
+                }
+
+                if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+                {
+                    var result = await PrintDineInOrder();
+                    if (result is false)
+                    {
+                        if (_commonProperties.UpdateDineInOrder == true && (_commonProperties.AppendedTableItems?.Any() != true))
+                        {
+                            _cartService.ClearDineInOrderAttributes();
+                        }
+                        else return;
+                    }
+                    else
+                    {
+                        var existingOrder = _commonProperties.GetActiveOrder();
+                        if (existingOrder != null)
+                        {
+                            // If this is an update (has appended items), print only the new items
+                            if (_commonProperties.UpdateDineInOrder && _commonProperties.AppendedTableItems?.Any() == true)
+                            {
+                                // Create a temporary order with only the appended items for printing
+                                var appendedOrder = new DineInOrderDetails
+                                {
+                                    CaptainId = existingOrder.CaptainId,
+                                    CaptainName = existingOrder.CaptainName,
+                                    RelatedTableId = existingOrder.RelatedTableId,
+                                    RelatedTableName = existingOrder.RelatedTableName,
+                                    BasicOrderDetails = new BlazorBase.Models.OrderDetails
+                                    {
+                                        OrderId = existingOrder.BasicOrderDetails!.OrderId,
+                                        CashierName = existingOrder.BasicOrderDetails.CashierName,
+                                        Items = _commonProperties.AppendedTableItems.ToList(),
+                                        Total = existingOrder.BasicOrderDetails.Total,
+                                        Service = existingOrder.BasicOrderDetails.Service,
+                                        Tax = existingOrder.BasicOrderDetails.Tax
+                                    }
+                                };
+                                await _printOrderService.PrintInitialDineInOrder(appendedOrder, false, true, isClosing: true, isUpdate: true);
+                            }
+                            else
+                            {
+                                // This is a new order, print everything
+                                await _printOrderService.PrintInitialDineInOrder(existingOrder, false, true);
+                            }
+                        }
+                    }
+                    _cartService.ClearDineInOrderAttributes();
+                }
+
+                if (_commonProperties.CurrentPosMode == PosModes.Delivery.ToString())
+                {
+                    await PrintDeliveryOrder();
+                }
+
+                _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+
+                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+
+                // Refresh app date to stay in sync
+                var appDate = await _appDateService.GetAppDate();
+                if (appDate != null)
+                {
+                    _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
+                    _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber + 1;
+                }
+
+                _services.NotifyStateChanged();
+            }
+            else
+                _snackbar.Add("No Order to print", Severity.Info);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
 
     private async Task<bool> PrintDineInOrder()
     {

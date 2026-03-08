@@ -57,7 +57,7 @@ public class OrderItemsDetailsDto
     public int? MenuSalesItemId { get; set; }
     public string? ItemName { get; set; } // Optional: for display
     public decimal? Price { get; set; } // Optional: for display
-    public int? Quantity { get; set; }
+    public decimal? Quantity { get; set; }
     public decimal? TotalAmount { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
     public string? OrderType { get; set; }
@@ -81,7 +81,7 @@ public class OrderItemsDetailsDto
 
     // Void details
     public bool? IsVoided { get; set; }
-    public int? VoidAmount { get; set; }
+    public decimal? VoidAmount { get; set; }
     public decimal? TotalVoidAmount { get; set; }
     public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
@@ -104,8 +104,8 @@ public class OrderItemAttributesDto
     public string? AttributeName { get; set; }
 }
 
-public record OrderItemSplitDto(int OrderItemDetailId, int QuantityToMove);
-public record OrderItemVoidDto(int OrderItemDetailId, int QuantityToVoid);
+public record OrderItemSplitDto(int OrderItemDetailId, decimal QuantityToMove);
+public record OrderItemVoidDto(int OrderItemDetailId, decimal QuantityToVoid);
 
 public class SplitTargetDto
 {

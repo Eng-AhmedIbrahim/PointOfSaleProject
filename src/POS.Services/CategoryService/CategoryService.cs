@@ -107,6 +107,12 @@ public class CategoryService : ICategoryService
             if (newCategory.Invisible != oldCategory.Invisible)
                 oldCategory.Invisible = newCategory.Invisible;
 
+            if (newCategory.KitchenTypeId != oldCategory.KitchenTypeId)
+                oldCategory.KitchenTypeId = newCategory.KitchenTypeId;
+
+            if (newCategory.PrintInBackupReceipt != oldCategory.PrintInBackupReceipt)
+                oldCategory.PrintInBackupReceipt = newCategory.PrintInBackupReceipt;
+
              _unitOfWork.Repository<Category>().Update(oldCategory);
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0)

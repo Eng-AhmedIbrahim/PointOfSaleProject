@@ -17,8 +17,6 @@ public class AttributeWithIncludeSpecs :BaseSpecifications<Attributes>
     {
         Includes.Add(a => a.AttributeItems);
         IncludeStrings.Add($"{nameof(Attributes.AttributeItems)}.{nameof(AttributeItem.RelatedMenuItem)}");
+        Includes.Add(a => a.AttributeGroups);
     }
-
-
-    
 }

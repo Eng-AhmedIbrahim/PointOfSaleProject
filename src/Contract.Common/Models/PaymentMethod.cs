@@ -7,5 +7,6 @@ public enum PaymentMethod
     Mastercard,
     InstaPay,
     Wallet,
-    Mada
+    Mada,
+    VodafoneCash
 }

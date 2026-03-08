@@ -2,6 +2,7 @@
 
 public class OrderSettingToReturnDto
 {
+    public int BranchID { get; set; }
     public string? OrderType { get; set; }
     public string? OrderStatment { get; set; }
     public decimal? Service { get; set; } = 0M;
@@ -17,4 +18,8 @@ public class OrderSettingToReturnDto
     public bool? DeductCaptainTips { get; set; }
     public decimal? CaptainTipsAmount { get; set; }
     public string? ComputerName { get; set; }
+    public bool? CanVoidFromBranch { get; set; } = true;
+    public bool? CanVoidFromCallCenter { get; set; } = true;
+    public bool? CanAddItemsFromBranch { get; set; } = true;
+    public bool? CanAddItemsFromCallCenter { get; set; } = true;
 }

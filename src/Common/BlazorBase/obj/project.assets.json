@@ -422,6 +422,19 @@
           }
         }
       },
+      "Serilog/4.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Serilog.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Serilog.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "System.IO.Pipelines/8.0.0": {
         "type": "package",
         "compile": {
@@ -1015,6 +1028,29 @@
         "runtimes/win-x86/native/qpdf.dll"
       ]
     },
+    "Serilog/4.0.2": {
+      "sha512": "Vehq4uNYtURe/OnHEpWGvMgrvr5Vou7oZLdn3BuEH5FSCeHXDpNJtpzWoqywXsSvCTuiv0I65mZDRnJSeUvisA==",
+      "type": "package",
+      "path": "serilog/4.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/net462/Serilog.dll",
+        "lib/net462/Serilog.xml",
+        "lib/net471/Serilog.dll",
+        "lib/net471/Serilog.xml",
+        "lib/net6.0/Serilog.dll",
+        "lib/net6.0/Serilog.xml",
+        "lib/net8.0/Serilog.dll",
+        "lib/net8.0/Serilog.xml",
+        "lib/netstandard2.0/Serilog.dll",
+        "lib/netstandard2.0/Serilog.xml",
+        "serilog.4.0.2.nupkg.sha512",
+        "serilog.nuspec"
+      ]
+    },
     "System.IO.Pipelines/8.0.0": {
       "sha512": "FHNOatmUq0sqJOkTx+UF/9YK1f180cnW5FVqnQMvYUN0elp6wFzbtPSiqbo1/ru8ICp43JM1i7kKkk6GsNGHlA==",
       "type": "package",
@@ -1062,7 +1098,8 @@
       "Microsoft.AspNetCore.Components.Web >= 8.0.13",
       "MudBlazor >= 8.2.0",
       "POS.Contract >= 1.0.0",
-      "POS.Reports >= 1.0.0"
+      "POS.Reports >= 1.0.0",
+      "Serilog >= 4.0.2"
     ]
   },
   "packageFolders": {
@@ -1138,6 +1175,10 @@
           "MudBlazor": {
             "target": "Package",
             "version": "[8.2.0, )"
+          },
+          "Serilog": {
+            "target": "Package",
+            "version": "[4.0.2, )"
           }
         },
         "imports": [

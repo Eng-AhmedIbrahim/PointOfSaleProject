@@ -33,9 +33,9 @@
                             {
                                 var splitIndex = j;
                                 <td>
-                                    <MudNumericField T="int" 
-                                                    Value="@GetSplitQty(item.DatabaseId, splitIndex)" 
-                                                    ValueChanged="@(val => SetSplitQty(item.DatabaseId, splitIndex, val, item.Quantity))"
+                                    <MudNumericField T="decimal"
+                                                     Value="@GetSplitQty(item.DatabaseId, splitIndex)" 
+                                                    ValueChanged="@(val => SetSplitQty(item.DatabaseId, splitIndex, val, item?.Quantity ?? 0))"
                                                     Min="0" Max="@item.Quantity" 
                                                     Variant="Variant.Outlined" 
                                                     Margin="Margin.Dense" 
@@ -98,7 +98,7 @@
     [Parameter] public DineInOrderDetails OrderToSplit { get; set; } = default!;
 
     private List<TableItem> SourceItems = new();
-    private Dictionary<int, int[]> SplitQuantities = new(); // DatabaseId -> Quantity for each of 8 splits
+    private Dictionary<int, decimal[]> SplitQuantities = new(); // DatabaseId -> Quantity for each of 8 splits
 
     protected override void OnInitialized()
     {
@@ -107,26 +107,26 @@
             SourceItems = OrderToSplit.BasicOrderDetails.Items.ToList();
             foreach (var item in SourceItems)
             {
-                SplitQuantities[item.DatabaseId] = new int[8];
+                SplitQuantities[item.DatabaseId] = new decimal[8];
             }
         }
     }
 
-    private int GetSplitQty(int itemId, int splitIndex) 
+    private decimal GetSplitQty(int itemId, int splitIndex) 
     {
         if (SplitQuantities.TryGetValue(itemId, out var qtys))
             return qtys[splitIndex];
         return 0;
     }
 
-    private void SetSplitQty(int itemId, int splitIndex, int val, int maxQty)
+    private void SetSplitQty(int itemId, int splitIndex, decimal val, decimal maxQty)
     {
         if (!SplitQuantities.ContainsKey(itemId)) return;
         
         var qtys = SplitQuantities[itemId];
         
         // Calculate total allocated for this item across all splits except current one
-        int otherSplitsTotal = 0;
+        decimal otherSplitsTotal = 0;
         for (int i = 0; i < 8; i++)
         {
             if (i != splitIndex) otherSplitsTotal += qtys[i];
@@ -159,7 +159,7 @@
 
                 foreach (var item in SourceItems)
                 {
-                    int qty = GetSplitQty(item.DatabaseId, splitIndex);
+                    decimal qty = GetSplitQty(item.DatabaseId, splitIndex);
                     if (qty > 0)
                     {
                         target.ItemsToMove.Add(new OrderItemSplitDto(item.DatabaseId, qty));

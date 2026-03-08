@@ -4,11 +4,11 @@ public class TableItem
 {
     public int Id { get; set; }
     public int DatabaseId { get; set; }
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
     public string? Name { get; set; }
     public decimal? Price { get; set; }
     public decimal? Total { get; set; }
-    public decimal? AttributePrice { get; set; }
+    public decimal? ExtraPrice { get; set; }
     public string? LineComment { get; set; }
     public string? NameAr { get; set; }
     public int? CategoryId { get; set; }
@@ -29,10 +29,18 @@ public class TableItem
     public decimal TaxAmount { get; set; }
     public decimal? TotalAmount { get; set; }
 
+    /// <summary>Per-item tax percentage set in BackOffice (e.g. 14 for 14%)</summary>
+    public decimal? ItemTax { get; set; }
+    /// <summary>Calculated tax amount for this item line</summary>
+    public decimal ItemTaxAmount { get; set; }
+
     public bool IsReadOnly { get; set; }
     public bool IsVoided { get; set; }
+    public bool ByWeight { get; set; } = false;
+    /// <summary>Fractional weight in kg (only used when ByWeight=true)</summary>
+    public decimal? WeightQty { get; set; }
     public decimal? TotalVoidAmount { get; set; }
-    public int? VoidAmount { get; set; }
+    public decimal? VoidAmount { get; set; }
     public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
@@ -71,7 +79,12 @@ public class TableItem
             VoidBy = this.VoidBy,
             VoidByName = this.VoidByName,
             VoidTime = this.VoidTime,
-            VoidReason = this.VoidReason
+            VoidReason = this.VoidReason,
+            ExtraPrice = this.ExtraPrice,
+            ByWeight = this.ByWeight,
+            WeightQty = this.WeightQty,
+            ItemTax = this.ItemTax,
+            ItemTaxAmount = this.ItemTaxAmount
         };
     }
 }
@@ -80,13 +93,15 @@ public class AttributeDto
 {
     public int? Id { get; set; }
     public string? Name { get; set; } = string.Empty;
+    public decimal? ExtraPrice { get; set; } = 0;
 
     public AttributeDto Clone()
     {
         return new AttributeDto
         {
             Id = this.Id,
-            Name = this.Name
+            Name = this.Name,
+            ExtraPrice = this.ExtraPrice
         };
     }
 }

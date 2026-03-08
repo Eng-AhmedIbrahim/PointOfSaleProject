@@ -15,6 +15,9 @@ public class BranchService : IBranchService
             if (branch is null)
                 return null;
 
+            if (branch.ImagePath == null)
+                branch.ImagePath = string.Empty;
+
             await _unitOfWork.Repository<Branch>().AddAsync(branch);
 
             var result = await _unitOfWork.CompleteAsync();
@@ -81,8 +84,9 @@ public class BranchService : IBranchService
                 oldBranch.Description = newBranch.Description;
             if (!string.IsNullOrEmpty(newBranch.Address))
                 oldBranch.Address = newBranch.Address;
-            if (!string.IsNullOrEmpty(newBranch.ImagePath))
-                oldBranch.ImagePath = newBranch.ImagePath;
+
+            oldBranch.ImagePath = newBranch.ImagePath;
+            oldBranch.CompanyId = newBranch.CompanyId;
 
             if (newBranch.LogoWidth != oldBranch.LogoWidth && newBranch.LogoWidth != 0)
                 oldBranch.LogoWidth = newBranch.LogoWidth;

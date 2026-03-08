@@ -11,14 +11,14 @@ public class OrderItemsDetails:BaseEntity
 
     public int? MenuSalesItemId { get; set; }
     public MenuSalesItems? MenuSalesItem { get; set; }
-    public int? Quantity { get; set; }
+    public decimal? Quantity { get; set; }
     public bool? Discount { get; set; }
     public decimal? TotalDiscountPrice { get; set; }
     public decimal? TotalDiscountPercentage { get; set; }
     public decimal? TotalDiscountAmount { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
     public bool? IsVoided { get; set; }
-    public int? VoidAmount { get; set; } // This is VoidQuantity
+    public decimal? VoidAmount { get; set; } // This is VoidQuantity
     public decimal? TotalVoidAmount { get; set; }
     public string? VoidBy { get; set; }
     public string? VoidByName { get; set; }
@@ -38,6 +38,7 @@ public class OrderItemsDetails:BaseEntity
     public int? CategoryKitchenTypeId { get; set; }
     public bool? PrintInBackupReceiptFromCategory { get; set; }
     public bool? PrintInBackupReceiptFromItem { get; set; }
+    public bool? ByWeight { get; set; }
 
     public Orders? Order { get; set; }
     

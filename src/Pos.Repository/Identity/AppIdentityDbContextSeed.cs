@@ -32,9 +32,12 @@ public static class AppIdentityDbContextSeed
             }
             else
             {
-                // Update localized names if they changed
-                existing.NameAr = perm.NameAr;
-                existing.NameEn = perm.NameEn;
+                // Update properties if they changed
+                existing.PoliceArabicName = perm.PoliceArabicName;
+                existing.PoliceEnglishNameEn = perm.PoliceEnglishNameEn;
+                existing.ScreenArabicName = perm.ScreenArabicName;
+                existing.ScreenEnglishName = perm.ScreenEnglishName;
+                existing.IsBackOffice = perm.IsBackOffice;
                 context.Permissions.Update(existing);
             }
         }
@@ -46,6 +49,8 @@ public static class AppIdentityDbContextSeed
             {
                 Email = "Administrator",
                 UserName = "Administrator",
+                DisplayName = "Administrator",
+                ArabicName = "Administrator",
                 RegistrationDate = DateTime.Now,
                 EmailConfirmed = true,
                 IsActive = true
@@ -116,9 +121,91 @@ public static class AppIdentityDbContextSeed
             }
         }
 
-        // Always Update Claims if needed
-        await SeedRoleClaims(roleManager, context);
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "DriverMorning"))
+        {
+            var user = new AppUser()
+            {
+                Email = "DriverMorning@pos.com",
+                UserName = "DriverMorning",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "طيار صباحي",
+                ArabicName = "طيار صباحي",
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("17");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                    await userManager.AddToRoleAsync(user, role.Name);
+            }
+        }
 
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "DriverEvening"))
+        {
+            var user = new AppUser()
+            {
+                Email = "DriverEvening@pos.com",
+                UserName = "DriverEvening",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "طيار مسائي",
+                ArabicName = "طيار مسائي",
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("17");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                    await userManager.AddToRoleAsync(user, role.Name);
+            }
+        }
+
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "CashierMorning"))
+        {
+            var user = new AppUser()
+            {
+                Email = "CashierMorning@pos.com",
+                UserName = "CashierMorning",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "كاشير صباحي",
+                ArabicName = "كاشير صباحي",
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("4");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                    await userManager.AddToRoleAsync(user, role.Name);
+            }
+        }
+
+        if (!await userManager.Users.AnyAsync(u => u.UserName == "CashierEvening"))
+        {
+            var user = new AppUser()
+            {
+                Email = "CashierEvening@pos.com",
+                UserName = "CashierEvening",
+                RegistrationDate = DateTime.Now,
+                EmailConfirmed = true,
+                DisplayName = "كاشير مسائي",
+                ArabicName = "كاشير مسائي",
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, "123456");
+            if (result.Succeeded)
+            {
+                var role = await roleManager.FindByIdAsync("4");
+                if (role != null && !string.IsNullOrEmpty(role.Name))
+                    await userManager.AddToRoleAsync(user, role.Name);
+            }
+        }
+
+        await SeedRoleClaims(roleManager, context);
     }
 
 
@@ -148,144 +235,251 @@ public static class AppIdentityDbContextSeed
     public static async Task SeedRoleClaims(RoleManager<ApplicationRole> roleManager, AppIdentityDbContext context)
     {
         var allPermissions = await context.Permissions.Select(p => p.Name).ToListAsync();
-        
-        // Administrator gets ALL permissions
+
+        // ─── Administrator: gets ALL permissions automatically ─────────────────
         var adminRole = await roleManager.FindByNameAsync("Administrator");
         if (adminRole != null)
         {
-            var claims = await roleManager.GetClaimsAsync(adminRole);
+            var existingClaims = await roleManager.GetClaimsAsync(adminRole);
             foreach (var permission in allPermissions)
             {
-                if (!claims.Any(c => c.Type == "Permission" && c.Value == permission))
-                {
+                if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == permission))
                     await roleManager.AddClaimAsync(adminRole, new Claim("Permission", permission));
-                }
             }
         }
 
-        // Define other roles with comprehensive permissions
+        // ─── Other roles ───────────────────────────────────────────────────────
         var rolePermissions = new Dictionary<string, List<string>>
         {
-            { "مدير فرع", new List<string> {
-                // Screens
-                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway", "CanAccessDistribution",
-                "CanAccessOrders", "CanAccessReport", "CanAccessSummary", "CanAccessSettings", "CanAccessAccounts",
-                // POS Actions
-                "CanAccessVoidOrder", "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
-                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
-                // Admin
-                "CanAccessUsers", "CanAccessRoles", "CanAccessPosSettings", "CanAccessPrintingSettings",
-                // Footer Buttons
-                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
-                "CanAccessFooterQuickPaymentBtn", "CanAccessFooterMealsBtn", "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
-                // DineIn Buttons
-                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
-                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInTransferBtn",
-                "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
-                // Delivery Buttons
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
-                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
-                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn",
-                // All Orders Buttons
-                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn", "CanAccessAllOrdersVoidBtn",
-                // Distribution
-                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn", "CanAccessDistributionVoidBtn",
-                "CanAccessDistributionPrintBtn", "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
-                "CanAccessDistributionVoidHistoryBtn", "CanAccessDistributionDriverSettlementBtn", "CanAccessDistributionViewDriversBtn",
-                // Accounts
-                "CanAccessAccountsViewBtn", "CanAccessAccountsPrintBtn",
-                // Summary
-                "CanAccessSummaryViewDetailsBtn", "CanAccessSummaryPrintBtn"
-            } },
-            { "مساعد مدير", new List<string> {
-                // Screens
+            // ══════════════════════════════════════════════════════════════════
+            // مدير فرع  –  Full POS access, all screens, full reporting
+            // ══════════════════════════════════════════════════════════════════
+            { "مدير فرع", new List<string>
+            {
+                // Nav / Screens
                 "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway",
-                "CanAccessOrders", "CanAccessSummary", "CanAccessReport", "CanAccessAccounts",
-                // POS Actions
-                "CanAccessTransferTable", "CanAccessMergeTable", "CanAccessSplitOrder",
-                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder", "CanAccessVoidItem",
+                "CanAccessDistribution", "CanAccessOrders", "CanAccessSummary",
+                "CanAccessAccounts", "CanAccessWaiting",
+                // Section 3 – Item Actions
+                "CanUseKeypad", "CanIncrementQuantity", "CanDecrementQuantity",
+                "CanDeleteItem", "CanApplyItemDiscount", "CanEditItemComment",
+
+                // Section 4 – Order Actions
+                "CanPrintOrder", "CanWaitingOrder", "CanCancelOrder",
+
                 // Footer Buttons
-                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
-                "CanAccessFooterQuickPaymentBtn", "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
+                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn",
+                "CanAccessFooterPaymentMethodBtn", "CanAccessFooterQuickPaymentBtn",
+                "CanAccessFooterMealsBtn", "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
+
                 // DineIn Buttons
                 "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
-                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInTransferBtn",
-                "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
+                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn",
+                "CanAccessDineInTransferBtn", "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
+
                 // Delivery Buttons
                 "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
-                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn",
-                // All Orders Buttons
-                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn",
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn",
+                "CanAccessDeliveryBranchManagementBtn", "CanAccessDeliveryDistributionBtn",
+                "CanAccessDeliveryToggleDirectionBtn",
+
+                // All Orders (Today)
+                "CanViewOrderDetails", "CanPrintOrderCustomerReceipt",
+                "CanPrintOrderKitchenReceipt", "CanVoidOrderFromList",
+
                 // Distribution
-                "CanAccessDistributionViewBtn", "CanAccessDistributionPrintBtn", "CanAccessDistributionCollectBtn",
+                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn",
+                "CanAccessDistributionVoidBtn", "CanAccessDistributionPrintBtn",
+                "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
+                "CanAccessDistributionVoidHistoryBtn", "CanAccessDistributionDriverSettlementBtn",
                 "CanAccessDistributionViewDriversBtn",
-                // Accounts
-                "CanAccessAccountsViewBtn", "CanAccessAccountsPrintBtn"
+
+                // Waiting Page Actions
+                "CanCompleteWaitingOrder", "CanRemoveWaitingOrder",
+
+                // Summary Actions
+                "CanViewSummaryDetails", "CanPrintSummaryReport",
+
+                // Accounts Actions
+                "CanViewStaffAccounts", "CanPrintStaffAccounts",
+
+                // Global Feature Flags
+                "CanAccessPosSettingsFeature"
             } },
-            { "كاشير", new List<string> {
-                // Screens
+
+            // ══════════════════════════════════════════════════════════════════
+            // مساعد مدير  –  Most POS access, no void, no branch mgmt
+            // ══════════════════════════════════════════════════════════════════
+            { "مساعد مدير", new List<string>
+            {
+                // Nav / Screens
+                "CanAccessTables", "CanAccessDelivery", "CanAccessTakeAway",
+                "CanAccessOrders", "CanAccessSummary", "CanAccessAccounts",
+                "CanAccessWaiting", "CanAccessDistribution",
+
+                // Section 3 – Item Actions
+                "CanUseKeypad", "CanIncrementQuantity", "CanDecrementQuantity",
+                "CanDeleteItem", "CanApplyItemDiscount", "CanEditItemComment",
+
+                // Section 4 – Order Actions
+                "CanPrintOrder", "CanWaitingOrder", "CanCancelOrder",
+
+                // Footer Buttons
+                "CanAccessFooterDiscountBtn", "CanAccessFooterCustomerDataBtn",
+                "CanAccessFooterPaymentMethodBtn", "CanAccessFooterQuickPaymentBtn",
+                "CanAccessFooterWaitingBtn", "CanAccessFooterSettingsBtn",
+
+                // DineIn Buttons
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
+                "CanAccessDineInSplitOrderBtn", "CanAccessDineInMergeTableBtn",
+                "CanAccessDineInTransferBtn", "CanAccessDineInVoidBtn", "CanAccessDineInGuestCountBtn",
+
+                // Delivery Buttons
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
+                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn",
+                "CanAccessDeliveryToggleDirectionBtn",
+
+                // All Orders (Today)
+                "CanViewOrderDetails", "CanPrintOrderCustomerReceipt", "CanPrintOrderKitchenReceipt",
+
+                // Distribution (limited – no void/undispatch)
+                "CanAccessDistributionViewBtn", "CanAccessDistributionPrintBtn",
+                "CanAccessDistributionCollectBtn", "CanAccessDistributionViewDriversBtn",
+
+                // Waiting Page Actions
+                "CanCompleteWaitingOrder", "CanRemoveWaitingOrder",
+
+                // Summary Actions
+                "CanViewSummaryDetails", "CanPrintSummaryReport",
+
+                // Accounts Actions
+                "CanViewStaffAccounts", "CanPrintStaffAccounts"
+            } },
+
+            // ══════════════════════════════════════════════════════════════════
+            // كاشير  –  Basic POS: take order, print, waiting; no void/cancel
+            // ══════════════════════════════════════════════════════════════════
+            { "كاشير", new List<string>
+            {
+                // Nav / Screens
                 "CanAccessTakeAway", "CanAccessDelivery", "CanAccessTables",
                 "CanAccessOrders", "CanAccessWaiting",
-                // POS Actions
-                "CanAccessDiscount", "CanAccessPrintReceipt", "CanAccessCloseOrder",
+
+                // Section 3 – Item Actions
+                "CanUseKeypad", "CanIncrementQuantity", "CanDecrementQuantity",
+
+                // Section 4 – Order Actions
+                "CanPrintOrder", "CanWaitingOrder",
+
                 // Footer Buttons
                 "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
                 "CanAccessFooterQuickPaymentBtn", "CanAccessFooterWaitingBtn",
+                "CanAccessFooterMealsBtn",
+
                 // DineIn Buttons
-                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
-                "CanAccessDineInGuestCountBtn",
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn",
+                "CanAccessDineInCloseTableBtn", "CanAccessDineInGuestCountBtn",
+
                 // Delivery Buttons
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
-                "CanAccessDeliverySearchBtn", "CanAccessDeliveryToggleDirectionBtn",
-                // All Orders Buttons
-                "CanAccessAllOrdersViewBtn", "CanAccessAllOrdersPrintBtn"
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn",
+                "CanAccessDeliveryClearBtn", "CanAccessDeliverySearchBtn",
+                "CanAccessDeliveryToggleDirectionBtn",
+
+                // All Orders (Today) – view & print customer only
+                "CanViewOrderDetails", "CanPrintOrderCustomerReceipt",
+
+                // Waiting Page
+                "CanCompleteWaitingOrder"
             } },
-            { "كابتن صاله", new List<string> {
-                // Screens
-                "CanAccessTables", "CanAccessOrders",
-                // POS Actions
-                "CanAccessPrintReceipt", "CanAccessTransferTable", "CanAccessMergeTable",
+
+            // ══════════════════════════════════════════════════════════════════
+            // كابتن صاله  –  DineIn focused: order, receipt, table mgmt
+            // ══════════════════════════════════════════════════════════════════
+            { "كابتن صاله", new List<string>
+            {
+                // Nav / Screens
+                "CanAccessTables", "CanAccessOrders", "CanAccessWaiting",
+
+                // Section 3 – Item Actions
+                "CanUseKeypad", "CanIncrementQuantity", "CanDecrementQuantity",
+                "CanEditItemComment",
+
+                // Section 4 – Order Actions
+                "CanPrintOrder", "CanWaitingOrder",
+
                 // Footer Buttons
                 "CanAccessFooterCustomerDataBtn", "CanAccessFooterWaitingBtn",
+                "CanAccessFooterMealsBtn",
+
                 // DineIn Buttons
-                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn", "CanAccessDineInCloseTableBtn",
-                "CanAccessDineInTransferBtn", "CanAccessDineInMergeTableBtn", "CanAccessDineInGuestCountBtn"
+                "CanAccessDineInOrderBtn", "CanAccessDineInReceiptBtn",
+                "CanAccessDineInCloseTableBtn", "CanAccessDineInTransferBtn",
+                "CanAccessDineInMergeTableBtn", "CanAccessDineInGuestCountBtn",
+
+                // All Orders (Today) – view only
+                "CanViewOrderDetails",
+
+                // Waiting Page
+                "CanCompleteWaitingOrder"
             } },
-            { "Call Center", new List<string> {
-                // Screens
+
+            // ══════════════════════════════════════════════════════════════════
+            // Call Center  –  Delivery & distribution only
+            // ══════════════════════════════════════════════════════════════════
+            { "Call Center", new List<string>
+            {
+                // Nav / Screens
                 "CanAccessDelivery", "CanAccessDistribution", "CanAccessOrders",
-                // POS Actions
-                "CanAccessPrintReceipt", "CanAccessCloseOrder",
+
                 // Footer Buttons
                 "CanAccessFooterCustomerDataBtn", "CanAccessFooterPaymentMethodBtn",
-                // Delivery Buttons
-                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
-                "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
+
+                // Delivery Buttons – full access
+                "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn",
+                "CanAccessDeliveryClearBtn", "CanAccessDeliveryComplaintsBtn",
+                "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
                 "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn",
-                // All Orders Buttons
-                "CanAccessAllOrdersViewBtn",
-                // Distribution
-                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn", "CanAccessDistributionVoidBtn",
-                "CanAccessDistributionPrintBtn", "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
+
+                // All Orders (Today) – view only
+                "CanViewOrderDetails",
+
+                // Distribution – full operational access
+                "CanAccessDistributionAssignBtn", "CanAccessDistributionViewBtn",
+                "CanAccessDistributionVoidBtn", "CanAccessDistributionPrintBtn",
+                "CanAccessDistributionUnDispatchBtn", "CanAccessDistributionCollectBtn",
                 "CanAccessDistributionVoidHistoryBtn", "CanAccessDistributionViewDriversBtn"
+            } },
+
+            // ══════════════════════════════════════════════════════════════════
+            // طيار  –  Distribution & Order view only
+            // ══════════════════════════════════════════════════════════════════
+            { "طيار", new List<string>
+            {
+                "CanAccessDistribution",
+                "CanAccessDistributionViewBtn",
+                "CanAccessDistributionPrintBtn",
+                "CanAccessOrders",
+                "CanViewOrderDetails"
             } }
         };
 
-        foreach (var role in rolePermissions)
+        foreach (var roleEntry in rolePermissions)
         {
-            var identityRole = await roleManager.FindByNameAsync(role.Key);
-            if (identityRole != null)
+            var identityRole = await roleManager.FindByNameAsync(roleEntry.Key);
+            if (identityRole == null) continue;
+
+            var existingClaims = await roleManager.GetClaimsAsync(identityRole);
+            foreach (var permission in roleEntry.Value)
             {
-                 var claims = await roleManager.GetClaimsAsync(identityRole);
-                foreach (var permission in role.Value)
+                // Only add if it actually exists in the DB (skip stale permission names)
+                if (allPermissions.Contains(permission) &&
+                    !existingClaims.Any(c => c.Type == "Permission" && c.Value == permission))
                 {
-                    if (allPermissions.Contains(permission) && !claims.Any(c => c.Type == "Permission" && c.Value == permission))
-                    {
-                        await roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
-                    }
+                    await roleManager.AddClaimAsync(identityRole, new Claim("Permission", permission));
                 }
             }
         }
     }
 
 }
+

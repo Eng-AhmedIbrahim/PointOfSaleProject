@@ -92,4 +92,14 @@ public class PosFeatureSettingsService : IPosFeatureSettingsService
 
         return await _unitOfWork.CompleteAsync() > 0;
     }
+
+    public async Task<bool> IsFeatureEnabledAsync(string featureName, string? computerName = null)
+    {
+        var spec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => 
+            s.FeatureName == featureName && 
+            (computerName == null || s.ComputerName == computerName));
+        
+        var setting = await _unitOfWork.Repository<PosFeatureSetting>().GetByIdWithSpecificationTrackedAsync(spec);
+        return setting?.Value ?? false;
+    }
 }

@@ -199,11 +199,15 @@ public class AuthService : IAuthService
 
 
 
-    public async Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user)
+    public async Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user, bool? forBackOffice = null)
     {
         var appUser = await _userManager.GetUserAsync(user);
         if (appUser == null) return new HashSet<string>();
+        return await GetUserPermissionsAsync(appUser, forBackOffice);
+    }
 
+    public async Task<HashSet<string>> GetUserPermissionsAsync(AppUser appUser, bool? forBackOffice = null)
+    {
         // Get the roles associated with the user
         var roles = await _userManager.GetRolesAsync(appUser);
 
@@ -212,15 +216,28 @@ public class AuthService : IAuthService
         var role = await _roleManager.FindByNameAsync(roles[0]);
         if (role == null) return new HashSet<string>();
 
-
-        var permissions = await _identityDbContext.RoleClaims
+        var permissionsQuery = _identityDbContext.RoleClaims
             .Where(rc => rc.RoleId == role.Id && rc.ClaimType == "Permission")
-            .Select(rc => rc.ClaimValue)
-            .Distinct()
-            .ToListAsync();
+            .Select(rc => rc.ClaimValue);
+
+        if (forBackOffice.HasValue)
+        {
+            // Join with our custom Permissions table to check the IsBackOffice flag
+            var filteredPermissions = await (from rc in _identityDbContext.RoleClaims
+                                       join p in _identityDbContext.Permissions on rc.ClaimValue equals p.Name
+                                       where rc.RoleId == role.Id && rc.ClaimType == "Permission" 
+                                             && p.IsBackOffice == forBackOffice.Value
+                                       select rc.ClaimValue)
+                                       .Distinct()
+                                       .ToListAsync();
+                                       
+            return new HashSet<string>(filteredPermissions!);
+        }
+
+        var allPermissions = await permissionsQuery.Distinct().ToListAsync();
 
         // Return the distinct permissions as a HashSet
-        return new HashSet<string>(permissions!);
+        return new HashSet<string>(allPermissions!);
     }
 
     public async Task<List<AppUser>> GetUsersHasSpecificRole(string roleName)
@@ -228,5 +245,21 @@ public class AuthService : IAuthService
         var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
 
         return usersInRole.ToList();
+    }
+
+    public async Task<List<Permission>> GetAllPermissionsAsync()
+    {
+        return await _identityDbContext.Permissions.ToListAsync();
+    }
+
+    public async Task<List<string>> GetRolePermissionsAsync(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role == null) return new List<string>();
+
+        return await _identityDbContext.RoleClaims
+            .Where(rc => rc.RoleId == role.Id && rc.ClaimType == "Permission")
+            .Select(rc => rc.ClaimValue!)
+            .ToListAsync();
     }
 }

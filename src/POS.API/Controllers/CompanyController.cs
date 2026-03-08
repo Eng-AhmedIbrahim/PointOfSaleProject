@@ -17,7 +17,7 @@ public class CompanyController : BaseApiController
     [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<IActionResult> CreateCompany([FromQuery] CreateCompanyDto companyDto)
+    public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyDto companyDto)
     {
         if (companyDto is null)
             return BadRequest(new ApiResponse(400));
@@ -61,7 +61,7 @@ public class CompanyController : BaseApiController
     [ProducesResponseType(typeof(Company), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult> UpdateCompany([FromQuery]UpdatedCompanyDto company)
+    public async Task<IActionResult> UpdateCompany([FromBody] UpdatedCompanyDto company)
     {
         Company? storedCompany = await _companyService!.GetCompanyByIdAsync(company!.CompanyId!)!;
         var newCompany = _mapper.Map<UpdatedCompanyDto,Company>(company);

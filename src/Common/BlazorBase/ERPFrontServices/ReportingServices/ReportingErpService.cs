@@ -34,6 +34,13 @@ public class ReportingErpService : IReportingErpService
         return response ?? new List<OrderDto>();
     }
 
+    public async Task<List<OrderDto>> GetStaffOrders(DateTime posDate, string staffId, string staffType)
+    {
+        var url = $"api/reporting/staff-orders?posDate={posDate:yyyy-MM-dd}&staffId={staffId}&staffType={staffType}";
+        var response = await _httpClient.GetFromJsonAsync<List<OrderDto>>(url);
+        return response ?? new List<OrderDto>();
+    }
+
     public async Task<List<SalesItemSummaryDto>> GetSalesItemsSummary(DateTime posDate)
     {
         var response = await _httpClient.GetFromJsonAsync<List<SalesItemSummaryDto>>($"api/reporting/sales-items-summary?posDate={posDate:yyyy-MM-dd}");

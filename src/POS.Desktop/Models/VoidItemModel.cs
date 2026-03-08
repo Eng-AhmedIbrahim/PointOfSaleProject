@@ -7,7 +7,7 @@ public class VoidItemModel
     public TableItem? TableItem { get; set; }
     public string ItemName { get; set; } = string.Empty;
     public decimal UnitPrice { get; set; }
-    public int OriginalQuantity { get; set; }
-    public int QuantityToVoid { get; set; }
+    public decimal OriginalQuantity { get; set; }
+    public decimal QuantityToVoid { get; set; }
     public decimal TotalAmount => QuantityToVoid * UnitPrice;
 }

@@ -53,24 +53,22 @@ public class KitchenPrintersController : BaseApiController
         }
 
         var kitchenPrinterToReturn = _mapper.Map<KitchenPrintersToReturnDto>(createdKitchenPrinter);
-        return CreatedAtAction(nameof(GetKitchenPrinterByIdAsync), new { id = kitchenPrinterToReturn.Id }, kitchenPrinterToReturn);
+        return Ok(kitchenPrinterToReturn);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateKitchenPrinterAsync(int id, KitchenPrinters kitchenPrinter)
+    public async Task<ActionResult> UpdateKitchenPrinterAsync(int id, KitchenPrintersDto kitchenPrinterDto)
     {
-        if (id != kitchenPrinter.Id)
-        {
-            return BadRequest("ID mismatch.");
-        }
-
         var kitchenPrinterExists = await _kitchenPrintersService.GetPrinterByIdAsync(id);
         if (kitchenPrinterExists == null)
         {
             return NotFound($"Kitchen printer with ID {id} not found.");
         }
 
-        var success = await _kitchenPrintersService.UpdatePrinterAsync(kitchenPrinterExists, kitchenPrinter);
+        var mappedPrinter = _mapper.Map<KitchenPrinters>(kitchenPrinterDto);
+        mappedPrinter.Id = id;
+
+        var success = await _kitchenPrintersService.UpdatePrinterAsync(kitchenPrinterExists, mappedPrinter);
         if (success is null)
         {
             return BadRequest(new ApiResponse(400, "Failed to update kitchen printer."));

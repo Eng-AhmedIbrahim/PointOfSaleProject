@@ -67,7 +67,7 @@ public partial class Section4Table
         Snackbar.Add("Item Has Been Committed Handler Invoked");
     }
 
-    private void UpdateQuantity(TableItem item, int newQuantity)
+    private void UpdateQuantity(TableItem item, decimal newQuantity)
     {
         item.Quantity = newQuantity;
         item.Total = item.Quantity * item.Price;

@@ -12,9 +12,11 @@
 @inject IDineInOrderFrontService _dineInOrderService
 @inject IOrderTrackFrontService _orderTrackService
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="action-buttons-grid">
-    @if (_canVoidOrder && _commonProperties.IsFeatureEnabled("POS_Button_Cancel"))
+    @if (_canCancelOrder)
     {
         <MudItem xs="4">
             <MudButton Variant="Variant.Filled"
@@ -27,7 +29,7 @@
             </MudButton>
         </MudItem>
     }
-    @if (_canWaiting && _commonProperties.IsFeatureEnabled("POS_Button_Waiting"))
+    @if (_canWaitingOrder)
     {
         <MudItem xs="4">
             <MudButton Variant="Variant.Filled"
@@ -40,7 +42,7 @@
             </MudButton>
         </MudItem>
     }
-    @if (_canPrintReceipt && _commonProperties.IsFeatureEnabled("POS_Button_Print"))
+    @if (_canPrintOrder)
     {
         <MudItem xs="4">
             <MudButton Variant="Variant.Filled"

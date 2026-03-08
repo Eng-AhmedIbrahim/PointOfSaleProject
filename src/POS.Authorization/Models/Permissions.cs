@@ -4,7 +4,7 @@ public static class Permissions
 {
     public static readonly Dictionary<string, string> RolePermissions = new()
     {
-        // ── Screens / Nav ────────────────────────────────────────────────────
+        // ── Nav / Screens ─────────────────────────────────────────────────────
         { "CanAccessTables",       "CanAccessTables" },
         { "CanAccessDelivery",     "CanAccessDelivery" },
         { "CanAccessTakeAway",     "CanAccessTakeAway" },
@@ -12,27 +12,20 @@ public static class Permissions
         { "CanAccessSummary",      "CanAccessSummary" },
         { "CanAccessOrders",       "CanAccessOrders" },
         { "CanAccessDistribution", "CanAccessDistribution" },
-        { "CanAccessDiscount",     "CanAccessDiscount" },
-        { "CanAccessMeals",        "CanAccessMeals" },
         { "CanAccessWaiting",      "CanAccessWaiting" },
-        { "CanAccessSettings",     "CanAccessSettings" },
-        { "CanAccessKitchen",      "CanAccessKitchen" },
-        { "CanAccessReport",       "CanAccessReport" },
 
-        // ── POS Actions ───────────────────────────────────────────────────────
-        { "CanAccessVoidOrder",       "CanAccessVoidOrder" },
-        { "CanAccessTransferTable",   "CanAccessTransferTable" },
-        { "CanAccessMergeTable",      "CanAccessMergeTable" },
-        { "CanAccessSplitOrder",      "CanAccessSplitOrder" },
-        { "CanAccessPrintReceipt",    "CanAccessPrintReceipt" },
-        { "CanAccessCloseOrder",      "CanAccessCloseOrder" },
-        { "CanAccessVoidItem",        "CanAccessVoidItem" },
+        // ── Section 3 – Item Actions ──────────────────────────────────────────
+        { "CanUseKeypad",          "CanUseKeypad" },
+        { "CanIncrementQuantity",  "CanIncrementQuantity" },
+        { "CanDecrementQuantity",  "CanDecrementQuantity" },
+        { "CanDeleteItem",         "CanDeleteItem" },
+        { "CanApplyItemDiscount",  "CanApplyItemDiscount" },
+        { "CanEditItemComment",    "CanEditItemComment" },
 
-        // ── Settings ──────────────────────────────────────────────────────────
-        { "CanAccessUsers",            "CanAccessUsers" },
-        { "CanAccessRoles",            "CanAccessRoles" },
-        { "CanAccessPosSettings",      "CanAccessPosSettings" },
-        { "CanAccessPrintingSettings", "CanAccessPrintingSettings" },
+        // ── Section 4 – Order Actions ─────────────────────────────────────────
+        { "CanPrintOrder",    "CanPrintOrder" },
+        { "CanWaitingOrder",  "CanWaitingOrder" },
+        { "CanCancelOrder",   "CanCancelOrder" },
 
         // ── Footer Buttons ────────────────────────────────────────────────────
         { "CanAccessFooterDiscountBtn",      "CanAccessFooterDiscountBtn" },
@@ -63,10 +56,11 @@ public static class Permissions
         { "CanAccessDeliveryDistributionBtn",       "CanAccessDeliveryDistributionBtn" },
         { "CanAccessDeliveryToggleDirectionBtn",    "CanAccessDeliveryToggleDirectionBtn" },
 
-        // ── All Orders Buttons ────────────────────────────────────────────────
-        { "CanAccessAllOrdersViewBtn",  "CanAccessAllOrdersViewBtn" },
-        { "CanAccessAllOrdersPrintBtn", "CanAccessAllOrdersPrintBtn" },
-        { "CanAccessAllOrdersVoidBtn",  "CanAccessAllOrdersVoidBtn" },
+        // ── All Orders (Today) Actions ────────────────────────────────────────
+        { "CanViewOrderDetails",          "CanViewOrderDetails" },
+        { "CanPrintOrderCustomerReceipt", "CanPrintOrderCustomerReceipt" },
+        { "CanPrintOrderKitchenReceipt",  "CanPrintOrderKitchenReceipt" },
+        { "CanVoidOrderFromList",         "CanVoidOrderFromList" },
 
         // ── Distribution Buttons ──────────────────────────────────────────────
         { "CanAccessDistributionAssignBtn",           "CanAccessDistributionAssignBtn" },
@@ -79,15 +73,19 @@ public static class Permissions
         { "CanAccessDistributionDriverSettlementBtn", "CanAccessDistributionDriverSettlementBtn" },
         { "CanAccessDistributionViewDriversBtn",      "CanAccessDistributionViewDriversBtn" },
 
-        // ── Accounts Buttons ──────────────────────────────────────────────────
-        { "CanAccessAccountsViewBtn",  "CanAccessAccountsViewBtn" },
-        { "CanAccessAccountsPrintBtn", "CanAccessAccountsPrintBtn" },
+        // ── Waiting Page Actions ──────────────────────────────────────────────
+        { "CanCompleteWaitingOrder", "CanCompleteWaitingOrder" },
+        { "CanRemoveWaitingOrder",   "CanRemoveWaitingOrder" },
 
-        // ── Summary Buttons ───────────────────────────────────────────────────
-        { "CanAccessSummaryViewDetailsBtn", "CanAccessSummaryViewDetailsBtn" },
-        { "CanAccessSummaryPrintBtn",       "CanAccessSummaryPrintBtn" },
+        // ── Summary Actions ───────────────────────────────────────────────────
+        { "CanViewSummaryDetails", "CanViewSummaryDetails" },
+        { "CanPrintSummaryReport", "CanPrintSummaryReport" },
 
-        // ── Global Features ───────────────────────────────────────────────────
+        // ── Accounts Actions ──────────────────────────────────────────────────
+        { "CanViewStaffAccounts",  "CanViewStaffAccounts" },
+        { "CanPrintStaffAccounts", "CanPrintStaffAccounts" },
+
+        // ── Global ────────────────────────────────────────────────────────────
         { "CanAccessPosSettingsFeature", "CanAccessPosSettingsFeature" },
     };
 }

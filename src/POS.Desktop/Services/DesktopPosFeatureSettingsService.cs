@@ -39,4 +39,14 @@ public class DesktopPosFeatureSettingsService : IPosFeatureSettingsService
         // This is handled by the server when GetSettingsByComputerNameAsync is called
         return Task.FromResult(true);
     }
+
+    public async Task<bool> IsFeatureEnabledAsync(string featureName, string? computerName = null)
+    {
+        if (string.IsNullOrEmpty(computerName))
+            computerName = Environment.MachineName;
+
+        var settings = await GetSettingsByComputerNameAsync(computerName);
+        var setting = settings.FirstOrDefault(x => x.FeatureName == featureName);
+        return setting?.Value ?? false;
+    }
 }

@@ -24,6 +24,8 @@ using BlazorBase.ERPFrontServices.OrderTrackServices;
 using BlazorBase.ERPFrontServices.ComplaintServices;
 using BlazorBase.ERPFrontServices.VoidServices;
 using BlazorBase.ERPFrontServices.ReportingServices;
+using BlazorBase.ERPFrontServices.PaymentMethodServices;
+using BlazorBase.ERPFrontServices.SettingsServices;
 using BlazorBase.API;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -263,6 +265,8 @@ public partial class App : Application
         services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
         services.AddScoped<IVoidErpService, VoidErpService>();
         services.AddScoped<IReportingErpService, ReportingErpService>();
+        services.AddScoped<IPaymentMethodServices, BlazorBase.ERPFrontServices.PaymentMethodServices.PaymentMethodServices>();
+        services.AddScoped<ISystemSettingsServices, SystemSettingsServices>();
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));

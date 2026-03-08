@@ -1,3 +1,5 @@
+using BlazorBase.ERPFrontServices.SettingsServices;
+
 namespace POS.Desktop.Services;
 
 public class CallCenterNotificationService : IDisposable, IAsyncDisposable
@@ -40,25 +42,28 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                 
                 _deliveryInvocation.TriggerNewOrderReceived();
 
-                // If this machine is the dispatcher, print the order automatically
-                if (_dispatcherSettings.IsDispatcher)
+                // Get latest settings from DB/Service
+                Task.Run(async () =>
                 {
-                    Task.Run(async () =>
+                    try
                     {
-                        try
+                        using (var scope = _scopeFactory.CreateScope())
                         {
-                            using (var scope = _scopeFactory.CreateScope())
+                            var settingsService = scope.ServiceProvider.GetRequiredService<ISystemSettingsServices>();
+                            var settings = await settingsService.GetDispatcherSettingsAsync();
+
+                            if (settings.IsDispatcher)
                             {
                                 var printService = scope.ServiceProvider.GetRequiredService<IPrintOrderService>();
                                 await printService.PrintReceivedOrderAsync(order);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Failed to print order {order.OrderId} automatically: {ex.Message}");
-                        }
-                    });
-                }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to print order {order.OrderId} automatically: {ex.Message}");
+                    }
+                });
             });
 
             connection.On<OrderDto>("ReceiveOrderDispatched", (order) =>

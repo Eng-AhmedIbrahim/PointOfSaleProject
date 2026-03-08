@@ -5,7 +5,7 @@ public class MenuSalesItemsGroupDto
     public int Id { get; set; }
     public string? ArabicName { get; set; }
     public string? EnglishName { get; set; }
-    public decimal? AttributePrice { get; set; }
+    public decimal? ExtraPrice { get; set; }
     public decimal? Price { get; set; }
 
     public MenuSalesItemsGroupDto Clone()
@@ -15,7 +15,7 @@ public class MenuSalesItemsGroupDto
             Id = this.Id,
             ArabicName = this.ArabicName,
             EnglishName = this.EnglishName,
-            AttributePrice = this.AttributePrice,
+            ExtraPrice = this.ExtraPrice,
             Price = this.Price
         };
     }

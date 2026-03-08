@@ -9,9 +9,11 @@ namespace BackOffice.Desktop.Services;
 public class DesktopPosFeatureSettingsService : IPosFeatureSettingsService
 {
     private readonly HttpClient _httpClient;
+    private readonly ApiSettings _apiSettings;
 
     public DesktopPosFeatureSettingsService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings)
     {
+        _apiSettings = apiSettings;
         _httpClient = httpClientFactory.CreateClient(apiSettings.ApiName!);
     }
 
@@ -19,7 +21,7 @@ public class DesktopPosFeatureSettingsService : IPosFeatureSettingsService
     {
         try
         {
-            var settings = await _httpClient.GetFromJsonAsync<List<PosFeatureSettingToReturnDto>>($"api/PosFeatureSettings/{computerName}");
+            var settings = await _httpClient.GetFromJsonAsync<List<PosFeatureSettingToReturnDto>>($"{_apiSettings.Endpoints!.GetPosFeatureSettings}/{computerName}");
             return settings ?? new List<PosFeatureSettingToReturnDto>();
         }
         catch (Exception)
@@ -30,7 +32,7 @@ public class DesktopPosFeatureSettingsService : IPosFeatureSettingsService
 
     public async Task<bool> UpdateSettingsAsync(string computerName, List<PosFeatureSettingToReturnDto> settings)
     {
-        var response = await _httpClient.PutAsJsonAsync($"api/PosFeatureSettings/{computerName}", settings);
+        var response = await _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.UpdatePosFeatureSettings}/{computerName}", settings);
         return response.IsSuccessStatusCode;
     }
 
@@ -38,5 +40,11 @@ public class DesktopPosFeatureSettingsService : IPosFeatureSettingsService
     {
         // This is handled by the server when GetSettingsByComputerNameAsync is called
         return Task.FromResult(true);
+    }
+
+    public async Task<bool> IsFeatureEnabledAsync(string featureName, string? computerName = null)
+    {
+        var settings = await GetSettingsByComputerNameAsync(computerName ?? Environment.MachineName);
+        return settings.FirstOrDefault(s => s.FeatureName == featureName)?.Value ?? false;
     }
 }

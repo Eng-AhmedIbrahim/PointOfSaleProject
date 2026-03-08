@@ -1,4 +1,6 @@
-﻿namespace BlazorBase.ERPFrontServices.DeliveryServices;
+﻿using POS.Contract;
+
+namespace BlazorBase.ERPFrontServices.DeliveryServices;
 
 public class DeliveryServices : IDeliveryServices
 {
@@ -80,6 +82,67 @@ public class DeliveryServices : IDeliveryServices
 
     private async Task<HttpResponseMessage> GetAllDeliveryZonesRequest()
         => await _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllZones);
+
+    public async Task<ServiceResponse<DeliveryZonesToReturnDto>> CreateZone(DeliveryZoneDto newZone)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => CreateZoneRequest(newZone));
+            if (response is null)
+                return ServiceResponseHelpers.Failure<DeliveryZonesToReturnDto>("Failed to connect to the API");
+
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Zone created successfully");
+
+            var createdZone = response.IsSuccessStatusCode ?
+                    ApiRequestHelpers.DeserializeResponseContent<DeliveryZonesToReturnDto>(
+                        await response.Content.ReadAsStringAsync()) : default;
+
+            return createdZone is null
+                ? ServiceResponseHelpers.Failure<DeliveryZonesToReturnDto>(responseMessage)
+                : ServiceResponseHelpers.Success(createdZone, responseMessage);
+        }, "Failed to Create Zone");
+    }
+
+    public async Task<ServiceResponse<DeliveryZonesToReturnDto>> UpdateZone(int id, DeliveryZonesToReturnDto updatedZone)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => UpdateZoneRequest(id, updatedZone));
+            if (response is null)
+                return ServiceResponseHelpers.Failure<DeliveryZonesToReturnDto>("Failed to connect to the API");
+
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Zone updated successfully");
+
+            return response.IsSuccessStatusCode
+                ? ServiceResponseHelpers.Success(updatedZone, responseMessage)
+                : ServiceResponseHelpers.Failure<DeliveryZonesToReturnDto>(responseMessage);
+        }, "Failed to Update Zone");
+    }
+
+    public async Task<ServiceResponse<bool>> DeleteZone(int zoneId)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => DeleteZoneRequest(zoneId));
+            if (response is null)
+                return ServiceResponseHelpers.Failure<bool>("Failed to connect to the API");
+
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Zone Deleted successfully");
+
+            return response.IsSuccessStatusCode
+                ? ServiceResponseHelpers.Success(true, responseMessage)
+                : ServiceResponseHelpers.Failure<bool>(responseMessage);
+        }, "Failed to Delete Zone");
+    }
+
+    private Task<HttpResponseMessage> CreateZoneRequest(DeliveryZoneDto zone)
+        => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateZone, zone);
+
+    private Task<HttpResponseMessage> UpdateZoneRequest(int id, DeliveryZonesToReturnDto zone)
+        => _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.UpdateZone}/{id}", zone);
+
+    private Task<HttpResponseMessage> DeleteZoneRequest(int id)
+        => _httpClient.DeleteAsync($"{_apiSettings.Endpoints!.DeleteZone}/{id}");
 
     private async Task<HttpResponseMessage> CreateClientAsyncRequest(DeliveryCustomerDto deliveryCustomer)
        => await _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateNewCustomer,deliveryCustomer);

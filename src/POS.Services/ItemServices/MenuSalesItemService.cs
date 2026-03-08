@@ -70,6 +70,84 @@ public class MenuSalesItemService : IMenuSalesItemService
             return null;
         }
     }
+
+    public async Task<IReadOnlyList<ItemsClassifications>?> GetAllClassificationsAsync()
+    {
+        try
+        {
+            var classifications = await _unitOfWork.Repository<ItemsClassifications>().GetAllAsync();
+            return classifications;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading items classifications");
+            return null;
+        }
+    }
+
+    public async Task<ItemsClassifications?> GetClassificationByIdAsync(int id)
+    {
+        try
+        {
+            return await _unitOfWork.Repository<ItemsClassifications>().GetByIdAsync(id);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error getting classification by id {id}", id);
+            return null;
+        }
+    }
+
+    public async Task<ItemsClassifications?> CreateClassificationAsync(ItemsClassifications classification)
+    {
+        try
+        {
+            await _unitOfWork.Repository<ItemsClassifications>().AddAsync(classification);
+            var result = await _unitOfWork.CompleteAsync();
+            return result > 0 ? classification : null;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error creating classification");
+            return null;
+        }
+    }
+
+    public async Task<ItemsClassifications?> UpdateClassificationAsync(ItemsClassifications oldClassification, ItemsClassifications newClassification)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(newClassification.ArabicName))
+                oldClassification.ArabicName = newClassification.ArabicName;
+            if (!string.IsNullOrEmpty(newClassification.Name))
+                oldClassification.Name = newClassification.Name;
+
+            _unitOfWork.Repository<ItemsClassifications>().Update(oldClassification);
+            var result = await _unitOfWork.CompleteAsync();
+            return result > 0 ? oldClassification : null;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error updating classification {id}", oldClassification.Id);
+            return null;
+        }
+    }
+
+    public async Task<bool> DeleteClassification(ItemsClassifications classification)
+    {
+        try
+        {
+            _unitOfWork.Repository<ItemsClassifications>().Delete(classification);
+            var result = await _unitOfWork.CompleteAsync();
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error deleting classification {id}", classification.Id);
+            return false;
+        }
+    }
+
     public async Task<MenuSalesItems?> GetItemByIdAsync(int itemId)
     {
         try
@@ -77,8 +155,9 @@ public class MenuSalesItemService : IMenuSalesItemService
             var itemSpecs = new MenuSalesItemsWithIncludeSpec(itemId);
             var item = await _unitOfWork.Repository<MenuSalesItems>().GetByIdWithSpecificationAsync(itemSpecs);
 
+            // Fallback: if spec-based lookup returns null (e.g. item has no Attribute), try simple lookup
             if (item is null)
-                return default;
+                item = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(itemId);
 
             return item;
         }
@@ -92,8 +171,9 @@ public class MenuSalesItemService : IMenuSalesItemService
     {
         try
         {
+            // NOTE: Do NOT set oldItem.Id from newItem.Id — newItem is mapped from UpdatedItemDto
+            // which uses 'ItemId', so newItem.Id would be 0 after mapping. oldItem already has the correct Id.
 
-            oldItem.Id = newItem.Id;
             if (!string.IsNullOrEmpty(newItem.ArabicName))
                 oldItem.ArabicName = newItem.ArabicName;
             if (!string.IsNullOrEmpty(newItem.EnglishName))
@@ -132,7 +212,6 @@ public class MenuSalesItemService : IMenuSalesItemService
             if (!string.IsNullOrEmpty(newItem.MainCategoryId.ToString()))
                 oldItem.MainCategoryId = newItem.MainCategoryId;
 
-
             if (!string.IsNullOrEmpty(newItem.Barcode))
                 oldItem.Barcode = newItem.Barcode;
 
@@ -142,40 +221,40 @@ public class MenuSalesItemService : IMenuSalesItemService
             if (!string.IsNullOrEmpty(newItem.ImagePath))
                 oldItem.ImagePath = newItem.ImagePath;
 
-            if (!string.IsNullOrEmpty(newItem.ImagePath))
-                oldItem.ImagePath = newItem.ImagePath;
-
             if (newItem.Invisible != oldItem.Invisible)
                 oldItem.Invisible = newItem.Invisible;
 
+            if (newItem.KitchenTypeId != oldItem.KitchenTypeId)
+                oldItem.KitchenTypeId = newItem.KitchenTypeId;
+
+            if (newItem.PrintInBackupReceipt.HasValue && newItem.PrintInBackupReceipt != oldItem.PrintInBackupReceipt)
+                oldItem.PrintInBackupReceipt = newItem.PrintInBackupReceipt;
+
             _unitOfWork.Repository<MenuSalesItems>().Update(oldItem);
 
-            var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0)
-                return null;
+            await _unitOfWork.CompleteAsync();
 
-            return oldItem ?? null;
+            return oldItem;
         }
         catch (Exception ex)
-
         {
             Log.Error(ex, "Error Occur During Update Item That Have Id {itemId}", oldItem.Id);
             return null;
-
         }
     }
     public async Task<MenuSalesItems?> AddAttributeToItem(int attributeId, int itemId)
     {
         try
         {
-           var item =  await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(itemId);
+            var item = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(itemId);
             if (item is null)
                 return null;
-            
-            item.AttributeId = attributeId;
 
-            var result  = await _unitOfWork.CompleteAsync();
-            if(result <= 0) return null;
+            item.AttributeId = attributeId > 0 ? attributeId : null;
+            item.HasAttribute = attributeId > 0;
+
+            var result = await _unitOfWork.CompleteAsync();
+            if (result <= 0 && attributeId > 0) return null;
 
             var itemSpecs = new MenuSalesItemsWithIncludeSpec(itemId);
             var itemWithAttribute = await _unitOfWork.Repository<MenuSalesItems>().GetByIdWithSpecificationAsync(itemSpecs);

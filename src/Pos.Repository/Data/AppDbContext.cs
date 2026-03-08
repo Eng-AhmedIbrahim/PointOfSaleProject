@@ -1,5 +1,7 @@
 ﻿namespace Pos.Repository.Data;
 
+using POS.Core.Entities.Settings;
+
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -24,6 +26,7 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<AttributeItem> AttributeItems { get; set; }
+    public DbSet<AttributeGroup> AttributeGroups { get; set; }
     public DbSet<Attributes> Attributes { get; set; }
     public DbSet<Branch> Branches { get; set; }
     public DbSet<Category> Categories { get; set; }
@@ -31,6 +34,7 @@ public class AppDbContext : DbContext
     public DbSet<KitchenType> KitchenTypes { get; set; }
     public DbSet<KitchenPrinters> KitchenPrinters { get; set; }
     public DbSet<MenuSalesItems> MenuSalesItems { get; set; }
+    public DbSet<ItemsClassifications> ItemsClassifications { get; set; }
     public DbSet<OrderItemAttributes> OrderItemAttributes { get; set; }
     public DbSet<Orders> Orders { get; set; }
     public DbSet<OrderItemsDetails> OrdersDetails { get; set; }
@@ -53,4 +57,12 @@ public class AppDbContext : DbContext
     public DbSet<POS.Core.Entities.ComplaintEntity.Complaint> Complaints { get; set; }
     public DbSet<OrderVoid> OrderVoids { get; set; }
     public DbSet<OrderVoidItem> OrderVoidItems { get; set; }
+    public DbSet<POS.Core.Entities.Payment.PaymentMethodEntity> PaymentMethods { get; set; }
+    public DbSet<POS.Core.Entities.Settings.DispatcherSetting> DispatcherSettings { get; set; }
+    public DbSet<HqSetting> HqSettings { get; set; }
+    public DbSet<InventoryItem> InventoryItems { get; set; }
+    public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
+    public DbSet<Unit> Units { get; set; }
 }

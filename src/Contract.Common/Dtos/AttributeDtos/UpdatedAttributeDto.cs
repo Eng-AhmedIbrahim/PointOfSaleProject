@@ -6,4 +6,5 @@ public class UpdatedAttributeDto
     public string? EnglishName { get; set; }
     public string? ArabicName { get; set; }
     public ICollection<AttributeItemDto>? AttributeItems { get; set; } = [];
+    public ICollection<AttributeGroupDto>? AttributeGroups { get; set; } = [];
 }

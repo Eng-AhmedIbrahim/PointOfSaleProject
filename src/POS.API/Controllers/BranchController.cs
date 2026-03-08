@@ -14,19 +14,12 @@ public class BranchController : BaseApiController
     [ProducesResponseType(typeof(BranchToReturnDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<IActionResult> CreateBranch([FromQuery] BranchDto branchDto)
+    public async Task<IActionResult> CreateBranch([FromBody] BranchDto branchDto)
     {
-        var logoPath = "";
         if (branchDto is null)
             return BadRequest(new ApiResponse(400));
 
-        if(branchDto.Logo is not null)
-        {
-            logoPath= DocumentSetting.UploadFile(branchDto.Logo, "Imgs");
-        }
-
         var mappedBranch = _mapper.Map<BranchDto, Branch>(branchDto);
-        mappedBranch.ImagePath = logoPath;
 
         var branch = await _branchService.CrateBranchAsync(mappedBranch);
 
@@ -71,16 +64,10 @@ public class BranchController : BaseApiController
     [ProducesResponseType(typeof(Branch), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [HttpPut]
-    public async Task<IActionResult> UpdateBranch([FromQuery] UpdatedBranchDto branch,bool updatedLogo)
+    public async Task<IActionResult> UpdateBranch([FromBody] UpdatedBranchDto branch)
     {
         var storedBranch = await _branchService.GetBranchByIdAsync(branch.BranchId)!;
      
-        if(updatedLogo)
-        {
-            DocumentSetting.DeleteFile(storedBranch?.ImagePath??string.Empty);
-            DocumentSetting.UploadFile(branch.Logo!, "Imgs");
-        }
-
         var newBranch = _mapper.Map<UpdatedBranchDto, Branch>(branch);
         newBranch.Id = storedBranch!.Id;
 

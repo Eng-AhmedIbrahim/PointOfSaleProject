@@ -36,3 +36,4 @@ global using POS.Core.Entities.Shift;
 global using POS.Core.Entities.Delivery;
 global using POS.Core.Entities.UserSettings;
 global using System.Security.Claims;
+global using POS.Core.Entities.Settings;

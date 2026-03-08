@@ -247,11 +247,12 @@ public partial class POS
         var newAttribute = new AttributeDto
         {
             Id = selectedMenuItem.Id,
-            Name = selectedMenuItem.ArabicName ?? string.Empty
+            Name = selectedMenuItem.ArabicName ?? string.Empty,
+            ExtraPrice = selectedMenuItem.ExtraPrice
         };
 
         currentSelectedAttribute?.Add(newAttribute);
-        _currentBaseItem!.Price += selectedMenuItem.AttributePrice ?? 0;
+        _currentBaseItem!.Price += selectedMenuItem.ExtraPrice ?? 0;
     }
 
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
@@ -281,7 +282,7 @@ public partial class POS
                     ArabicName = item.ArabicName,
                     EnglishName = item.EnglishName,
                     Price = item.Price,
-                    AttributePrice = item.AttributePrice ?? 0
+                    ExtraPrice = item.ExtraPrice ?? 0
                 };
 
                 _itemByCatId.Add(newMenuItem);
@@ -303,11 +304,11 @@ public partial class POS
             Total = menuItem.Price ?? 0,
             Attributes = currentSelectedAttribute ?? [],
             CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
-            ItemKitchenTypeId = menuItem.ItemKitchenTypeId,
+            ItemKitchenTypeId = menuItem.KitchenTypeId,
             PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
-            PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceiptFromItem,
+            PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceipt,
             TotalAmount = menuItem.Price,
-            AttributePrice = menuItem.AttributePrice
+            ExtraPrice = menuItem.ExtraPrice
         };
         _commonProperties?.TableItems?.Add(newTableItem);
 

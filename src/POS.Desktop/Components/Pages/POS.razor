@@ -25,7 +25,8 @@
             @foreach (var category in _categories ?? [])
             {
                 <button class="category-btn" @onclick="async () => await InvokeItems(category.Id)">
-                    @(Localizer.GetCurrentLanguage() == "ar" ? category.ArabicName : (category.EnglishName ?? category.ArabicName))
+                    @(Localizer.GetCurrentLanguage() == "ar" ? 
+                    category.ArabicName : (category.EnglishName ?? category.ArabicName))
                 </button>
             }
         </div>
@@ -37,9 +38,34 @@
         <div class="full-height overflow-y-auto pa-0 ma-0 sales-grid-container">
             @foreach (var item in _itemByCatId)
             {
-                <button class="item-button" @onclick="@(() => AddItemToSection4(item))">
-                    <span class="item-text">@(Localizer.GetCurrentLanguage() == "ar" ? item.ArabicName : (item.EnglishName ?? item.ArabicName))</span>
-                </button>
+                <MudTooltip Placement="Placement.Right" Arrow="true" Color="MudBlazor.Color.Dark"
+                            Delay="400"
+                            RootStyle="display:block;">
+                    <ChildContent>
+                        <button class="item-button"
+                                style="@GetItemButtonStyle(item)"
+                                @onclick="@(() => AddItemToSection4(item))">
+                            @if (item.ByWeight)
+                            {
+                                <span class="item-weight-badge">⚖️</span>
+                            }
+                            <span class="item-text" style="@(item.TextSize.HasValue ? $"font-size:{item.TextSize}px" : "")">@(Localizer.GetCurrentLanguage() == "ar" ? item.ArabicName : (item.EnglishName ?? item.ArabicName))</span>
+                        </button>
+                    </ChildContent>
+                    <TooltipContent>
+                        <div style="text-align:right; direction:rtl; min-width:120px; padding:4px 2px;">
+                            <div style="font-weight:900; font-size:1rem; color:#4ade80; letter-spacing:0.5px;">
+                                @item.Price?.ToString("0.00") <span style="font-size:0.75rem; opacity:0.8;">ج.م</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                            {
+                                <div style="font-size:0.8rem; opacity:0.85; margin-top:4px; font-weight:600; max-width:200px; white-space:normal; line-height:1.4;">
+                                    @item.Description
+                                </div>
+                            }
+                        </div>
+                    </TooltipContent>
+                </MudTooltip>
             }
         </div>
     </MudItem>
@@ -60,7 +86,7 @@
                 @(_commonProperties.CurrentPosMode == "Delivery" ? Localizer["DeliveryService"] : _commonProperties.CurrentPosMode + " " + Localizer["Order"])
             </MudText>
             
-            @if (_commonProperties.CurrentPosMode == "Delivery" && (_dispatcherSettings.IsDispatcher || canChangeBranch))
+            @if (_commonProperties.CurrentPosMode == "Delivery" && (_dynamicDispatcherSettings.IsDispatcher || canChangeBranch))
             {
                 <div class="branch-selector-container d-flex align-center gap-2">
                     <MudText Typo="Typo.caption" Class="branch-label">@Localizer["Branch"]</MudText>

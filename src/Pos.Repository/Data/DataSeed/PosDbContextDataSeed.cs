@@ -115,19 +115,51 @@ public static class PosDbContextDataSeed
             await _dbContext.SaveChangesAsync();
         }
 
+        if (!_dbContext.ItemsClassifications.Any())
+        {
+            var classifications = await GetDataFromJsonFile<ItemsClassifications>("ItemsClassifications.json");
+            await _dbContext.ItemsClassifications.AddRangeAsync(classifications);
+            await _dbContext.SaveChangesAsync();
+        }
 
 
-        //if (!_dbContext.PrintingSettings.Any())
-        //{
-        //    var printingSettings = await GetDataFromJsonFile<PrintingSettings>("printingSettings.json");
-        //    if (branch != null)
-        //    {
-        //        foreach (var printingSetting in printingSettings)
-        //            printingSetting.BranchID = branch!.Id;
-        //    }
-        //    await _dbContext.PrintingSettings.AddRangeAsync(printingSettings);
-        //    await _dbContext.SaveChangesAsync();
-        //}
+        if (!_dbContext.PaymentMethods.Any())
+        {
+            var paymentMethods = await GetDataFromJsonFile<POS.Core.Entities.Payment.PaymentMethodEntity>("paymentMethods.json");
+            if (paymentMethods != null && paymentMethods.Any())
+            {
+                await _dbContext.PaymentMethods.AddRangeAsync(paymentMethods);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        if (!_dbContext.DispatcherSettings.Any())
+        {
+            var dispatcherSettings = new POS.Core.Entities.Settings.DispatcherSetting
+            {
+                ComputerName = Environment.MachineName,
+                IsDispatcher = false,
+                RefreshTimeForDeliveryOrderColorsPerSecond = 30,
+                CriticalTimeForDeliveryOrderPerMinute = 60,
+                WarningTimeForDeliveryOrderPerMinute = 45,
+                VoidLimitMinutesForDeliveryOrder = 15,
+                AllowVoidLimitMinutesForDeliveryOrder = false,
+                AllowDeliveryVoidFromBranch = true
+            };
+            await _dbContext.DispatcherSettings.AddAsync(dispatcherSettings);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        if (!_dbContext.Units.Any())
+        {
+            var units = await GetDataFromJsonFile<Unit>("units.json");
+            if (units != null && units.Any())
+            {
+                foreach (var unit in units) unit.CreatedAt = DateTime.Now;
+                await _dbContext.Units.AddRangeAsync(units);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 
     private static string FindValidFilePath(List<string> paths, string fileName)

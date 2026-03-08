@@ -11,11 +11,11 @@ public class MenuSalesItems : BaseEntity
     public decimal? ThirdPrice { get; set; }
     public decimal? FourthPrice { get; set; }
     public decimal? FifthPrice { get; set; }
-    public decimal? AttributePrice { get; set; }
     public decimal? Tax { get; set; }
     public string? Description { get; set; }
     public string? ImagePath { get; set; }
-    public MainCategories? MainCategoryId { get; set; }
+    public int? MainCategoryId { get; set; }
+    public ItemsClassifications? MainCategory { get; set; }
     public string? BackColor { get; set; }
     public string? TextColor { get; set; }
     public int? TextSize { get; set; }
@@ -36,5 +36,6 @@ public class MenuSalesItems : BaseEntity
     public ICollection<OrderItemsDetails>? OrderDetails { get; set; } = new List<OrderItemsDetails>();
     public int? KitchenTypeId { get; set; }
     public KitchenType? KitchenType { get; set; }
-    public bool? PrintInBackupReceipt { get; set; } = true;
+    public bool? PrintInBackupReceipt { get; set; }
+    public bool ByWeight { get; set; } = false;
 }

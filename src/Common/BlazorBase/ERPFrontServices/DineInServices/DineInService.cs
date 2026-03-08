@@ -1,4 +1,7 @@
-﻿namespace BlazorBase.ERPFrontServices.DineInServices;
+﻿using POS.Contract;
+using POS.Contract.Dtos.DineInDtos;
+
+namespace BlazorBase.ERPFrontServices.DineInServices;
 
 public class DineInService : IDineInService
 {
@@ -71,5 +74,75 @@ public class DineInService : IDineInService
     }
 
     private async Task<HttpResponseMessage> GetTablesRequest()
-     =>   await _httpClient.GetAsync($"{_apiSettings.Endpoints!.UpdateTables}");
+     =>   await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetAllTables}");
+
+    // CRUD operations for Table Groups
+    public async Task<ServiceResponse<TableGroupToReturnDto>> CreateTableGroup(TableGroupDto tableGroup)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateTableGroup, tableGroup));
+            if (response is null) return ServiceResponseHelpers.Failure<TableGroupToReturnDto>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table Group created successfully");
+            var result = response.IsSuccessStatusCode ? ApiRequestHelpers.DeserializeResponseContent<TableGroupToReturnDto>(await response.Content.ReadAsStringAsync()) : default;
+            return result is null ? ServiceResponseHelpers.Failure<TableGroupToReturnDto>(responseMessage) : ServiceResponseHelpers.Success(result, responseMessage);
+        }, "Failed to Create Table Group");
+    }
+
+    public async Task<ServiceResponse<TableGroupToReturnDto>> UpdateTableGroup(int id, TableGroupToReturnDto tableGroup)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.UpdateTableGroup}/{id}", tableGroup));
+            if (response is null) return ServiceResponseHelpers.Failure<TableGroupToReturnDto>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table Group updated successfully");
+            return response.IsSuccessStatusCode ? ServiceResponseHelpers.Success(tableGroup, responseMessage) : ServiceResponseHelpers.Failure<TableGroupToReturnDto>(responseMessage);
+        }, "Failed to Update Table Group");
+    }
+
+    public async Task<ServiceResponse<bool>> DeleteTableGroup(int id)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.DeleteAsync($"{_apiSettings.Endpoints!.DeleteTableGroup}/{id}"));
+            if (response is null) return ServiceResponseHelpers.Failure<bool>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table Group Deleted successfully");
+            return response.IsSuccessStatusCode ? ServiceResponseHelpers.Success(true, responseMessage) : ServiceResponseHelpers.Failure<bool>(responseMessage);
+        }, "Failed to Delete Table Group");
+    }
+
+    // CRUD operations for Tables
+    public async Task<ServiceResponse<TableToReturnDto>> CreateTable(TableDto table)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateTable, table));
+            if (response is null) return ServiceResponseHelpers.Failure<TableToReturnDto>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table created successfully");
+            var result = response.IsSuccessStatusCode ? ApiRequestHelpers.DeserializeResponseContent<TableToReturnDto>(await response.Content.ReadAsStringAsync()) : default;
+            return result is null ? ServiceResponseHelpers.Failure<TableToReturnDto>(responseMessage) : ServiceResponseHelpers.Success(result, responseMessage);
+        }, "Failed to Create Table");
+    }
+
+    public async Task<ServiceResponse<TableToReturnDto>> UpdateTable(int id, TableToReturnDto table)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.UpdateTable}/{id}", table));
+            if (response is null) return ServiceResponseHelpers.Failure<TableToReturnDto>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table updated successfully");
+            return response.IsSuccessStatusCode ? ServiceResponseHelpers.Success(table, responseMessage) : ServiceResponseHelpers.Failure<TableToReturnDto>(responseMessage);
+        }, "Failed to Update Table");
+    }
+
+    public async Task<ServiceResponse<bool>> DeleteTable(int id)
+    {
+        return await ServiceResponseHelpers.ExecuteWithResponseAsync(async () =>
+        {
+            var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.DeleteAsync($"{_apiSettings.Endpoints!.DeleteTable}/{id}"));
+            if (response is null) return ServiceResponseHelpers.Failure<bool>("Failed to connect to the API");
+            var responseMessage = await ApiRequestHelpers.GetResponseMessage(response, "Table Deleted successfully");
+            return response.IsSuccessStatusCode ? ServiceResponseHelpers.Success(true, responseMessage) : ServiceResponseHelpers.Failure<bool>(responseMessage);
+        }, "Failed to Delete Table");
+    }
 }

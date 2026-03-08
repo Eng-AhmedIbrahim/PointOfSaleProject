@@ -9,4 +9,5 @@ public class OrderItemAttributes :BaseEntity
     public AttributeItem? AttributeItem { get; set; }
 
     public string AttributeName { get; set; } = string.Empty;
+    public decimal? ExtraPrice { get; set; } = 0;
 }

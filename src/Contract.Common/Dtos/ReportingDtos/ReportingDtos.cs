@@ -1,10 +1,13 @@
-using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.OrderDtos;
+using System.Collections.Generic;
 
 namespace POS.Contract.Dtos.ReportingDtos;
 
 public class SalesSummaryDto
 {
     public DateTime PosDate { get; set; }
+    public string? StaffName { get; set; }
+    public List<POS.Contract.Dtos.OrderDtos.OrderDto>? DetailedOrders { get; set; }
     public ModeSummaryDto DineIn { get; set; } = new();
     public ModeSummaryDto Delivery { get; set; } = new();
     public ModeSummaryDto TakeAway { get; set; } = new();
@@ -35,7 +38,8 @@ public class OverallSummaryDto
     public decimal RefundAmount { get; set; }
     public decimal Expenses { get; set; }
     public decimal VoidAmount { get; set; }
-    public int VoidCount { get; set; }
+    public decimal VoidCount { get; set; }
+    public decimal TotalDiscount { get; set; }
     public decimal TotalRevenue => TotalSales + PendingAmount;
     public decimal NetCash => CashAmount - RefundAmount - Expenses;
     public string Currency { get; set; } = string.Empty;
@@ -61,5 +65,6 @@ public class SalesItemSummaryDto
     public string ItemName { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
     public decimal TotalAmount { get; set; }
+    public decimal UnitPrice { get; set; }
     public string CategoryName { get; set; } = string.Empty;
 }

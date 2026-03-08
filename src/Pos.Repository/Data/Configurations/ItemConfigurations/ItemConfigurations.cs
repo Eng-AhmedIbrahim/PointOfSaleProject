@@ -6,6 +6,9 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
     private readonly int MinLength = 70;
     public void Configure(EntityTypeBuilder<MenuSalesItems> builder)
     {
+        builder.Property(s => s.Id)
+            .ValueGeneratedNever();
+
         builder.Property(s => s.ArabicName)
             .HasColumnType("nvarchar")
             .HasMaxLength(MinLength)
@@ -93,10 +96,10 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
             .HasForeignKey<MenuSalesItems>(e => e.AttributeId)
             .OnDelete(DeleteBehavior.SetNull);
 
-             builder.Property(e => e.MainCategoryId)
-            .HasConversion(
-                v => v.ToString(),
-                v => (MainCategories)Enum.Parse(typeof(MainCategories), v!));
+        builder.HasOne(e => e.MainCategory)
+            .WithMany()
+            .HasForeignKey(e => e.MainCategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
 
 
         builder.HasOne(c => c.KitchenType)
@@ -106,5 +109,9 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
         builder.Property(c => c.PrintInBackupReceipt)
            .HasColumnType("bit")
             .HasDefaultValue(true);
+
+        builder.Property(c => c.ByWeight)
+            .HasColumnType("bit")
+            .HasDefaultValue(false);
     }
 }

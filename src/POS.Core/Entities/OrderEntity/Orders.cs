@@ -75,7 +75,7 @@ public class Orders : BaseEntity
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
-    public int? VoidCount { get; set; }
+    public decimal? VoidCount { get; set; }
     public decimal? TotalVoid { get; set; }
     public int? PrintCount { get; set; }
     public DateTime? KitchenOutTime { get; set; }

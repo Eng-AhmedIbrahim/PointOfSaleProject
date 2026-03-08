@@ -5,6 +5,9 @@ public class CategoryConfigurations : IEntityTypeConfiguration<Category>
     private readonly int MinLength = 70;
     public void Configure(EntityTypeBuilder<Category> builder)
     {
+        builder.Property(c => c.Id)
+            .ValueGeneratedNever();
+
         builder.Property(c => c.EnglishName)
             .HasColumnType("nvarchar")
             .HasMaxLength(MinLength)

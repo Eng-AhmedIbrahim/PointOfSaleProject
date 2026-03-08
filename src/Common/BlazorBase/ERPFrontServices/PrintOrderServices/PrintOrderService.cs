@@ -1,5 +1,6 @@
 ﻿using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.ReportingDtos;
+using Serilog;
 
 namespace BlazorBase.ERPFrontServices.PrintOrderServices;
 
@@ -30,6 +31,13 @@ public class PrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.Tax = orderId.BasicOrderDetails?.Tax;
         _commonProperties.OrderDto.Services = orderId.BasicOrderDetails?.Service;
 
+        // Guard: do not send empty order to API
+        if (_commonProperties.OrderDto.OrderDetails == null || !_commonProperties.OrderDto.OrderDetails.Any())
+        {
+            Log.Warning("PrintInitialDineInOrder: OrderDetails is null or empty for OrderId={OrderId}. Skipping API call.", _commonProperties.OrderDto.OrderId);
+            return;
+        }
+
         await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
     }
 
@@ -49,6 +57,15 @@ public class PrintOrderService : IPrintOrderService
         PaymentMethod paymentMethod = PaymentMethod.Cash)
     {
         BackupMainOrderDtoDetails(customerName, customerPhone, paid, paymentMethod);
+
+        // Guard: do not send empty order to API
+        if (_commonProperties.OrderDto!.OrderDetails == null || !_commonProperties.OrderDto.OrderDetails.Any())
+        {
+            Log.Warning("PrintTakeAwayOrder: OrderDetails is null or empty. TableItems count={Count}. Skipping API call.",
+                _commonProperties.TableItems?.Count ?? 0);
+            return false;
+        }
+
         var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
         if (result is null)
             return false;
@@ -78,8 +95,8 @@ public class PrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.Paid = paid > 0.00m ? paid : (_commonProperties._financeSettingsList?.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0M);
         _commonProperties.OrderDto.Remaining = (_commonProperties._financeSettingsList?.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0M) - _commonProperties.OrderDto.Paid;
         _commonProperties.OrderDto.SubTotal = _commonProperties._financeSettingsList?.Count > 0 ? _commonProperties._financeSettingsList[0].Value : 0M;
-        _commonProperties.OrderDto.Services = settings?.Service;
-        _commonProperties.OrderDto.Tax = settings?.Tax;
+        _commonProperties.OrderDto.Services = _commonProperties._financeSettingsList?.Count > 3 ? _commonProperties._financeSettingsList[3].Value : 0M;
+        _commonProperties.OrderDto.Tax = _commonProperties._financeSettingsList?.Count > 2 ? _commonProperties._financeSettingsList[2].Value : 0M;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.GrandTotal = _commonProperties._financeSettingsList?.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0M;
         _commonProperties.OrderDto.OrderDate = _commonProperties.PosDate?.ToDateTime(TimeOnly.FromDateTime(DateTime.Now));
@@ -193,8 +210,14 @@ public class PrintOrderService : IPrintOrderService
         return Task.CompletedTask;
     }
 
-    public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items)
+    public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true)
     {
+        return Task.CompletedTask;
+    }
+
+    public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null)
+    {
+        // Default no-op implementation for non-desktop scenarios
         return Task.CompletedTask;
     }
 }

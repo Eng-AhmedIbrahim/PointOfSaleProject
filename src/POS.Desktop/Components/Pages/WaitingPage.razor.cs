@@ -2,8 +2,27 @@
 
 public partial class WaitingPage
 {
+    [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+
     public int CurrentOrderId { get; set; }
     public List<TableItem>? Items { get; set; }
+
+    private bool _canCompleteOrder;
+    private bool _canRemoveOrder;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            _canCompleteOrder = (await AuthorizationService.AuthorizeAsync(user, "CanCompleteWaitingOrder")).Succeeded;
+            _canRemoveOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanRemoveWaitingOrder")).Succeeded;
+        }
+    }
+
     private void ShowWaitingOrder(int orderId)
     {
         CurrentOrderId = orderId;
@@ -40,11 +59,14 @@ public partial class WaitingPage
     private async Task CompleteWaitingOrder()
     {
         WaitingOrder? waitingOrder = _commonProperties!.WaitingQueue!.WaitingOrders.FirstOrDefault(o => o.Id == CurrentOrderId);
-        _commonProperties.TableItems = waitingOrder!.Items;
-        _commonProperties!._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
+        if (waitingOrder != null)
+        {
+            _commonProperties.TableItems = waitingOrder.Items;
+            _commonProperties!._financeSettingsList![0].Value = _commonProperties.TableItems.Sum(i => i.Total ?? 0);
 
-        RemoveWaitingOrder();
-        await SafeNavigateAsync("/pos");
+            RemoveWaitingOrder();
+            await SafeNavigateAsync("/pos");
+        }
     }
 
     private async Task BackToPos()

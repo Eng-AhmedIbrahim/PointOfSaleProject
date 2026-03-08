@@ -85,3 +85,6 @@ global using System.Net;
 global using System.Security.Claims;
 global using System.Text;
 global using System.Text.Json;
+global using POS.Contract.Dtos.SettingsDtos;
+global using POS.Core.Services.Contract.DataSyncServices;
+global using POS.Core.Entities.Settings;

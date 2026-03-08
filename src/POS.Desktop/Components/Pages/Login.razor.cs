@@ -73,7 +73,7 @@ public partial class Login
 
         try
         {
-            var response = await client!.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin });
+            var response = await client!.PostAsJsonAsync(ConstantStrings.LoginUserUrl, new { UserName = _userName, Password = _pin, ForBackOffice = false });
 
             if (response.IsSuccessStatusCode)
             {
@@ -103,7 +103,7 @@ public partial class Login
             }
             else
             {
-                Snackbar.Add("Login Failed: Invalid Username or PIN", Severity.Error);
+                Snackbar.Add("فشل تسجيل الدخول: اسم المستخدم أو الرقم السري غير صحيح", Severity.Error);
                 _pin = string.Empty;
                 StateHasChanged(); 
                 await pinInput.FocusAsync();
@@ -111,7 +111,7 @@ public partial class Login
         }
         catch (Exception ex)
         {
-            Snackbar.Add("An error occurred during login", Severity.Error);
+            Snackbar.Add("فشل تسجيل الدخول: حدث خطأ أثناء عملية الدخول", Severity.Error);
             _pin = string.Empty;
             StateHasChanged();
             await pinInput.FocusAsync();

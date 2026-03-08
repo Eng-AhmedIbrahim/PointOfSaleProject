@@ -36,6 +36,13 @@ public class ReportingController : BaseApiController
         return Ok(orders);
     }
 
+    [HttpGet("staff-orders")]
+    public async Task<ActionResult<List<OrderDto>>> GetStaffOrders([FromQuery] DateTime posDate, [FromQuery] string staffId, [FromQuery] string staffType)
+    {
+        var orders = await _reportingService.GetStaffOrdersAsync(posDate, staffId, staffType);
+        return Ok(orders);
+    }
+
     [HttpGet("sales-items-summary")]
     public async Task<ActionResult<List<SalesItemSummaryDto>>> GetSalesItemsSummary([FromQuery] DateTime posDate)
     {

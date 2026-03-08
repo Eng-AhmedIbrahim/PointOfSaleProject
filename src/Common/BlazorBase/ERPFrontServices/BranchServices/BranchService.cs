@@ -1,4 +1,8 @@
-﻿using BlazorBase.ERPFrontServices.AppDateServices;
+﻿using BlazorBase.API;
+using POS.Contract.Dtos.CompanyDtos;
+using Microsoft.Extensions.Logging;
+using BlazorBase.Helpers;
+using BlazorBase.ERPFrontServices.AppDateServices;
 
 namespace BlazorBase.ERPFrontServices.BranchServices;
 
@@ -19,28 +23,51 @@ public class BranchService : IBranchService
 
     public async Task<IReadOnlyList<BranchToReturnDto>> GetBranches()
     {
-        return await GetApiResponseAsync<BranchToReturnDto>(
-            GetBranchesRequest,
-           "Failed to retrieve AppDate from the API.");
+        var response = await _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllBranches);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return ApiRequestHelpers.DeserializeResponseContent<List<BranchToReturnDto>>(content) ?? [];
+        }
+        return [];
     }
 
-    private async Task<HttpResponseMessage> GetBranchesRequest()
-    => await _httpClient.GetAsync(_apiSettings!.Endpoints!.GetBranches);
-
-    private async Task<IReadOnlyList<T>> GetApiResponseAsync<T>(
-        Func<Task<HttpResponseMessage>> apiRequest,
-        string? message)
+    public async Task<BranchToReturnDto?> GetBranchById(int id)
     {
-        var response = await ApiRequestHelpers.SendApiRequest(apiRequest);
-        if (response is null || !response.IsSuccessStatusCode)
+        var response = await _httpClient.GetAsync($"{_apiSettings.Endpoints!.GetBranchById}/{id}");
+        if (response.IsSuccessStatusCode)
         {
-            _logger.LogError("API call failed: {ErrorMessage}", message ?? "No message provided.");
-            return [];
+            var content = await response.Content.ReadAsStringAsync();
+            return ApiRequestHelpers.DeserializeResponseContent<BranchToReturnDto>(content);
         }
+        return null;
+    }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var items = ApiRequestHelpers.DeserializeResponseContent<List<T>>(content);
+    public async Task<BranchToReturnDto?> CreateBranch(BranchDto branchDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.CreateBranch, branchDto);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return ApiRequestHelpers.DeserializeResponseContent<BranchToReturnDto>(content);
+        }
+        return null;
+    }
 
-        return items ?? [];
+    public async Task<BranchToReturnDto?> UpdateBranch(UpdatedBranchDto branchDto)
+    {
+        var response = await _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.UpdateBranch}", branchDto);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            return ApiRequestHelpers.DeserializeResponseContent<BranchToReturnDto>(content);
+        }
+        return null;
+    }
+
+    public async Task<bool> DeleteBranch(int id)
+    {
+        var response = await _httpClient.DeleteAsync($"{_apiSettings.Endpoints!.DeleteBranch}?branchId={id}");
+        return response.IsSuccessStatusCode;
     }
 }

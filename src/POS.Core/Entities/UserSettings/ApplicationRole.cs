@@ -3,23 +3,15 @@
 public class ApplicationRole : IdentityRole
 {
     public bool ShowInLogin { get; set; } = true;
-    public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 }
 
 public class Permission
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string NameAr { get; set; } = string.Empty;
-    public string NameEn { get; set; } = string.Empty;
-    public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
-}
-
-public class RolePermission
-{
-    public string? RoleId { get; set; }
-    public ApplicationRole? Role { get; set; }
-
-    public int PermissionId { get; set; }
-    public Permission? Permission { get; set; }
+    public string PoliceArabicName { get; set; } = string.Empty;
+    public string PoliceEnglishNameEn { get; set; } = string.Empty;
+    public string ScreenArabicName { get; set; } = string.Empty;
+    public string ScreenEnglishName { get; set; } = string.Empty;
+    public bool IsBackOffice { get; set; } = false;
 }

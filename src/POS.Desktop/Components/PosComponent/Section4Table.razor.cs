@@ -68,13 +68,24 @@ public partial class Section4Table
         Snackbar.Add("Item Has Been Committed Handler Invoked");
     }
 
-    private void UpdateQuantity(TableItem item, int newQuantity)
+    private void UpdateQuantity(TableItem item, decimal newQuantity)
     {
         item.Quantity = newQuantity;
         _cartService.RecalculateItemTotals(item);
         _cartService.CalculateSection4Table();
     }
 
+    private void UpdateWeightQty(TableItem item, decimal newWeightKg)
+    {
+        if (newWeightKg <= 0) return;
+
+        item.WeightQty = newWeightKg;
+        item.Quantity = newWeightKg;
+
+        _cartService.RecalculateItemTotals(item);
+        _cartService.CalculateSection4Table();
+        InvokeAsync(StateHasChanged);
+    }
 
     private void SelectItem(TableItem item)
      => _cartService.SetSelectedItem(item);

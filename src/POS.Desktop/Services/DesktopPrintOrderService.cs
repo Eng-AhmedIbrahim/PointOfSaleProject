@@ -107,12 +107,16 @@ public class DesktopPrintOrderService : IPrintOrderService
         bool isClosing = false, bool isUpdate = false)
     {
         var branch = await _branchService.GetBranches();
-        var currentBranch = branch.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
+        var currentBranch = branch.ElementAtOrDefault(0);
+        var firstBranch = branch.ElementAtOrDefault(0);
+        var receiptName = !string.IsNullOrWhiteSpace(currentBranch?.Name) ? currentBranch.Name : firstBranch?.Name;
+        if (string.IsNullOrWhiteSpace(receiptName) || receiptName.Equals("Store", StringComparison.OrdinalIgnoreCase))
+            receiptName = firstBranch?.Name ?? "Store";
 
         var receipt = new DineInReceipt()
         {
             Id = order.BasicOrderDetails!.OrderId,
-            StoreName = currentBranch?.Name ?? "Store",
+            StoreName = receiptName,
             CashierName = order.BasicOrderDetails.CashierName ?? "Cashier",
             CaptainName = order.CaptainName ?? "Captain",
             ReceiptType = "DineIn",
@@ -159,7 +163,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
         if (countToPrint > 0)
         {
-            var kitchens = await _printerServices.GetKitchenTypesAsync();
+            var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
             Log.Information("Fetched {Count} kitchens", kitchens?.Count ?? 0);
             
             var customerKitchen = kitchens?.ElementAtOrDefault(0);
@@ -351,15 +355,26 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto!.OrderId = _commonProperties.CurrentOrderId;
         _commonProperties.OrderDto!.OrderType = "TakeAway";
         _commonProperties.OrderDto.CashierName = _commonProperties.CurrentUser;
-        _commonProperties.OrderDto.BranchId = _commonProperties.BranchDetails!.Id;
-        _commonProperties.OrderDto.BranchName = _commonProperties.BranchDetails.Name;
+        
+        // Ensure Branch Details are populated
+        if (_commonProperties.BranchDetails == null || string.IsNullOrWhiteSpace(_commonProperties.BranchDetails.Name))
+        {
+             // Try to use common properties store name or default
+             _commonProperties.OrderDto.BranchName = _commonProperties.StoreName;
+        }
+        else
+        {
+            _commonProperties.OrderDto.BranchId = _commonProperties.BranchDetails.Id;
+            _commonProperties.OrderDto.BranchName = _commonProperties.BranchDetails.Name;
+        }
+
         _commonProperties.OrderDto.CashierId = _commonProperties.CurrentUserId;
         _commonProperties.OrderDto.FooterMessage = _commonProperties.TakeAwaySettings!.OrderStatment;
         _commonProperties.OrderDto.PaymentMethod = paymentMethod;
         _commonProperties.OrderDto.Paid = paid > 0.00m ? paid : (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0);
         _commonProperties.OrderDto.SubTotal = _commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 0 ? _commonProperties._financeSettingsList[0].Value : 0;
-        _commonProperties.OrderDto.Services = _commonProperties.TakeAwaySettings!.Service;
-        _commonProperties.OrderDto.Tax = _commonProperties.TakeAwaySettings!.Tax;
+        _commonProperties.OrderDto.Services = _commonProperties._financeSettingsList?.Count > 3 ? _commonProperties._financeSettingsList[3].Value : 0M;
+        _commonProperties.OrderDto.Tax = _commonProperties._financeSettingsList?.Count > 2 ? _commonProperties._financeSettingsList[2].Value : 0M;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0;
         _commonProperties.OrderDto.DiscountReason = _commonProperties.OrderDiscount?.DiscountReason;
@@ -380,12 +395,16 @@ public class DesktopPrintOrderService : IPrintOrderService
     private async Task PrintTakeAwayLocally(OrderDto orderDto, OrderDto createdOrder, bool isCopy = false)
     {
         var branch = await _branchService.GetBranches();
-        var currentBranch = branch.FirstOrDefault(b => b.Id == orderDto.BranchId);
-        
+        var currentBranch = branch.ElementAtOrDefault(0);
+        var firstBranch = branch.ElementAtOrDefault(0);
+        var receiptName = !string.IsNullOrWhiteSpace(orderDto.BranchName) ? orderDto.BranchName : firstBranch?.Name;
+        if (string.IsNullOrWhiteSpace(receiptName) || receiptName.Equals("Store", StringComparison.OrdinalIgnoreCase))
+            receiptName = firstBranch?.Name ?? "Store";
+
         var receipt = new Receipt()
         {
             Id = createdOrder.OrderId,
-            StoreName = orderDto.BranchName ?? "Store",
+            StoreName = receiptName,
             CashierName = orderDto.CashierName ?? "Cashier",
             ReceiptType = orderDto.OrderType ?? "TakeAway",
             DateCreated = createdOrder.OrderDate ?? DateTime.Now,
@@ -419,65 +438,62 @@ public class DesktopPrintOrderService : IPrintOrderService
 
         if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)
         {
-            var kitchens = await _printerServices.GetKitchenTypesAsync();
-            Log.Information("Fetched {Count} kitchens for TakeAway", kitchens?.Count ?? 0);
-            
+            var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
             var customerKitchen = kitchens?.ElementAtOrDefault(0);
-            if (customerKitchen == null) Log.Warning("customerKitchen (Element 0) is null for TakeAway");
+            var printers = customerKitchen?.KitchenPrinters?.FirstOrDefault();
 
-            if (customerKitchen != null)
+            var reportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+            Directory.CreateDirectory(reportsFolder);
+
+            string? originalPath = null;
+            string? copyPath = null;
+
+            for (int i = 1; i <= orderSettings.CustomerReceiptCount; i++)
             {
-                var printers = customerKitchen.KitchenPrinters?.FirstOrDefault();
-                if (printers == null) Log.Warning("printers is null for TakeAway kitchen {KitchenName}", customerKitchen.KitchenName);
-
-                if (printers != null)
+                var printerName = printers != null ? typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string : null;
+                
+                // FALLBACK: If no specific printer configured for this copy, use system default
+                if (string.IsNullOrWhiteSpace(printerName))
                 {
+                    printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
+                    Log.Information("No kitchen printer for copy {i}. Using system default: {Printer}", i, printerName);
+                }
 
-                    string? originalPath = null;
-                    string? copyPath = null;
-                    var reportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
-                    Directory.CreateDirectory(reportsFolder);
+                if (string.IsNullOrEmpty(printerName)) continue;
 
-                    for (int i = 1; i <= orderSettings.CustomerReceiptCount; i++)
+                bool isActuallyCopy = isCopy || (currentPrintCount > 1) || (i > 1);
+
+                string pathToPrint;
+                if (isActuallyCopy)
+                {
+                    if (copyPath == null)
                     {
-                        var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
-                        if (string.IsNullOrEmpty(printerName)) continue;
-
-                        bool isActuallyCopy = isCopy || (currentPrintCount > 1) || (i > 1);
-
-                        string pathToPrint;
-                        if (isActuallyCopy)
-                        {
-                            if (copyPath == null)
-                            {
-                                receipt.IsCopy = true;
-                                var document = new ReceiptDocument(receipt, orderDto.OrderDetails ?? new List<TableItem>());
-                                copyPath = Path.Combine(reportsFolder, $"Order_{createdOrder.OrderId}_TakeAway_Copy_{DateTime.Now:yyyyMMddHHmmss}_{i}.pdf");
-                                document.GeneratePdf(copyPath);
-                            }
-                            pathToPrint = copyPath;
-                        }
-                        else
-                        {
-                            if (originalPath == null)
-                            {
-                                receipt.IsCopy = false;
-                                var document = new ReceiptDocument(receipt, orderDto.OrderDetails ?? new List<TableItem>());
-                                originalPath = Path.Combine(reportsFolder, $"Order_{createdOrder.OrderId}_TakeAway_Original_{DateTime.Now:yyyyMMddHHmmss}_{i}.pdf");
-                                document.GeneratePdf(originalPath);
-                            }
-                            pathToPrint = originalPath;
-                        }
-
-                        try
-                        {
-                            await _printerServices.PrintPdfAsync(pathToPrint, printerName);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Error printing TakeAway to printer {PrinterName}", printerName);
-                        }
+                        receipt.IsCopy = true;
+                        var document = new ReceiptDocument(receipt, orderDto.OrderDetails ?? new List<TableItem>());
+                        copyPath = Path.Combine(reportsFolder, $"Order_{createdOrder.OrderId}_TakeAway_Copy_{DateTime.Now:yyyyMMddHHmmss}_{i}.pdf");
+                        document.GeneratePdf(copyPath);
                     }
+                    pathToPrint = copyPath;
+                }
+                else
+                {
+                    if (originalPath == null)
+                    {
+                        receipt.IsCopy = false;
+                        var document = new ReceiptDocument(receipt, orderDto.OrderDetails ?? new List<TableItem>());
+                        originalPath = Path.Combine(reportsFolder, $"Order_{createdOrder.OrderId}_TakeAway_Original_{DateTime.Now:yyyyMMddHHmmss}_{i}.pdf");
+                        document.GeneratePdf(originalPath);
+                    }
+                    pathToPrint = originalPath;
+                }
+
+                try
+                {
+                    await _printerServices.PrintPdfAsync(pathToPrint, printerName);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error printing TakeAway to printer {PrinterName}", printerName);
                 }
             }
         }
@@ -498,13 +514,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
 
         var filteredItems = itemsToProcess
-            .Where(i =>
-                (i.PrintInBackupReceiptFromCategory == true && i.PrintInBackupReceiptFromItem != false) ||
-                (i.PrintInBackupReceiptFromCategory == false && i.PrintInBackupReceiptFromItem == true) ||
-                (i.PrintInBackupReceiptFromCategory == true && i.PrintInBackupReceiptFromItem == null) ||
-                (i.PrintInBackupReceiptFromCategory == null && i.PrintInBackupReceiptFromItem == null) || 
-                (i.PrintInBackupReceiptFromCategory == null && i.PrintInBackupReceiptFromItem == true)
-            )
+            .Where(i => i.PrintInBackupReceiptFromItem ?? i.PrintInBackupReceiptFromCategory ?? true)
             .ToList();
 
         if (filteredItems.Count == 0)
@@ -539,7 +549,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             if (receiptCount > 0)
             {
-                var kitchens = await _printerServices.GetKitchenTypesAsync();
+                var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
                 // Use index 1 if available, otherwise index 0, otherwise first available
                 var backupKitchen = kitchens?.ElementAtOrDefault(1) ?? null;
                 
@@ -596,7 +606,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             return;
         }
 
-        var kitchens = await _printerServices.GetKitchenTypesAsync();
+        var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
         if (kitchens == null || !kitchens.Any())
         {
             Log.Warning("PrintKitchenReceiptsLocally: No kitchens found for device {Device}", Environment.MachineName);
@@ -722,15 +732,28 @@ public class DesktopPrintOrderService : IPrintOrderService
         
         _commonProperties.OrderDto!.OrderType = "Delivery";
         _commonProperties.OrderDto.CashierName = _commonProperties.CurrentUser;
-        _commonProperties.OrderDto.BranchId = _commonProperties.BranchDetails!.Id;
-        _commonProperties.OrderDto.BranchName = _commonProperties.BranchDetails.Name;
+
+        // Ensure Branch Details are populated
+        if (_commonProperties.BranchDetails == null || string.IsNullOrWhiteSpace(_commonProperties.BranchDetails.Name))
+        {
+             var branches = await _branchService.GetBranches();
+             var firstBranch = branches.FirstOrDefault();
+             _commonProperties.OrderDto.BranchId = firstBranch?.Id ?? 1;
+             _commonProperties.OrderDto.BranchName = firstBranch?.Name ?? _commonProperties.StoreName;
+        }
+        else
+        {
+            _commonProperties.OrderDto.BranchId = _commonProperties.BranchDetails.Id;
+            _commonProperties.OrderDto.BranchName = _commonProperties.BranchDetails.Name;
+        }
+
         _commonProperties.OrderDto.CashierId = _commonProperties.CurrentUserId;
         _commonProperties.OrderDto.FooterMessage = _commonProperties.DeliverySettings?.OrderStatment ?? "";
         _commonProperties.OrderDto.PaymentMethod = _commonProperties.SelectedPaymentMethod;
         _commonProperties.OrderDto.Paid = paid > 0.00m ? paid : (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0);
         _commonProperties.OrderDto.SubTotal = _commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 0 ? _commonProperties._financeSettingsList[0].Value : 0;
-        _commonProperties.OrderDto.Services = _commonProperties.DeliverySettings?.Service ?? 0;
-        _commonProperties.OrderDto.Tax = _commonProperties.DeliverySettings?.Tax ?? 0;
+        _commonProperties.OrderDto.Services = _commonProperties._financeSettingsList?.Count > 3 ? _commonProperties._financeSettingsList[3].Value : 0M;
+        _commonProperties.OrderDto.Tax = _commonProperties._financeSettingsList?.Count > 2 ? _commonProperties._financeSettingsList[2].Value : 0M;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0;
         _commonProperties.OrderDto.DiscountReason = _commonProperties.OrderDiscount?.DiscountReason;
@@ -776,7 +799,11 @@ public class DesktopPrintOrderService : IPrintOrderService
         OrderDto createdOrder, bool isFollowUp = false, decimal? parentDeliveryFees = null, bool isCopy = false)
     {
         var branch = await _branchService.GetBranches();
-        var currentBranch = branch.FirstOrDefault(b => b.Id == orderDto.BranchId);
+        var currentBranch = branch.ElementAtOrDefault(0);
+        var firstBranch = branch.ElementAtOrDefault(0);
+        var receiptName = !string.IsNullOrWhiteSpace(orderDto.BranchName) ? orderDto.BranchName : firstBranch?.Name;
+        if (string.IsNullOrWhiteSpace(receiptName) || receiptName.Equals("Store", StringComparison.OrdinalIgnoreCase))
+            receiptName = firstBranch?.Name ?? "Store";
 
         var receipt = new DeliveryReceipt()
         {
@@ -784,7 +811,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             ParentOrderId = createdOrder.ParentOrderId,
             IsFollowUp = isFollowUp,
 
-            StoreName = orderDto.BranchName ?? "Store",
+            StoreName = receiptName,
             CashierName = orderDto.CashierName ?? "Cashier",
             ReceiptType = orderDto.OrderType ?? "Delivery",
             DateCreated = createdOrder.OrderDate ?? DateTime.Now,
@@ -1055,7 +1082,7 @@ public class DesktopPrintOrderService : IPrintOrderService
     private async Task PrintVoidReceiptInternal(int orderId, string? cashier, string orderType, DateTime? date, string? notice, string? tableName, List<TableItem> items)
     {
         // Similar to PrintKitchenReceiptsLocally but forced to VOID type
-        var kitchens = await _printerServices.GetKitchenTypesAsync();
+        var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
         if (kitchens == null || !kitchens.Any()) return;
 
         var groups = items
@@ -1112,43 +1139,66 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
-    public async Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items)
+    public async Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true)
     {
         try
         {
             var branch = await _branchService.GetBranches();
             var currentBranch = branch.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
             
-            var document = new SalesSummaryDocument(summary, items, currentBranch?.Name ?? "Store", LogoPath);
+            var format = useA4 ? ReportPageFormat.A4 : ReportPageFormat.Cashier;
+            var document = new SalesSummaryDocument(summary, items, currentBranch?.Name ?? "Store", LogoPath, format, isArabic);
             
             var reportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
             Directory.CreateDirectory(reportsFolder);
-            var outputPath = Path.Combine(reportsFolder, $"SalesSummary_{summary.PosDate:yyyyMMdd}_{DateTime.Now:HHmmss}.pdf");
+            var formatSuffix = useA4 ? "A4" : "Cashier";
+            var langSuffix = isArabic ? "AR" : "EN";
+            var outputPath = Path.Combine(reportsFolder, $"SalesSummary_{summary.PosDate:yyyyMMdd}_{formatSuffix}_{langSuffix}_{DateTime.Now:HHmmss}.pdf");
             
             document.GeneratePdf(outputPath);
             
-            string? printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
-            
-            if (string.IsNullOrEmpty(printerName))
+            if (string.IsNullOrWhiteSpace(printerName))
             {
-                var kitchens = await _printerServices.GetKitchenTypesAsync();
-                var mainKitchen = kitchens?.ElementAtOrDefault(0); // TakeAway/Main printer usually
+                 // Try to get system default printer
+                 printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
+                 Log.Information("No printer specified. Using system default: {Printer}", printerName);
+            }
+            
+            if (string.IsNullOrWhiteSpace(printerName))
+            {
+                // Fallback to kitchen settings if still no printer
+                var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
+                var mainKitchen = kitchens?.ElementAtOrDefault(0); 
                 printerName = mainKitchen?.KitchenPrinters?.FirstOrDefault()?.Copy1;
+                Log.Information("System default null. Trying kitchen fallback: {Printer}", printerName);
             }
 
-            if (!string.IsNullOrEmpty(printerName))
+            if (!string.IsNullOrWhiteSpace(printerName))
             {
-                Log.Information("Printing Sales Summary to: {Printer}", printerName);
-                await _printerServices.PrintPdfAsync(outputPath, printerName);
+                Log.Information("Final printer choice for Sales Summary: {Printer}", printerName);
+                bool success = await _printerServices.PrintPdfAsync(outputPath, printerName);
+                if (!success)
+                {
+                    Log.Warning("PrintPdfAsync returned false for {Printer}", printerName);
+                    throw new Exception($"Failed to print to {printerName}. Check if printer is connected.");
+                }
             }
             else
             {
-                Log.Warning("No printer found (Default or Cashier) to print Sales Summary.");
+                Log.Warning("Critical: No printer found anywhere to print Sales Summary.");
+                throw new Exception("No printer found on this system.");
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to print sales summary");
         }
+    }
+
+    public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null)
+    {
+        // TODO: Implement driver settlement printing when needed
+        Log.Warning("PrintDriverSettlementAsync called but not yet fully implemented for desktop.");
+        return Task.CompletedTask;
     }
 }

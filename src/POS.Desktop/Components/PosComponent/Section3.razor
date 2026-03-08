@@ -7,7 +7,7 @@
 <link href="actions-section.css" rel="stylesheet" />
 
 <div class="actions-grid-container">
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_Numbers"))
+    @if (_canUseKeypad)
     {
         @for (var i = 1; i <= 9; i++)
         {
@@ -19,10 +19,7 @@
         <button class="action-button keypad-btn special-keypad-button" @onclick='() => _cartService.AppendNumberToQuantity("0")'>
             0
         </button>
-    }
 
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_BS"))
-    {
         <button class="action-button keypad-btn special-keypad-button" @onclick="() => _cartService.OnClickBS()">
             BS
         </button>
@@ -34,37 +31,40 @@
         <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="Size.Large" />
     </button>
 
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_Plus"))
+    @if (_canIncrement)
     {
         <button class="action-button icon-btn plus-btn special-icon-btn" @onclick="() => _cartService.IncrementQuantity()">
             <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Large" />
         </button>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_Minus"))
+    @if (_canDecrement)
     {
         <button class="action-button icon-btn minus-btn special-icon-btn" @onclick="() => _cartService.DecrementQuantity()">
             <MudIcon Icon="@Icons.Material.Filled.Remove" Size="Size.Large" />
         </button>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_Delete"))
+    @if (_canDeleteItem)
     {
         <button class="action-button icon-btn full-width delete-btn" @onclick="() => _cartService.RemoveItem(_commonProperties.TableItems??[])">
             <MudIcon Icon="@Icons.Material.Outlined.DeleteOutline" Size="Size.Large" />
         </button>
     }
 
-    @if (_commonProperties.IsFeatureEnabled("POS_Keypad_Edit"))
+    @if (_canEditItem)
     {
         <button class="action-button icon-btn full-width edit-btn" @onclick="OpenItemCommentDialog">
             <MudIcon Icon="@Icons.Material.Outlined.EditNote" Size="Size.Large" />
         </button>
     }
 
-    <button class="action-button icon-btn full-width discount-btn" @onclick="OpenDiscountDialog" style="background-color: #fdd835; color: #000;">
-        <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Size="Size.Large" />
-    </button>
+    @if (_canApplyDiscount)
+    {
+        <button class="action-button icon-btn full-width discount-btn" @onclick="OpenDiscountDialog" style="background-color: #fdd835; color: #000;">
+            <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Size="Size.Large" />
+        </button>
+    }
 </div>
 
 @code
@@ -82,7 +82,6 @@
 
         _commonProperties.ItemCommentDialogReference = await _dialogService.ShowAsync<ItemCommentDialog>("Add New Address");
     }
-
 
     private async Task OpenDiscountDialog()
     {

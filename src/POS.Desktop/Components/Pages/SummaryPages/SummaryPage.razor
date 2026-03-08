@@ -7,6 +7,7 @@
 @inject IAppDateService AppDateService
 @inject ISnackbar Snackbar
 
+@attribute [Authorize(Policy = "CanAccessSummary")]
 @namespace POS.Desktop.Components.Pages.SummaryPages
 
 <div class="summary-container" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")" style="height: 100vh; width: 100vw;">
@@ -120,16 +121,15 @@
                     <div class="actions-grid">
                         @if (_canViewDetails)
                         {
-                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Analytics" Color="Color.Primary" FullWidth="true" Class="action-btn primary" OnClick="ShowSalesItems">@Localizer["SalesItems"]</MudButton>
+                            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Analytics" Color="Color.Primary" Class="action-btn primary" OnClick="ShowSalesItems">@Localizer["SalesItems"]</MudButton>
                         }
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Sync" Color="Color.Secondary" FullWidth="true" Class="action-btn secondary" OnClick="OnInitializedAsync">@Localizer["Refresh"]</MudButton>
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Sync" Color="Color.Secondary" Class="action-btn secondary" OnClick="OnInitializedAsync">@Localizer["Refresh"]</MudButton>
                         @if (_canPrint)
                         {
-                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.LocalPrintshop" Color="Color.Info" FullWidth="true" Class="action-btn info" OnClick="PrintSummary">@Localizer["PrintSummary"]</MudButton>
+                             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.LocalPrintshop" Color="Color.Info" Class="action-btn info" OnClick="PrintSummary">@Localizer["PrintSummary"]</MudButton>
                         }
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Logout" Color="Color.Error" Class="action-btn error" OnClick="GoBack">@Localizer["Close"]</MudButton>
                     </div>
-                    <MudSpacer />
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Logout" Color="Color.Error" FullWidth="true" Class="action-btn error" OnClick="GoBack">@Localizer["Close"]</MudButton>
                 </div>
             </div>
     }

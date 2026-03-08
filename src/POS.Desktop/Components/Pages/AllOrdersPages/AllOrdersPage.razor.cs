@@ -12,7 +12,8 @@ public partial class AllOrdersPage
     private DateTime SelectedDate = DateTime.Today;
 
     private bool _canViewOrder;
-    private bool _canPrintOrder;
+    private bool _canPrintCustomerReceipt;
+    private bool _canPrintKitchenReceipt;
     private bool _canVoidOrder;
 
     private IEnumerable<OrderDto> FilteredOrders {
@@ -48,9 +49,10 @@ public partial class AllOrdersPage
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canViewOrder  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessAllOrdersViewBtn")).Succeeded;
-            _canPrintOrder = (await AuthorizationService.AuthorizeAsync(user, "CanAccessAllOrdersPrintBtn")).Succeeded;
-            _canVoidOrder  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessAllOrdersVoidBtn")).Succeeded;
+            _canViewOrder            = (await AuthorizationService.AuthorizeAsync(user, "CanViewOrderDetails")).Succeeded;
+            _canPrintCustomerReceipt = (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderCustomerReceipt")).Succeeded;
+            _canPrintKitchenReceipt  = (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderKitchenReceipt")).Succeeded;
+            _canVoidOrder            = (await AuthorizationService.AuthorizeAsync(user, "CanVoidOrderFromList")).Succeeded;
         }
 
         await LoadOrders();

@@ -15,7 +15,7 @@ public class UpdatedItemDto
     public decimal? Tax { get; set; }
     public string? Description { get; set; }
     public IFormFile? Image { get; set; }
-    //public MainCategories? MainCategoryId { get; set; }
+    public int? MainCategoryId { get; set; }
     public string? BackColor { get; set; }
     public string? TextColor { get; set; }
     public int? TextSize { get; set; } // px or pt
@@ -26,6 +26,9 @@ public class UpdatedItemDto
     public int? CategoryId { get; set; }
     public bool HasAttribute { get; set; } = false;
     public int? AttributeId { get; set; }
+    public int? KitchenTypeId { get; set; }
+    public bool? PrintInBackupReceipt { get; set; }
+    public bool ByWeight { get; set; } = false;
 
     public UpdatedItemDto()
     {

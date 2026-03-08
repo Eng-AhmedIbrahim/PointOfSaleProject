@@ -25,19 +25,19 @@ public class AccountController : BaseApiController
     }
 
     [HttpPost("CreateUser")]
-    public async Task<IActionResult> Register(RegisterDto registerDto)
+    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-        if (CheckUserExists(registerDto!.UserName!).Result.Value)
+        if ((await CheckUserExists(registerDto!.UserName!)).Value)
             return BadRequest(new ApiValidationErrorResponse() { Errors = new string[] { "This User already exists!" } });
 
         AppUser? user = new AppUser
         {
             UserName = registerDto.UserName,
-            DisplayName = registerDto.DisplayName,
+            DisplayName = registerDto.DisplayName ?? string.Empty,
             Email = registerDto.Email,
             RegistrationDate = DateTime.Now,
             DateOfBirth = registerDto.DateOfBirth,
-            //ImageUrl = registerDto!.ImageUrl!.FileName,
+            ImageUrl = registerDto.ImageUrl != null ? registerDto.ImageUrl.FileName : null,
             ArabicName = registerDto.ArabicName,
             PhoneNumber = registerDto.PhoneNumber,
             IsActive = true
@@ -106,9 +106,10 @@ public class AccountController : BaseApiController
         var userDto = _mapper.Map<UserDto>(user);
         userDto.Token = token;
         userDto.Roles = roles.ToList();
-        userDto.Permissions = allClaims
-            .Where(c => c.Type.Equals("Permission", StringComparison.OrdinalIgnoreCase))
-            .Select(c => c.Value).ToList();
+        
+        // Fetch filtered permissions based on the application type (BackOffice vs POS)
+        var filteredPermissions = await _authService.GetUserPermissionsAsync(user, model.ForBackOffice);
+        userDto.Permissions = filteredPermissions.ToList();
 
         return Ok(userDto);
     }
@@ -150,6 +151,23 @@ public class AccountController : BaseApiController
         return Ok(mappedUsers);
     }
 
+    [HttpGet("GetUsersWithRoles")]
+    public async Task<ActionResult<List<UserDto>>> GetUsersWithRoles()
+    {
+        var allUsers = await _userManager.Users.ToListAsync();
+        var mappedUsers = new List<UserDto>();
+
+        foreach (var user in allUsers)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var mappedUser = _mapper.Map<UserDto>(user);
+            mappedUser.Roles = userRoles.ToList();
+            mappedUsers.Add(mappedUser);
+        }
+
+        return Ok(mappedUsers);
+    }
+
     [HttpGet("UserExists")]
     public async Task<ActionResult<bool>> CheckUserExists(string userName)
         => await _userManager.FindByNameAsync(userName) is not null;
@@ -164,13 +182,37 @@ public class AccountController : BaseApiController
             bool isRoleAlreadyExists = await _roleManager.RoleExistsAsync(Name);
             if (isRoleAlreadyExists) return BadRequest(new ApiResponse(400, $"Role: {Name} Already Exists !!"));
 
-            await _roleManager.CreateAsync(new ApplicationRole { Name = Name });
+            // Calculate next sequential ID
+            var roles = await _roleManager.Roles.ToListAsync();
+            int nextId = 1;
+            if (roles.Any())
+            {
+                var numericIds = roles
+                    .Select(r => {
+                        int.TryParse(r.Id, out int id);
+                        return id;
+                    })
+                    .Where(id => id > 0)
+                    .ToList();
+                
+                if (numericIds.Any())
+                {
+                    nextId = numericIds.Max() + 1;
+                }
+            }
+
+            await _roleManager.CreateAsync(new ApplicationRole 
+            { 
+                Id = nextId.ToString(),
+                Name = Name,
+                NormalizedName = Name.ToUpper()
+            });
             return Ok(Name);
         }
         catch (Exception ex)
         {
             Log.Error(ex.Message);
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiResponse(400, ex.Message));
         }
     }
 
@@ -215,10 +257,27 @@ public class AccountController : BaseApiController
     }
 
     [HttpGet("get-roles")]
-    public async Task<ActionResult<List<ApplicationRole>>> GetAllRoles()
+    public async Task<ActionResult<List<RoleToReturnDto>>> GetAllRoles()
     {
         var roles = await _authService.GetAllRolesAsync();
-        return Ok(roles);
+        var mappedRoles = _mapper.Map<List<ApplicationRole>, List<RoleToReturnDto>>(roles);
+        return Ok(mappedRoles);
+    }
+
+    [HttpGet("get-all-permissions")]
+    public async Task<ActionResult<List<PermissionDto>>> GetAllPermissions()
+    {
+        var permissions = await _authService.GetAllPermissionsAsync();
+        // Since it's a simple mapping and we might not have it in AutoMapper yet, do it manually or assume AutoMapper covers it
+        var mapped = _mapper.Map<List<Permission>, List<PermissionDto>>(permissions);
+        return Ok(mapped);
+    }
+
+    [HttpGet("get-role-permissions/{roleName}")]
+    public async Task<ActionResult<List<string>>> GetRolePermissions(string roleName)
+    {
+        var permissions = await _authService.GetRolePermissionsAsync(roleName);
+        return Ok(permissions);
     }
 
     [HttpGet("get-users")]
@@ -292,9 +351,9 @@ public class AccountController : BaseApiController
 
 
     [HttpGet("user-permissions")]
-    public async Task<ActionResult<HashSet<string>>> GetUserPermissions()
+    public async Task<ActionResult<HashSet<string>>> GetUserPermissions(bool? forBackOffice = null)
     {
-        var userPermissions = await _authService.GetUserPermissionsAsync(User);
+        var userPermissions = await _authService.GetUserPermissionsAsync(User, forBackOffice);
         return Ok(userPermissions);
     }
 
@@ -389,6 +448,67 @@ public class AccountController : BaseApiController
         
         var mappedUsers = _mapper.Map<List<AppUser>, List<UserToReturnDto>>(activeUsers);
         
+        return Ok(mappedUsers);
+    }
+
+    [HttpPost("UpdateUser")]
+    public async Task<IActionResult> UpdateUser(UserDto userDto)
+    {
+        var user = await _userManager.FindByIdAsync(userDto.UserId!);
+        if (user == null) return NotFound(new ApiResponse(404, "User not found"));
+
+        user.UserName = userDto.UserName;
+        user.ArabicName = userDto.ArabicName;
+        // Don't overwrite DisplayName with null if we aren't editing it
+        if (!string.IsNullOrEmpty(userDto.DisplayName))
+        {
+            user.DisplayName = userDto.DisplayName;
+        }
+        else if (string.IsNullOrEmpty(user.DisplayName)) 
+        {
+            user.DisplayName = string.Empty; // Ensure it's never null if DB requires it
+        }
+
+        user.PhoneNumber = userDto.PhoneNumber;
+        user.IsActive = userDto.IsActive;
+        user.DateOfBirth = userDto.DateOfBirth;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            var errs = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest(new ApiResponse(400, "Failed to update user: " + errs));
+        }
+
+        // Update roles
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var rolesToRemove = currentRoles.Except(userDto.Roles).ToList();
+        var rolesToAdd = userDto.Roles.Except(currentRoles).ToList();
+
+        if (rolesToRemove.Any()) await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+        if (rolesToAdd.Any()) await _userManager.AddToRolesAsync(user, rolesToAdd);
+
+        return Ok(true);
+    }
+
+
+    [HttpGet("GetUsersAccountsWithRole")]
+    public async Task<ActionResult<List<UserDto>>> GetUsersAccountsWithRole()
+    {
+        var rolesToShow = await _roleManager.Roles.Where(r => r.ShowInLogin).Select(r => r.Name).ToListAsync();
+        var activeUsers = await _userManager.Users.Where(u => u.IsActive).ToListAsync();
+
+        var filteredUsers = new List<AppUser>();
+        foreach (var user in activeUsers)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Any(r => rolesToShow.Contains(r)))
+            {
+                filteredUsers.Add(user);
+            }
+        }
+
+        var mappedUsers = _mapper.Map<List<UserDto>>(filteredUsers);
         return Ok(mappedUsers);
     }
 

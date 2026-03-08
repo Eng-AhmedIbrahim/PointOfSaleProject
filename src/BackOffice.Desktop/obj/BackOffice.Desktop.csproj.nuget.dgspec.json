@@ -113,9 +113,13 @@
               "version": "[2018.4.8.256, )",
               "generatePathProperty": true
             },
+            "Radzen.Blazor": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
             "Serilog": {
               "target": "Package",
-              "version": "[4.0.0, )"
+              "version": "[4.0.2, )"
             },
             "Serilog.Enrichers.Environment": {
               "target": "Package",
@@ -234,6 +238,10 @@
             "MudBlazor": {
               "target": "Package",
               "version": "[8.2.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[4.0.2, )"
             }
           },
           "imports": [
@@ -448,6 +456,10 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.2, )"
             }
           },
           "imports": [

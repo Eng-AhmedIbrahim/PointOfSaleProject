@@ -22,7 +22,12 @@ public interface IAuthService
     public Task<List<ApplicationRole>> GetAllRolesAsync();
     public Task<ApplicationRole> GetRoleAsync(string roleName);
 
-    public Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user);
+    public Task<HashSet<string>> GetUserPermissionsAsync(ClaimsPrincipal user, bool? forBackOffice = null);
+    public Task<HashSet<string>> GetUserPermissionsAsync(AppUser user, bool? forBackOffice = null);
+    
+    public Task<List<Permission>> GetAllPermissionsAsync();
+    public Task<List<string>> GetRolePermissionsAsync(string roleName);
+
 
     //InUse
     public Task<List<AppUser>> GetUsersHasSpecificRole(string roleName);

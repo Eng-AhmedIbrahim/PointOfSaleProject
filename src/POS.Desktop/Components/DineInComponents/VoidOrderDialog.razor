@@ -62,7 +62,7 @@
                          <MudText Typo="Typo.h5" Color="Color.Error" Class="font-weight-black text-glow-red">@TotalVoidAmount.ToString("N2")</MudText>
                     </div>
                      <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="VoidAll" 
-                                Class="void-all-btn rounded-lg font-weight-bold elevation-0" StartIcon="@Icons.Material.Filled.DeleteSweep">
+                                 Class="void-all-btn rounded-lg font-weight-bold elevation-0" StartIcon="@Icons.Material.Filled.DeleteSweep">
                         @_localizer["VoidAllItems"]
                     </MudButton>
                 </div>
@@ -108,11 +108,16 @@
                                  Placeholder="@_localizer["TypeReasonHere"]"
                                  Variant="Variant.Outlined" 
                                  FullWidth="true" 
-                                 Class="mb-4 custom-reason-field" 
+                                 Class="mb-2 custom-reason-field" 
                                  Lines="2"
                                  Margin="Margin.Dense"
                                  Adornment="Adornment.Start"
                                  AdornmentIcon="@Icons.Material.Filled.Comment" />
+
+                    <div class="d-flex align-center justify-space-between mb-3 px-2">
+                        <MudText Typo="Typo.body2" Class="font-weight-bold color-slate-600">@_localizer["ReturnToStock"]</MudText>
+                        <MudSwitch @bind-Value="ReturnToStock" Color="Color.Primary" Dense="true" />
+                    </div>
                     
                     <div class="d-flex gap-3">
                         <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="Save" 
@@ -229,6 +234,7 @@
         background: #ffffff !important;
         color: #1e293b !important;
         border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
     }
 
     .num-btn:hover {

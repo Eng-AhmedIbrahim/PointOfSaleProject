@@ -8,6 +8,8 @@ public class UpdatedCategoryDto
     public string? EnglishName { get; set; }
     public string? ItemsFont { get; set; }
     public bool Invisible { get; set; } = false;
+    public int? KitchenTypeId { get; set; }
+    public bool? PrintInBackupReceipt { get; set; }
     public DateTime UpdatedDate { get; set; }
 
     public UpdatedCategoryDto()

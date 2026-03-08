@@ -22,6 +22,7 @@ public partial class VoidOrderDialog
     public VoidItemModel? SelectedItem { get; set; }
     public string NumpadInput { get; set; } = "0";
     public string CustomReason { get; set; } = string.Empty;
+    public bool ReturnToStock { get; set; } = true;
     private string Reason => CustomReason;
     private decimal OriginalOrderTotal 
     {
@@ -217,7 +218,7 @@ public partial class VoidOrderDialog
             bool result;
             if (isFullVoid)
             {
-                result = await _voidErpService.VoidOrder(OrderId, Reason, voidBy, voidByName);
+                result = await _voidErpService.VoidOrder(OrderId, Reason, voidBy, voidByName, ReturnToStock);
             }
             else
             {
@@ -227,7 +228,7 @@ public partial class VoidOrderDialog
                     return new OrderItemVoidDto(detailId, i.QuantityToVoid);
                 }).ToList();
 
-                result = await _voidErpService.VoidItems(OrderId, voidDtos, Reason, voidBy, voidByName);
+                result = await _voidErpService.VoidItems(OrderId, voidDtos, Reason, voidBy, voidByName, ReturnToStock);
             }
 
             if (result)

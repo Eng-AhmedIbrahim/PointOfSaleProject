@@ -1,0 +1,229 @@
+@page "/basicdata/permissions"
+@using Radzen
+@using Radzen.Blazor
+@using BlazorBase.ERPFrontServices.AccountServices
+@using POS.Contract.Dtos.AccountDtos
+@attribute [Authorize]
+@inject IAccountService AccountService
+@inject ISnackbar Snackbar
+@inject BlazorBase.Services.LocalizationService LocalizerService
+
+<div class="permissions-management-container @(IsArabic ? "rtl-mode" : "") py-2" dir="@(IsArabic ? "rtl" : "ltr")">
+    
+    <div class="page-header mb-3 px-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <MudIcon Icon="@Icons.Material.Filled.Security" Size="Size.Large" Color="MudBlazor.Color.Primary" Class="me-2" />
+            <h2 class="m-0 page-title">@(IsArabic ? "إدارة الصلاحيات" : "Permissions Management")</h2>
+        </div>
+        <div>
+            <MudButton Variant="MudBlazor.Variant.Outlined" 
+                       Color="MudBlazor.Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Language"
+                       OnClick="ToggleLanguage"
+                       Style="border-radius: 20px; font-weight: 800; border-width: 2px;">
+                @(IsArabic ? "English Layout" : "الواجهة العربية")
+            </MudButton>
+        </div>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="loading-state h-100 d-flex flex-column justify-content-center align-items-center">
+            <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+            <h4 class="mt-4" style="color: #64748b; font-weight: 700;">@(IsArabic ? "جاري تحميل البيانات..." : "Loading data...")</h4>
+        </div>
+    }
+    else
+    {
+        <div class="tab-content px-3" style="display: flex; flex-direction: column; overflow: hidden; height: 100%;">
+            
+            <div class="role-selector-header">
+                <div class="d-flex align-items-center" style="gap: 1.5rem;">
+                    <MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Size="Size.Large" Color="MudBlazor.Color.Primary" />
+                    <RadzenLabel Text="@(IsArabic ? "اختر الدور لتعديل صلاحياته:" : "Select Role to Edit Permissions:")" Style="font-weight: 900; font-size: 1.15rem; color: #1e293b;" />
+                    <RadzenDropDown TValue="string" Data="@AllRoles" TextProperty="Name" ValueProperty="Name" 
+                                    @bind-Value="SelectedRoleForPermissions"
+                                    Style="width: 300px; font-weight: 800; font-size: 1.1rem; border-radius: 8px;"
+                                    Placeholder="@(IsArabic ? "اختر الدور..." : "Select Role...")" 
+                                    AllowClear="false" />
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(SelectedRoleForPermissions))
+            {
+                <div class="permissions-content-area mt-4" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+                    <RadzenTabs RenderMode="Radzen.TabRenderMode.Client" Style="flex: 1; height: 100%;">
+                        <Tabs>
+                            <RadzenTabsItem Text="@(IsArabic ? "POS الصلاحيات" : "POS Permissions")" Icon="point_of_sale">
+                                @RenderRolePermissionsEditor(PosPermissions)
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text="@(IsArabic ? "Back Office الصلاحيات" : "Back Office Permissions")" Icon="desktop_windows">
+                                @RenderRolePermissionsEditor(BackOfficePermissions)
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state text-center p-5 mt-4" style="background: white; border-radius: 16px; border: 2px dashed #cbd5e1;">
+                    <MudIcon Icon="@Icons.Material.Filled.Security" Style="font-size: 5rem; color: #94a3b8" />
+                    <h3 class="mt-4" style="font-weight: 900; color: #475569;">@(IsArabic ? "الرجاء اختيار الدور أولاً" : "Please select a role first")</h3>
+                    <p style="color: #64748b; font-weight: 700;">@(IsArabic ? "حدد الدور من القائمة بالأعلى لعرض وتعديل صلاحياته." : "Select a role from the dropdown above to view and modify its permissions.")</p>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string SelectedRoleForPermissions = "";
+
+    RenderFragment RenderRolePermissionsEditor(List<PermissionDto> permissions) => __builder => {
+        <div class="permissions-editor-container">
+            <div class="row m-0 w-100">
+                @{
+                    var grouped = permissions
+                        .GroupBy(p => IsArabic ? p.ScreenArabicName : p.ScreenEnglishName)
+                        .OrderBy(g => GetSortOrder(g.Key));
+                    
+                    foreach (var group in grouped)
+
+                    {
+                        <div class="col-12 col-md-6 col-xl-4 p-2">
+                            <div class="permission-group-card">
+                                <div class="group-header">
+                                    <h5 class="m-0 group-header-title w-100 d-flex align-items-center justify-content-center">
+                                        <span>@group.Key</span>
+                                        <MudIcon Icon="@Icons.Material.Filled.ViewModule" Class="ms-2" Size="Size.Small"/>
+                                    </h5>
+                                </div>
+                                <div class="group-body">
+                                    @foreach (var p in group)
+                                    {
+                                        var isGranted = RolePermissionsMap.ContainsKey(SelectedRoleForPermissions) && RolePermissionsMap[SelectedRoleForPermissions].Contains(p.Name);
+                                        <div class="permission-item px-3 py-2 @(isGranted ? "granted" : "")">
+                                            <div class="permission-action">
+                                                 <MudSwitch T="bool"
+                                                            Value="@isGranted" 
+                                                            ValueChanged="@(async (args) => await TogglePermission(SelectedRoleForPermissions, p.Name))" 
+                                                            Color="MudBlazor.Color.Primary" 
+                                                            UnCheckedColor="MudBlazor.Color.Default" 
+                                                            Size="Size.Large" />
+                                            </div>
+                                            <div class="permission-info text-end flex-grow-1">
+                                                <span class="permission-name">@(IsArabic ? p.PoliceArabicName : p.PoliceEnglishNameEn)</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    };
+
+    private List<RoleToReturnDto> AllRoles = new();
+    private List<PermissionDto> BackOfficePermissions = new();
+    private List<PermissionDto> PosPermissions = new();
+    private Dictionary<string, HashSet<string>> RolePermissionsMap = new();
+    private bool IsLoading = true;
+
+    private bool? _isArabicOverride = null;
+    private bool IsArabic => _isArabicOverride ?? (LocalizerService.GetCurrentLanguage() == "ar");
+
+    private void ToggleLanguage()
+    {
+        _isArabicOverride = !IsArabic;
+    }
+
+    private static int GetSortOrder(string groupKey)
+    {
+        return groupKey switch
+        {
+            "قائمة شاشة المبيعات" => 1,
+            "أزرار اسفل شاشة البيع" => 2,
+            "شاشة الصالة" => 3,
+            "شاشة التوصيل" => 4,
+            "Navigation Menu Actions" => 1,
+            "Footer Layout Actions" => 2,
+            "Dine-In Screen" => 3,
+            "Delivery Screen" => 4,
+            _ => 99
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        try
+        {
+            // Use all roles for selection
+            AllRoles = (await AccountService.GetRoles()).ToList();
+            
+            // Load Permissions
+            var allPerms = (await AccountService.GetAllPermissions()).ToList();
+            BackOfficePermissions = allPerms.Where(p => p.IsBackOffice).ToList();
+            PosPermissions = allPerms.Where(p => !p.IsBackOffice).ToList();
+            
+            // Load current assignments
+            foreach (var role in AllRoles)
+            {
+                var rolePerms = await AccountService.GetRolePermissions(role.Name);
+                RolePermissionsMap[role.Name] = new HashSet<string>(rolePerms);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(IsArabic ? "فشل تحميل البيانات" : "Failed to load data", Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task TogglePermission(string roleName, string permissionName)
+    {
+        if (string.IsNullOrEmpty(roleName)) return;
+
+        if (!RolePermissionsMap.ContainsKey(roleName))
+            RolePermissionsMap[roleName] = new HashSet<string>();
+
+        bool isGranted = !RolePermissionsMap[roleName].Contains(permissionName);
+        
+        if (isGranted)
+            RolePermissionsMap[roleName].Add(permissionName);
+        else
+            RolePermissionsMap[roleName].Remove(permissionName);
+
+        // UI updates automatically because of bindings 
+        StateHasChanged();
+
+        // Update Backend
+        var updateItems = new List<RolePermissionItemDto> 
+        { 
+            new RolePermissionItemDto { Permission = permissionName, IsGranted = isGranted } 
+        };
+        
+        var success = await AccountService.UpdateRolePermissions(roleName, updateItems);
+        if (!success)
+        {
+            Snackbar.Add(IsArabic ? "فشل تحديث الصلاحية" : "Failed to update permission", Severity.Error);
+            // Revert state
+            if (!isGranted)
+                RolePermissionsMap[roleName].Add(permissionName);
+            else
+                RolePermissionsMap[roleName].Remove(permissionName);
+        }
+        // else 
+        // Snackbar.Add(IsArabic ? "تم التحديث" : "Updated", Severity.Success); // Optional success msg
+    }
+}

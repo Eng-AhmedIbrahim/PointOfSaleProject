@@ -1,10 +1,11 @@
 ﻿@inherits LayoutComponentBase
-<MudThemeProvider />
+@using MudBlazor.Utilities
+
+<MudThemeProvider Theme="@_customTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-@using POS.Core.Services.Contract.PosFeatureServices
 @inject CommonProperties _commonProperties
 @inject ISnackbar _snackbar
 @inject BlazorBase.Services.LocalizationService Localizer
@@ -12,13 +13,64 @@
 
 @implements IDisposable
 
+<AuthorizeView>
+    <Authorized>
+        <MudLayout Style="height: 100vh;">
+            <MudMainContent Class="main-content-wrapper py-0">
+                <NavMenu />
+                <div class="page-container">
+                    @Body
+                </div>
+            </MudMainContent>
+        </MudLayout>
+        <RadzenDialog />
+        <RadzenNotification />
+        <RadzenContextMenu />
+    </Authorized>
+    <NotAuthorized>
+        @Body
+        <RadzenDialog />
+        <RadzenNotification />
+        <RadzenContextMenu />
+    </NotAuthorized>
+</AuthorizeView>
+
 @code {
     bool _drawerOpen = true;
+    bool _isMini = false;
 
-    void DrawerToggle()
+    private bool IsArabic => Localizer.GetCurrentLanguage() == "ar";
+
+    private void ToggleMini()
     {
-        _drawerOpen = !_drawerOpen;
+        _isMini = !_isMini;
     }
+
+    private MudTheme _customTheme = new()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            DrawerBackground = new MudColor("#0f172a"), // Slate 900
+            DrawerText = new MudColor("#94a3b8"),
+            DrawerIcon = new MudColor("#64748b"),
+            Primary = new MudColor("#1e90ff"), // BlueSky from logo
+            Secondary = new MudColor("#ec4899"),
+            AppbarBackground = new MudColor("#ffffff"),
+            Background = new MudColor("#f8fafc"),
+            TextPrimary = new MudColor("#1e293b")
+        },
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Tajawal", "Roboto", "Helvetica", "Arial", "sans-serif" }
+            },
+            Button = new ButtonTypography()
+            {
+                TextTransform = "none"
+            }
+        }
+    };
 
     private Action? _stateChangedHandler;
 
@@ -39,48 +91,29 @@
             _commonProperties.OnChange -= _stateChangedHandler;
         }
     }
-
-    private async Task Logout()
-    {
-        await LocalStorage.RemoveItemAsync("authToken");
-        await LocalStorage.RemoveItemAsync("AppSettingDTOList");
-        await LocalStorage.RemoveItemAsync("CurrentUser");
-        
-        // Use Javascript location reload since we are a desktop app, or navigate to /login and refresh state.
-        // We'll just trigger the same process POS.Desktop uses.
-        System.Diagnostics.Process.Start(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-        Environment.Exit(0);
-    }
 }
-
-<AuthorizeView>
-    <Authorized>
-        <MudLayout>
-            <MudAppBar Elevation="1" Color="Color.Primary">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-                <MudText Typo="Typo.h5" Class="ml-3">Back Office Management</MudText>
-                <MudSpacer />
-                <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="Logout" />
-            </MudAppBar>
-
-            <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
-                <NavMenu />
-            </MudDrawer>
-
-            <MudMainContent>
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
-                    @Body
-                </MudContainer>
-            </MudMainContent>
-        </MudLayout>
-    </Authorized>
-    <NotAuthorized>
-        @Body
-    </NotAuthorized>
-</AuthorizeView>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+<style>
+    @@import url('fonts.css');
+
+    .main-content-wrapper {
+        background-color: #f8fafc;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .page-container {
+        height: calc(100vh - 72px);
+        overflow-y: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+</style>

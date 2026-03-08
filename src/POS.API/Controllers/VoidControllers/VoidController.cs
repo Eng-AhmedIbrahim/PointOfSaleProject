@@ -53,9 +53,10 @@ public class VoidController : BaseApiController
     public async Task<ActionResult<bool>> VoidOrder(int id,
         [FromQuery] string reason, 
         [FromQuery] string voidBy, 
-        [FromQuery] string voidByName)
+        [FromQuery] string voidByName,
+        [FromQuery] bool returnToStock = false)
     {
-        var result = await _voidService.VoidOrderAsync(id, reason, voidBy, voidByName);
+        var result = await _voidService.VoidOrderAsync(id, reason, voidBy, voidByName, returnToStock);
         
         if (result)
         {
@@ -84,9 +85,10 @@ public class VoidController : BaseApiController
         [FromBody] List<OrderItemVoidDto> itemsToVoid, 
         [FromQuery] string reason, 
         [FromQuery] string voidBy, 
-        [FromQuery] string voidByName)
+        [FromQuery] string voidByName,
+        [FromQuery] bool returnToStock = false)
     {
-        var result = await _voidService.VoidItemsAsync(id, itemsToVoid, reason, voidBy, voidByName);
+        var result = await _voidService.VoidItemsAsync(id, itemsToVoid, reason, voidBy, voidByName, returnToStock);
         
         if (result)
         {
@@ -190,15 +192,20 @@ public class VoidController : BaseApiController
             var groupedItems = kitchenItems
                 .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
                 .GroupBy(item => item.ItemKitchenTypeId ?? item.CategoryKitchenTypeId!.Value)
-                .Join(kitchens,
-                      g => g.Key,
-                      k => k.Id,
-                      (g, k) => new
-                      {
-                          KitchenName = k.KitchenName ?? $"Kitchen_{k.Id}",
-                          Items = g.ToList(),
-                          Printers = k.KitchenPrinters
-                      });
+                .Select(g => 
+                {
+                    var kitchen = kitchens.FirstOrDefault(k => k.Id == g.Key);
+                    var printers = kitchen?.KitchenPrinters?
+                        .FirstOrDefault(p => p.DeviceName == (orderDto.MachineName ?? Environment.MachineName));
+                    
+                    return new
+                    {
+                        KitchenName = kitchen?.KitchenName ?? $"Kitchen_{g.Key}",
+                        Items = g.ToList(),
+                        Printers = printers
+                    };
+                })
+                .Where(x => x.Printers != null);
 
             foreach (var group in groupedItems)
             {

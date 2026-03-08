@@ -1,94 +1,155 @@
 @page "/accounts"
 @layout MainLayout
-@inject IReportingErpService ReportingService
-@inject IAppDateService AppDateService
+@attribute [Authorize(Policy = "CanAccessAccounts")]
 @inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
-@inject ISnackbar Snackbar
 @inject NavigationManager _navigationManager
 @namespace POS.Desktop.Components.Pages.AccountingPages
 
-<div class="accounts-container">
-    <div class="accounts-header fade-in">
-        <div class="title-section">
-            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Class="mr-2" />
-            <MudText Typo="Typo.h5" Style="font-weight: 700;">@Localizer["AccountsSummary"]</MudText>
-        </div>
-        
-        <div class="filter-section">
-            <MudToggleGroup T="string" @bind-Value="_staffType" Outline="true" Delimiters="true" Dense="true" Rounded="true" Color="Color.Primary" SelectionMode="SelectionMode.SingleSelection" CheckMark="false">
-                <MudToggleItem Value="@("Cashier")">@Localizer["Cashier"]</MudToggleItem>
-                <MudToggleItem Value="@("Waiter")">@Localizer["Waiter"]</MudToggleItem>
-                <MudToggleItem Value="@("Driver")">@Localizer["Driver"]</MudToggleItem>
-            </MudToggleGroup>
+<MudRTLProvider RightToLeft="@(Localizer.GetCurrentLanguage() == "ar")" Style="width: 100%;">
+    <div class="accounts-container fade-in" style="width: 100%; min-width: 100%;">
+        <div class="accounts-header">
+            <div class="title-section">
+                <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Large" Class="@(Localizer.GetCurrentLanguage() == "ar" ? "ml-2" : "mr-2")" Color="Color.Primary" />
+                <MudText Typo="Typo.h5" Style="font-weight: 800;">@(Localizer.GetCurrentLanguage() == "ar" ? "حسابات الموظفين" : "Staff Accounts")</MudText>
+            </div>
             
-            <MudDatePicker @bind-Date="_selectedDate" Label="@Localizer["SelectDate"]" Variant="Variant.Outlined" Margin="Margin.Dense" Class="ml-4" Style="width: 150px;" />
-            
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadData" Class="ml-2">@Localizer["Refresh"]</MudButton>
+            <div class="filter-section d-flex align-center">
+                <MudDatePicker @bind-Date="_selectedDate" 
+                               Label="@Localizer["SelectDate"]" 
+                               Variant="Variant.Outlined" 
+                               Margin="Margin.Dense" 
+                               Class="mx-4" 
+                               Style="min-width: 250px;" />
+                
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Refresh" 
+                           OnClick="LoadData" 
+                           Class="px-6 py-2 rounded-lg">@Localizer["Refresh"]</MudButton>
+            </div>
         </div>
-    </div>
 
-    <div class="accounts-content glass fade-in">
-        <MudTable Items="@_accounts" Hover="true" Dense="true" Loading="@_isLoading" Elevation="0" Height="calc(100vh - 280px)" FixedHeader="true" Class="custom-table" RowClassFunc="@((item, idx) => "table-row")">
-            <HeaderContent>
-                <MudTh>@Localizer["ID"]</MudTh>
-                <MudTh>@Localizer["Name"]</MudTh>
-                <MudTh>@Localizer["OrderCount"]</MudTh>
-                <MudTh>@Localizer["Cash"]</MudTh>
-                <MudTh>@Localizer["Credit"]</MudTh>
-                <MudTh>@Localizer["OnAccount"]</MudTh>
-                <MudTh>@Localizer["Total"]</MudTh>
-                <MudTh>@Localizer["Actions"]</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd>@context.Id</MudTd>
-                <MudTd><b>@context.Name</b></MudTd>
-                <MudTd>@context.OrderCount</MudTd>
-                <MudTd Class="text-green">@context.CashAmount.ToString("N2")</MudTd>
-                <MudTd Class="text-blue">@context.CreditAmount.ToString("N2")</MudTd>
-                <MudTd Class="text-orange">@context.OnAccountAmount.ToString("N2")</MudTd>
-                <MudTd><MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small">@context.TotalAmount.ToString("N2")</MudChip></MudTd>
-                <MudTd>
-                    @if (_canViewAccountDetails)
-                    {
-                        <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Info" Size="Size.Small" />
-                    }
-                    @if (_canPrintAccountReport)
-                    {
-                        <MudIconButton Icon="@Icons.Material.Filled.Print" Color="Color.Default" Size="Size.Small" />
-                    }
-                </MudTd>
-            </RowTemplate>
-            <NoRecordsContent>
-                <div class="empty-state">
-                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Style="opacity:0.3" />
-                    <MudText>@Localizer["NoDataFound"]</MudText>
+        <div class="accounts-content glass">
+            <MudTable Items="@_summaries" Hover="true" Dense="true" Loading="@_isLoading" Elevation="0" Height="calc(100vh - 300px)" FixedHeader="true" Class="custom-table" RowClassFunc="@((item, idx) => "table-row")">
+                <HeaderContent>
+                    <MudTh Style="text-align: right;">@Localizer["StaffName"]</MudTh>
+                    <MudTh Style="text-align: right;">@Localizer["OrderCount"]</MudTh>
+                    <MudTh Style="text-align: right;">@Localizer["CashAmount"]</MudTh>
+                    <MudTh Style="text-align: right;">@Localizer["CreditAmount"]</MudTh>
+                    <MudTh Style="text-align: right;">@Localizer["TotalAmount"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["Actions"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Style="text-align: right;"><b>@context.Name</b></MudTd>
+                    <MudTd Style="text-align: right;"><MudChip T="string" Color="Color.Info" Size="Size.Small" Variant="Variant.Text">@context.OrderCount</MudChip></MudTd>
+                    <MudTd Style="text-align: right;">@context.CashAmount.ToString("N2")</MudTd>
+                    <MudTd Style="text-align: right;">@context.CreditAmount.ToString("N2")</MudTd>
+                    <MudTd Style="text-align: right;">
+                        <MudText Style="font-weight: 800;" Color="Color.Primary">@context.TotalAmount.ToString("N2")</MudText>
+                    </MudTd>
+                    <MudTd Style="text-align: center;">
+                        <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenStaffDetails(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <div class="empty-state">
+                        <MudIcon Icon="@Icons.Material.Filled.PersonOff" Size="Size.Large" Style="opacity:0.3" />
+                        <MudText>@Localizer["NoDataFound"]</MudText>
+                    </div>
+                </NoRecordsContent>
+            </MudTable>
+        </div>
+
+        <div class="accounts-footer">
+            <div class="footer-stats-grid">
+                <div class="footer-stat">
+                    <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الكاش" : "Total Cash")</span>
+                    <span class="value">@_summaries.Sum(a => a.CashAmount).ToString("N2")</span>
                 </div>
-            </NoRecordsContent>
-        </MudTable>
-    </div>
+                <div class="footer-stat">
+                    <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الفيزا" : "Total Visa")</span>
+                    <span class="value">@_summaries.Sum(a => a.CreditAmount).ToString("N2")</span>
+                </div>
+                <div class="footer-stat total-revenue">
+                    <span class="label">@Localizer["GrandTotal"]</span>
+                    <span class="value">@_summaries.Sum(a => a.TotalAmount).ToString("N2")</span>
+                </div>
+            </div>
+            
+            <div class="footer-actions">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Info" 
+                           StartIcon="@Icons.Material.Filled.Print" 
+                           Class="footer-btn"
+                           OnClick="PrintAccountsReport">@(Localizer.GetCurrentLanguage() == "ar" ? "طباعة الكل" : "Print All")</MudButton>
 
-    <div class="accounts-footer fade-in">
-        <div class="footer-stat">
-            <span class="label">@Localizer["TotalCash"]</span>
-            <span class="value text-green">@_accounts.Sum(a => a.CashAmount).ToString("N2")</span>
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Error" 
+                           StartIcon="@Icons.Material.Filled.Close" 
+                           Class="footer-btn"
+                           OnClick="GoBack">@Localizer["Close"]</MudButton>
+            </div>
         </div>
-        <div class="footer-stat">
-            <span class="label">@Localizer["TotalCredit"]</span>
-            <span class="value text-blue">@_accounts.Sum(a => a.CreditAmount).ToString("N2")</span>
-        </div>
-        <div class="footer-stat">
-            <span class="label">@Localizer["TotalOnAccount"]</span>
-            <span class="value text-orange">@_accounts.Sum(a => a.OnAccountAmount).ToString("N2")</span>
-        </div>
-        <div class="footer-stat">
-            <span class="label">@Localizer["GrandTotal"]</span>
-            <span class="value">@_accounts.Sum(a => a.TotalAmount).ToString("N2")</span>
-        </div>
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" OnClick="GoBack">@Localizer["Close"]</MudButton>
     </div>
-</div>
+</MudRTLProvider>
+
+<style>
+    .rtl { direction: rtl; }
+    .accounts-container { 
+        width: 100% !important; 
+        min-width: 100% !important; 
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    
+    .accounts-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    }
+
+    .footer-stats-grid {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #eee;
+    }
+
+    .footer-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .footer-btn {
+        height: 60px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .total-revenue .value {
+        color: #10b981;
+    }
+
+    /* Table Responsiveness */
+    .custom-table { width: 100% !important; }
+    
+    @@media (max-width: 960px) {
+        .footer-actions { grid-template-columns: 1fr; }
+        .accounts-header { flex-direction: column; height: auto; gap: 10px; }
+        .filter-section { width: 100%; justify-content: center; }
+    }
+</style>
 
 
 

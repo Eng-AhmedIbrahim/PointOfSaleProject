@@ -13,5 +13,6 @@ public class RegisterDto
     public string? Email { get; set; }
     public string? ArabicName { get; set; }
     public DateTime? DateOfBirth { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
     public IFormFile? ImageUrl { get; set; }
 }

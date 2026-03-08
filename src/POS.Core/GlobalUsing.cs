@@ -24,3 +24,6 @@ global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;
 global using POS.Core.Entities.Categorie;
 global using POS.Contract.Dtos.OrderDtos;
 global using POS.Contract.Dtos.DineIn;
+global using POS.Core.Entities.Settings;
+global using POS.Contract.Dtos.SettingsDtos;
+global using POS.Core.Services.Contract.DataSyncServices;

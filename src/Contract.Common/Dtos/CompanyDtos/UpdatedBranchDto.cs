@@ -11,7 +11,9 @@ public class UpdatedBranchDto
     [Required]
     public int BranchId { get; set; }
     public string? Name { get; set; }
-    public IFormFile? Logo { get; set; }
+    public string? Description { get; set; }
+    public string? ImagePath { get; set; }
+    public int? CompanyId { get; set; }
     public int LogoWidth { get; set; } = 200;
     public int LogoHeight { get; set; } = 100;
     public string? Address { get; set; }

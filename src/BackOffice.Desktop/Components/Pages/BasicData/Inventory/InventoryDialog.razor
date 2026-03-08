@@ -1,0 +1,182 @@
+@using POS.Contract.Dtos.InventoryDtos
+@using BlazorBase.ERPFrontServices.InventoryServices
+@inject IInventoryFrontService InventoryService
+@inject ISnackbar Snackbar
+@inject LocalizationService Localizer
+
+<MudDialog>
+    <TitleContent>
+        <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Center">
+            <MudIcon Icon="@GetIcon()" Color="@GetColor()" Size="Size.Large" />
+            <MudText Typo="Typo.h5" Class="brand-font">@GetTitle()</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <div class="pa-4 glass-dialog-content">
+            <MudStack Spacing="4">
+                <MudAlert Severity="Severity.Info" Variant="MudBlazor.Variant.Outlined" Class="rounded-lg">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.subtitle2">@(Localizer.GetCurrentLanguage() == "ar" ? "الصنف الحالي:" : "Current Item:")</MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">@(Localizer.GetCurrentLanguage() == "ar" ? Item?.ItemNameAr : Item?.ItemNameEn)</MudText>
+                        <MudText Typo="Typo.body2">@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد الحالي:" : "Current Stock:") @Item?.CurrentQuantity.ToString("N2") @Item?.Unit</MudText>
+                    </MudStack>
+                </MudAlert>
+
+                @if (Mode == DialogMode.Adjustment)
+                {
+                <MudNumericField @bind-Value="QuantityChange" 
+                Label="@(Localizer.GetCurrentLanguage() == "ar" ? "كمية التعديل (+ للإضافة، - للحذف)" : "Adjustment Quantity (+ to add, - to remove)")" 
+                                     Variant="MudBlazor.Variant.Outlined" 
+                                     Margin="Margin.Normal"
+                                     HelperText="@GetAdjustmentHelper()" />
+                }
+                else if (Mode == DialogMode.PhysicalCount)
+                {
+                    <MudNumericField @bind-Value="NewQuantity" 
+                                     Label="@(Localizer.GetCurrentLanguage() == "ar" ? "الكمية الفعلية المكتشفة" : "Actual Physical Quantity")"
+                                     Variant="MudBlazor.Variant.Outlined"
+                                     Margin="Margin.Normal" />
+                }
+                else if (Mode == DialogMode.OpeningStock)
+                {
+                    <MudNumericField @bind-Value="NewQuantity" 
+                                     Label="@(Localizer.GetCurrentLanguage() == "ar" ? "رصيد أول المدة" : "Opening Stock Quantity")"
+                                     Variant="MudBlazor.Variant.Outlined"
+                                     Margin="Margin.Normal" />
+                }
+
+                <MudTextField @bind-Value="Notes" 
+                             Label="@(Localizer.GetCurrentLanguage() == "ar" ? "ملاحظات" : "Notes")" 
+                             Variant="MudBlazor.Variant.Outlined" 
+                             Lines="3" />
+            </MudStack>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Class="px-6">@(Localizer.GetCurrentLanguage() == "ar" ? "إلغاء" : "Cancel")</MudButton>
+        <MudButton Color="@GetColor()" Variant="MudBlazor.Variant.Filled" OnClick="Submit" Class="px-8 py-2 rounded-lg" Disabled="@IsProcessing">
+            @if (IsProcessing)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @(Localizer.GetCurrentLanguage() == "ar" ? "حفظ" : "Save")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .brand-font { font-family: 'Outfit', 'Noto Sans Arabic', sans-serif; font-weight: 700; }
+    .glass-dialog-content { background: #fafafa; border-radius: 12px; }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public InventoryItemDto? Item { get; set; }
+    [Parameter] public DialogMode Mode { get; set; } = DialogMode.Adjustment;
+
+    private decimal QuantityChange { get; set; }
+    private decimal NewQuantity { get; set; }
+    private string Notes { get; set; } = "";
+    private bool IsProcessing = false;
+
+    public enum DialogMode { Adjustment, PhysicalCount, OpeningStock }
+
+    private string GetTitle()
+    {
+        return Mode switch
+        {
+            DialogMode.Adjustment => (Localizer.GetCurrentLanguage() == "ar" ? "تعديل رصيد" : "Stock Adjustment"),
+            DialogMode.PhysicalCount => (Localizer.GetCurrentLanguage() == "ar" ? "جرد يدوي" : "Physical Count"),
+            DialogMode.OpeningStock => (Localizer.GetCurrentLanguage() == "ar" ? "رصيد أول المدة" : "Opening Stock"),
+            _ => "Inventory"
+        };
+    }
+
+    private string GetIcon()
+    {
+        return Mode switch
+        {
+            DialogMode.Adjustment => Icons.Material.Filled.Tune,
+            DialogMode.PhysicalCount => Icons.Material.Filled.FactCheck,
+            DialogMode.OpeningStock => Icons.Material.Filled.PlayCircleFilled,
+            _ => Icons.Material.Filled.Inventory
+        };
+    }
+
+    private Color GetColor()
+    {
+        return Mode switch
+        {
+            DialogMode.Adjustment => Color.Info,
+            DialogMode.PhysicalCount => Color.Success,
+            DialogMode.OpeningStock => Color.Primary,
+            _ => Color.Default
+        };
+    }
+
+    private string GetAdjustmentHelper()
+    {
+        var result = (Item?.CurrentQuantity ?? 0) + QuantityChange;
+        return (Localizer.GetCurrentLanguage() == "ar" ? "الرصيد المتوقع بعد الحفظ: " : "Expected total: ") + result.ToString("N2");
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        if (Item == null) return;
+        IsProcessing = true;
+
+        try
+        {
+            ServiceResponse<bool> response;
+
+            if (Mode == DialogMode.Adjustment)
+            {
+                response = await InventoryService.UpdateStockAsync(new UpdateStockDto
+                {
+                    MenuSalesItemId = Item.MenuSalesItemId,
+                    QuantityChange = QuantityChange,
+                    TransactionType = (int)POS.Core.Entities.Item.TransactionType.Adjustment,
+                    Notes = Notes
+                });
+            }
+            else if (Mode == DialogMode.PhysicalCount)
+            {
+                response = await InventoryService.SetPhysicalStockAsync(new UpdateStockDto
+                {
+                    MenuSalesItemId = Item.MenuSalesItemId,
+                    QuantityChange = NewQuantity, // Serves as absolute value in this endpoint
+                    Notes = Notes
+                });
+            }
+            else // OpeningStock
+            {
+                response = await InventoryService.SetOpeningStockAsync(new UpdateStockDto
+                {
+                    MenuSalesItemId = Item.MenuSalesItemId,
+                    QuantityChange = NewQuantity,
+                    Notes = Notes
+                });
+            }
+
+            if (response.Success)
+            {
+                Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "تم الحفظ بنجاح" : "Saved successfully", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add(response.Message, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+}

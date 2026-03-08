@@ -8,9 +8,9 @@ public class OrderVoidItem : BaseEntity
     public int OrderDetailId { get; set; }
     
     // Quantity tracking
-    public int QuantityBefore { get; set; }
-    public int QuantityVoided { get; set; }
-    public int QuantityAfter { get; set; }
+    public decimal QuantityBefore { get; set; }
+    public decimal QuantityVoided { get; set; }
+    public decimal QuantityAfter { get; set; }
 
     // Amount tracking
     public decimal AmountBefore { get; set; }

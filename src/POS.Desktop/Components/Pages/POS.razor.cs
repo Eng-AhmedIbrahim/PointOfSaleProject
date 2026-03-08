@@ -1,4 +1,8 @@
-﻿namespace POS.Desktop.Components.Pages;
+﻿using BlazorBase.ERPFrontServices.SettingsServices;
+using POS.Contract.Dtos.SettingsDtos;
+using POS.Desktop.Components.PosComponent;
+
+namespace POS.Desktop.Components.Pages;
 
 public partial class POS
 {
@@ -14,16 +18,18 @@ public partial class POS
     private double _spacing = 4.0;
     private Action? _stateChangedHandler;
     private ICollection<BranchToReturnDto>? _branches = new List<BranchToReturnDto>();
-    private bool canChangeBranch => _dispatcherSettings?.IsDispatcher ?? false;
+    private bool canChangeBranch => _dynamicDispatcherSettings?.IsDispatcher ?? false;
 
 
     [Inject] private ISnackbar _snackbar { get; set; } = default!;
-    [Inject] private global::ERPFront.Models.DispatcherSettings _dispatcherSettings { get; set; } = default!;
+    [Inject] private ISystemSettingsServices _systemSettingsServices { get; set; } = default!;
+    private DispatcherSettingsDto _dynamicDispatcherSettings = new();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            _dynamicDispatcherSettings = await _systemSettingsServices.GetDispatcherSettingsAsync();
             _categories = await _categoryServices.GetAllCategoriesAsync();
             if (_categories != null)
             {
@@ -99,6 +105,9 @@ public partial class POS
         _itemByCatId = _itemByCatId.Where(i => i.Invisible == false).ToList();
 
         currentCatId = catId;
+        
+        // Ensure attribute selection is reset when switching categories
+        ResetClickCountAndBaseItem();
     }
 
     private Task OnSection4ItemsChanged()
@@ -109,6 +118,14 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
+        // If item is sold by weight, show weight selection dialog first
+        if (selectedMenuItem.ByWeight)
+        {
+            ResetClickCountAndBaseItem();
+            await ShowWeightSelector(selectedMenuItem);
+            return;
+        }
+
         TableItem? existingCashedItem = GetItemFromTableById(selectedMenuItem);
 
         if (IsCashedItem(existingCashedItem))
@@ -121,6 +138,52 @@ public partial class POS
         }
 
         UpdateOrderTotals();
+    }
+
+    /// <summary>
+    /// Shows a weight selector and adds the item with the chosen weight multiplier.
+    /// </summary>
+    private async Task ShowWeightSelector(MenuSalesItemsToReturnDto selectedMenuItem)
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.ExtraSmall,
+            FullWidth = true,
+            NoHeader = true
+        };
+        var parameters = new DialogParameters
+        {
+            ["ItemName"] = selectedMenuItem.ArabicName ?? selectedMenuItem.EnglishName ?? "",
+            ["PricePerKilo"] = selectedMenuItem.Price ?? 0,
+            ["IsArabic"] = Localizer.GetCurrentLanguage() == "ar"
+        };
+
+        var dialog = await DialogService.ShowAsync<WeightSelectorDialog>("", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is (decimal weightMultiplier, string weightLabel))
+        {
+            // Clone the item and apply weight pricing
+            var weightedItem = new MenuSalesItemsToReturnDto
+            {
+                Id = selectedMenuItem.Id,
+                ArabicName = selectedMenuItem.ArabicName, // Keep original name, quantity will show weight
+                EnglishName = selectedMenuItem.EnglishName,
+                CategoryId = selectedMenuItem.CategoryId,
+                CategoryKitchenTypeId = selectedMenuItem.CategoryKitchenTypeId,
+                KitchenTypeId = selectedMenuItem.KitchenTypeId,
+                PrintInBackupReceiptFromCategory = selectedMenuItem.PrintInBackupReceiptFromCategory,
+                PrintInBackupReceipt = selectedMenuItem.PrintInBackupReceipt,
+                Price = selectedMenuItem.Price, // Use original price per unit/kilo
+                ByWeight = true
+            };
+
+            currentSelectedAttribute = [];
+            // Pass the exact weight (kg) so it shows correctly in the qty column
+            await AddItemToTable(weightedItem, weightMultiplier);
+            UpdateOrderTotals();
+        }
     }
 
     /// <summary>
@@ -191,6 +254,16 @@ public partial class POS
     /// </summary>
     private async void ProcessAttributeSelection(MenuSalesItemsToReturnDto selectedMenuItem)
     {
+        // If this item HAS its own attributes, it's definitely a new main item selection.
+        // We should reset any pending selection from another item.
+        if (selectedMenuItem.Attributes != null && selectedMenuItem.Attributes.Any())
+        {
+            if (_currentBaseItem == null || selectedMenuItem.Id != _currentBaseItem.Id)
+            {
+                ResetClickCountAndBaseItem();
+            }
+        }
+
         if (_itemClickCount.Count == 0)
             InitializeBaseItem(selectedMenuItem);
 
@@ -271,11 +344,12 @@ public partial class POS
         var newAttribute = new AttributeDto
         {
             Id = selectedMenuItem.Id,
-            Name = selectedMenuItem.ArabicName ?? string.Empty
+            Name = selectedMenuItem.ArabicName ?? string.Empty,
+            ExtraPrice = selectedMenuItem.ExtraPrice ?? 0
         };
 
         currentSelectedAttribute?.Add(newAttribute);
-        _currentBaseItem!.Price += selectedMenuItem.AttributePrice ?? 0;
+        _currentBaseItem!.Price += selectedMenuItem.ExtraPrice ?? 0;
     }
 
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
@@ -305,7 +379,7 @@ public partial class POS
                     ArabicName = item.ArabicName,
                     EnglishName = item.EnglishName,
                     Price = item.Price,
-                    AttributePrice = item.AttributePrice ?? 0
+                    ExtraPrice = item.ExtraPrice ?? 0
                 };
 
                 _itemByCatId.Add(newMenuItem);
@@ -316,7 +390,7 @@ public partial class POS
     private void IncrementClickCount()
          => _itemClickCount[_currentBaseItem?.Id ?? 0]++;
 
-    private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem)
+    private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem, decimal? weightQty = null)
     {
         TableItem? newTableItem = new TableItem
         {
@@ -325,16 +399,24 @@ public partial class POS
             NameAr = menuItem.ArabicName,
             CategoryId = menuItem.CategoryId,
             Price = menuItem.Price ?? 0,
-            Quantity = 1,
+            Quantity = weightQty ?? 1,
             Total = menuItem.Price ?? 0,
             Attributes = currentSelectedAttribute ?? [],
             CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
-            ItemKitchenTypeId = menuItem.ItemKitchenTypeId,
+            ItemKitchenTypeId = menuItem.KitchenTypeId,
             PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
-            PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceiptFromItem,
+            PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceipt,
             TotalAmount = menuItem.Price,
-            AttributePrice = menuItem.AttributePrice
+            ExtraPrice = menuItem.ExtraPrice,
+            ByWeight = menuItem.ByWeight,
+            WeightQty = weightQty,
+            ItemTax = menuItem.Tax,
+            HasTax = (menuItem.Tax ?? 0) > 0
         };
+
+        // Recalculate to apply item-level tax and discounts immediately
+        _cartService.RecalculateItemTotals(newTableItem);
+
         _commonProperties?.TableItems?.Add(newTableItem);
 
         if (_commonProperties!.UpdateDineInOrder)
@@ -365,6 +447,19 @@ public partial class POS
 
     private TableItem? GetItemFromTableById(MenuSalesItemsToReturnDto selectedMenuItem)
         => _commonProperties?.TableItems?.Where(c => c!.Attributes!.Count == 0).FirstOrDefault(s => s.Id == selectedMenuItem.Id);
+
+    /// <summary>
+    /// Builds the inline style string for an item button based on design settings.
+    /// </summary>
+    private static string GetItemButtonStyle(MenuSalesItemsToReturnDto item)
+    {
+        var sb = new System.Text.StringBuilder();
+        if (!string.IsNullOrEmpty(item.BackColor))
+            sb.Append($"background-color:{item.BackColor}!important;");
+        if (!string.IsNullOrEmpty(item.TextColor))
+            sb.Append($"color:{item.TextColor}!important;");
+        return sb.ToString();
+    }
 
     private async Task GetCurrentDayAndTime()
     {

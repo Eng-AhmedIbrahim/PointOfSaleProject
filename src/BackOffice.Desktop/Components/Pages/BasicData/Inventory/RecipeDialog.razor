@@ -1,0 +1,327 @@
+@using POS.Contract.Dtos.InventoryDtos
+@using BlazorBase.ERPFrontServices.InventoryServices
+@inject IRecipeFrontService RecipeService
+@inject IInventoryFrontService InventoryService
+@inject ISnackbar Snackbar
+@inject LocalizationService Localizer
+
+
+
+<MudDialog Class="recipe-dialog-styled">
+    <TitleContent>
+        <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Center">
+            <div class="header-badge">
+                <MudIcon Icon="@Icons.Material.Filled.SoupKitchen" Color="Color.Primary" />
+            </div>
+            <MudStack Spacing="0">
+                <MudText Typo="Typo.h5" Class="brand-font">@(Localizer.GetCurrentLanguage() == "ar" ? "تحليل مكونات الصنف (ريسيبي)" : "Item Recipe Analysis")</MudText>
+                <MudText Typo="Typo.caption" Class="text-muted">@(Localizer.GetCurrentLanguage() == "ar" ? $"مكونات صنف: {Item?.ItemNameAr}" : $"Recipe for: {Item?.ItemNameEn}")</MudText>
+            </MudStack>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <div class="pa-4 glass-container mt-2">
+            <MudGrid Spacing="4">
+                <!-- Add Ingredient Section -->
+                <MudItem xs="12">
+                    <div class="add-ingredient-pill pa-4 mb-4">
+                        <MudGrid Spacing="2" AlignItems="AlignItems.Center">
+                            <MudItem xs="6">
+                                <MudAutocomplete T="InventoryItemDto" 
+                                               Label="@(Localizer.GetCurrentLanguage() == "ar" ? "اختر المكون" : "Select Ingredient")"
+                                               @bind-Value="SelectedIngredient" 
+                                               SearchFunc="@SearchIngredients"
+                                               ToStringFunc="@(i => i == null ? "" : (Localizer.GetCurrentLanguage() == "ar" ? i.ItemNameAr : i.ItemNameEn))"
+                                               Variant="MudBlazor.Variant.Outlined" 
+                                               Margin="Margin.Dense"
+                                               ResetValueOnEmptyText="true"
+                                               Placeholder="@(Localizer.GetCurrentLanguage() == "ar" ? "اكتب اسم الصنف..." : "Type item name...")" />
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudNumericField @bind-Value="NewIngredientQty" 
+                                               Label="@(Localizer.GetCurrentLanguage() == "ar" ? "الكمية" : "Qty")"
+                                                 Variant="MudBlazor.Variant.Outlined"
+                                                 Margin="Margin.Dense" />
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudButton Variant="MudBlazor.Variant.Filled"
+                                           Color="Color.Primary" 
+                                           FullWidth="true" 
+                                           OnClick="AddIngredient" 
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           Class="premium-action-btn">
+                                    @(Localizer.GetCurrentLanguage() == "ar" ? "إضافة" : "Add")
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </div>
+                </MudItem>
+
+                <!-- Ingredients Table -->
+                <MudItem xs="12">
+                    <MudTable Items="@CurrentIngredients" 
+                              Dense="true" 
+                              Hover="true" 
+                              Bordered="false" 
+                              Striped="true" 
+                              Elevation="0"
+                              Class="ingredients-table"
+                              Loading="@IsLoading">
+                        <HeaderContent>
+                            <MudTh>@(Localizer.GetCurrentLanguage() == "ar" ? "المكون" : "Ingredient")</MudTh>
+                            <MudTh Style="text-align: center;">@(Localizer.GetCurrentLanguage() == "ar" ? "الكمية المطلوبة" : "Required Qty")</MudTh>
+                            <MudTh Style="text-align: center;">@(Localizer.GetCurrentLanguage() == "ar" ? "الوحدة" : "Unit")</MudTh>
+                            <MudTh Style="text-align: right;">@(Localizer.GetCurrentLanguage() == "ar" ? "حذف" : "Remove")</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Ingredient">
+                                <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Center">
+                                    <MudAvatar Color="Color.Info" Size="Size.Small" Variant="MudBlazor.Variant.Outlined">@context.IngredientName?[0]</MudAvatar>
+                                    <MudText Typo="Typo.body2" Class="font-weight-bold">@context.IngredientName</MudText>
+                                </MudStack>
+                            </MudTd>
+                            <MudTd DataLabel="Qty" Style="text-align: center;">
+                                <MudNumericField @bind-Value="context.Quantity"
+                                                 Variant="MudBlazor.Variant.Text"
+                                                 Margin="Margin.Dense" 
+                                               Style="max-width: 80px; margin: auto;" />
+                            </MudTd>
+                            <MudTd DataLabel="Unit" Style="text-align: center;">
+                                <MudSelect T="int?" Value="@context.UnitId" ValueChanged="@((val) => context.UnitId = val)" Margin="Margin.Dense" Dense="true" Variant="MudBlazor.Variant.Text">
+                                    <MudSelectItem T="int?" Value="@((int?)null)">---</MudSelectItem>
+                                    @foreach (var unit in AllUnits)
+                                    {
+                                        <MudSelectItem T="int?" Value="@((int?)unit.Id)">@(Localizer.GetCurrentLanguage() == "ar" ? unit.ArabicName : unit.EnglishName)</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudTd>
+                            <MudTd DataLabel="Remove" Style="text-align: right;">
+                                <MudIconButton Icon="@Icons.Material.Filled.RemoveCircleOutline" 
+                                             Color="Color.Error" 
+                                             Size="Size.Small" 
+                                             OnClick="@(() => RemoveIngredient(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <div class="pa-8 d-flex flex-column align-center opacity-50">
+                                <MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Large" Class="mb-2" />
+                                <MudText>@(Localizer.GetCurrentLanguage() == "ar" ? "لا يوجد مكونات مضافة حالياً" : "No ingredients added yet")</MudText>
+                            </div>
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Class="px-6 rounded-lg">@(Localizer.GetCurrentLanguage() == "ar" ? "إلغاء المعاينة" : "Cancel")</MudButton>
+        <MudButton Color="Color.Success" 
+                   Variant="MudBlazor.Variant.Filled" 
+                   OnClick="SaveRecipe" 
+                   Class="px-10 py-2 rounded-lg elevation-8" 
+                   StartIcon="@Icons.Material.Filled.Save"
+                   Disabled="@IsSaving">
+            @if (IsSaving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @(Localizer.GetCurrentLanguage() == "ar" ? "حفظ المكونات" : "Save Recipe")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .brand-font { font-family: 'Outfit', sans-serif; font-weight: 700; }
+    
+    .recipe-dialog-styled .mud-dialog-width-sm {
+        max-width: 800px !important;
+        width: 100%;
+        border-radius: 20px !important;
+    }
+
+    .header-badge {
+        background: #f1f5f9;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .glass-container {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+    }
+
+    .add-ingredient-pill {
+        background: #f8fafc;
+        border-radius: 14px;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .premium-action-btn {
+        border-radius: 10px;
+        padding: 8px !important;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .ingredients-table {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .text-muted { color: #64748b; }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public InventoryItemDto? Item { get; set; }
+
+    private List<RecipeIngredientDto> CurrentIngredients = new();
+    private List<InventoryItemDto> AllInventoryItems = new();
+    private List<UnitDto> AllUnits = new();
+    [Inject] public IUnitFrontService UnitFrontService { get; set; } = default!;
+    
+    private InventoryItemDto? SelectedIngredient;
+    private decimal NewIngredientQty = 1;
+    
+    private bool IsLoading = true;
+    private bool IsSaving = false;
+    private int? CurrentRecipeId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUnits();
+        await LoadData();
+    }
+
+    private async Task LoadUnits()
+    {
+        var response = await UnitFrontService.GetAllUnitsAsync();
+        if (response.Success) AllUnits = response.Data.ToList();
+    }
+
+    private async Task LoadData()
+    {
+        IsLoading = true;
+        try
+        {
+            // Load all ingredients for autocomplete
+            var invResponse = await InventoryService.GetAllInventoryAsync();
+            if (invResponse.Success)
+            {
+                AllInventoryItems = invResponse.Data?.Where(i => i.MenuSalesItemId != Item?.MenuSalesItemId).ToList() ?? new();
+            }
+
+            // Load existing recipe
+            if (Item != null)
+            {
+                var recipeResponse = await RecipeService.GetRecipeByItemIdAsync(Item.MenuSalesItemId);
+                if (recipeResponse.Success && recipeResponse.Data != null)
+                {
+                    CurrentRecipeId = recipeResponse.Data.Id;
+                    CurrentIngredients = recipeResponse.Data.Ingredients.ToList();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading recipe: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task<IEnumerable<InventoryItemDto>> SearchIngredients(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return AllInventoryItems.Take(10);
+            
+        return AllInventoryItems
+            .Where(x => (x.ItemNameAr?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false) || 
+                        (x.ItemNameEn?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false))
+            .Take(20);
+    }
+
+    private void AddIngredient()
+    {
+        if (SelectedIngredient == null)
+        {
+            Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "يرجى اختيار مكون أولاً" : "Please select an ingredient first", Severity.Warning);
+            return;
+        }
+
+        if (CurrentIngredients.Any(i => i.MenuSalesIngredientId == SelectedIngredient.MenuSalesItemId))
+        {
+            Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "هذا المكون مضاف بالفعل" : "Ingredient already added", Severity.Warning);
+            return;
+        }
+
+        CurrentIngredients.Add(new RecipeIngredientDto
+        {
+            MenuSalesIngredientId = SelectedIngredient.MenuSalesItemId,
+            IngredientName = Localizer.GetCurrentLanguage() == "ar" ? SelectedIngredient.ItemNameAr : SelectedIngredient.ItemNameEn,
+            Quantity = NewIngredientQty,
+            UnitId = SelectedIngredient.UnitId,
+            Unit = SelectedIngredient.Unit
+        });
+
+        SelectedIngredient = null;
+        NewIngredientQty = 1;
+    }
+
+    private void RemoveIngredient(RecipeIngredientDto ingredient)
+    {
+        CurrentIngredients.Remove(ingredient);
+    }
+
+    private async Task SaveRecipe()
+    {
+        if (Item == null) return;
+        IsSaving = true;
+
+        try
+        {
+            var recipeDto = new RecipeDto
+            {
+                Id = CurrentRecipeId ?? 0,
+                MenuSalesItemId = Item.MenuSalesItemId,
+                RecipeName = (Localizer.GetCurrentLanguage() == "ar" ? Item.ItemNameAr : Item.ItemNameEn) + " Recipe",
+                IsActive = true,
+                Ingredients = CurrentIngredients
+            };
+
+            ServiceResponse<bool> response;
+            if (CurrentRecipeId.HasValue && CurrentRecipeId.Value > 0)
+            {
+                response = await RecipeService.UpdateRecipeAsync(recipeDto);
+            }
+            else
+            {
+                response = await RecipeService.CreateRecipeAsync(recipeDto);
+            }
+
+            if (response.Success)
+            {
+                Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "تم حفظ الريسيبي بنجاح" : "Recipe saved successfully", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                Snackbar.Add(response.Message, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error saving recipe: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

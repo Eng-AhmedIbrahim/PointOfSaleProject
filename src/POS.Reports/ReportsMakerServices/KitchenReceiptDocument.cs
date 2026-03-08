@@ -180,7 +180,8 @@ public class KitchenReceiptDocument : IDocument
                     Name = first.Name,
                     Quantity = g.Sum(x => x.Quantity),
                     Attributes = first.Attributes,
-                    IsVoided = first.IsVoided
+                    IsVoided = first.IsVoided,
+                    ByWeight = first.ByWeight
                 };
             }).ToList();
 
@@ -218,7 +219,9 @@ public class KitchenReceiptDocument : IDocument
                         }
                     });
                     
-                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString("0.##"));
+                    var qtyText = item.Quantity.ToString("0.##");
+                    if (item.ByWeight) qtyText += " كجم";
+                    table.Cell().Element(CellStyle).AlignCenter().Text(qtyText);
 
                     if (item.Attributes?.Any() == true)
                     {

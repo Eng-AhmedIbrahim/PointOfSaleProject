@@ -1,69 +1,109 @@
+@using global::POS.Contract.Dtos.ReportingDtos
 @inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
 
-<MudDialog Class="sales-items-dialog glass">
-    <TitleContent>
-        <div class="dialog-header">
-            <MudIcon Icon="@Icons.Material.Filled.Analytics" Color="Color.Primary" Class="mr-2" />
-            <MudText Typo="Typo.h6">@Localizer["SalesItemsSummary"]</MudText>
-            <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Default" Size="Size.Small" />
-        </div>
-        <div class="search-bar">
-            <MudTextField @bind-Value="_searchText" 
-                         Placeholder="@Localizer["SearchItems"]" 
-                         Adornment="Adornment.Start" 
-                         AdornmentIcon="@Icons.Material.Filled.Search" 
-                         Variant="Variant.Outlined" 
-                         Margin="Margin.Dense"
-                         FullWidth="true" />
-        </div>
-    </TitleContent>
+<MudDialog Class="premium-sales-items-dialog" Style="border-radius: 20px; overflow: hidden;">
     <DialogContent>
-        <div class="dialog-scroll-content">
-            <MudTable Items="FilteredItems" Hover="true" Dense="true" Elevation="0" FixedHeader="true" Height="400px" Class="items-table">
-                <HeaderContent>
-                    <MudTh>@Localizer["Item"]</MudTh>
-                    <MudTh>@Localizer["Category"]</MudTh>
-                    <MudTh>@Localizer["Qty"]</MudTh>
-                    <MudTh>@Localizer["Total"]</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd>
-                        <div class="item-info">
-                            <span class="name">@context.ItemName</span>
-                        </div>
-                    </MudTd>
-                    <MudTd>
-                        <span class="category-badge">@context.CategoryName</span>
-                    </MudTd>
-                    <MudTd>
-                        <span class="qty">@context.Quantity.ToString("0.##")</span>
-                    </MudTd>
-                    <MudTd>
-                        <span class="amount">@context.TotalAmount.ToString("0.##")</span>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+        <div class="dialog-content-inner pa-4" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")">
+            @* Custom Header for NoHeader = true scenarios *@
+            <div class="custom-header-box d-flex align-center justify-space-between mb-4 glass pa-4 rounded-xl border">
+                <div class="d-flex align-center gap-3">
+                    <div class="icon-circle shadow-sm">
+                        <MudIcon Icon="@Icons.Material.Filled.Leaderboard" Color="Color.Primary" />
+                    </div>
+                    <div>
+                        <MudText Typo="Typo.h5" Style="font-weight: 900; color: #1e3a5f;">@Localizer["SalesItemsSummary"]</MudText>
+                        <MudText Typo="Typo.caption" Class="text-muted">@Items.Count @Localizer["UniqueItems"]</MudText>
+                    </div>
+                </div>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="rounded-pill" />
+            </div>
+
+            <div class="search-section mb-4">
+                <MudTextField @bind-Value="_searchText" 
+                             Placeholder="@Localizer["SearchItems"]" 
+                             Adornment="Adornment.Start" 
+                             AdornmentIcon="@Icons.Material.Filled.Search" 
+                             Variant="Variant.Outlined" 
+                             Margin="Margin.Dense"
+                             FullWidth="true" 
+                             Class="search-field-pill rounded-pill"
+                             Clearable="true" />
+            </div>
+
+            <div class="table-container-elevated shadow-xs rounded-xl overflow-hidden border">
+                <MudTable Items="FilteredItems" 
+                          Hover="true" 
+                          Dense="true" 
+                          Elevation="0" 
+                          FixedHeader="true" 
+                          Height="400px" 
+                          Class="items-table"
+                          Bordered="false">
+                    <HeaderContent>
+                        <MudTh Style="background: #f8f9fa; font-weight: 800;">@Localizer["Item"]</MudTh>
+                        <MudTh Style="background: #f8f9fa; font-weight: 800;">@Localizer["Category"]</MudTh>
+                        <MudTh Style="background: #f8f9fa; font-weight: 800; text-align: center;">@Localizer["Qty"]</MudTh>
+                        <MudTh Style="background: #f8f9fa; font-weight: 800; text-align: center;">@Localizer["Total"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@Localizer["Item"]">
+                            <MudText Style="font-weight: 700;">@context.ItemName</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Category"]">
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Info" Class="rounded-lg">@context.CategoryName</MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Qty"]" Style="text-align: center;">
+                            <span class="qty-badge">@context.Quantity.ToString("0.##")</span>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Total"]" Style="text-align: center;">
+                            <MudText Color="Color.Primary" Style="font-weight: 900;">@context.TotalAmount.ToString("N2")</MudText>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
         </div>
     </DialogContent>
     <DialogActions>
-        <div class="dialog-footer">
-            <div class="total-stats">
-                <div class="stat">
-                    <span class="label">@Localizer["TotalQty"]</span>
-                    <span class="value">@Items.Sum(x => x.Quantity).ToString("0.##")</span>
+        <div class="w-100 pa-4 pt-0">
+            <div class="footer-stats-box glass pa-4 mb-4 rounded-xl border d-flex justify-space-around align-center">
+                <div class="stat-group">
+                    <MudText Typo="Typo.caption" Class="stat-label">@Localizer["TotalQty"]</MudText>
+                    <MudText Typo="Typo.h5" Style="font-weight: 900; color: #2c3e50;">@Items.Sum(x => x.Quantity).ToString("0.##")</MudText>
                 </div>
-                <div class="divider"></div>
-                <div class="stat">
-                    <span class="label">@Localizer["TotalSales"]</span>
-                    <span class="value primary">@Items.Sum(x => x.TotalAmount).ToString("0.##")</span>
+                <div class="stat-divider"></div>
+                <div class="stat-group">
+                    <MudText Typo="Typo.caption" Class="stat-label">@Localizer["TotalSales"]</MudText>
+                    <MudText Typo="Typo.h4" Color="Color.Primary" Style="font-weight: 900;">@Items.Sum(x => x.TotalAmount).ToString("N2")</MudText>
                 </div>
             </div>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Close" Class="close-btn">@Localizer["Close"]</MudButton>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Error" 
+                       OnClick="Close" 
+                       FullWidth="true"
+                       Class="rounded-pill py-3 px-10"
+                       Style="font-weight: 800;">@Localizer["Close"]</MudButton>
         </div>
     </DialogActions>
 </MudDialog>
+
+<style>
+    .premium-sales-items-dialog .mud-dialog-content { padding: 0 !important; background: #fdfdfd; }
+    .custom-header-box { background: rgba(255, 255, 255, 0.9); }
+    .icon-circle { width: 40px; height: 40px; background: #e3f2fd; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .text-muted { color: #8898aa; font-size: 11px; }
+    
+    .search-field-pill .mud-outlined-input { border-radius: 30px !important; background: white !important; }
+    
+    .items-table .mud-table-head { border-bottom: 2px solid #eee; }
+    .qty-badge { background: #f0f2f5; padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; }
+    
+    .footer-stats-box { background: #fcfcfc; box-shadow: 0 -4px 10px rgba(0,0,0,0.02); }
+    .stat-label { font-weight: 800; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-divider { width: 2px; height: 40px; background: #eee; }
+    
+    .glass { backdrop-filter: blur(10px); }
+</style>
 
 @code {
     [Parameter] public List<SalesItemSummaryDto> Items { get; set; } = new();

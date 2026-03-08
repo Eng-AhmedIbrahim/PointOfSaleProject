@@ -1,7 +1,9 @@
 ﻿using BlazorBase.API;
 using BlazorBase.Helpers;
 using POS.Contract.Dtos.OrderDtos;
+using POS.Contract.Dtos.KitchenDtos;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorBase.ERPFrontServices.OrderServices;
 public class OrderSettingsService : IOrderSettingsService
@@ -41,12 +43,48 @@ public class OrderSettingsService : IOrderSettingsService
         var url = _apiSettings.Endpoints!.GetOrderSettings;
         if (!string.IsNullOrEmpty(computerName))
         {
-            url += $"?computerName={computerName}";
+            url += $"?computerName={Uri.EscapeDataString(computerName)}";
         }
 
         return await GetApiResponseAsync<ICollection<OrderSettingToReturnDto>>(
-            () => _httpClient.GetAsync(url),
+            () => _httpClient.GetAsync(url!),
             "Failed to retrieve Order Settings from the API."
+        );
+    }
+
+    public async Task<OrderSettingToReturnDto?> GetOrderSettingAsync(int orderType, string? computerName = null)
+    {
+        var url = _apiSettings.Endpoints!.GetOrderSettings!.Replace("GetOrderSettings", $"GetOrderSetting/{orderType}");
+        if (!string.IsNullOrEmpty(computerName))
+        {
+            url += $"?computerName={Uri.EscapeDataString(computerName)}";
+        }
+
+        return await GetApiResponseAsync<OrderSettingToReturnDto>(
+            () => _httpClient.GetAsync(url),
+            $"Failed to retrieve Order Setting for orderType {orderType} from the API."
+        );
+    }
+
+    public async Task<OrderSettingToReturnDto?> UpdateOrderSettingAsync(int orderType, OrderSettingToReturnDto dto, string? computerName = null)
+    {
+        var url = _apiSettings.Endpoints!.GetOrderSettings!.Replace("GetOrderSettings", $"UpdateOrderSetting/{orderType}");
+        if (!string.IsNullOrEmpty(computerName))
+        {
+            url += $"?computerName={Uri.EscapeDataString(computerName)}";
+        }
+
+        return await GetApiResponseAsync<OrderSettingToReturnDto>(
+            () => _httpClient.PutAsJsonAsync(url, dto),
+            $"Failed to update Order Setting for orderType {orderType}."
+        );
+    }
+
+    public async Task<List<POS.Contract.Dtos.AccountDtos.RoleToReturnDto>?> GetRolesAsync()
+    {
+        return await GetApiResponseAsync<List<POS.Contract.Dtos.AccountDtos.RoleToReturnDto>>(
+            () => _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllRoles!),
+            "Failed to retrieve roles."
         );
     }
 
@@ -61,8 +99,77 @@ public class OrderSettingsService : IOrderSettingsService
     public async Task<int> IncrementPrintCountAsync(int orderId)
     {
         return await GetApiResponseAsync<int>(
-            () => _httpClient.PutAsJsonAsync($"{_apiSettings.Endpoints!.CreateOrder}/incrementPrintCount/{orderId}", new { }),
+            () => _httpClient.PutAsJsonAsync($"api/order/incrementPrintCount/{orderId}", new { }),
             "Failed to increment print count via the API."
+        );
+    }
+
+    // Kitchen & Printer Management
+    public async Task<List<KitchenTypeToReturnDto>?> GetAllKitchenTypesAsync()
+    {
+        return await GetApiResponseAsync<List<KitchenTypeToReturnDto>>(
+            () => _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllKitchenTypes!),
+            "Failed to retrieve kitchen types."
+        );
+    }
+
+    public async Task<KitchenTypeToReturnDto?> CreateKitchenTypeAsync(KitchenTypeDto dto)
+    {
+        return await GetApiResponseAsync<KitchenTypeToReturnDto>(
+            () => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.GetAllKitchenTypes!, dto),
+            "Failed to create kitchen type."
+        );
+    }
+
+    public async Task<bool> UpdateKitchenTypeAsync(int id, KitchenTypeDto dto)
+    {
+        var url = $"{_apiSettings.Endpoints!.GetAllKitchenTypes}/{id}";
+        var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PutAsJsonAsync(url, dto));
+        return response?.IsSuccessStatusCode ?? false;
+    }
+
+    public async Task<bool> DeleteKitchenTypeAsync(int id)
+    {
+        var url = $"{_apiSettings.Endpoints!.GetAllKitchenTypes}/{id}";
+        var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.DeleteAsync(url));
+        return response?.IsSuccessStatusCode ?? false;
+    }
+
+    public async Task<List<KitchenPrintersToReturnDto>?> GetAllKitchenPrintersAsync()
+    {
+        return await GetApiResponseAsync<List<KitchenPrintersToReturnDto>>(
+            () => _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllKitchenPrinters!),
+            "Failed to retrieve kitchen printers."
+        );
+    }
+
+    public async Task<KitchenPrintersToReturnDto?> CreateKitchenPrinterAsync(KitchenPrintersDto dto)
+    {
+        return await GetApiResponseAsync<KitchenPrintersToReturnDto>(
+            () => _httpClient.PostAsJsonAsync(_apiSettings.Endpoints!.GetAllKitchenPrinters!, dto),
+            "Failed to create kitchen printer."
+        );
+    }
+
+    public async Task<bool> UpdateKitchenPrinterAsync(int id, KitchenPrintersDto dto)
+    {
+        var url = $"{_apiSettings.Endpoints!.GetAllKitchenPrinters}/{id}";
+        var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.PutAsJsonAsync(url, dto));
+        return response?.IsSuccessStatusCode ?? false;
+    }
+
+    public async Task<bool> DeleteKitchenPrinterAsync(int id)
+    {
+        var url = $"{_apiSettings.Endpoints!.GetAllKitchenPrinters}/{id}";
+        var response = await ApiRequestHelpers.SendApiRequest(() => _httpClient.DeleteAsync(url));
+        return response?.IsSuccessStatusCode ?? false;
+    }
+
+    public async Task<List<string>?> GetInstalledPrintersAsync()
+    {
+        return await GetApiResponseAsync<List<string>>(
+            () => _httpClient.GetAsync(_apiSettings.Endpoints!.GetInstalledPrinters!),
+            "Failed to retrieve installed printers."
         );
     }
 
@@ -73,7 +180,9 @@ public class OrderSettingsService : IOrderSettingsService
         var response = await ApiRequestHelpers.SendApiRequest(apiRequest);
         if (response is null || !response.IsSuccessStatusCode)
         {
-            _logger.LogError("API call failed: {ErrorMessage}", message ?? "No message provided.");
+            var errorContent = response != null ? await response.Content.ReadAsStringAsync() : "No Response";
+            _logger.LogError("API call failed: {ErrorMessage}. Status: {Status}, Content: {Content}", message ?? "No message provided.", response?.StatusCode, errorContent);
+            Console.WriteLine($"[API 400 ERROR DUMP] -> Status: {response?.StatusCode}, Body: {errorContent}");
             return default!;
         }
 

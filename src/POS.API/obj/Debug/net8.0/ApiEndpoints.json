@@ -56,49 +56,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "UserName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Password",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "DisplayName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "roleName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "PhoneNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Email",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "ArabicName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "DateOfBirth",
-        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "ImageUrl",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
+        "Name": "registerDto",
+        "Type": "POS.Contract.Dtos.AccountDtos.RegisterDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -137,6 +97,52 @@
   },
   {
     "ContainingType": "POS.API.Controllers.AccountController",
+    "Method": "GetAllPermissions",
+    "RelativePath": "api/Account/get-all-permissions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.AccountDtos.PermissionDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AccountController",
+    "Method": "GetRolePermissions",
+    "RelativePath": "api/Account/get-role-permissions/{roleName}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "roleName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AccountController",
     "Method": "GetRole",
     "RelativePath": "api/Account/get-role/{roleName}",
     "HttpMethod": "GET",
@@ -171,7 +177,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[POS.Core.Entities.UserSettings.ApplicationRole, POS.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.AccountDtos.RoleToReturnDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -285,6 +291,26 @@
   },
   {
     "ContainingType": "POS.API.Controllers.AccountController",
+    "Method": "GetUsersAccountsWithRole",
+    "RelativePath": "api/Account/GetUsersAccountsWithRole",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.AccountDtos.UserDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AccountController",
     "Method": "GetUsersByRole",
     "RelativePath": "api/Account/GetUsersByRole/{roleName}",
     "HttpMethod": "GET",
@@ -309,6 +335,26 @@
       },
       {
         "Type": "POS.Contract.Dtos.DineInDtos.UserToReturnDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AccountController",
+    "Method": "GetUsersWithRoles",
+    "RelativePath": "api/Account/GetUsersWithRoles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.AccountDtos.UserDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -420,12 +466,34 @@
   },
   {
     "ContainingType": "POS.API.Controllers.AccountController",
+    "Method": "UpdateUser",
+    "RelativePath": "api/Account/UpdateUser",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userDto",
+        "Type": "POS.Contract.Dtos.AccountDtos.UserDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AccountController",
     "Method": "GetUserPermissions",
     "RelativePath": "api/Account/user-permissions",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "forBackOffice",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.HashSet\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
@@ -737,64 +805,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "Name",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Description",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Logo",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      },
-      {
-        "Name": "LogoWidth",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "LogoHeight",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "Address",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Phone1",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Phone2",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Active",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "Suspend",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "CreationDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
+        "Name": "branchDto",
+        "Type": "POS.Contract.Dtos.CompanyDtos.BranchDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -827,64 +840,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "BranchId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "Name",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Logo",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      },
-      {
-        "Name": "LogoWidth",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "LogoHeight",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "Address",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Phone1",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Phone2",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Active",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "Suspend",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "UpdateDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "updatedLogo",
-        "Type": "System.Boolean",
-        "IsRequired": false
+        "Name": "branch",
+        "Type": "POS.Contract.Dtos.CompanyDtos.UpdatedBranchDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -1185,44 +1143,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "EnglishName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "ArabicName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "PhoneNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "MobileNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Website",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Email",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Address",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "CreationDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
+        "Name": "companyDto",
+        "Type": "POS.Contract.Dtos.CompanyDtos.CreateCompanyDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -1255,44 +1178,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "CompanyId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "EnglishName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "ArabicName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "PhoneNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "MobileNumber",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Website",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Email",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Address",
-        "Type": "System.String",
-        "IsRequired": false
+        "Name": "company",
+        "Type": "POS.Contract.Dtos.CompanyDtos.UpdatedCompanyDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -1525,6 +1413,130 @@
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.ComplaintDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DataSyncController",
+    "Method": "GetDatabases",
+    "RelativePath": "api/DataSync/databases",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "settings",
+        "Type": "POS.Contract.Dtos.SettingsDtos.HqSettingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DataSyncController",
+    "Method": "GetSettings",
+    "RelativePath": "api/DataSync/settings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.SettingsDtos.HqSettingDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DataSyncController",
+    "Method": "UpdateSettings",
+    "RelativePath": "api/DataSync/settings",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "settings",
+        "Type": "POS.Contract.Dtos.SettingsDtos.HqSettingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.Common.BaseResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DataSyncController",
+    "Method": "SyncData",
+    "RelativePath": "api/DataSync/sync",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "POS.Contract.Dtos.SettingsDtos.SyncRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.Common.BaseResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.DataSyncController",
+    "Method": "TestConnection",
+    "RelativePath": "api/DataSync/test-connection",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "settings",
+        "Type": "POS.Contract.Dtos.SettingsDtos.HqSettingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.Common.BaseResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -2779,6 +2791,122 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "GetByItemId",
+    "RelativePath": "api/Inventory/{itemId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "itemId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "GetAllInventory",
+    "RelativePath": "api/Inventory/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "Initialize",
+    "RelativePath": "api/Inventory/Initialize",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "initDto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.InventoryItemDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "InitializeAll",
+    "RelativePath": "api/Inventory/InitializeAll",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "SetOpeningStock",
+    "RelativePath": "api/Inventory/SetOpeningStock",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updateDto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.UpdateStockDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "SetPhysicalStock",
+    "RelativePath": "api/Inventory/SetPhysicalStock",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updateDto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.UpdateStockDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "GetTransactions",
+    "RelativePath": "api/Inventory/Transactions/{itemId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "itemId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryController",
+    "Method": "UpdateStock",
+    "RelativePath": "api/Inventory/UpdateStock",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updateDto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.UpdateStockDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.ItemController",
     "Method": "CreateMenuItemAsync",
     "RelativePath": "api/Item",
@@ -2787,114 +2915,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Barcode",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "ArabicName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "EnglishName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Price",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "SecondPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "ThirdPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "FourthPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "FifthPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "AttributePrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Tax",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Description",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Image",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      },
-      {
-        "Name": "BackColor",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "TextColor",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "TextSize",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Invisible",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "CreationDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "BranchId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "CategoryId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "HasAttribute",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "AttributeId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "PrintInBackupReceipt",
-        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
+        "Name": "itemDto",
+        "Type": "POS.Contract.Dtos.ItemDto.MenuSalesItemsDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -2927,109 +2950,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "ItemId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "Barcode",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "ArabicName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "EnglishName",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Price",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "SecondPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "ThirdPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "FourthPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "FifthPrice",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Tax",
-        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Description",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "Image",
-        "Type": "Microsoft.AspNetCore.Http.IFormFile",
-        "IsRequired": false
-      },
-      {
-        "Name": "BackColor",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "TextColor",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "TextSize",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "Invisible",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "UpdatedDate",
-        "Type": "System.DateTime",
-        "IsRequired": false
-      },
-      {
-        "Name": "BranchId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "CategoryId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
-      },
-      {
-        "Name": "HasAttribute",
-        "Type": "System.Boolean",
-        "IsRequired": false
-      },
-      {
-        "Name": "AttributeId",
-        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "IsRequired": false
+        "Name": "newItem",
+        "Type": "POS.Contract.Dtos.ItemDto.UpdatedItemDto",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [
@@ -3165,6 +3088,58 @@
   },
   {
     "ContainingType": "POS.API.Controllers.ItemController",
+    "Method": "CreateClassification",
+    "RelativePath": "api/Item/CreateClassification",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "classificationDto",
+        "Type": "POS.Contract.Dtos.ItemDto.ItemsClassificationsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ItemDto.ItemsClassificationsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ItemController",
+    "Method": "DeleteClassification",
+    "RelativePath": "api/Item/DeleteClassification/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ItemController",
     "Method": "GetAllItems",
     "RelativePath": "api/Item/GetAllItems",
     "HttpMethod": "GET",
@@ -3189,6 +3164,26 @@
           "text/json"
         ],
         "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ItemController",
+    "Method": "GetClassifications",
+    "RelativePath": "api/Item/GetClassifications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyList\u00601[[POS.Contract.Dtos.ItemDto.ItemsClassificationsDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
       }
     ]
   },
@@ -3224,6 +3219,32 @@
           "text/json"
         ],
         "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ItemController",
+    "Method": "UpdateClassification",
+    "RelativePath": "api/Item/UpdateClassification",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "classificationDto",
+        "Type": "POS.Contract.Dtos.ItemDto.ItemsClassificationsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ItemDto.ItemsClassificationsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
       }
     ]
   },
@@ -3303,8 +3324,8 @@
         "IsRequired": true
       },
       {
-        "Name": "kitchenPrinter",
-        "Type": "POS.Core.Entities.Kitchen.KitchenPrinters",
+        "Name": "kitchenPrinterDto",
+        "Type": "POS.Contract.Dtos.KitchenDtos.KitchenPrintersDto",
         "IsRequired": true
       }
     ],
@@ -3713,6 +3734,115 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.PaymentMethodController",
+    "Method": "GetPaymentMethods",
+    "RelativePath": "api/PaymentMethod",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.PaymentDtos.PaymentMethodToReturnDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.PaymentMethodController",
+    "Method": "CreatePaymentMethod",
+    "RelativePath": "api/PaymentMethod",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "paymentMethodDto",
+        "Type": "POS.Contract.Dtos.PaymentDtos.PaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.PaymentDtos.PaymentMethodToReturnDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.PaymentMethodController",
+    "Method": "GetPaymentMethod",
+    "RelativePath": "api/PaymentMethod/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.PaymentDtos.PaymentMethodToReturnDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.PaymentMethodController",
+    "Method": "UpdatePaymentMethod",
+    "RelativePath": "api/PaymentMethod/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "paymentMethodDto",
+        "Type": "POS.Contract.Dtos.PaymentDtos.PaymentMethodDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.PaymentMethodController",
+    "Method": "DeletePaymentMethod",
+    "RelativePath": "api/PaymentMethod/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.PosFeatureSettingsController",
     "Method": "GetSettings",
     "RelativePath": "api/PosFeatureSettings/{computerName}",
@@ -4030,6 +4160,80 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.InventoryControllers.RecipeController",
+    "Method": "Create",
+    "RelativePath": "api/Recipe",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.RecipeDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryControllers.RecipeController",
+    "Method": "Update",
+    "RelativePath": "api/Recipe",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.RecipeDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryControllers.RecipeController",
+    "Method": "Delete",
+    "RelativePath": "api/Recipe/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryControllers.RecipeController",
+    "Method": "GetByItemId",
+    "RelativePath": "api/Recipe/{itemId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "itemId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.InventoryControllers.RecipeController",
+    "Method": "GetAll",
+    "RelativePath": "api/Recipe/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.ReportController",
     "Method": "GenerateDeliveryReceiptReport",
     "RelativePath": "api/Report/Generate-Delivery-Receipt",
@@ -4154,6 +4358,42 @@
   },
   {
     "ContainingType": "POS.API.Controllers.ReportingController",
+    "Method": "GetStaffOrders",
+    "RelativePath": "api/Reporting/staff-orders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "posDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "staffId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "staffType",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDtos.OrderDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ReportingController",
     "Method": "GetTodayOrders",
     "RelativePath": "api/Reporting/today-orders",
     "HttpMethod": "GET",
@@ -4182,6 +4422,132 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.SettingsController",
+    "Method": "UpdateDispatcherSettings",
+    "RelativePath": "api/Settings/dispatcher",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "POS.Contract.Dtos.SettingsDtos.DispatcherSettingsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.SettingsDtos.DispatcherSettingsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.SettingsController",
+    "Method": "GetDispatcherSettings",
+    "RelativePath": "api/Settings/dispatcher/{computerName}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "computerName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.SettingsDtos.DispatcherSettingsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.UnitController",
+    "Method": "GetAll",
+    "RelativePath": "api/Unit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.UnitController",
+    "Method": "Create",
+    "RelativePath": "api/Unit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.UnitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.UnitController",
+    "Method": "Update",
+    "RelativePath": "api/Unit",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "POS.Contract.Dtos.InventoryDtos.UnitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.UnitController",
+    "Method": "GetById",
+    "RelativePath": "api/Unit/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.UnitController",
+    "Method": "Delete",
+    "RelativePath": "api/Unit/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "POS.API.Controllers.UserSettingsController",
@@ -4273,6 +4639,11 @@
         "Name": "voidByName",
         "Type": "System.String",
         "IsRequired": false
+      },
+      {
+        "Name": "returnToStock",
+        "Type": "System.Boolean",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": [
@@ -4313,6 +4684,11 @@
       {
         "Name": "voidByName",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "returnToStock",
+        "Type": "System.Boolean",
         "IsRequired": false
       }
     ],

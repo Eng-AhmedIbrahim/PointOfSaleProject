@@ -29,6 +29,90 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts.css",
+      "PackagePath": "staticwebassets\\fonts.css"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\cairo-ar.woff2",
+      "PackagePath": "staticwebassets\\fonts\\cairo-ar.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\cairo-en.woff2",
+      "PackagePath": "staticwebassets\\fonts\\cairo-en.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\cairo-latinext.woff2",
+      "PackagePath": "staticwebassets\\fonts\\cairo-latinext.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\notosansarabic-arabic.woff2",
+      "PackagePath": "staticwebassets\\fonts\\notosansarabic-arabic.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\notosansarabic-latin.woff2",
+      "PackagePath": "staticwebassets\\fonts\\notosansarabic-latin.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\notosansarabic-latinext.woff2",
+      "PackagePath": "staticwebassets\\fonts\\notosansarabic-latinext.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\notosansarabic-math.woff2",
+      "PackagePath": "staticwebassets\\fonts\\notosansarabic-math.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\notosansarabic-symbols.woff2",
+      "PackagePath": "staticwebassets\\fonts\\notosansarabic-symbols.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\outfit-latin.woff2",
+      "PackagePath": "staticwebassets\\fonts\\outfit-latin.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\outfit-latinext.woff2",
+      "PackagePath": "staticwebassets\\fonts\\outfit-latinext.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\roboto-latin.woff2",
+      "PackagePath": "staticwebassets\\fonts\\roboto-latin.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\roboto-latinext.woff2",
+      "PackagePath": "staticwebassets\\fonts\\roboto-latinext.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-ar-400.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-ar-400.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-ar-500.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-ar-500.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-ar-700.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-ar-700.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-ar-800.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-ar-800.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-en-400.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-en-400.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-en-500.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-en-500.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-en-700.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-en-700.woff2"
+    },
+    {
+      "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\fonts\\tajawal-en-800.woff2",
+      "PackagePath": "staticwebassets\\fonts\\tajawal-en-800.woff2"
+    },
+    {
       "Id": "F:\\PointOfSaleProject\\src\\POS.Desktop\\wwwroot\\images\\Logo.png",
       "PackagePath": "staticwebassets\\images\\Logo.png"
     },

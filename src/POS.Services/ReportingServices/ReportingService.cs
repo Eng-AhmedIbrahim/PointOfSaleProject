@@ -34,7 +34,8 @@ public class ReportingService : IReportingService
         
         var voidedOrders = orders.Where(o => o.OrderState == OrderStates.Voided).ToList();
         summary.Overall.VoidAmount = voidedOrders.Sum(o => o.GrandTotal ?? 0);
-        summary.Overall.VoidCount = voidedOrders.Count;
+        summary.Overall.VoidCount = voidedOrders.Sum(o => o.VoidCount ?? 0);
+        summary.Overall.TotalDiscount = summary.DineIn.Discount + summary.Delivery.Discount + summary.TakeAway.Discount;
 
         decimal total = summary.Overall.TotalSales + summary.Overall.PendingAmount;
         if (total > 0)
@@ -113,6 +114,24 @@ public class ReportingService : IReportingService
         return _mapper.Map<List<OrderDto>>(orders.OrderByDescending(o => o.OrderDate).ToList());
     }
 
+    public async Task<List<OrderDto>> GetStaffOrdersAsync(DateTime posDate, string staffId, string staffType)
+    {
+        Expression<Func<Orders, bool>> criteria = o => o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date;
+
+        if (staffType.Equals("Cashier", StringComparison.OrdinalIgnoreCase))
+            criteria = o => o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date && o.CashierID == staffId;
+        else if (staffType.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+            criteria = o => o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date && o.WaiterID == staffId;
+        else if (staffType.Equals("Driver", StringComparison.OrdinalIgnoreCase))
+            criteria = o => o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date && o.DriverID == staffId;
+
+        var spec = new BaseSpecifications<Orders>(criteria);
+        spec.Includes.Add(o => o.OrderDetails!);
+        spec.AddThenInclude("OrderDetails.OrderItemAttributes");
+        var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+        return _mapper.Map<List<OrderDto>>(orders.OrderByDescending(o => o.OrderDate).ToList());
+    }
+
     public async Task<List<SalesItemSummaryDto>> GetSalesItemsSummaryAsync(DateTime posDate)
     {
         var spec = new BaseSpecifications<Orders>(
@@ -132,7 +151,7 @@ public class ReportingService : IReportingService
         var attrItemToMenuItemDict = attributeItems.ToDictionary(a => a.Id, a => a.RelatedMenuItemId);
 
         // Build flat list of item rows (regular items + expanded attribute sub-items)
-        var rawRows = new List<(int MenuSalesItemId, string ItemName, string CategoryName, int Quantity, decimal TotalAmount)>();
+        var rawRows = new List<(int MenuSalesItemId, string ItemName, string CategoryName, decimal Quantity, decimal TotalAmount, decimal UnitPrice)>();
 
         foreach (var order in orders)
         {
@@ -144,7 +163,8 @@ public class ReportingService : IReportingService
                 var itemName = d.ItemName ?? "";
                 var catName = d.CategoryName ?? "";
 
-                if (d.MenuSalesItemId.HasValue && menuDict.TryGetValue(d.MenuSalesItemId.Value, out var menuItem))
+                MenuSalesItems? menuItem = null;
+                if (d.MenuSalesItemId.HasValue && menuDict.TryGetValue(d.MenuSalesItemId.Value, out menuItem))
                 {
                     if (string.IsNullOrWhiteSpace(itemName)) itemName = menuItem.ArabicName ?? menuItem.EnglishName ?? "";
                     if (string.IsNullOrWhiteSpace(catName) && menuItem.CategoryId.HasValue && catDict.TryGetValue(menuItem.CategoryId.Value, out var cat))
@@ -159,7 +179,8 @@ public class ReportingService : IReportingService
                     itemName,
                     catName,
                     d.Quantity ?? 0,
-                    d.TotalAfterDiscount ?? d.TotalAmount ?? 0
+                    d.TotalAfterDiscount ?? d.TotalAmount ?? 0,
+                    menuItem?.Price ?? 0
                 ));
 
                 // If this item has attributes (it's an offer), expand its attribute sub-items
@@ -181,14 +202,14 @@ public class ReportingService : IReportingService
                                     relatedCatName = relatedCat.ArabicName ?? relatedCat.EnglishName ?? "";
                                 }
                             }
-                            // Each attribute sub-item gets quantity = offer quantity (e.g., 1 offer with 2 foul => 1 * 1 = 1 foul)
-                            // The attribute represents a single component, so each attr adds 1 * offer qty
+                            // Each attribute sub-item gets quantity = offer quantity
                             rawRows.Add((
                                 relatedMenuItemId,
                                 relatedItemName,
                                 relatedCatName,
                                 itemQty, // quantity of the offer
-                                0 // price is already accounted for in the offer total
+                                0, // price is already accounted for in the offer total
+                                relatedItem?.Price ?? 0
                             ));
                         }
                     }
@@ -204,7 +225,8 @@ public class ReportingService : IReportingService
                 ItemName = string.IsNullOrWhiteSpace(g.Key.ItemName) ? "صنف غير معروف" : g.Key.ItemName,
                 CategoryName = string.IsNullOrWhiteSpace(g.Key.CategoryName) ? "بدون تصنيف" : g.Key.CategoryName,
                 Quantity = g.Sum(r => r.Quantity),
-                TotalAmount = g.Sum(r => r.TotalAmount)
+                TotalAmount = g.Sum(r => r.TotalAmount),
+                UnitPrice = g.Max(r => r.UnitPrice)
             })
             .OrderByDescending(x => x.Quantity)
             .ToList();

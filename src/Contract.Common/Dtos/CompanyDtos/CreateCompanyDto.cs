@@ -7,6 +7,7 @@ public class CreateCompanyDto
         CreationDate = DateTime.Now;
         CreationDate.ToString("yyyy-MM-dd hh:mm:ss.fff tt zzz");
     }
+    public int Id { get; set; }
     public string? EnglishName { get; set; }
     public string? ArabicName { get; set; }
     public string? PhoneNumber { get; set; }

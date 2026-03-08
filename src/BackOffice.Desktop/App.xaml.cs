@@ -1,42 +1,14 @@
-using Microsoft.AspNetCore.Components.WebView.Wpf;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using System.IO;
 using System.Windows;
-using BlazorBase;
-using BlazorBase.ERPFrontServices.PrintOrderServices;
-using BackOffice.Desktop.Auth;
-using BackOffice.Desktop.Extensions;
-using MudBlazor.Services;
-using Blazored.LocalStorage;
-using System.Text.Json;
-using BlazorBase.ERPFrontServices.Section4ButtonsService;
-using BlazorBase.ERPFrontServices.CartServices;
-using BlazorBase.ERPFrontServices.CategoryServices;
-using BlazorBase.ERPFrontServices.AppDateServices;
-using BlazorBase.ERPFrontServices.DineInServices;
-using BlazorBase.ERPFrontServices.OrderServices;
-using BlazorBase.ERPFrontServices.DeliveryServices;
-using BlazorBase.ERPFrontServices.BranchServices;
-using BlazorBase.ERPFrontServices.DineInOrderServices;
 using BlazorBase.ERPFrontServices.OrderTrackServices;
 using BlazorBase.ERPFrontServices.ComplaintServices;
-using BlazorBase.ERPFrontServices.VoidServices;
 using BlazorBase.ERPFrontServices.ReportingServices;
-using BlazorBase.API;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Authorization;
-using POS.Authorization.Models;
-using BackOffice.Desktop.Components;
-using System.Net.Http;
+using BlazorBase.ERPFrontServices.CompanyServices;
+using BlazorBase.ERPFrontServices.PaymentMethodServices;
+using BlazorBase.ERPFrontServices.SettingsServices;
 using BackOffice.Desktop.Services;
-using POS.Core.Services.Contract.PrinterServices;
+using BlazorBase.ERPFrontServices.InventoryServices;
 using POS.Core.Services.Contract.PosFeatureServices;
-using Microsoft.Extensions.Localization;
-using ERPFront.HubSettings;
-using ERPFront.Models;
+using Radzen;
 
 namespace BackOffice.Desktop;
 
@@ -195,9 +167,10 @@ public partial class App : Application
             config.SnackbarConfiguration.VisibleStateDuration = 3000;
             config.SnackbarConfiguration.HideTransitionDuration = 500;
             config.SnackbarConfiguration.ShowTransitionDuration = 500;
-            config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+            config.SnackbarConfiguration.SnackbarVariant = MudBlazor.Variant.Filled;
         });
         services.AddBlazorBootstrap();
+        services.AddRadzenComponents();
         services.AddBlazoredLocalStorage();
 
         // Localization
@@ -252,17 +225,27 @@ public partial class App : Application
         services.AddScoped<IOrderSettingsService, OrderSettingsService>();
         services.AddScoped<IDeliveryServices, DeliveryServices>();
         services.AddScoped<IBranchService, BranchService>();
+        services.AddScoped<ICompanyService, CompanyService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.AccountServices.IAccountService, BlazorBase.ERPFrontServices.AccountServices.AccountService>();
         services.AddScoped<IPrintOrderService, DesktopPrintOrderService>();
         services.AddSingleton<CallCenterNotificationService>();
 
         // Category services
         services.AddScoped<ICategoryServices, CategoryService>();
+        services.AddScoped<IItemService, ItemService>();
+        services.AddScoped<IAttributeService, AttributeFrontService>();
         services.AddScoped<IDineInOrderFrontService, DineInOrderFrontService>();
         services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
         services.AddScoped<IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
         services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
         services.AddScoped<IVoidErpService, VoidErpService>();
         services.AddScoped<IReportingErpService, ReportingErpService>();
+        services.AddScoped<IPaymentMethodServices, BlazorBase.ERPFrontServices.PaymentMethodServices.PaymentMethodServices>();
+        services.AddScoped<ISystemSettingsServices, SystemSettingsServices>();
+        services.AddScoped<BlazorBase.ERPFrontServices.DataSyncServices.IDataSyncFrontService, BlazorBase.ERPFrontServices.DataSyncServices.DataSyncFrontService>();
+        services.AddScoped<IInventoryFrontService, InventoryFrontService>();
+        services.AddScoped<IRecipeFrontService, RecipeFrontService>();
+        services.AddScoped<IUnitFrontService, UnitFrontService>();
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));

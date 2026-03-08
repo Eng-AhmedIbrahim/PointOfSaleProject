@@ -253,8 +253,7 @@ namespace Pos.Repository.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     ArabicName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     EnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     NormalizedEnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
@@ -279,8 +278,7 @@ namespace Pos.Repository.Migrations
                 name: "MenuSalesItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Barcode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ArabicName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     EnglishName = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),

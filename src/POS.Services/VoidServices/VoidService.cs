@@ -2,10 +2,10 @@ using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.VoidDtos;
 using POS.Core.Entities.DineIn;
 using POS.Core.Entities.OrderEntity;
+using POS.Core.Entities.Item;
 using POS.Core.Repository.Contract;
 using POS.Core.Services.Contract.VoidServices;
-using POS.Core.Specifications.OrderSpecs;
-using POS.Core.Specifications;
+using POS.Core.Services.Contract.InventoryServices;
 using Serilog;
 
 namespace POS.Services.VoidServices;
@@ -13,10 +13,14 @@ namespace POS.Services.VoidServices;
 public class VoidService : IVoidService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IInventoryService _inventoryService;
+    private readonly IRecipeService _recipeService;
 
-    public VoidService(IUnitOfWork unitOfWork)
+    public VoidService(IUnitOfWork unitOfWork, IInventoryService inventoryService, IRecipeService recipeService)
     {
         _unitOfWork = unitOfWork;
+        _inventoryService = inventoryService;
+        _recipeService = recipeService;
     }
 
     public async Task<List<VoidReportDto>> GetVoidReportAsync(DateTime posDate)
@@ -100,7 +104,7 @@ public class VoidService : IVoidService
         return report;
     }
 
-    public async Task<bool> VoidOrderAsync(int orderId, string reason, string voidBy, string voidByName)
+    public async Task<bool> VoidOrderAsync(int orderId, string reason, string voidBy, string voidByName, bool returnToStock = false)
     {
         using var transaction = _unitOfWork.BeginTransaction();
         try
@@ -132,7 +136,7 @@ public class VoidService : IVoidService
             };
 
             decimal totalVoidedValue = 0;
-            int totalVoidedCount = 0;
+            decimal totalVoidedCount = 0;
 
             if (order.OrderDetails != null)
             {
@@ -141,7 +145,7 @@ public class VoidService : IVoidService
                     if (item.IsVoided == true) continue;
 
                     decimal itemValue = item.TotalAmount ?? 0;
-                    int itemQty = item.Quantity ?? 0;
+                    decimal itemQty = item.Quantity ?? 0;
 
                     var voidItem = new OrderVoidItem
                     {
@@ -167,8 +171,33 @@ public class VoidService : IVoidService
                     item.TotalAmount = 0;
                     item.TotalAfterDiscount = 0;
 
-                    totalVoidedValue += itemValue;
-                    totalVoidedCount += itemQty;
+                    // Inventory Management
+                    if (item.MenuSalesItemId.HasValue)
+                    {
+                        if (returnToStock)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                itemQty, 
+                                TransactionType.Void, 
+                                order.OrderID.ToString());
+                        }
+                        else
+                        {
+                            // Record as Waste: Return then consume as Waste to document the audit trail without changing final quantity
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                itemQty, 
+                                TransactionType.Void, 
+                                order.OrderID.ToString());
+                                
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value, 
+                                itemQty, 
+                                TransactionType.Waste, 
+                                order.OrderID.ToString());
+                        }
+                    }
                 }
             }
 
@@ -224,7 +253,7 @@ public class VoidService : IVoidService
         }
     }
 
-    public async Task<bool> VoidItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName)
+    public async Task<bool> VoidItemsAsync(int orderId, List<OrderItemVoidDto> itemsToVoid, string reason, string voidBy, string voidByName, bool returnToStock = false)
     {
         if (itemsToVoid == null || !itemsToVoid.Any()) return false;
 
@@ -255,14 +284,14 @@ public class VoidService : IVoidService
             };
 
             decimal voidedTotalValue = 0;
-            int voidedTotalCount = 0;
+            decimal voidedTotalCount = 0;
 
             foreach (var voidRequest in itemsToVoid)
             {
                 var item = order.OrderDetails?.FirstOrDefault(i => i.Id == voidRequest.OrderItemDetailId || i.MenuSalesItemId == voidRequest.OrderItemDetailId);
                 if (item == null || voidRequest.QuantityToVoid <= 0 || item.Quantity < voidRequest.QuantityToVoid) continue;
 
-                int qtyBefore = item.Quantity ?? 0;
+                decimal qtyBefore = item.Quantity ?? 0;
                 decimal unitPrice = qtyBefore > 0 ? (item.TotalAmount ?? 0) / qtyBefore : (item.UnitPrice ?? 0);
                 decimal valToVoid = unitPrice * voidRequest.QuantityToVoid;
 
@@ -291,7 +320,42 @@ public class VoidService : IVoidService
 
                 voidedTotalValue += valToVoid;
                 voidedTotalCount += voidRequest.QuantityToVoid;
+
+                // Inventory Management
+                if (item.MenuSalesItemId.HasValue)
+                {
+                    // Inventory Management
+                    if (item.MenuSalesItemId.HasValue)
+                    {
+                        if (returnToStock)
+                        {
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value,
+                                voidRequest.QuantityToVoid,
+                                TransactionType.Void,
+                                order.OrderID.ToString());
+                        }
+                        else
+                        {
+                            // Record as Waste: Return then consume as Waste to document the audit trail
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value,
+                                voidRequest.QuantityToVoid,
+                                TransactionType.Void,
+                                order.OrderID.ToString());
+
+                            await _inventoryService.ConsumeItemStockAsync(
+                                item.MenuSalesItemId.Value,
+                                voidRequest.QuantityToVoid,
+                                TransactionType.Waste,
+                                order.OrderID.ToString());
+                        }
+                    }
+                }
+
             }
+
+            if (voidedTotalCount == 0) return false;
 
             order.TotalVoid = (order.TotalVoid ?? 0) + voidedTotalValue;
             order.VoidCount = (order.VoidCount ?? 0) + voidedTotalCount;

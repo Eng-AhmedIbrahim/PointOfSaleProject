@@ -13,11 +13,21 @@ public class CartService : ICartService
        => SelectedItem = item;
 
     public void AppendNumberToQuantity(string number)
-    => UpdateQuantity(_ => int.Parse(number));
+    => UpdateQuantity(current =>
+    {
+        string currentStr = current.ToString();
+        string newStr = (current == 0 || current == 1) ? number : currentStr + number;
+        return decimal.TryParse(newStr, out decimal result) ? result : current;
+    });
 
     public void OnClickBS()
-     => UpdateQuantity(current => current > 9 ?
-                        int.Parse(current.ToString().Substring(0, current.ToString().Length - 1)) : 0);
+     => UpdateQuantity(current =>
+     {
+         string currentStr = current.ToString();
+         if (currentStr.Length <= 1) return 0;
+         string newStr = currentStr.Substring(0, currentStr.Length - 1);
+         return decimal.TryParse(newStr, out decimal result) ? result : 0;
+     });
 
     public void IncrementQuantity()
     => UpdateQuantity(current => current + 1);
@@ -25,7 +35,7 @@ public class CartService : ICartService
     public void DecrementQuantity()
     => UpdateQuantity(current => current - 1 <= 0 ? 1 : current - 1);
 
-    public void UpdateQuantity(Func<int, int> updateFunc)
+    public void UpdateQuantity(Func<decimal, decimal> updateFunc)
     {
         if (SelectedItem != null)
         {
@@ -39,9 +49,14 @@ public class CartService : ICartService
 
     public void RecalculateItemTotals(TableItem item)
     {
-        decimal originalTotal = item.Quantity * (item.Price ?? 0M);
-        item.Total = originalTotal; // Keep original gross total in .Total
-        
+        // For ByWeight items the qty is always 1 (price already includes weight factor)
+        decimal qty = item.Quantity;
+        decimal basePrice = item.Price ?? 0M;
+
+        decimal originalTotal = qty * basePrice;
+        item.Total = originalTotal; // gross before discount
+
+        // Apply line-item discount
         if (item.HasDiscount)
         {
             if (item.DiscountPercentage.HasValue && item.DiscountPercentage.Value > 0)
@@ -67,7 +82,18 @@ public class CartService : ICartService
             item.TotalAfterDiscount = originalTotal;
         }
 
-        item.TotalAmount = item.TotalAfterDiscount;
+        // Apply per-item tax (% from BackOffice) on the after-discount amount
+        if (item.HasTax && item.ItemTax.HasValue && item.ItemTax.Value > 0)
+        {
+            item.ItemTaxAmount = Math.Round((item.TotalAfterDiscount ?? 0) * (item.ItemTax.Value / 100), 2);
+        }
+        else
+        {
+            item.ItemTaxAmount = 0;
+        }
+
+        // TotalAmount = net after discount + item-level tax
+        item.TotalAmount = item.TotalAfterDiscount + item.ItemTaxAmount;
     }
 
     public void RemoveItem(List<TableItem> items)
@@ -88,19 +114,29 @@ public class CartService : ICartService
 
     private void UpdateAmount()
     {
-        decimal grossTotal = _commonProperties!.TableItems?.Sum(i => i.Quantity * (i.Price ?? 0M)) ?? 0M;
-        decimal totalLineDiscount = _commonProperties.TableItems?.Sum(i => i.TotalDiscountPrice ?? 0M) ?? 0M;
-        
+        if (_commonProperties?.TableItems == null) return;
+
+        // Current net total (sum of (qty * price) - line discount) for all items
+        decimal netTotalBeforeTax = _commonProperties.TableItems
+            .Sum(i => (i.Quantity * (i.Price ?? 0M)) - (i.TotalDiscountPrice ?? 0M));
+
+        decimal grossTotal = _commonProperties.TableItems
+            .Sum(i => i.Quantity * (i.Price ?? 0M));
+
+        decimal totalLineDiscount = _commonProperties.TableItems
+            .Sum(i => i.TotalDiscountPrice ?? 0M);
+
         _commonProperties.TotalLineDiscount = totalLineDiscount;
-        
-        // Account (Index 0) will show Gross Total
+
+        // Account (Index 0): Gross total before any discount or tax
         if (_commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 0)
         {
             _commonProperties._financeSettingsList[0].Value = FormatValue(grossTotal);
         }
 
-        // We'll store the net-after-line price for Tax/Service calculation
-        _commonProperties.SubTotal = grossTotal - totalLineDiscount;
+        // SubTotal = net price before any taxes (item or order level)
+        // This is the base for calculating order-level Service/Tax
+        _commonProperties.SubTotal = netTotalBeforeTax;
     }
 
     private decimal FormatValue(decimal value)
@@ -259,10 +295,13 @@ public class CartService : ICartService
 
     private decimal CalculateTotalAmountHelper(dynamic settings, decimal Amount)
     {
-        decimal taxRate = settings.Tax ?? 0M;
+        decimal orderTaxRate = settings.Tax ?? 0M;
         decimal serviceRate = settings.Service ?? 0M;
 
-        decimal taxAmount = (taxRate * Amount) / 100;
+        // 1. Calculate order-level tax based on subtotal
+        decimal orderTaxAmount = (orderTaxRate * Amount) / 100;
+        
+        // 2. Calculate service based on subtotal
         decimal serviceAmount = (serviceRate * Amount) / 100;
 
         if (settings is DeliverySettings && _commonProperties?.CustomerDetails?.ZoneFees > 0)
@@ -270,17 +309,25 @@ public class CartService : ICartService
             serviceAmount = _commonProperties.CustomerDetails.ZoneFees;
         }
 
-        // Store these in finance settings if they exist
+        // 3. Sum of all per-item taxes
+        decimal totalItemTax = _commonProperties?.TableItems?.Sum(i => i.ItemTaxAmount) ?? 0M;
+
+        // 4. Combined Tax for Display (Order Tax + Item Taxes)
+        decimal combinedTaxForDisplay = orderTaxAmount + totalItemTax;
+
+        // Store these in finance settings labels
         if (_commonProperties?._financeSettingsList != null)
         {
             if (_commonProperties._financeSettingsList.Count > 2)
-                _commonProperties._financeSettingsList[2].Value = FormatValue(taxAmount);
+                _commonProperties._financeSettingsList[2].Value = FormatValue(combinedTaxForDisplay);
             if (_commonProperties._financeSettingsList.Count > 3)
                 _commonProperties._financeSettingsList[3].Value = FormatValue(serviceAmount);
         }
 
-        var amount = Amount + taxAmount + serviceAmount;
-        return Math.Round(amount * 2, MidpointRounding.AwayFromZero) / 2;
+        // Total = Net Amount + Combined Taxes + Service
+        var totalAmount = Amount + totalItemTax + orderTaxAmount + serviceAmount;
+        
+        return Math.Round(totalAmount * 2, MidpointRounding.AwayFromZero) / 2;
     }
     public async void NotifyStateChanged()
      => OnChange?.Invoke();

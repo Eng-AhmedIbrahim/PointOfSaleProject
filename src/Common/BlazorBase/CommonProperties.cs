@@ -1,4 +1,7 @@
-﻿namespace BlazorBase;
+﻿using POS.Contract.Models;
+using POS.Contract.Dtos.PaymentDtos;
+
+namespace BlazorBase;
 
 public class CommonProperties
 {
@@ -41,6 +44,8 @@ public class CommonProperties
         }
     }
     public string? PaymentMethod { get; set; } = "Cash";
+    public List<PaymentMethodToReturnDto> AvailablePaymentMethods { get; set; } = new();
+    public int SelectedPaymentMethodId { get; set; }
 
     public int CurrentOrderCount { get; set; }
 
