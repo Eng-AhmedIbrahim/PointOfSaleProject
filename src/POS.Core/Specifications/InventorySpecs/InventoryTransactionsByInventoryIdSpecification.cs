@@ -6,5 +6,6 @@ public class InventoryTransactionsByInventoryIdSpecification : BaseSpecification
         : base(x => x.InventoryItemId == inventoryId)
     {
         AddOrderByDesc(x => x.CreatedAt);
+        Includes.Add(x => x.Images);
     }
 }

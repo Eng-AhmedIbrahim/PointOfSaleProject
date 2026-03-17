@@ -14,4 +14,6 @@ public class CustomerAddressDto
     public int DeliveryCustomerId { get; set; }
     public int BranchId { get; set; }
     public decimal DeliveryFee { get; set; }
+    public decimal ZoneBonus { get; set; }
+
 }

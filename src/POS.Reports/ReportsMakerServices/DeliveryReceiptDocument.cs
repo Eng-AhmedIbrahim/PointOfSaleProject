@@ -1,4 +1,7 @@
-﻿namespace POS.Reports.ReportsMakerServices;
+using POS.Contract.Models.ReceiptModels;
+using POS.Contract.Models.ReceiptModels.Delivery;
+
+namespace POS.Reports.ReportsMakerServices;
 
 public class DeliveryReceiptDocument : IDocument
 {
@@ -133,6 +136,22 @@ public class DeliveryReceiptDocument : IDocument
             table.Cell().PaddingTop(5).Text(_receipt.DateCreated.ToString("d/M/yyyy")).AlignCenter();
             table.Cell().PaddingTop(5).Text(_receipt.DateCreated.ToString("h:mm:ss tt")).AlignCenter();
         });
+
+        if (_receipt.IsVoid)
+        {
+            column.Item()
+                .PaddingTop(6)
+                .Border(3)
+                .BorderColor(Colors.Red.Medium)
+                .AlignCenter()
+                .Text(text =>
+                {
+                    text.Span("X  ملغي  X")
+                        .Bold()
+                        .FontSize(40)
+                        .FontColor(Colors.Red.Medium);
+                });
+        }
     }
 
     private void BuildOrderInfo(ref ColumnDescriptor column)
@@ -214,6 +233,7 @@ public class DeliveryReceiptDocument : IDocument
                     TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
                     Attributes = first.Attributes,
                     IsVoided = first.IsVoided,
+                    VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage
                 };
@@ -262,8 +282,25 @@ public class DeliveryReceiptDocument : IDocument
                 {
                     table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
+                    table.Cell().Element(CellStyle).AlignRight().Text(text => {
+                        text.Span(item.Name);
+                        if (item.IsVoided == true && item.Quantity == 0) {
+                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
+                        }
+                    });
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+
+                    // Add Voided hint if available and item still has active quantity
+                    if (item.VoidAmount > 0 && item.Quantity > 0)
+                    {
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(45)
+                            .Text($"✖ ملغي: {item.VoidAmount.Value.ToString("0.##")}")
+                            .FontSize(10)
+                            .FontColor(Colors.Red.Medium)
+                            .AlignRight();
+                    }
 
                     // Add attributes if available
                     if (item.Attributes?.Any() == true)

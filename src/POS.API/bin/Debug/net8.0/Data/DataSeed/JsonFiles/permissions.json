@@ -478,5 +478,333 @@
         "ScreenArabicName": "شاشة الانتظار",
         "ScreenEnglishName": "Waiting Page Actions",
         "IsBackOffice": false
+    },
+    {
+        "Name": "CanAccessBackOffice",
+        "PoliceArabicName": "دخول لوحة التحكم",
+        "PoliceEnglishNameEn": "Access Back Office",
+        "ScreenArabicName": "عام",
+        "ScreenEnglishName": "General",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewDashboardAtBackOffice",
+        "PoliceArabicName": "عرض لوحة البيانات",
+        "PoliceEnglishNameEn": "View Dashboard",
+        "ScreenArabicName": "عام",
+        "ScreenEnglishName": "General",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageCompanySettingsAtBackOffice",
+        "PoliceArabicName": "إدارة الفروع والشركة",
+        "PoliceEnglishNameEn": "Manage Company & Branches",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageOrderSettingsAtBackOffice",
+        "PoliceArabicName": "إدارة إعدادات الأوردر",
+        "PoliceEnglishNameEn": "Manage Order Settings",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManagePrinterSettingsAtBackOffice",
+        "PoliceArabicName": "إدارة إعدادات الطابعات",
+        "PoliceEnglishNameEn": "Manage Printer Settings",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageSystemFeaturesAtBackOffice",
+        "PoliceArabicName": "إدارة خصائص النظام",
+        "PoliceEnglishNameEn": "Manage System Features",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanSyncDataAtBackOffice",
+        "PoliceArabicName": "تحديث البيانات",
+        "PoliceEnglishNameEn": "Sync Data",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageGeneralSettingsAtBackOffice",
+        "PoliceArabicName": "الإعدادات العامة",
+        "PoliceEnglishNameEn": "General Settings",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManagePosSettingsAtBackOffice",
+        "PoliceArabicName": "إعدادات نقاط البيع",
+        "PoliceEnglishNameEn": "POS Settings",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageLanguageSettingsAtBackOffice",
+        "PoliceArabicName": "إعدادات اللغة",
+        "PoliceEnglishNameEn": "Language Settings",
+        "ScreenArabicName": "الإعدادات",
+        "ScreenEnglishName": "Settings",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageUsersAtBackOffice",
+        "PoliceArabicName": "إدارة المستخدمين",
+        "PoliceEnglishNameEn": "Manage Users",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageRolesAtBackOffice",
+        "PoliceArabicName": "إدارة الأدوار",
+        "PoliceEnglishNameEn": "Manage Roles",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManagePermissionsAtBackOffice",
+        "PoliceArabicName": "إدارة الصلاحيات",
+        "PoliceEnglishNameEn": "Manage Permissions",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageItemsAtBackOffice",
+        "PoliceArabicName": "إدارة الأصناف والمنيو",
+        "PoliceEnglishNameEn": "Manage Items & Menu",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageCategoriesAtBackOffice",
+        "PoliceArabicName": "إدارة الفئات",
+        "PoliceEnglishNameEn": "Manage Categories",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageTablesAtBackOffice",
+        "PoliceArabicName": "إدارة الطاولات",
+        "PoliceEnglishNameEn": "Manage Tables",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageZonesAtBackOffice",
+        "PoliceArabicName": "إدارة مناطق التوصيل",
+        "PoliceEnglishNameEn": "Manage Delivery Zones",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManagePaymentMethodsAtBackOffice",
+        "PoliceArabicName": "إدارة طرق الدفع",
+        "PoliceEnglishNameEn": "Manage Payment Methods",
+        "ScreenArabicName": "البيانات الأساسية",
+        "ScreenEnglishName": "Basic Data",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageInventoryAtBackOffice",
+        "PoliceArabicName": "إدارة المخازن",
+        "PoliceEnglishNameEn": "Manage Inventory",
+        "ScreenArabicName": "المخازن",
+        "ScreenEnglishName": "Inventory",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageRawMaterialsAtBackOffice",
+        "PoliceArabicName": "إدارة المواد الخام",
+        "PoliceEnglishNameEn": "Manage Raw Materials",
+        "ScreenArabicName": "المخازن",
+        "ScreenEnglishName": "Inventory",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageSemiFinishedItemsAtBackOffice",
+        "PoliceArabicName": "إدارة الأصناف نصف المصنعة",
+        "PoliceEnglishNameEn": "Manage Semi-Finished Items",
+        "ScreenArabicName": "المخازن",
+        "ScreenEnglishName": "Inventory",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageRecipesAtBackOffice",
+        "PoliceArabicName": "إدارة الريسيبي",
+        "PoliceEnglishNameEn": "Manage Recipes (BOM)",
+        "ScreenArabicName": "المخازن",
+        "ScreenEnglishName": "Inventory",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanManageUnitsAtBackOffice",
+        "PoliceArabicName": "إدارة الوحدات",
+        "PoliceEnglishNameEn": "Manage Units",
+        "ScreenArabicName": "المخازن",
+        "ScreenEnglishName": "Inventory",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanAssignDriverAtBackOffice",
+        "PoliceArabicName": "تعيين سائق",
+        "PoliceEnglishNameEn": "Assign Driver",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewOrderAtBackOffice",
+        "PoliceArabicName": "عرض تفاصيل الطلب",
+        "PoliceEnglishNameEn": "View Order Details",
+        "ScreenArabicName": "الطلبات",
+        "ScreenEnglishName": "Orders",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanVoidOrderAtBackOffice",
+        "PoliceArabicName": "إلغاء الطلب",
+        "PoliceEnglishNameEn": "Void Order",
+        "ScreenArabicName": "الطلبات",
+        "ScreenEnglishName": "Orders",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanPrintOrderAtBackOffice",
+        "PoliceArabicName": "طباعة الطلب",
+        "PoliceEnglishNameEn": "Print Order",
+        "ScreenArabicName": "الطلبات",
+        "ScreenEnglishName": "Orders",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanPrintKitchenOrderAtBackOffice",
+        "PoliceArabicName": "طباعة بون المطبخ",
+        "PoliceEnglishNameEn": "Print Kitchen Order",
+        "ScreenArabicName": "الطلبات",
+        "ScreenEnglishName": "Orders",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanUnDispatchOrderAtBackOffice",
+        "PoliceArabicName": "إلغاء توزيع الطلب",
+        "PoliceEnglishNameEn": "Un-Dispatch Order",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanCollectOrderAtBackOffice",
+        "PoliceArabicName": "تحصيل الطلب",
+        "PoliceEnglishNameEn": "Collect Order",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewDriversListAtBackOffice",
+        "PoliceArabicName": "عرض قائمة السائقين",
+        "PoliceEnglishNameEn": "View Drivers List",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewVoidHistoryAtBackOffice",
+        "PoliceArabicName": "عرض سجل الإلغاءات",
+        "PoliceEnglishNameEn": "View Void History",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewDriverSettlementAtBackOffice",
+        "PoliceArabicName": "تسوية حساب السائق",
+        "PoliceEnglishNameEn": "Driver Settlement",
+        "ScreenArabicName": "التوزيع",
+        "ScreenEnglishName": "Distribution",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewSummaryDetailsAtBackOffice",
+        "PoliceArabicName": "عرض تفاصيل الملخص",
+        "PoliceEnglishNameEn": "View Summary Details",
+        "ScreenArabicName": "الملخص",
+        "ScreenEnglishName": "Summary",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanPrintSummaryReportAtBackOffice",
+        "PoliceArabicName": "طباعة تقرير الملخص",
+        "PoliceEnglishNameEn": "Print Summary Report",
+        "ScreenArabicName": "الملخص",
+        "ScreenEnglishName": "Summary",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanPrintStaffAccountsAtBackOffice",
+        "PoliceArabicName": "طباعة تقارير حسابات الموظفين",
+        "PoliceEnglishNameEn": "Print Staff Accounts",
+        "ScreenArabicName": "الحسابات",
+        "ScreenEnglishName": "Accounts",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewBackOfficeTransactionsAtBackOffice",
+        "PoliceArabicName": "عرض العمليات",
+        "PoliceEnglishNameEn": "View Transactions",
+        "ScreenArabicName": "العمليات",
+        "ScreenEnglishName": "Transactions",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewBackOfficeReportsAtBackOffice",
+        "PoliceArabicName": "عرض التقارير",
+        "PoliceEnglishNameEn": "View Reports",
+        "ScreenArabicName": "التقارير",
+        "ScreenEnglishName": "Reports",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewQueriesAtBackOffice",
+        "PoliceArabicName": "عرض الاستعلامات",
+        "PoliceEnglishNameEn": "View Queries",
+        "ScreenArabicName": "الاستعلامات",
+        "ScreenEnglishName": "Queries",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewRegistrationAtBackOffice",
+        "PoliceArabicName": "عرض التسجيل",
+        "PoliceEnglishNameEn": "View Registration",
+        "ScreenArabicName": "التسجيل",
+        "ScreenEnglishName": "Registration",
+        "IsBackOffice": true
+    },
+    {
+        "Name": "CanViewClosingAtBackOffice",
+        "PoliceArabicName": "عرض الإغلاق",
+        "PoliceEnglishNameEn": "View Closing",
+        "ScreenArabicName": "الإغلاق",
+        "ScreenEnglishName": "Closing",
+        "IsBackOffice": true
     }
 ]

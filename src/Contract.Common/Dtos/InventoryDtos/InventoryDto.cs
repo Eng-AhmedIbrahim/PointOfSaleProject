@@ -27,7 +27,10 @@ public class UpdateStockDto
     public int MenuSalesItemId { get; set; }
     public decimal QuantityChange { get; set; }
     public int TransactionType { get; set; } // Map to TransactionType enum
+    public string? Reason { get; set; }
+    public string? ImagePaths { get; set; } // Comma separated or JSON
     public string? Notes { get; set; }
+    public string? CreatedBy { get; set; }
 }
 
 public class InventoryTransactionDto
@@ -37,6 +40,9 @@ public class InventoryTransactionDto
     public decimal ResultingQuantity { get; set; }
     public string? Type { get; set; }
     public string? ReferenceId { get; set; }
+    public string? Reason { get; set; }
+    public string? ImagePaths { get; set; }
     public string? Notes { get; set; }
+    public string? CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
 }

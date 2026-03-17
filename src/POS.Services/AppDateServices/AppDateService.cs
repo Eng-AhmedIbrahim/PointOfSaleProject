@@ -1,4 +1,8 @@
-﻿namespace POS.Services.AppDateServices;
+﻿using System.Linq.Expressions;
+using POS.Core.Entities.OrderEntity;
+using Serilog;
+
+namespace POS.Services.AppDateServices;
 
 public class AppDateService : IAppDateService
 {
@@ -44,5 +48,56 @@ public class AppDateService : IAppDateService
         _unitOfWork.Repository<AppDate>().Update(appDate);
         await _unitOfWork.CompleteAsync();
         return appDate;
+    }
+
+    public async Task<bool> CheckEndOfDayStatusAsync()
+    {
+        try
+        {
+            var appDate = await GetAppDateAsync();
+            if (appDate == null) return false;
+
+            // Check if any orders exist for today that are NOT in a final state
+            // Final states are Completed, Voided, and Canceled.
+            Expression<Func<Orders, bool>> criteria = o => 
+                o.OrderDate.HasValue && 
+                o.OrderDate.Value.Date == appDate.PosDate.Date &&
+                o.OrderState != OrderStates.Completed &&
+                o.OrderState != OrderStates.Voided &&
+                o.OrderState != OrderStates.Canceled;
+
+            var hasPending = await _unitOfWork.Repository<Orders>().ExistsAsync(criteria);
+            return !hasPending;
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Failed to Check End Of Day Status");
+            return false;
+        }
+    }
+
+    public async Task<bool> CloseDayAsync()
+    {
+        try
+        {
+            var appDate = await GetAppDateAsync();
+            if (appDate == null) return false;
+
+            // Increment dates
+            appDate.PosDate = appDate.PosDate.AddDays(1);
+            appDate.StoreDate = appDate.StoreDate.AddDays(1);
+            
+            // Reset order number
+            appDate.CurrentOrderNumber = 1;
+
+            _unitOfWork.Repository<AppDate>().Update(appDate);
+            var result = await _unitOfWork.CompleteAsync();
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Failed to Close Day");
+            return false;
+        }
     }
 }

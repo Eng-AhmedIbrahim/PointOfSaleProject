@@ -1,4 +1,4 @@
-﻿using POS.Contract;
+using POS.Contract;
 
 namespace BlazorBase.ERPFrontServices.DeliveryServices;
 
@@ -53,9 +53,9 @@ public class DeliveryServices : IDeliveryServices
     }
 
 
-    public async Task<DeliveryCustomerDto> CreateClientAsync(DeliveryCustomerDto deliveryCustomer)
+    public async Task<DeliveryCustomerToReturnDto> CreateClientAsync(DeliveryCustomerDto deliveryCustomer)
     {
-        return await GetApiResponseAsync<DeliveryCustomerDto>(
+        return await GetApiResponseAsync<DeliveryCustomerToReturnDto>(
         () => CreateClientAsyncRequest(deliveryCustomer),
         "Failed to Create Client from the API."
         ) ?? new();

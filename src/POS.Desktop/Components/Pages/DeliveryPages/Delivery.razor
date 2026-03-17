@@ -1,4 +1,4 @@
-﻿@page "/delivery"
+@page "/delivery"
 @layout MainLayout
 @inject CommonProperties _commonProperties
 @inject IHttpClientFactory _httpClientFactory
@@ -342,16 +342,7 @@
         return Task.FromResult(result);
     }
 
-    // private async Task OnValueChanged(string selectedBranch)
-    // {
-    //     IsBranchSelected = true;
-    //     _commonProperties!.CustomerDetails!.BranchName = selectedBranch;
-    //     var branchId = Branches!.Where(n => n.Name == selectedBranch).Select(b => b.Id).FirstOrDefault();
-    //     var zonesToReturnDtos = await _deliveryServices.GetDeliveryZonesAsync();
-    //     Zones = zonesToReturnDtos.ToList();
-    // }
-
-
+ 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
@@ -377,6 +368,30 @@
 
                 // Update UI with basic customer info first
                 CustomerStats = client;
+                
+                // Set initial zone from the first address if available
+                var firstAddr = client.CustomerAddresses?.FirstOrDefault();
+                if (firstAddr != null)
+                {
+                    // Sync with latest data from master Zones list
+                    var zoneSync = Zones?.FirstOrDefault(z => z.Id == firstAddr.DeliveryZoneId);
+                    
+                    SelectedZone = zoneSync ?? new DeliveryZonesToReturnDto
+                    {
+                        Id = firstAddr.DeliveryZoneId,
+                        ZoneName = firstAddr.ZoneName,
+                        DeliveryFee = firstAddr.DeliveryFee,
+                        BranchId = firstAddr.BranchId,
+                        ZoneBonus = firstAddr.ZoneBonus
+                    };
+                    
+                    _commonProperties.CustomerDetails!.ZoneID = firstAddr.DeliveryZoneId;
+                    _commonProperties.CustomerDetails.BranchId = firstAddr.BranchId;
+                    _commonProperties.CustomerDetails.ZoneName = firstAddr.ZoneName;
+                    _commonProperties.CustomerDetails.ZoneFees = zoneSync?.DeliveryFee ?? firstAddr.DeliveryFee;
+                    _commonProperties.CustomerDetails.BranchName = firstAddr.BranchName;
+                    _commonProperties.CustomerDetails.ZoneBonus = zoneSync?.ZoneBonus ?? firstAddr.ZoneBonus;
+                }
 
                 // Populate Last 10 Orders
                 if (client.Last10Orders != null)
@@ -393,9 +408,7 @@
                     }).ToList();
                 }
                 else
-                {
                     _orders = new();
-                }
 
                 await InvokeAsync(StateHasChanged);
 
@@ -473,33 +486,75 @@
 
     private void ClearCustomerDataExceptPhone()
     {
+        // Preserve current zone info if available
+        var currentZoneId = _commonProperties.CustomerDetails?.ZoneID ?? 0;
+        var currentZoneName = _commonProperties.CustomerDetails?.ZoneName;
+        var currentZoneFees = _commonProperties.CustomerDetails?.ZoneFees ?? 0;
+        var currentBranchId = _commonProperties.CustomerDetails?.BranchId ?? 0;
+        var currentBranchName = _commonProperties.CustomerDetails?.BranchName;
+
         var phone = _commonProperties.CustomerDetails?.FirstPhoneNumber;
         _commonProperties.CustomerDetails = new BlazorBase.Models.DeliveryModels.CustomerDetails
         {
-            FirstPhoneNumber = phone
+            FirstPhoneNumber = phone,
+            ZoneID = currentZoneId,
+            ZoneName = currentZoneName,
+            ZoneFees = currentZoneFees,
+            BranchId = currentBranchId,
+            BranchName = currentBranchName
         };
-        SelectedZone = null;
+
+        // Maintain SelectedZone UI state
+        if (currentZoneId > 0)
+        {
+            SelectedZone = Zones.FirstOrDefault(z => z.Id == currentZoneId) ?? new DeliveryZonesToReturnDto
+            {
+                Id = currentZoneId,
+                ZoneName = currentZoneName,
+                DeliveryFee = currentZoneFees,
+                BranchId = currentBranchId
+            };
+        }
+        else
+        {
+            SelectedZone = null;
+        }
     }
 
     private void BackupCustomerDetails(DeliveryCustomerToReturnDto client)
     {
         var clientAddress = client!.CustomerAddresses!.FirstOrDefault();
+        if (clientAddress == null) return;
+
         _commonProperties.CustomerDetails!.FirstPhoneNumber = client.FirstPhoneNumber;
         _commonProperties.CustomerDetails.SecondPhoneNumber = client.SecondPhoneNumber;
         _commonProperties.CustomerDetails.CustomerName = client.CustomerName;
         _commonProperties.CustomerDetails.ClientTitle = client.ClientTitle;
-        _commonProperties.CustomerDetails.FloorNumber = clientAddress!.FloorNumber;
-        _commonProperties.CustomerDetails.FlatNumber = clientAddress!.FlatNumber;
-        _commonProperties.CustomerDetails.HomeNumber = clientAddress!.HomeNumber;
-        _commonProperties.CustomerDetails.ClientAddress = clientAddress!.ClientAddress;
-        _commonProperties.CustomerDetails.AddressNote = clientAddress!.AddressNote;
-        _commonProperties.CustomerDetails.BranchName = clientAddress!.BranchName;
-        _commonProperties.CustomerDetails.ZoneName = clientAddress!.ZoneName;
+        _commonProperties.CustomerDetails.FloorNumber = clientAddress.FloorNumber;
+        _commonProperties.CustomerDetails.FlatNumber = clientAddress.FlatNumber;
+        _commonProperties.CustomerDetails.HomeNumber = clientAddress.HomeNumber;
+        _commonProperties.CustomerDetails.ClientAddress = clientAddress.ClientAddress;
+        _commonProperties.CustomerDetails.AddressNote = clientAddress.AddressNote;
+        _commonProperties.CustomerDetails.BranchName = clientAddress.BranchName;
+        _commonProperties.CustomerDetails.ZoneName = clientAddress.ZoneName;
         _commonProperties.CustomerDetails.CustomerAddressId = clientAddress.Id;
         _commonProperties.CustomerDetails.ZoneID = clientAddress.DeliveryZoneId;
         _commonProperties.CustomerDetails.Id = clientAddress.DeliveryCustomerId;
         _commonProperties.CustomerDetails.BranchId = clientAddress.BranchId;
+        
+        // Use fee from address, but sync with current Zones list for latest price and bonus if possible
         _commonProperties.CustomerDetails.ZoneFees = clientAddress.DeliveryFee;
+        _commonProperties.CustomerDetails.ZoneBonus = clientAddress.ZoneBonus;
+        
+        var zoneSync = Zones?.FirstOrDefault(z => z.Id == clientAddress.DeliveryZoneId);
+        if (zoneSync != null)
+        {
+            if (zoneSync.DeliveryFee.HasValue)
+                _commonProperties.CustomerDetails.ZoneFees = zoneSync.DeliveryFee.Value;
+            
+            if (zoneSync.ZoneBonus.HasValue)
+                _commonProperties.CustomerDetails.ZoneBonus = zoneSync.ZoneBonus.Value;
+        }
 
         SafeAddressSelected();
     }

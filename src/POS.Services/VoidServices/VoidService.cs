@@ -169,7 +169,10 @@ public class VoidService : IVoidService
                     item.VoidReason = reason;
                     item.Quantity = 0;
                     item.TotalAmount = 0;
-                    item.TotalAfterDiscount = 0;
+                    item.TotalAfterDiscount = null;
+
+                    totalVoidedValue += itemValue;
+                    totalVoidedCount += itemQty;
 
                     // Inventory Management
                     if (item.MenuSalesItemId.HasValue)
@@ -202,6 +205,7 @@ public class VoidService : IVoidService
             }
 
             order.OrderState = OrderStates.Voided;
+            order.TableState = "Closed";
             order.VoidTime = voidTime;
             order.VoidByName = voidByName;
             order.VoidBy = voidBy;
@@ -316,7 +320,19 @@ public class VoidService : IVoidService
                 item.VoidReason = reason;
                 item.Quantity -= voidRequest.QuantityToVoid;
                 item.TotalAmount -= valToVoid;
-                if (voidRequest.QuantityToVoid > 0) item.IsVoided = true; // User wants it true even if partially voided 
+
+                // Proportionally reduce TotalAfterDiscount if it exists
+                if (item.TotalAfterDiscount.HasValue)
+                {
+                    decimal ratio = qtyBefore > 0 ? (qtyBefore - voidRequest.QuantityToVoid) / qtyBefore : 0;
+                    item.TotalAfterDiscount = item.TotalAfterDiscount.Value * ratio;
+                    
+                    // Cleanup if it becomes 0
+                    if (item.TotalAfterDiscount <= 0.001m)
+                        item.TotalAfterDiscount = null;
+                }
+
+                if (voidRequest.QuantityToVoid > 0) item.IsVoided = true; 
 
                 voidedTotalValue += valToVoid;
                 voidedTotalCount += voidRequest.QuantityToVoid;
@@ -366,35 +382,37 @@ public class VoidService : IVoidService
             if (!activeItems.Any())
             {
                 order.OrderState = OrderStates.Voided;
+                order.TableState = "Closed";
                 order.Subtotal = 0; order.Tax = 0; order.Service = 0; order.GrandTotal = 0;
                 voidOperation.IsFullVoid = true;
             }
             else
             {
-                if (order.OrderState != OrderStates.Dispatched && order.OrderState != OrderStates.Voided)
-                    order.OrderState = OrderStates.Voided;
-
                 decimal oldGrandTotal = order.GrandTotal ?? 0;
                 decimal subBefore = order.Subtotal ?? 1;
                 decimal newSub = activeItems.Sum(i => i.TotalAmount ?? 0);
-                order.Tax = (order.Tax ?? 0) * (newSub / subBefore);
-                order.Service = (order.Service ?? 0) * (newSub / subBefore);
+                
+                // Reduce fixed discount proportionally if applicable
+                if ((order.Discount ?? 0) > 0 && (order.DiscountPercentage == null || order.DiscountPercentage == 0))
+                {
+                    decimal ratio = subBefore > 0 ? (newSub / subBefore) : 0;
+                    order.Discount = Math.Round((order.Discount ?? 0) * ratio, 2);
+                }
+
+                // Recalculate Tax and Service based on new subtotal
+                decimal taxRatio = subBefore > 0 ? (newSub / subBefore) : 0;
+                order.Tax = Math.Round((order.Tax ?? 0) * taxRatio, 2);
+                order.Service = Math.Round((order.Service ?? 0) * taxRatio, 2);
+
                 order.Subtotal = newSub;
-                order.GrandTotal = newSub + (order.Tax ?? 0) + (order.Service ?? 0) + (order.DeliveryFees ?? 0) - (order.Discount ?? 0);
+                decimal calculatedGrandTotal = newSub + (order.Tax ?? 0) + (order.Service ?? 0) + (order.DeliveryFees ?? 0) - (order.Discount ?? 0);
+                order.GrandTotal = Math.Round(calculatedGrandTotal * 2, MidpointRounding.AwayFromZero) / 2;
 
                 decimal reduction = oldGrandTotal - (order.GrandTotal ?? 0);
                 if (reduction > 0)
                 {
-                    if ((order.Remain ?? 0) >= reduction)
-                    {
-                        order.Remain -= reduction;
-                    }
-                    else
-                    {
-                        decimal diff = reduction - (order.Remain ?? 0);
-                        order.Remain = 0;
-                        order.Paid = Math.Max(0, (order.Paid ?? 0) - diff);
-                    }
+                    order.Remain = (order.GrandTotal ?? 0) - (order.Paid ?? 0);
+                    if (order.Remain < 0) order.Remain = 0;
                 }
             }
 

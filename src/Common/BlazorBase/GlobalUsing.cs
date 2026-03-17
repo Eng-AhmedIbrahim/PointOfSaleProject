@@ -16,7 +16,7 @@ global using POS.Contract.Dtos.OrderDto;
 global using POS.Contract.Dtos.DineInDtos;
 global using BlazorBase.Models;
 global using POS.Contract.Enums;
-global using POS.Reports.Models;
+
 global using System.Security.Claims;
 global using System.Net.Http.Json;
 global using POS.Contract.Dtos.DeliveryDtos.DeliveryTitleDtos;

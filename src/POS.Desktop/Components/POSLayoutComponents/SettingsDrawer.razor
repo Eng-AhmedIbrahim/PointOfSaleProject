@@ -32,10 +32,9 @@
                 </MudButtonGroup>
             </div>
 
-            <LocalizationSettingsComponent />
-
             @if (CurrentPageName.Equals(PagesNames.POS))
             {
+                <LocalizationSettingsComponent />
                 <Section3SettingsComponent />
                 <FinanceSettingsComponent />
             }

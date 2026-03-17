@@ -1,4 +1,4 @@
-﻿using global::POS.Contract.Dtos.ReportingDtos;
+using global::POS.Contract.Dtos.ReportingDtos;
 namespace POS.Desktop.Components.Pages.SummaryPages;
 
 public partial class SummaryPage
@@ -87,6 +87,33 @@ public partial class SummaryPage
         catch (Exception ex)
         {
             Snackbar.Add("Error preparing preview: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task ShowDetailedSales()
+    {
+        try
+        {
+            var options = new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true };
+            var parameters = new DialogParameters { ["SelectedDate"] = SelectedDate };
+            await DialogService.ShowAsync<DetailedSalesDialog>("", parameters, options);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task OnCloseDay()
+    {
+        var parameters = new DialogParameters { ["Title"] = Localizer["CloseDay"] };
+        var options = new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<EndOfDayDialog>("", parameters, options);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled && result.Data is true)
+        {
+            await OnInitializedAsync(); // Refresh summary for new date
         }
     }
 }

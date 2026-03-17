@@ -1,3 +1,5 @@
+using POS.Contract.Models.ReceiptModels;
+
 public static class FakeDataGenerator
 {
     private static readonly Random Random = new();

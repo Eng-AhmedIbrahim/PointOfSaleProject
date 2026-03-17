@@ -1,4 +1,6 @@
-﻿namespace POS.Reports.ReportsMakerServices;
+using POS.Contract.Models.ReceiptModels;
+
+namespace POS.Reports.ReportsMakerServices;
 
 public class ReceiptDocument : IDocument
 {
@@ -131,6 +133,22 @@ public class ReceiptDocument : IDocument
 
                 text.AlignCenter();
             });
+
+        if (receipt.IsVoid)
+        {
+            column.Item()
+                .PaddingTop(6)
+                .Border(3)
+                .BorderColor(Colors.Red.Medium)
+                .AlignCenter()
+                .Text(text =>
+                {
+                    text.Span("X  ملغي  X")
+                        .Bold()
+                        .FontSize(40)
+                        .FontColor(Colors.Red.Medium);
+                });
+        }
     }
 
     private void BuildDateAndCashierInfo(ref ColumnDescriptor column)
@@ -193,6 +211,7 @@ public class ReceiptDocument : IDocument
                     TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
                     Attributes = first.Attributes,
                     IsVoided = first.IsVoided,
+                    VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
                     TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0),
@@ -244,11 +263,28 @@ public class ReceiptDocument : IDocument
                 {
                     table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.NameAr ?? item.Name).AlignEnd();
+                    table.Cell().Element(CellStyle).AlignRight().Text(text => {
+                        text.Span(item.NameAr ?? item.Name);
+                        if (item.IsVoided == true && item.Quantity == 0) {
+                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
+                        }
+                    });
                     
                     var qtyText = item.Quantity.ToString("0.##");
                     if (item.ByWeight) qtyText += " كجم";
                     table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
+
+                    // Add Voided hint if available and item still has active quantity
+                    if (item.VoidAmount > 0 && item.Quantity > 0)
+                    {
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(45)
+                            .Text($"✖ ملغي: {item.VoidAmount.Value.ToString("0.##")}")
+                            .FontSize(10)
+                            .FontColor(Colors.Red.Medium)
+                            .AlignRight();
+                    }
 
                     // Add Discount if available
                     if (item.HasDiscount)

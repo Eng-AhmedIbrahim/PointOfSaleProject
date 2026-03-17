@@ -534,6 +534,26 @@
   },
   {
     "ContainingType": "POS.API.Controllers.AppDateController",
+    "Method": "CloseDay",
+    "RelativePath": "api/AppDate/close-day",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.AppDateController",
     "Method": "GetAppDate",
     "RelativePath": "api/AppDate/get-app-date",
     "HttpMethod": "GET",
@@ -4326,6 +4346,32 @@
   },
   {
     "ContainingType": "POS.API.Controllers.ReportingController",
+    "Method": "GetPendingOrders",
+    "RelativePath": "api/Reporting/pending-orders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "posDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDtos.OrderDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ReportingController",
     "Method": "GetSalesItemsSummary",
     "RelativePath": "api/Reporting/sales-items-summary",
     "HttpMethod": "GET",
@@ -4335,6 +4381,11 @@
       {
         "Name": "posDate",
         "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "endDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
@@ -4361,6 +4412,11 @@
       {
         "Name": "posDate",
         "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "endDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       }
     ],
@@ -4434,6 +4490,32 @@
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.OrderDtos.OrderDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ReportsController",
+    "Method": "GenerateReport",
+    "RelativePath": "api/Reports/generate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "POS.Contract.Dtos.ReportingDtos.ReportRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ReportingDtos.ReportResponseDto",
         "MediaTypes": [
           "text/plain",
           "application/json",

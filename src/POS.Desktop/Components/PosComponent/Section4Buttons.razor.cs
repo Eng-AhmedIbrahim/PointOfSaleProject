@@ -1,8 +1,9 @@
-﻿namespace POS.Desktop.Components.PosComponent;
+namespace POS.Desktop.Components.PosComponent;
 
 using POS.Desktop.Components.PosDialog;
 using BlazorBase.Helpers;
 using Microsoft.Extensions.Logging;
+using BlazorBase.Components.Shared;
 
 public partial class Section4Buttons
 {
@@ -173,6 +174,8 @@ public partial class Section4Buttons
             _isProcessing = false;
         }
     }
+
+    
 
     private async Task<bool> PrintDineInOrder()
     {
@@ -395,6 +398,9 @@ public partial class Section4Buttons
                 
                 CheckIsTableExist(existingOrder);
                 
+                // Clear print count in memory as it was reset in DB
+                existingOrder.PrintCount = 0;
+                
                 _snackbar.Add("Order updated successfully", Severity.Success);
             }
             else
@@ -457,6 +463,11 @@ public partial class Section4Buttons
             {
                 existingItem.Quantity += newItem.Quantity;
                 existingItem.Total = existingItem.Quantity * existingItem.Price;
+                // If the item was partially voided, adding new units makes it active again for those units
+                if (existingItem.Quantity > 0)
+                {
+                    existingItem.IsVoided = false;
+                }
             }
             else
                 existingOrder.BasicOrderDetails!.Items.Add(newItem);
@@ -568,7 +579,7 @@ public partial class Section4Buttons
         };
         var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Large, FullWidth = true };
         
-        var dialog = await _dialogService.ShowAsync<POS.Desktop.Components.DineInComponents.VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+        var dialog = await _dialogService.ShowAsync<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
         var result = await dialog.Result;
 
         if (result != null && !result.Canceled && result.Data != null)

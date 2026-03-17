@@ -60,6 +60,7 @@ public class OrderItemsDetailsDto
     public decimal? Quantity { get; set; }
     public decimal? TotalAmount { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
+    public decimal? Total { get; set; }
     public string? OrderType { get; set; }
     public string? ItemNameAr { get; set; }
     public int? CategoryId { get; set; }

@@ -1017,6 +1017,35 @@
         }
       }
     },
+    "/api/AppDate/close-day": {
+      "put": {
+        "tags": [
+          "AppDate"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Attribute": {
       "post": {
         "tags": [
@@ -7592,6 +7621,14 @@
               "type": "string",
               "format": "date-time"
             }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         ],
         "responses": {
@@ -7728,6 +7765,54 @@
         }
       }
     },
+    "/api/Reporting/pending-orders": {
+      "get": {
+        "tags": [
+          "Reporting"
+        ],
+        "parameters": [
+          {
+            "name": "posDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Reporting/staff-orders": {
       "get": {
         "tags": [
@@ -7803,6 +7888,14 @@
               "type": "string",
               "format": "date-time"
             }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         ],
         "responses": {
@@ -7831,6 +7924,54 @@
                   "items": {
                     "$ref": "#/components/schemas/SalesItemSummaryDto"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Reports/generate": {
+      "post": {
+        "tags": [
+          "Reports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponseDto"
                 }
               }
             }
@@ -9318,6 +9459,16 @@
           "addressNote": {
             "type": "string",
             "nullable": true
+          },
+          "deliveryZoneId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -9699,6 +9850,52 @@
               "$ref": "#/components/schemas/OrderDto"
             },
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HourlySalesDto": {
+        "type": "object",
+        "properties": {
+          "hour": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hourLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "orderCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dineInAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "dineInCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "takeAwayAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "takeAwayCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deliveryAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -10426,6 +10623,41 @@
         },
         "additionalProperties": false
       },
+      "ModeDetails": {
+        "type": "object",
+        "properties": {
+          "modeTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "discount": {
+            "type": "number",
+            "format": "double"
+          },
+          "netSales": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalTaxAndService": {
+            "type": "number",
+            "format": "double"
+          },
+          "grandTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "orderCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "ModeSummaryDto": {
         "type": "object",
         "properties": {
@@ -10968,6 +11200,11 @@
             "format": "double",
             "nullable": true
           },
+          "total": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "orderType": {
             "type": "string",
             "nullable": true
@@ -11351,11 +11588,23 @@
             "type": "number",
             "format": "double"
           },
+          "refundCount": {
+            "type": "number",
+            "format": "double"
+          },
           "expenses": {
             "type": "number",
             "format": "double"
           },
           "voidAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "fullVoidAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "partialVoidAmount": {
             "type": "number",
             "format": "double"
           },
@@ -11379,6 +11628,20 @@
           },
           "currency": {
             "type": "string",
+            "nullable": true
+          },
+          "hourlySales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HourlySalesDto"
+            },
+            "nullable": true
+          },
+          "modeDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModeDetails"
+            },
             "nullable": true
           }
         },
@@ -11611,6 +11874,58 @@
         },
         "additionalProperties": false
       },
+      "ReportRequestDto": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "nullable": true
+          },
+          "fromDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "toDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "format": {
+            "type": "string",
+            "nullable": true
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReportResponseDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RoleClaimsRequest": {
         "type": "object",
         "properties": {
@@ -11697,6 +12012,35 @@
           "categoryName": {
             "type": "string",
             "nullable": true
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemTitle": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "qty": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "total": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -11716,6 +12060,20 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrderDto"
+            },
+            "nullable": true
+          },
+          "voidEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoidEventDto"
+            },
+            "nullable": true
+          },
+          "cashierSummaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccountSummaryDto"
             },
             "nullable": true
           },
@@ -12238,7 +12596,19 @@
             "type": "integer",
             "format": "int32"
           },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "imagePaths": {
+            "type": "string",
+            "nullable": true
+          },
           "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
             "type": "string",
             "nullable": true
           }
@@ -12363,9 +12733,6 @@
             "type": "boolean"
           },
           "isInventory": {
-            "type": "boolean"
-          },
-          "byWeight": {
             "type": "boolean"
           },
           "kitchenTypeId": {
@@ -12692,6 +13059,47 @@
           "arabicName": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VoidEventDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderType": {
+            "type": "string",
+            "nullable": true
+          },
+          "voidDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "voidedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isFullVoid": {
+            "type": "boolean"
+          },
+          "grandTotalBefore": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalVoidedAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "grandTotalAfter": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false

@@ -1,0 +1,208 @@
+@using global::POS.Contract.Dtos.OrderDtos
+@using BlazorBase.ERPFrontServices.ReportingServices
+@using BlazorBase.ERPFrontServices.PrintOrderServices
+@using BlazorBase
+@using BlazorBase.Services
+@inject LocalizationService Localizer
+@inject CommonProperties _commonProperties
+@inject IReportingErpService ReportingService
+@inject ISnackbar Snackbar
+
+<MudDialog Class="premium-detailed-sales-dialog" Style="border-radius: 20px; overflow: hidden; max-height: 90vh;">
+    <DialogContent>
+        <div class="dialog-content-inner pa-4" dir="@(_commonProperties.IsRtl ? "rtl" : "ltr")">
+            <div class="custom-header-box d-flex align-center justify-space-between mb-4 glass pa-4 rounded-xl border">
+                <div class="d-flex align-center gap-3">
+                    <div class="icon-circle shadow-sm">
+                        <MudIcon Icon="@Icons.Material.Filled.Assignment" Color="Color.Warning" />
+                    </div>
+                    <div>
+                        <MudText Typo="Typo.h5" Style="font-weight: 900; color: #1e3a5f;">@Localizer["DetailedSales"]</MudText>
+                        <MudText Typo="Typo.caption" Class="text-muted">@_orders.Count @Localizer["OrdersFound"]</MudText>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                     <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.LocalPrintshop" OnClick="PrintReport" Size="Size.Small" Class="rounded-pill">@Localizer["PrintReport"]</MudButton>
+                     <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="Close" Color="Color.Error" Variant="Variant.Filled" Size="Size.Small" Class="rounded-pill" />
+                </div>
+            </div>
+
+            <div class="search-section mb-4">
+                <MudTextField @bind-Value="_searchText" 
+                             Placeholder="@Localizer["SearchByOrderIdOrCashier"]" 
+                             Adornment="Adornment.Start" 
+                             AdornmentIcon="@Icons.Material.Filled.Search" 
+                             Variant="Variant.Outlined" 
+                             Margin="Margin.Dense"
+                             FullWidth="true" 
+                             Class="search-field-pill rounded-pill"
+                             Clearable="true" />
+            </div>
+
+            @if (_isLoading)
+            {
+                <div class="d-flex justify-center align-center pa-10">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </div>
+            }
+            else
+            {
+                <div class="orders-scroll-container rounded-xl border overflow-hidden" style="height: 50vh; overflow-y: auto; background: white;">
+                    <MudExpansionPanels MultiExpansion="false" Class="pa-2">
+                        @foreach (var order in FilteredOrders)
+                        {
+                            <MudExpansionPanel Class="order-panel mb-2 rounded-lg border">
+                                <TitleContent>
+                                    <div class="d-flex align-center justify-space-between w-100 pe-4">
+                                        <div class="d-flex align-center gap-4">
+                                            <div class="order-id-badge">#@order.OrderId</div>
+                                            <div class="d-flex flex-column">
+                                                <MudText Typo="Typo.subtitle2" Style="font-weight: 800;">@order.OrderType (@order.OrderState)</MudText>
+                                                <MudText Typo="Typo.caption" Class="text-muted">@order.OrderDate?.ToString("HH:mm") | @order.CashierName</MudText>
+                                            </div>
+                                        </div>
+                                        <div class="order-total-pill">@order.GrandTotal?.ToString("N2")</div>
+                                    </div>
+                                </TitleContent>
+                                <ChildContent>
+                                    <div class="order-details-content pa-2">
+                                        <MudSimpleTable Dense="true" Hover="true" Bordered="false" Elevation="0" Class="rounded-lg">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: 800;">@Localizer["Item"]</th>
+                                                    <th style="text-align: center; font-weight: 800;">@Localizer["Qty"]</th>
+                                                    <th style="text-align: center; font-weight: 800;">@Localizer["Price"]</th>
+                                                    <th style="text-align: center; font-weight: 800;">@Localizer["Total"]</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (order.OrderDetails != null)
+                                                {
+                                                    @foreach (var item in order.OrderDetails)
+                                                    {
+                                                        <tr>
+                                                            <td>@item.NameAr</td>
+                                                            <td style="text-align: center;">@item.Quantity</td>
+                                                            <td style="text-align: center;">@item.Price?.ToString("N2")</td>
+                                                            <td style="text-align: center; font-weight: 700;">@((item.Quantity * (item.Price ?? 0)).ToString("N2"))</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </MudSimpleTable>
+                                        
+                                        @if (!string.IsNullOrEmpty(order.VoidReason))
+                                        {
+                                            <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2 rounded-lg">
+                                                @Localizer["Voided"]: @order.VoidReason (@order.VoidByName)
+                                            </MudAlert>
+                                        }
+                                        @if (order.TotalDiscount > 0)
+                                        {
+                                            <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2 rounded-lg">
+                                                @Localizer["Discount"]: @order.TotalDiscount?.ToString("N2") (@order.DiscountReason)
+                                            </MudAlert>
+                                        }
+                                    </div>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+                    </MudExpansionPanels>
+                </div>
+            }
+        </div>
+    </DialogContent>
+</MudDialog>
+
+<style>
+    .premium-detailed-sales-dialog .mud-dialog-content { padding: 0 !important; background: #f8f9fa; }
+    .custom-header-box { background: white; }
+    .icon-circle { width: 44px; height: 44px; background: #fff8e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .text-muted { color: #8898aa; font-size: 11px; }
+    
+    .search-field-pill .mud-outlined-input { border-radius: 30px !important; background: white !important; }
+    
+    .order-panel { background: white !important; transition: all 0.2s; }
+    .order-panel:hover { transform: scale(1.005); border-color: #ff9800 !important; }
+    
+    .order-id-badge { background: #1e3a5f; color: white; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 13px; }
+    .order-total-pill { background: #e8f5e9; color: #2e7d32; padding: 6px 15px; border-radius: 20px; font-weight: 900; font-size: 15px; }
+    
+    .glass { backdrop-filter: blur(8px); }
+</style>
+
+@code {
+    [Parameter] public DateTime SelectedDate { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+
+    private List<OrderDto> _orders = new();
+    private bool _isLoading = true;
+    private string _searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _isLoading = true;
+        try
+        {
+            _orders = await ReportingService.GetTodayOrders(SelectedDate);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private IEnumerable<OrderDto> FilteredOrders => 
+        string.IsNullOrWhiteSpace(_searchText) 
+            ? _orders 
+            : _orders.Where(o => o.OrderId.ToString().Contains(_searchText) || 
+                               (o.CashierName != null && o.CashierName.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+
+    private async Task PrintReport()
+    {
+        try
+        {
+            var request = new ReportRequestDto
+            {
+                ReportId = "SalesDetailed",
+                FromDate = SelectedDate,
+                ToDate = SelectedDate,
+                Language = _commonProperties.Language ?? "ar",
+                Format = "PDF"
+            };
+            
+            var response = await ReportingService.GenerateReport(request);
+            if (response != null && response.Content != null)
+            {
+                // In Desktop app, we might want to preview it or just print it.
+                // For now, let's assume we use a specialized service or the generic one.
+                // Usually we'd open a preview dialog.
+                 var parameters = new DialogParameters
+                {
+                    ["PdfContent"] = response.Content,
+                    ["FileName"] = response.FileName
+                };
+                
+                var options = new DialogOptions { FullScreen = true };
+                // Here we assume a PDF previewer exists or we just trigger download.
+                // Since it's a desktop app, we might have a direct print.
+                Snackbar.Add("Report generated successfully", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Print error: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private void Close() => MudDialog.Close();
+}

@@ -1,6 +1,3 @@
-﻿using POS.Contract.Dtos;
-using POS.Desktop.Components.PosDialog;
-
 namespace POS.Desktop.Components.DeliveryComponent;
 
 public partial class DeliveryButtons
@@ -52,13 +49,9 @@ public partial class DeliveryButtons
         if (!result!.Canceled && result.Data is string action)
         {
             if (action == "New")
-            {
                 await CreateNewComplaint();
-            }
             else if (action == "View")
-            {
                 await SafeNavigateAsync("/delivery-complaints");
-            }
         }
     }
 
@@ -70,7 +63,8 @@ public partial class DeliveryButtons
             return;
         }
 
-        var targetOrder = _commonProperties.CustomerDetails.ActiveOrder ?? _commonProperties.CustomerDetails.Last10Orders?.FirstOrDefault();
+        var targetOrder = _commonProperties.CustomerDetails.ActiveOrder ?? 
+        _commonProperties.CustomerDetails.Last10Orders?.FirstOrDefault();
         
         var complaintDto = new ComplaintDto
         {
@@ -118,12 +112,13 @@ public partial class DeliveryButtons
         }
 
         var client = await _deliveryServices.GetClientByPhoneNumberAsync(_commonProperties!.CustomerDetails!.FirstPhoneNumber!);
-        if (client.Id == 0)
+        if (client == null || client.Id == 0)
         {
             var customerDetails = BackupCustomer() ?? new();
             var createdCustomer = await _deliveryServices.CreateClientAsync(customerDetails);
-            if (createdCustomer is not null)
+            if (createdCustomer != null && createdCustomer.Id > 0)
             {
+                _commonProperties.CustomerDetails.Id = createdCustomer.Id;
                 await SetPosModeToDeliveryMode();
                 return;
             }
@@ -134,6 +129,7 @@ public partial class DeliveryButtons
             }
         }
 
+        _commonProperties.CustomerDetails.Id = client.Id;
         await SetPosModeToDeliveryMode();
     }
 
@@ -167,7 +163,9 @@ public partial class DeliveryButtons
             FloorNumber = _commonProperties.CustomerDetails!.FloorNumber,
             FlatNumber = _commonProperties.CustomerDetails!.FlatNumber,
             ClientAddress = _commonProperties.CustomerDetails!.ClientAddress,
-            AddressNote = _commonProperties.CustomerDetails!.AddressNote
+            AddressNote = _commonProperties.CustomerDetails!.AddressNote,
+            DeliveryZoneId = _commonProperties.CustomerDetails!.ZoneID,
+            BranchId = _commonProperties.CustomerDetails!.BranchId
         };
 
     private void ClearDeliveryOrder()

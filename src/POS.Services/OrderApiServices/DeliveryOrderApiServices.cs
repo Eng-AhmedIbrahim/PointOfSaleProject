@@ -1,17 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using POS.Contract.Dtos.OrderDto;
-using POS.Contract.Dtos.OrderDtos;
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.OrderApiServices;
-using POS.Core.Services.Contract.PrinterServices;
-using POS.Core.Services.Contract.KitchenServices;
-using POS.Contract.Models;
-using POS.Reports.Models;
-using POS.Reports.Models.Kitchen;
-using POS.Reports.ReportsMakerServices;
-using POS.Core.Entities.Kitchen;
-using QuestPDF.Fluent;
-
 namespace POS.Services.OrderApiServices;
 
 public class DeliveryOrderApiServices : IDeliveryOrderApiServices

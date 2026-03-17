@@ -1,4 +1,4 @@
-﻿namespace POS.Desktop.Components.DeliveryComponent;
+namespace POS.Desktop.Components.DeliveryComponent;
 
 public partial class AddNewAddressDialog
 {
@@ -28,6 +28,15 @@ public partial class AddNewAddressDialog
         {
             _snackbar.Add("Customer Address Not Created", Severity.Error);
             return;
+        }
+
+        var selectedZoneObj = Zones.FirstOrDefault(z => z.ZoneName == _commonProperties.CustomerDetails!.ZoneName);
+        if (selectedZoneObj != null)
+        {
+            _commonProperties.CustomerDetails!.ZoneID = selectedZoneObj.Id;
+            _commonProperties.CustomerDetails.ZoneFees = selectedZoneObj.DeliveryFee ?? 0;
+            _commonProperties.CustomerDetails.ZoneBonus = selectedZoneObj.ZoneBonus ?? 0;
+            _commonProperties.CustomerDetails.BranchId = selectedZoneObj.BranchId;
         }
 
         _commonProperties.CustomerDetails!.FirstPhoneNumber = _handelDeliveryInvocation.CustomerDetails!.FirstPhoneNumber;

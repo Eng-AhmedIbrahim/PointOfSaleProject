@@ -44,15 +44,31 @@
     }
     @if (_canPrintOrder)
     {
-        <MudItem xs="4">
-            <MudButton Variant="Variant.Filled"
-                       FullWidth="true"
-                       Class="action-btn print-btn special-sec4-button"
-                       Size="Size.Small"
-                       StartIcon="@Icons.Material.Filled.Print"
-                       OnClick="PrintOrder">
-                @Localizer["Print"]
-            </MudButton>
-        </MudItem>
+        @if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+        {
+            <MudItem xs="4">
+                <MudButton Variant="Variant.Filled"
+                           FullWidth="true"
+                           Class="action-btn print-btn special-sec4-button"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Save"
+                           OnClick="PrintOrder">
+                    @Localizer["OrderBtn"]
+                </MudButton>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem xs="4">
+                <MudButton Variant="Variant.Filled"
+                           FullWidth="true"
+                           Class="action-btn print-btn special-sec4-button"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Print"
+                           OnClick="PrintOrder">
+                    @Localizer["Print"]
+                </MudButton>
+            </MudItem>
+        }
     }
 </MudGrid>

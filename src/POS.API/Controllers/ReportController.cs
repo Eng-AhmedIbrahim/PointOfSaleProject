@@ -1,3 +1,5 @@
+using POS.Contract.Models.ReceiptModels.DineIn;
+
 namespace POS.API.Controllers;
 
 [Route("api/[controller]")]

@@ -172,6 +172,7 @@ public partial class App : Application
         services.AddBlazorBootstrap();
         services.AddRadzenComponents();
         services.AddBlazoredLocalStorage();
+        services.AddScoped<BackOffice.Desktop.Services.IDesktopPrintingService, BackOffice.Desktop.Services.DesktopPrintingService>();
 
         // Localization
         services.AddLocalization();
@@ -188,7 +189,9 @@ public partial class App : Application
         services.AddSingleton<IConfiguration>(configuration);
 
         // Configure supported cultures
-        var culture = new System.Globalization.CultureInfo("ar");
+        var storage = new DesktopFileStorageService();
+        var cultureCode = storage.GetItemAsync<string>("culture").GetAwaiter().GetResult() ?? "ar";
+        var culture = new System.Globalization.CultureInfo(cultureCode);
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 
@@ -214,7 +217,7 @@ public partial class App : Application
         });
 
         // Application services
-        services.AddSingleton<CommonProperties>();
+        services.AddSingleton<CommonProperties>(sp => new CommonProperties { Language = cultureCode });
         services.AddSingleton<HandelDeliveryInvocation>();
         services.AddSingleton<CartService>();
         services.AddSingleton<Section4ButtonsServices>();

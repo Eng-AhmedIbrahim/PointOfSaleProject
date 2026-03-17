@@ -1,4 +1,4 @@
-﻿namespace BlazorBase.Models;
+namespace BlazorBase.Models;
 
 public class DineInOrderDetails
 {
@@ -10,7 +10,7 @@ public class DineInOrderDetails
     public string? RelatedTableName { get; set; }
     public string? CaptainId { get; set; }
     public string? CaptainName { get; set; }
-    public int PrintCount { get; set; }
+    public int? PrintCount { get; set; }
 
     public DineInOrderDetails Clone()
     {

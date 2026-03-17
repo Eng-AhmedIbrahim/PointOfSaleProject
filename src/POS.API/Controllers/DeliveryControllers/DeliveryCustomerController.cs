@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers.DeliveryControllers;
+namespace POS.API.Controllers.DeliveryControllers;
 
 public class DeliveryCustomerController : BaseApiController
 {
@@ -122,7 +122,9 @@ public class DeliveryCustomerController : BaseApiController
         if (createdCustomer is null)
             return BadRequest("Failed to create customer.");
 
-        return Ok(createdCustomer);
+        var customerToReturn = _mapper.Map<DeliveryCustomerToReturnDto>(createdCustomer);
+
+        return Ok(customerToReturn);
     }
         
     [HttpPut("{id}")]

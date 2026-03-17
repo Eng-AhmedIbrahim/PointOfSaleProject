@@ -15,14 +15,16 @@
 
 <AuthorizeView>
     <Authorized>
-        <MudLayout Style="height: 100vh;">
-            <MudMainContent Class="main-content-wrapper py-0">
-                <NavMenu />
-                <div class="page-container">
-                    @Body
-                </div>
-            </MudMainContent>
-        </MudLayout>
+        <div dir="@(IsArabic ? "rtl" : "ltr")">
+            <MudLayout Style="height: 100vh;">
+                <MudMainContent Class="main-content-wrapper py-0">
+                    <NavMenu />
+                    <div class="page-container">
+                        @Body
+                    </div>
+                </MudMainContent>
+            </MudLayout>
+        </div>
         <RadzenDialog />
         <RadzenNotification />
         <RadzenContextMenu />

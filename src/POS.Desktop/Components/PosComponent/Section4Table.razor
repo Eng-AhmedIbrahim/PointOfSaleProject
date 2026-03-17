@@ -1,4 +1,4 @@
-﻿@inject LocalizationService Localizer
+@inject LocalizationService Localizer
 @inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
@@ -27,7 +27,10 @@
 
     <RowTemplate>
         <MudTd DataLabel="Qty" Style="width: min-content;" Class="table-style" @onclick="() => SelectItem(context)">
-            @if (context.IsVoided)
+            @{
+                var remainingQty = context.Quantity - (context.VoidAmount ?? 0);
+            }
+            @if (remainingQty <= 0)
             {
                 <MudText Typo="Typo.body1" Class="table-style text-decoration-line-through opacity-50">
                     @(context.ByWeight && context.WeightQty.HasValue
@@ -38,41 +41,45 @@
             else if (context.ByWeight)
             {
                 <div class="weight-qty-cell">
-                    <MudNumericField T="decimal" Value="@(context.WeightQty ?? 0)"
+                    <MudNumericField T="decimal" Value="@((context.WeightQty ?? 0) - (context.VoidAmount ?? 0))"
                                      Min="0.001m" Max="999m" Step="0.125m"
                                      Format="0.###"
                                      Style="width: 80px;" Immediate="false"
-                                     ValueChanged="(val) => UpdateWeightQty(context, val)"
+                                     ValueChanged="@((val) => UpdateWeightQty(context, val))"
                                      Disabled="context.IsReadOnly" />
                     <span class="weight-qty-unit">كجم</span>
                 </div>
             }
             else
             {
-                <MudNumericField T="decimal" Value="context.Quantity" Min="0.1m"
+                <MudNumericField T="decimal" Value="remainingQty" Min="0.1m"
                                  Style="width: 60px;" Immediate="true"
-                                 ValueChanged="(val) => UpdateQuantity(context, val)"
+                                 ValueChanged="@((val) => UpdateQuantity(context, val))"
                                  Disabled="context.IsReadOnly" />
             }
         </MudTd>
         <MudTd DataLabel="Name" Class="table-style">
             <div class="d-flex align-center">
-                <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+                <MudText Typo="Typo.body1" Class="@(context.Quantity - (context.VoidAmount ?? 0) <= 0 ? "table-style text-decoration-line-through opacity-50" : "table-style")">
                     @context.Name
                 </MudText>
-                @if (context.IsVoided)
+                @if (context.Quantity - (context.VoidAmount ?? 0) <= 0)
                 {
                     <MudChip T="string" Size="Size.Small" Color="Color.Error" Variant="Variant.Filled" Class="ml-2 void-chip">@Localizer["Voided"]</MudChip>
+                }
+                @if (context.VoidAmount > 0 && context.Quantity > 0)
+                {
+                    <span style="color: #ef4444; font-size: 0.8rem; margin-right: 8px; font-weight: bold;">(@Localizer["Voided"]: @context.VoidAmount.Value.ToString("0.##"))</span>
                 }
             </div>
         </MudTd>
         <MudTd DataLabel="Price" Class="table-style">
-             <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+             <MudText Typo="Typo.body1" Class="@(context.Quantity - (context.VoidAmount ?? 0) <= 0 ? "table-style text-decoration-line-through opacity-50" : "table-style")">
                 @context.Price?.ToString("0.##")
              </MudText>
         </MudTd>
         <MudTd DataLabel="Total" Class="table-style">
-             <MudText Typo="Typo.body1" Class="@(context.IsVoided ? "table-style text-decoration-line-through opacity-50" : "table-style")">
+             <MudText Typo="Typo.body1" Class="@(context.Quantity - (context.VoidAmount ?? 0) <= 0 ? "table-style text-decoration-line-through opacity-50" : "table-style")">
                 @context.TotalAmount?.ToString("0.##")
              </MudText>
         </MudTd>

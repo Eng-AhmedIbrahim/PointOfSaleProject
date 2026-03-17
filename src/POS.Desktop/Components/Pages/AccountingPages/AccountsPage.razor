@@ -43,10 +43,10 @@
                 <RowTemplate>
                     <MudTd Style="text-align: right;"><b>@context.Name</b></MudTd>
                     <MudTd Style="text-align: right;"><MudChip T="string" Color="Color.Info" Size="Size.Small" Variant="Variant.Text">@context.OrderCount</MudChip></MudTd>
-                    <MudTd Style="text-align: right;">@context.CashAmount.ToString("N2")</MudTd>
-                    <MudTd Style="text-align: right;">@context.CreditAmount.ToString("N2")</MudTd>
+                    <MudTd Style="text-align: right;">@context.CashAmount.ToString("0.##")</MudTd>
+                    <MudTd Style="text-align: right;">@context.CreditAmount.ToString("0.##")</MudTd>
                     <MudTd Style="text-align: right;">
-                        <MudText Style="font-weight: 800;" Color="Color.Primary">@context.TotalAmount.ToString("N2")</MudText>
+                        <MudText Style="font-weight: 800;" Color="Color.Primary">@context.TotalAmount.ToString("0.##")</MudText>
                     </MudTd>
                     <MudTd Style="text-align: center;">
                         <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Primary" Size="Size.Small" OnClick="@(() => OpenStaffDetails(context))" />
@@ -65,15 +65,15 @@
             <div class="footer-stats-grid">
                 <div class="footer-stat">
                     <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الكاش" : "Total Cash")</span>
-                    <span class="value">@_summaries.Sum(a => a.CashAmount).ToString("N2")</span>
+                    <span class="value">@_summaries.Sum(a => a.CashAmount).ToString("0.##")</span>
                 </div>
                 <div class="footer-stat">
                     <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الفيزا" : "Total Visa")</span>
-                    <span class="value">@_summaries.Sum(a => a.CreditAmount).ToString("N2")</span>
+                    <span class="value">@_summaries.Sum(a => a.CreditAmount).ToString("0.##")</span>
                 </div>
                 <div class="footer-stat total-revenue">
                     <span class="label">@Localizer["GrandTotal"]</span>
-                    <span class="value">@_summaries.Sum(a => a.TotalAmount).ToString("N2")</span>
+                    <span class="value">@_summaries.Sum(a => a.TotalAmount).ToString("0.##")</span>
                 </div>
             </div>
             

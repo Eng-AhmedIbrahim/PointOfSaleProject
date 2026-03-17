@@ -6,10 +6,10 @@ public interface IInventoryService
     Task<InventoryItem?> GetInventoryByItemIdAsync(int menuSalesItemId);
     Task<IReadOnlyList<InventoryItem>> GetAllInventoryItemsAsync();
     
-    Task UpdateStockAsync(int menuSalesItemId, decimal quantityChange, TransactionType type, string? referenceId = null, string? notes = null);
+    Task<bool> UpdateStockAsync(int menuSalesItemId, decimal quantityChange, TransactionType type, string? referenceId = null, string? notes = null, string? reason = null, string? imagePaths = null, string? createdBy = null);
     
-    Task SetOpeningStockAsync(int menuSalesItemId, decimal openingQuantity, string? notes = null);
-    Task SetPhysicalStockAsync(int menuSalesItemId, decimal actualQuantity, string? notes = null);
+    Task<bool> SetOpeningStockAsync(int menuSalesItemId, decimal openingQuantity, string? notes = null, string? createdBy = null);
+    Task<bool> SetPhysicalStockAsync(int menuSalesItemId, decimal actualQuantity, string? notes = null, string? createdBy = null);
     
     Task ConsumeItemStockAsync(int menuSalesItemId, decimal quantity, TransactionType type = TransactionType.Sale, string? referenceId = null);
     

@@ -1,4 +1,4 @@
-﻿namespace POS.Services.OrderServices;
+namespace POS.Services.OrderServices;
 using POS.Core.Services.Contract.InventoryServices;
 using POS.Core.Entities.Item;
 
@@ -405,7 +405,10 @@ public class OrderService : IOrderService
                             {
                                 first.Quantity = g.Sum(x => x.Quantity ?? 0);
                                 first.TotalAmount = g.Sum(x => x.TotalAmount ?? 0);
-                                first.TotalAfterDiscount = g.Sum(x => x.TotalAfterDiscount ?? 0);
+                                
+                                var totalAds = g.Sum(x => x.TotalAfterDiscount ?? 0);
+                                first.TotalAfterDiscount = g.Any(x => x.TotalAfterDiscount.HasValue) ? totalAds : null;
+
                                 first.TotalDiscountAmount = g.Sum(x => x.TotalDiscountAmount ?? 0);
                                 first.TotalVoidAmount = g.Sum(x => x.TotalVoidAmount ?? 0);
                                 first.VoidAmount = g.Sum(x => x.VoidAmount ?? 0);

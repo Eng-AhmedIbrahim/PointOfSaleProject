@@ -1,5 +1,3 @@
-﻿using POS.Core.Services.Contract.DineInOrderServices;
-
 namespace POS.API.Controllers;
 
 public class OrderController : BaseApiController
@@ -238,8 +236,8 @@ public class OrderController : BaseApiController
     [HttpPut("createOrder")] // Aligned with OrderSettingsService.UpdateOrderAsync
     public async Task<IActionResult> UpdateOrderAsync([FromBody] OrderDto orderDto)
     {
-        if (orderDto == null || orderDto.OrderId == 0)
-            return BadRequest("Invalid order data or OrderId.");
+        if (orderDto == null || orderDto.Id == 0)
+            return BadRequest("Invalid order data or Id.");
 
         var order = BackupMainOrderDetails(orderDto);
         
@@ -545,7 +543,7 @@ public class OrderController : BaseApiController
     private async Task printDineInReceipts(OrderDto dineInOrder, List<string> branchDetails)
     {
         // Try to find the order to check print count
-        var currentPrintCount = await _dineInOrderService.IncrementPrintCountAsync(dineInOrder.OrderId);
+        var currentPrintCount = await _dineInOrderService.IncrementPrintCountAsync(dineInOrder.Id);
         bool isCopy = currentPrintCount > 0;
 
         var receipt = new Receipt()

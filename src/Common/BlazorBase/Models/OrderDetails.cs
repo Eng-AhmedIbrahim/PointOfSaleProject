@@ -1,4 +1,4 @@
-﻿namespace BlazorBase.Models;
+namespace BlazorBase.Models;
 
 public class OrderDetails
 {
@@ -8,6 +8,7 @@ public class OrderDetails
     public string? CashierName { get; set; }
     public string? OrderType { get; set; }
     public List<TableItem> Items { get; set; } = new List<TableItem>();
+    public bool? IsVoided { get; set; }
 
     public decimal? Account { get; set; }
     public OrderDiscount OrderDiscount { get; set; } = new();

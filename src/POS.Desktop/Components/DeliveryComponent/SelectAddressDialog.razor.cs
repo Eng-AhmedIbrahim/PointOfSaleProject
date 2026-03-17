@@ -1,4 +1,4 @@
-﻿namespace POS.Desktop.Components.DeliveryComponent;
+namespace POS.Desktop.Components.DeliveryComponent;
 
 public partial class SelectAddressDialog
 {
@@ -28,6 +28,7 @@ public partial class SelectAddressDialog
         _commonProperties.CustomerDetails.ZoneID = address.DeliveryZoneId;
         _commonProperties.CustomerDetails.BranchId = address.BranchId;
         _commonProperties.CustomerDetails.ZoneFees = address.DeliveryFee;
+        _commonProperties.CustomerDetails.ZoneBonus = address.ZoneBonus;
         _commonProperties.CustomerDetails.CustomerAddressId = address.Id;
 
         _handelDeliveryInvocation.TriggerAddressSelected();

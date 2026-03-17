@@ -1,4 +1,4 @@
-﻿namespace ERPFront.Components.Pages;
+namespace ERPFront.Components.Pages;
 
 public partial class POS
 {
@@ -119,8 +119,7 @@ public partial class POS
     private void IncrementExistingNewItem(TableItem existingNewItem)
     {
         existingNewItem.Quantity++;
-        existingNewItem.Total += existingNewItem.Price;
-        existingNewItem.TotalAmount += existingNewItem.Price;
+        _cartService.RecalculateItemTotals(existingNewItem);
     }
 
     /// <summary>
@@ -133,11 +132,10 @@ public partial class POS
             Name = existingCashedItem.Name,
             Price = existingCashedItem.Price,
             Quantity = 1,
-            Total = existingCashedItem.Price,
             IsReadOnly = false,
-            Attributes = existingCashedItem.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>(),
-            TotalAmount = existingCashedItem.Price
+            Attributes = existingCashedItem.Attributes?.Select(attr => attr.Clone()).ToList() ?? new List<AttributeDto>()
         };
+        _cartService.RecalculateItemTotals(newItem);
 
         if (_commonProperties!.UpdateDineInOrder)
             _commonProperties.AppendedTableItems!.Add(newItem);
@@ -301,15 +299,14 @@ public partial class POS
             Name = menuItem.ArabicName,
             Price = menuItem.Price ?? 0,
             Quantity = 1,
-            Total = menuItem.Price ?? 0,
             Attributes = currentSelectedAttribute ?? [],
             CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
             ItemKitchenTypeId = menuItem.KitchenTypeId,
             PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
             PrintInBackupReceiptFromItem = menuItem.PrintInBackupReceipt,
-            TotalAmount = menuItem.Price,
             ExtraPrice = menuItem.ExtraPrice
         };
+        _cartService.RecalculateItemTotals(newTableItem);
         _commonProperties?.TableItems?.Add(newTableItem);
 
         if (_commonProperties!.UpdateDineInOrder)

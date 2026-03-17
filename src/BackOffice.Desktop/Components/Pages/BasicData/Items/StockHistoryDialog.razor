@@ -1,17 +1,20 @@
 @using POS.Contract.Dtos.InventoryDtos
 @using BlazorBase.ERPFrontServices.InventoryServices
+@using BackOffice.Desktop.Components.Pages.BasicData.Inventory
 @inject IInventoryFrontService InventoryService
 @inject LocalizationService LocalizerService
+@inject IDialogService DialogService
 
 <MudDialog dir="@(IsArabic ? "rtl" : "ltr")" Class="stock-history-dialog">
     <TitleContent>
-        <div class="d-flex align-center">
-            <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2 ml-2" />
-            <MudText Typo="Typo.h6">@(IsArabic ? "سجل حركات الصنف" : "Item Transaction History")</MudText>
-            <MudSpacer />
-            <div class="d-flex flex-column align-end px-4">
-                <MudText Typo="Typo.caption" Color="Color.Secondary">@(IsArabic ? "الرصيد الحالي" : "Current Balance")</MudText>
-                <MudText Typo="Typo.h6" Color="Color.Primary" Style="font-weight: 800;">@Item.CurrentQuantity.ToString("N2")</MudText>
+        <div class="d-flex align-center justify-space-between w-100" style="padding-inline-end: 2.5rem;">
+            <div class="d-flex flex-column align-start">
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Style="font-weight: 600;">@(IsArabic ? "الرصيد الحالي" : "Current Balance")</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Primary" Style="font-weight: 900;">@Item.CurrentQuantity.ToString("N2")</MudText>
+            </div>
+            <div class="d-flex align-center">
+                <MudText Typo="Typo.h5" Style="font-weight: 800;">@(IsArabic ? "سجل حركات الصنف" : "Item Transaction History")</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2 ml-2" Style="font-size: 2rem;" />
             </div>
         </div>
     </TitleContent>
@@ -34,25 +37,17 @@
                     <MudTh Class="text-center">@(IsArabic ? "الكمية" : "Qty")</MudTh>
                     <MudTh Class="text-center">@(IsArabic ? "الرصيد" : "Balance")</MudTh>
                     <MudTh>@(IsArabic ? "المرجع" : "Ref")</MudTh>
-                    <MudTh>
-                        <MudStack Row="true" AlignItems="MudBlazor.AlignItems.Center" Spacing="2">
-                            <MudText>@(IsArabic ? "ملاحظات" : "Notes")</MudText>
-                            <MudTextField @bind-Value="_searchString" 
-                                         Placeholder="@(IsArabic ? "بحث..." : "Search...")" 
-                                         Adornment="Adornment.Start" 
-                                         AdornmentIcon="@Icons.Material.Filled.Search" 
-                                         IconSize="Size.Small" 
-                                         Class="mt-0 ml-4 mb-2" 
-                                         Clearable="true"
-                                         Immediate="true" />
-                        </MudStack>
+                    <MudTh>@(IsArabic ? "بواسطة" : "By")</MudTh>
+                    <MudTh Class="text-center">@(IsArabic ? "الصور" : "Photos")</MudTh>
+                    <MudTh Style="min-width: 250px;">
+                        <MudText>@(IsArabic ? "ملاحظات / سبب" : "Notes / Reason")</MudText>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Date">
                         <div class="d-flex flex-column">
-                            <MudText Typo="Typo.body2">@context.CreatedAt.ToString("yyyy/MM/dd")</MudText>
-                            <MudText Typo="Typo.caption" Color="Color.Secondary">@context.CreatedAt.ToString("hh:mm tt")</MudText>
+                            <MudText Typo="Typo.body1" Style="font-weight: 700;">@context.CreatedAt.ToString("yyyy/MM/dd")</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@context.CreatedAt.ToString("hh:mm tt")</MudText>
                         </div>
                     </MudTd>
                     <MudTd DataLabel="Type">
@@ -60,24 +55,47 @@
                                  Color="@GetTransactionColor(context.Type ?? "")" 
                                  Variant="MudBlazor.Variant.Text" 
                                  Icon="@GetTransactionIcon(context.Type ?? "")"
-                                 Size="Size.Small" 
-                                 Class="fw-bold m-0">
+                                 Size="Size.Medium" 
+                                 Class="fw-bold m-0" Style="font-size: 0.95rem;">
                             @GetTransactionLabel(context.Type ?? "")
                         </MudChip>
                     </MudTd>
                     <MudTd DataLabel="Qty" Class="text-center">
-                        <MudText Typo="Typo.body2" Color="@(context.QuantityChange >= 0 ? Color.Success : Color.Error)" Style="font-weight: 700;">
+                        <MudText Typo="Typo.h6" Color="@(context.QuantityChange >= 0 ? Color.Success : Color.Error)" Style="font-weight: 800;">
                             @(context.QuantityChange >= 0 ? "+" : "")@context.QuantityChange.ToString("N2")
                         </MudText>
                     </MudTd>
                     <MudTd DataLabel="Balance" Class="text-center">
-                        <MudText Typo="Typo.body2" Style="font-weight: 800; font-family: 'Roboto Mono', monospace;">@context.ResultingQuantity.ToString("N2")</MudText>
+                        <MudText Typo="Typo.h6" Style="font-weight: 800; font-family: 'Roboto Mono', monospace;">@context.ResultingQuantity.ToString("N2")</MudText>
                     </MudTd>
                     <MudTd DataLabel="Ref">
-                        <MudText Typo="Typo.body2" Color="Color.Secondary">@(string.IsNullOrEmpty(context.ReferenceId) ? "-" : context.ReferenceId)</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Secondary" Style="font-weight: 600;">@(string.IsNullOrEmpty(context.ReferenceId) ? "-" : context.ReferenceId)</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="By">
+                        <MudText Typo="Typo.body1" Style="font-weight: 600;">@(context.CreatedBy ?? "-")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Photos" Class="text-center">
+                        @if (!string.IsNullOrEmpty(context.ImagePaths))
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                          Size="Size.Medium" 
+                                          Color="Color.Info" 
+                                          Style="background: #eff6ff;"
+                                          OnClick="@(() => ShowGallery(context.ImagePaths))" />
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body1" Color="Color.Secondary">-</MudText>
+                        }
                     </MudTd>
                     <MudTd DataLabel="Notes">
-                        <MudText Typo="Typo.caption" Style="color: #666; font-style: italic;">@TranslateNotes(context.Notes)</MudText>
+                        <div class="d-flex align-center gap-2" style="max-width: 350px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            @if (!string.IsNullOrEmpty(context.Reason))
+                            {
+                                <MudChip T="string" Color="Color.Error" Size="Size.Small" Text="@context.Reason" Class="fw-bold m-0" Style="flex-shrink: 0;" />
+                            }
+                            <MudText Typo="Typo.body1" Style="color: #444; font-weight: 600; overflow: hidden; text-overflow: ellipsis;">@TranslateNotes(context.Notes)</MudText>
+                        </div>
                     </MudTd>
                 </RowTemplate>
                 <LoadingContent>
@@ -108,10 +126,16 @@
         background-color: #f8f9fa;
     }
     .fluent-table .mud-table-head .mud-th {
-        font-weight: 700;
-        color: #444;
+        font-weight: 800;
+        color: #1e293b;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 1rem;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .fluent-table .mud-table-cell {
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
     .fw-bold { font-weight: bold; }
 </style>
@@ -166,7 +190,7 @@
         {
             "StockIn" or "OpeningStock" or "Return" or "Void" => Color.Success,
             "Sale" or "StockOut" or "Waste" or "Damage" => Color.Error,
-            "Adjustment" => Color.Info,
+            "Adjustment" or "PhysicalCount" => Color.Info,
             _ => Color.Default
         };
     }
@@ -179,7 +203,8 @@
             "StockOut" => Icons.Material.Filled.RemoveCircle,
             "Sale" => Icons.Material.Filled.ShoppingCart,
             "Void" or "Return" => Icons.Material.Filled.SettingsBackupRestore,
-            "Adjustment" => Icons.Material.Filled.EditLocation,
+            "Adjustment" => Icons.Material.Filled.Tune,
+            "PhysicalCount" => Icons.Material.Filled.FactCheck,
             "Damage" or "Waste" => Icons.Material.Filled.DeleteForever,
             "OpeningStock" => Icons.Material.Filled.PlayCircle,
             _ => Icons.Material.Filled.Help
@@ -198,6 +223,7 @@
             "Return" => "مرتجع",
             "Void" => "إلغاء أوردر",
             "Adjustment" => "تعديل رصيد",
+            "PhysicalCount" => "جرد فعلي",
             "Damage" => "تالف",
             "Waste" => "هالك",
             "OpeningStock" => "رصيد أول المدة",
@@ -225,8 +251,30 @@
         if (notes == "Opening stock entry") return "إدخال رصيد أول المدة";
         if (notes == "Physical stock adjustment") return "تعديل جرد فعلي";
         if (notes == "Initial setup") return "تهيئة أولية";
+        if (notes == "Manual adjustment from grid") return "تعديل يدوي من الجدول";
 
         return notes;
+    }
+
+    private async Task ShowGallery(string paths)
+    {
+        if (string.IsNullOrEmpty(paths)) return;
+        
+        var images = paths.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters { ["Images"] = images };
+        
+        await DialogService.ShowAsync<TransactionImagesDialog>(
+            IsArabic ? "معرض الصور" : "Transaction Images", 
+            parameters, 
+            options);
+    }
+
+    private async Task ShowImage(string path)
+    {
+        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters { ["ImageUrl"] = path };
+        await DialogService.ShowAsync<ImagePreviewDialog>(IsArabic ? "معاينة الصورة" : "Image Preview", parameters, options);
     }
 
     void Close() => MudDialog.Close();

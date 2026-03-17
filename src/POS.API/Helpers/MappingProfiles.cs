@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AutoMapper;
 using POS.Core.Entities;
 using POS.Core.Entities.DineIn;
@@ -159,7 +159,11 @@ public class MappingProfiles : Profile
              opt =>
                 opt.MapFrom(src => src.CustomerAddresses));
 
-        CreateMap<CustomerAddress, CustomerAddressDto>();
+        CreateMap<CustomerAddress, CustomerAddressDto>()
+            .ForMember(d => d.DeliveryFee, o => o.MapFrom(s => s.DeliveryZone != null ? s.DeliveryZone.DeliveryFee : 0))
+            .ForMember(d => d.ZoneName, o => o.MapFrom(s => s.DeliveryZone != null ? s.DeliveryZone.ZoneName : s.ZoneName))
+            .ForMember(d => d.BranchName, o => o.MapFrom(s => s.Branch != null ? s.Branch.Name : s.BranchName))
+            .ForMember(d => d.ZoneBonus, o => o.MapFrom(s => s.DeliveryZone != null ? s.DeliveryZone.ZoneBonus : 0));
 
 
         CreateMap<DeliveryCustomerDto, DeliveryCustomerInfo>()
@@ -173,7 +177,9 @@ public class MappingProfiles : Profile
                     FloorNumber = src.FloorNumber,
                     FlatNumber = src.FlatNumber,
                     ClientAddress = src.ClientAddress,
-                    AddressNote = src.AddressNote
+                    AddressNote = src.AddressNote,
+                    DeliveryZoneId = src.DeliveryZoneId ?? 0,
+                    BranchId = src.BranchId ?? 0
                 }
             }));
 
@@ -222,6 +228,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.TotalAmount))
             .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName ?? (src.MenuSalesItem != null && src.MenuSalesItem.Category != null ? src.MenuSalesItem.Category.ArabicName : "")))
             .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromItem))
             .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory))
             .ForMember(dest => dest.ByWeight, opt => opt.MapFrom(src => src.ByWeight ?? false))

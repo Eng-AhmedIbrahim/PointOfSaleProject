@@ -20,6 +20,7 @@ using POS.Core.Services.Contract.EncryptionServices;
 using POS.Services.EncryptionServices;
 using POS.Core.Services.Contract.InventoryServices;
 using POS.Services.InventoryServices;
+using POS.Reports;
 
 namespace POS.API.Extensions;
 
@@ -61,6 +62,7 @@ public static class ApplicationServicesExtensions
         services.AddScoped<IRecipeService, RecipeService>();
         services.AddScoped<IUnitService, UnitService>();
         services.AddSingleton<IEncryptionService, EncryptionService>();
+        services.AddReportingInfrastructure();
 
 
         services.AddAutoMapper(typeof(MappingProfiles));

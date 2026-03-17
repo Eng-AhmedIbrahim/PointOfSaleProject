@@ -1,4 +1,5 @@
-﻿using BlazorBase.ERPFrontServices.DistributionServices;
+﻿using BlazorBase.Components.Shared;
+using BlazorBase.ERPFrontServices.DistributionServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
 using POS.Desktop.Components.DineInComponents;

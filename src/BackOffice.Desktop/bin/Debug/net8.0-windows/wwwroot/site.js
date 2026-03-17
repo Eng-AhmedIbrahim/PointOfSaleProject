@@ -1,4 +1,4 @@
-﻿window.updateFontSize = (className, step) => {
+window.updateFontSize = (className, step) => {
     const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize); // Default 16px
     let cssVarName = "";
 
@@ -104,3 +104,45 @@ function hideModal(id) {
     var modal = bootstrap.Modal.getInstance(document.querySelector(id));
     modal.hide();
 }
+
+window.downloadBase64File = (fileName, contentType, base64Data) => {
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = `data:${contentType};base64,${base64Data}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+window.createBlobUrl = (base64, contentType) => {
+    try {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: contentType });
+        const url = URL.createObjectURL(blob);
+        return url;
+    } catch (e) {
+        console.error("Error creating blob URL:", e);
+        return null;
+    }
+};
+
+window.createBlobFromUint8Array = (byteArray, contentType) => {
+    try {
+        const blob = new Blob([byteArray], { type: contentType });
+        return URL.createObjectURL(blob);
+    } catch (e) {
+        console.error("Error creating blob URL from array:", e);
+        return null;
+    }
+};
+
+window.revokeBlobUrl = (url) => {
+    if (url && url.startsWith('blob:')) {
+        URL.revokeObjectURL(url);
+    }
+};

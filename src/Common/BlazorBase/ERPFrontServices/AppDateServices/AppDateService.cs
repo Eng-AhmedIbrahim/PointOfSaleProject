@@ -29,6 +29,14 @@ public class AppDateService : IAppDateService
             "Failed to retrieve AppDate from the API.");
     }
 
+    public async Task<bool> CloseDay()
+    {
+        var response = await ApiRequestHelpers.SendApiRequest(CloseDayRequest);
+        return response != null && response.IsSuccessStatusCode;
+    }
+
+    private Task<HttpResponseMessage> CloseDayRequest()
+        => _httpClient.PutAsync(_apiSettings!.Endpoints!.CloseDay, null);
 
     private async Task<T> GetApiResponseAsync<T>(
         Func<Task<HttpResponseMessage>> apiRequest,

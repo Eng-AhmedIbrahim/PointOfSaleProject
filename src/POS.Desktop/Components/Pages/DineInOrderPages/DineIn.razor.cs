@@ -1,4 +1,4 @@
-﻿namespace POS.Desktop.Components.Pages.DineInOrderPages;
+namespace POS.Desktop.Components.Pages.DineInOrderPages;
 
 using BlazorBase.Helpers;
 using global::POS.Desktop.Components.DineInComponents;
@@ -82,6 +82,12 @@ public partial class DineIn : IDisposable
             if (_commonProperties.CurrentDineInOrder == null)
             {
                 Items = new List<TableItem>();
+                // Also clear selection UI if no active table/order is set in common properties
+                if (_commonProperties.TableId == 0 || (_commonProperties.DineInOrdersDetails != null && !_commonProperties.DineInOrdersDetails.ContainsKey(_commonProperties.TableId)))
+                {
+                    tableStates.Clear();
+                    buttonStates.Clear();
+                }
             }
             else
             {
@@ -348,7 +354,7 @@ public partial class DineIn : IDisposable
     private async Task OpenMultipleOrdersDialog(List<DineInOrderDetails> orders)
     {
         var parameters = new DialogParameters { ["Orders"] = orders };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.False, FullWidth = true };
         var dialog = await _dialogService.ShowAsync<MultipleOrdersDialog>("Select Order", parameters, options);
         var result = await dialog.Result;
 

@@ -643,7 +643,7 @@
     <value>مشكلة في المطبخ</value>
   </data>
   <data name="ConfirmVoid" xml:space="preserve">
-    <value>تأكيد الإلغاء</value>
+    <value>تأكيد</value>
   </data>
   <data name="PleaseSelectItemFirst" xml:space="preserve">
     <value>يرجى اختيار صنف أولاً</value>
@@ -1324,7 +1324,10 @@
     <value>جاري مزامنة الإعدادات...</value>
   </data>
   <data name="AllowCloseWithoutPrint" xml:space="preserve">
-    <value>السماح بالإغلاق بدون طباعة</value>
+    <value>إغلاق الطاولة بدون طباعة</value>
+  </data>
+  <data name="MustPrintBeforeClose" xml:space="preserve">
+    <value>يجب طباعة الإيصال قبل إغلاق الطاولة</value>
   </data>
   <data name="EnableCaptainTipsDeduction" xml:space="preserve">
     <value>تفعيل خصم تبس الكابتن</value>
@@ -1448,5 +1451,95 @@
   </data>
   <data name="CashAmount" xml:space="preserve">
     <value>المبلغ النقدي</value>
+  </data>
+  <data name="SalesEndOfDay" xml:space="preserve">
+    <value>إنهاء يوم عمل مبيعات</value>
+  </data>
+  <data name="CurrentPosDate" xml:space="preserve">
+    <value>تاريخ اليوم الحالي</value>
+  </data>
+  <data name="CannotCloseDay" xml:space="preserve">
+    <value>لا يمكن إنهاء اليوم</value>
+  </data>
+  <data name="ThereAre" xml:space="preserve">
+    <value>يوجد</value>
+  </data>
+  <data name="PleaseCompleteOrVoidAllOrdersBeforeClosing" xml:space="preserve">
+    <value>يرجى استكمال أو إلغاء جميع الأوردرات قبل إنهاء اليوم</value>
+  </data>
+  <data name="AllOrdersReadyToClose" xml:space="preserve">
+    <value>جميع الأوردرات مكتملة، اليوم جاهز للإغلاق</value>
+  </data>
+  <data name="CloseDayConfirmationMessage" xml:space="preserve">
+    <value>هل أنت متأكد من رغبتك في إنهاء يوم العمل؟</value>
+  </data>
+  <data name="ThisActionWillResetOrderCountsAndAdvanceDate" xml:space="preserve">
+    <value>هذا الإجراء سيقوم بتصفير عداد الأوردرات وتقديم تاريخ السيستم</value>
+  </data>
+  <data name="ConfirmCloseDay" xml:space="preserve">
+    <value>تأكيد إنهاء اليوم</value>
+  </data>
+  <data name="CloseDay" xml:space="preserve">
+    <value>تقفيل اليوم</value>
+  </data>
+  <data name="PrintEndOfDayReport" xml:space="preserve">
+    <value>طباعة تقرير تقفيل اليوم</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>جاري التحميل</value>
+  </data>
+  <data name="PendingOrders" xml:space="preserve">
+    <value>أوردرات معلقة</value>
+  </data>
+  <data name="OperationSuccessful" xml:space="preserve">
+    <value>تمت العملية بنجاح</value>
+  </data>
+  <data name="AccessRestricted" xml:space="preserve">
+    <value>صلاحية محدودة</value>
+  </data>
+  <data name="DetailedSales" xml:space="preserve">
+    <value>المبيعات التفصيلية</value>
+  </data>
+  <data name="OrdersFound" xml:space="preserve">
+    <value>طلب تم العثور عليها</value>
+  </data>
+  <data name="PrintReport" xml:space="preserve">
+    <value>طباعة تقرير</value>
+  </data>
+  <data name="SearchByOrderIdOrCashier" xml:space="preserve">
+    <value>ابحث برقم الطلب أو الكاشير</value>
+  </data>
+  <data name="UniqueItems" xml:space="preserve">
+    <value>صنف فريد</value>
+  </data>
+  <data name="VoidEntireOrder" xml:space="preserve">
+    <value>إلغاء الطلب بالكامل</value>
+  </data>
+  <data name="ConfirmEntireOrderVoid" xml:space="preserve">
+    <value>هل أنت متأكد من إلغاء الطلب بالكامل (شاملاً الخدمة والضريبة)؟</value>
+  </data>
+  <data name="SelectAtLeastTwoTablesToMerge" xml:space="preserve">
+    <value>برجاء اختيار طاولتين على الأقل للدمج</value>
+  </data>
+  <data name="SelectCurrentTable" xml:space="preserve">
+    <value>اختر الطاولة الحالية</value>
+  </data>
+  <data name="SelectAvailableTable" xml:space="preserve">
+    <value>اختر الطاولة المتاحة</value>
+  </data>
+  <data name="TransferOrderToAnotherTable" xml:space="preserve">
+    <value>نقل الطلب إلى طاولة أخرى</value>
+  </data>
+  <data name="FromTable" xml:space="preserve">
+    <value>من طاولة</value>
+  </data>
+  <data name="ToTable" xml:space="preserve">
+    <value>إلى طاولة</value>
+  </data>
+  <data name="ReturnToStock" xml:space="preserve">
+    <value>إعادة الأصناف للمخزن</value>
+  </data>
+  <data name="EnableInventoryTracking" xml:space="preserve">
+    <value>تفعيل نظام المخازن</value>
   </data>
 </root>

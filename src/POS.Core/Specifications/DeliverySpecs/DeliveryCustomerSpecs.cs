@@ -1,21 +1,28 @@
-﻿namespace POS.Core.Specifications.DeliverySpecs;
+namespace POS.Core.Specifications.DeliverySpecs;
 
 public class DeliveryCustomerSpecs : BaseSpecifications<DeliveryCustomerInfo>
 {
     public DeliveryCustomerSpecs() 
     {
-        Includes.Add(c => c.CustomerAddresses!);
+        AddIncludes();
     }
 
     public DeliveryCustomerSpecs(int customerId) : base(c => c.Id == customerId)
     {
-        Includes.Add(c => c.CustomerAddresses!);
+        AddIncludes();
     }
 
-    public DeliveryCustomerSpecs(string phoneNumber) : base(c => c.FirstPhoneNumber == phoneNumber)
+    public DeliveryCustomerSpecs(string phoneNumber) 
+        : base(c => c.FirstPhoneNumber == phoneNumber || c.SecondPhoneNumber == phoneNumber)
+    {
+        AddIncludes();
+    }
+
+    private void AddIncludes()
     {
         Includes.Add(c => c.CustomerAddresses!);
+        AddThenInclude("CustomerAddresses.DeliveryZone");
+        AddThenInclude("CustomerAddresses.Branch");
     }
-
 }
     

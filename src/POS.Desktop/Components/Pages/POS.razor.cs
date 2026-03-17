@@ -1,4 +1,4 @@
-﻿using BlazorBase.ERPFrontServices.SettingsServices;
+using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
 using POS.Desktop.Components.PosComponent;
 
@@ -32,13 +32,9 @@ public partial class POS
             _dynamicDispatcherSettings = await _systemSettingsServices.GetDispatcherSettingsAsync();
             _categories = await _categoryServices.GetAllCategoriesAsync();
             if (_categories != null)
-            {
                _categories = _categories.Where(c => c.Invisible == false).ToList();
-            }
             else
-            {
                _categories = new List<CategoryToReturnDto>();
-            }
 
             _stateChangedHandler = async () => 
             {
@@ -50,14 +46,16 @@ public partial class POS
             _section4ButtonsServices.OnChanged += _stateChangedHandler;
             Localizer.OnLanguageChanged += _stateChangedHandler;
 
-            if (_commonProperties?.CustomerDetails != null && string.IsNullOrEmpty(_commonProperties.CustomerDetails.FirstPhoneNumber))
+            if (_commonProperties?.CustomerDetails != null && 
+                string.IsNullOrEmpty(_commonProperties.CustomerDetails.FirstPhoneNumber))
                 _handelDeliveryInvocation.DeliveryDetails = string.Empty;
 
             await GetCurrentDayAndTime();
             await GetOrdersSetting();
 
             if (_commonProperties!.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
-                _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
+                _commonProperties.FeatureSettings = 
+                    await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
 
             if (!_commonProperties.UpdateDineInOrder)
                 _cartService.ResetDiscount();
@@ -66,9 +64,7 @@ public partial class POS
             _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
 
             if (_commonProperties!.TableItems!.Any())
-            {
                 _cartService.CalculateSection4Table();
-            }
             else
             {
                 _commonProperties.TotalDiscount = 0M;
@@ -131,7 +127,7 @@ public partial class POS
                 if (inventory.TrackInventory)
                 {
                     // Calculate what's already in the cart for this item
-                    decimal currentCartQty = _commonProperties.TableItems
+                    decimal currentCartQty = _commonProperties.TableItems!
                         .Where(i => i.Id == selectedMenuItem.Id && !i.IsReadOnly && !i.IsVoided)
                         .Sum(i => i.Quantity);
 
@@ -426,6 +422,37 @@ public partial class POS
 
     private async Task AddItemToTable(MenuSalesItemsToReturnDto menuItem, decimal? weightQty = null)
     {
+        var selectedAttributes = currentSelectedAttribute ?? new List<AttributeDto>();
+
+        // --- Try to find an existing matching item (same ID + same attributes) ---
+        TableItem? existingMatch = _commonProperties?.TableItems?
+            .Where(t => !t.IsReadOnly && !t.IsVoided && t.Id == menuItem.Id)
+            .FirstOrDefault(t => AreAttributeListsEqual(t.Attributes ?? [], selectedAttributes));
+
+        if (existingMatch != null && !menuItem.ByWeight)
+        {
+            // Same item with same attributes → just increment quantity
+            existingMatch.Quantity++;
+            _cartService.RecalculateItemTotals(existingMatch);
+
+            if (_commonProperties!.UpdateDineInOrder)
+            {
+                // Find or create an appended entry for this item
+                var appendedMatch = _commonProperties.AppendedTableItems!
+                    .FirstOrDefault(t => t.Id == menuItem.Id && AreAttributeListsEqual(t.Attributes ?? [], selectedAttributes));
+
+                if (appendedMatch != null)
+                    appendedMatch.Quantity++;
+                else
+                    _commonProperties.AppendedTableItems!.Add(existingMatch); // share reference so it's tracked
+            }
+
+            _cartService.CalculateSection4Table();
+            await InvokeItems(currentCatId);
+            return;
+        }
+
+        // --- New item ---
         TableItem? newTableItem = new TableItem
         {
             Id = menuItem.Id,
@@ -435,7 +462,7 @@ public partial class POS
             Price = menuItem.Price ?? 0,
             Quantity = weightQty ?? 1,
             Total = menuItem.Price ?? 0,
-            Attributes = currentSelectedAttribute ?? [],
+            Attributes = selectedAttributes,
             CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
             ItemKitchenTypeId = menuItem.KitchenTypeId,
             PrintInBackupReceiptFromCategory = menuItem.PrintInBackupReceiptFromCategory,
@@ -459,6 +486,19 @@ public partial class POS
         _cartService.CalculateSection4Table();
 
         await InvokeItems(currentCatId);
+    }
+
+    private bool AreAttributeListsEqual(IList<AttributeDto> list1, IList<AttributeDto> list2)
+    {
+        if (list1.Count != list2.Count) return false;
+        var sorted1 = list1.OrderBy(a => a.Id).ThenBy(a => a.Name).ToList();
+        var sorted2 = list2.OrderBy(a => a.Id).ThenBy(a => a.Name).ToList();
+        for (int i = 0; i < sorted1.Count; i++)
+        {
+            if (sorted1[i].Id != sorted2[i].Id || sorted1[i].Name != sorted2[i].Name)
+                return false;
+        }
+        return true;
     }
 
     private void ResetClickCountAndBaseItem()

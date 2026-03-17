@@ -124,10 +124,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             TotalAmount = order.BasicOrderDetails!.Account,
             ServiceAmount = order.BasicOrderDetails.Service?.ToString("N2") ?? "0.00",
             TaxAmount = order.BasicOrderDetails.Tax?.ToString("N2") ?? "0.00",
-            Discount = (order.BasicOrderDetails.Account ?? 0) + 
-                       (order.BasicOrderDetails.Service ?? 0) + 
-                       (order.BasicOrderDetails.Tax ?? 0) - 
-                       (order.BasicOrderDetails.Total ?? 0),
+            Discount = (order.BasicOrderDetails.Items?.Sum(i => i.TotalDiscountPrice ?? 0) ?? 0) + 
+                       (order.BasicOrderDetails.OrderDiscount?.Value ?? 0),
             TotalOrder = order.BasicOrderDetails.Total?.ToString("N2") ?? "0.00",
         };
 
@@ -149,11 +147,11 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             try
             {
-                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(order.BasicOrderDetails!.OrderId);
+                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(order.DatabaseId);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error incrementing print count for DineIn order {OrderId}", order.BasicOrderDetails!.OrderId);
+                Log.Error(ex, "Error incrementing print count for DineIn order {DatabaseId}", order.DatabaseId);
             }
         }
 
@@ -419,12 +417,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             if (!isCopy)
             {
-                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.OrderId);
+                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.Id);
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error incrementing print count for TakeAway order {OrderId}", createdOrder.OrderId);
+            Log.Error(ex, "Error incrementing print count for TakeAway order {Id}", createdOrder.Id);
         }
 
         if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)
@@ -828,12 +826,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             if (!isCopy)
             {
-                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.OrderId);
+                currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.Id);
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error incrementing print count for Delivery order {OrderId}", createdOrder.OrderId);
+            Log.Error(ex, "Error incrementing print count for Delivery order {Id}", createdOrder.Id);
         }
 
         if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)
@@ -981,11 +979,11 @@ public class DesktopPrintOrderService : IPrintOrderService
         int currentPrintCount = 0;
         try
         {
-            currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.OrderId);
+            currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.Id);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error incrementing print count for Dispatch order {OrderId}", createdOrder.OrderId);
+            Log.Error(ex, "Error incrementing print count for Dispatch order {Id}", createdOrder.Id);
         }
 
         if (orderSettings != null && orderSettings.CustomerReceiptCount > 0)

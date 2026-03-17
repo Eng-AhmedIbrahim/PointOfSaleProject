@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="03/12/2026" ReportInfo.Modified="03/12/2026" ReportInfo.CreatorVersion="2026.1.0.0">
+  <Dictionary>
+    <TableDataSource Name="Summary" ReferenceName="ReportData.Summary" DataType="System.Int32" Enabled="true">
+      <Column Name="NetTotal" DataType="System.Decimal"/>
+      <Column Name="TotalIncome" DataType="System.Decimal"/>
+      <Column Name="TotalDiscount" DataType="System.Decimal"/>
+      <Column Name="Expenses" DataType="System.Decimal"/>
+      <Column Name="TotalExpenses" DataType="System.Decimal"/>
+      <Column Name="SalesReturn" DataType="System.Decimal"/>
+      <Column Name="NetCash" DataType="System.Decimal"/>
+      <Column Name="CashPost" DataType="System.Decimal"/>
+      <Column Name="Credit" DataType="System.Decimal"/>
+      <Column Name="TotalCityLedger" DataType="System.Decimal"/>
+      <Column Name="FullVoidAmount" DataType="System.Decimal"/>
+      <Column Name="PartialVoidAmount" DataType="System.Decimal"/>
+      <Column Name="DineInTotal" DataType="System.Decimal"/>
+      <Column Name="TakeAwayTotal" DataType="System.Decimal"/>
+      <Column Name="DeliveryTotal" DataType="System.Decimal"/>
+      <Column Name="DeliveryFees" DataType="System.Decimal"/>
+      <Column Name="Service" DataType="System.Decimal"/>
+      <Column Name="Tax" DataType="System.Decimal"/>
+      <Column Name="OrderCount" DataType="System.Decimal"/>
+      <Column Name="OrderAVG" DataType="System.Decimal"/>
+      <Column Name="SoldItemsCount" DataType="System.Decimal"/>
+      <Column Name="GrossSales" DataType="System.Decimal"/>
+      <Column Name="DeliveryCount" DataType="System.Decimal"/>
+    </TableDataSource>
+    <TableDataSource Name="Categories" ReferenceName="ReportData.Categories" DataType="System.Int32" Enabled="true">
+      <Column Name="CategoryName" DataType="System.String"/>
+      <Column Name="Total" DataType="System.Decimal"/>
+      <Column Name="Percentage" DataType="System.Decimal"/>
+    </TableDataSource>
+    <Parameter Name="FromDate" DataType="System.String"/>
+    <Parameter Name="ToDate" DataType="System.String"/>
+    <Parameter Name="BranchName" DataType="System.String"/>
+  </Dictionary>
+  <ReportPage Name="Page1" PaperWidth="80" LeftMargin="4" RightMargin="4" TopMargin="4" BottomMargin="4">
+
+    <!-- ===== HEADER ===== -->
+    <ReportTitleBand Name="ReportTitleBand1" Width="264.6" Height="110">
+      <TextObject Name="TBranch" Left="0" Top="0" Width="264.6" Height="28"
+                  Text="[BranchName]" Font="Arial, 13pt, style=Bold" HorzAlign="Center" VertAlign="Center"/>
+      <TextObject Name="TTitle" Left="0" Top="30" Width="264.6" Height="26"
+                  Text="Sales Summary" Font="Arial, 12pt, style=Bold" HorzAlign="Center"
+                  Border.Lines="Bottom" Border.Width="1.5"/>
+      <!-- LTR: label left, value right -->
+      <TextObject Name="TFromLbl" Left="0" Top="66" Width="60" Height="18"
+                  Text="From:" Font="Arial, 9pt, style=Bold" HorzAlign="Left"/>
+      <TextObject Name="TFromVal" Left="60" Top="66" Width="204" Height="18"
+                  Text="[FromDate]" Font="Arial, 9pt" HorzAlign="Left"/>
+      <TextObject Name="TToLbl" Left="0" Top="84" Width="60" Height="18"
+                  Text="To:" Font="Arial, 9pt, style=Bold" HorzAlign="Left"/>
+      <TextObject Name="TToVal" Left="60" Top="84" Width="204" Height="18"
+                  Text="[ToDate]" Font="Arial, 9pt" HorzAlign="Left"/>
+    </ReportTitleBand>
+
+    <!-- ===== SUMMARY DATA BAND ===== -->
+    <DataBand Name="Data1" Top="115" Width="264.6" Height="670" DataSource="Summary">
+
+      <!-- REVENUES SECTION -->
+      <TextObject Name="HSales" Left="0" Top="5" Width="264.6" Height="22"
+                  Text="REVENUES" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+
+      <!-- Label LEFT | Value RIGHT (LTR) -->
+      <TextObject Name="LD"   Left="0"   Top="32" Width="154" Height="19" Text="Dine-In Total:"     Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VD"   Left="154" Top="32" Width="110" Height="19" Text="[Summary.DineInTotal]"    Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LT"   Left="0"   Top="51" Width="154" Height="19" Text="Take-Away Total:"   Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VT"   Left="154" Top="51" Width="110" Height="19" Text="[Summary.TakeAwayTotal]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LDel" Left="0"   Top="70" Width="154" Height="19" Text="Delivery Total:"    Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VDel" Left="154" Top="70" Width="110" Height="19" Text="[Summary.DeliveryTotal]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LDelF" Left="0"  Top="89" Width="154" Height="19" Text="Delivery Fees:"     Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VDelF" Left="154" Top="89" Width="110" Height="19" Text="[Summary.DeliveryFees]"  Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt"/>
+
+      <TextObject Name="LSvc" Left="0"   Top="108" Width="154" Height="19" Text="Service:"          Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VSvc" Left="154" Top="108" Width="110" Height="19" Text="[Summary.Service]"       Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt"/>
+
+      <TextObject Name="LTax" Left="0"   Top="127" Width="154" Height="19" Text="Tax:"              Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VTax" Left="154" Top="127" Width="110" Height="19" Text="[Summary.Tax]"           Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt"/>
+
+      <TextObject Name="LInc" Left="0"   Top="150" Width="154" Height="22" Text="Total Revenue:"    Font="Arial, 10pt, style=Bold" HorzAlign="Left" Border.Lines="Top" Border.Width="1"/>
+      <TextObject Name="VInc" Left="154" Top="150" Width="110" Height="22" Text="[Summary.GrossSales]"      Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Border.Lines="Top" Border.Width="1"/>
+
+      <!-- EXPENSES SECTION -->
+      <TextObject Name="HExp" Left="0" Top="181" Width="264.6" Height="22"
+                  Text="EXPENSES" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+
+      <TextObject Name="LExp" Left="0"   Top="208" Width="154" Height="19" Text="Total Expenses:"   Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VExp" Left="154" Top="208" Width="110" Height="19" Text="[Summary.TotalExpenses]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LRet" Left="0"   Top="227" Width="154" Height="19" Text="Returns:"          Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VRet" Left="154" Top="227" Width="110" Height="19" Text="[Summary.SalesReturn]"  Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt"/>
+
+      <!-- DISCOUNTS SECTION -->
+      <TextObject Name="HDis" Left="0" Top="255" Width="264.6" Height="22"
+                  Text="DISCOUNTS" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+
+      <TextObject Name="LDis" Left="0"   Top="282" Width="154" Height="19" Text="Total Discounts:"  Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VDis" Left="154" Top="282" Width="110" Height="19" Text="[Summary.TotalDiscount]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold" TextFill.Color="DarkRed"/>
+
+      <!-- NET CASH -->
+      <LineObject Name="LineNet1" Left="0" Top="310" Width="264.6" Border.Width="1.5"/>
+      <TextObject Name="LNet" Left="0"   Top="318" Width="134" Height="28" Text="Net Revenue:"      Font="Arial, 12pt, style=Bold" HorzAlign="Left"/>
+      <TextObject Name="VNet" Left="134" Top="318" Width="130" Height="28" Text="[Summary.NetTotal]"       Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 12pt, style=Bold"/>
+      <LineObject Name="LineNet2" Left="0" Top="351" Width="264.6" Border.Width="1.5"/>
+
+      <!-- PAYMENT METHODS -->
+      <TextObject Name="HPay" Left="0" Top="361" Width="264.6" Height="22"
+                  Text="PAYMENT METHODS" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+
+      <TextObject Name="LCash" Left="0"   Top="388" Width="154" Height="19" Text="Cash Collected:"  Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VCash" Left="154" Top="388" Width="110" Height="19" Text="[Summary.CashPost]"       Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold" TextFill.Color="DarkGreen"/>
+
+      <TextObject Name="LCard" Left="0"   Top="407" Width="154" Height="19" Text="Visa / Credit:"   Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VCard" Left="154" Top="407" Width="110" Height="19" Text="[Summary.TotalCityLedger]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold" TextFill.Color="DarkBlue"/>
+
+      <!-- VOIDS -->
+      <TextObject Name="HVoid" Left="0" Top="435" Width="264.6" Height="22"
+                  Text="VOIDS" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="180,30,30" TextFill.Color="White"/>
+
+      <TextObject Name="LVP" Left="0"   Top="462" Width="154" Height="19" Text="Partial Void:"      Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VVP" Left="154" Top="462" Width="110" Height="19" Text="[Summary.PartialVoidAmount]" Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt" TextFill.Color="DarkRed"/>
+
+      <TextObject Name="LVF" Left="0"   Top="481" Width="154" Height="19" Text="Full Void:"         Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VVF" Left="154" Top="481" Width="110" Height="19" Text="[Summary.FullVoidAmount]"    Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold" TextFill.Color="DarkRed"/>
+
+      <!-- STATISTICS -->
+      <TextObject Name="HStat" Left="0" Top="509" Width="264.6" Height="22"
+                  Text="STATISTICS" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+
+      <TextObject Name="LOC"  Left="0"   Top="536" Width="154" Height="19" Text="Order Count:"      Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VOC"  Left="154" Top="536" Width="110" Height="19" Text="[Summary.OrderCount]"         Format="Number" Format.DecimalDigits="0" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LAVG" Left="0"   Top="555" Width="154" Height="19" Text="Average Order:"    Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VAVG" Left="154" Top="555" Width="110" Height="19" Text="[Summary.OrderAVG]"       Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LSI"  Left="0"   Top="574" Width="154" Height="19" Text="Items Sold:"       Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VSI"  Left="154" Top="574" Width="110" Height="19" Text="[Summary.SoldItemsCount]"     Format="Number" Format.DecimalDigits="0" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <TextObject Name="LDelC" Left="0"  Top="593" Width="154" Height="19" Text="Delivery Orders:"  Font="Arial, 9.5pt" HorzAlign="Left"/>
+      <TextObject Name="VDelC" Left="154" Top="593" Width="110" Height="19" Text="[Summary.DeliveryCount]"      Format="Number" Format.DecimalDigits="0" HorzAlign="Right" Font="Arial, 9.5pt, style=Bold"/>
+
+      <!-- CATEGORIES SECTION -->
+      <TextObject Name="HCat" Left="0" Top="622" Width="264.6" Height="22"
+                  Text="SALES BY CATEGORY" Font="Arial, 11pt, style=Bold" HorzAlign="Center"
+                  Fill.Color="30,30,30" TextFill.Color="White"/>
+      <!-- Category Table Header -->
+      <TextObject Name="CHName" Left="0"   Top="648" Width="140" Height="19" Text="Category"  Font="Arial, 9pt, style=Bold" HorzAlign="Left"  Fill.Color="210,210,210" Border.Lines="All"/>
+      <TextObject Name="CHSale" Left="140" Top="648" Width="84"  Height="19" Text="Sales"     Font="Arial, 9pt, style=Bold" HorzAlign="Right" Fill.Color="210,210,210" Border.Lines="All"/>
+      <TextObject Name="CHPct"  Left="224" Top="648" Width="40"  Height="19" Text="%"         Font="Arial, 9pt, style=Bold" HorzAlign="Center" Fill.Color="210,210,210" Border.Lines="All"/>
+    </DataBand>
+
+    <!-- CATEGORIES DATA BAND -->
+    <DataBand Name="CatBand" Top="790" Width="264.6" Height="20" DataSource="Categories">
+      <TextObject Name="CRName" Left="0"   Top="0" Width="140" Height="20" Text="[Categories.CategoryName]" HorzAlign="Left"  Font="Arial, 9pt" Border.Lines="Bottom,Left,Right"/>
+      <TextObject Name="CRSale" Left="140" Top="0" Width="84"  Height="20" Text="[Categories.Total]"        Format="Number" Format.DecimalDigits="2" HorzAlign="Right" Font="Arial, 9pt" Border.Lines="Bottom,Left,Right"/>
+      <TextObject Name="CRPct"  Left="224" Top="0" Width="40"  Height="20" Text="[Categories.Percentage]%"  Format="Number" Format.DecimalDigits="1" HorzAlign="Center" Font="Arial, 9pt" Border.Lines="Bottom,Left,Right"/>
+    </DataBand>
+
+    <!-- FOOTER -->
+    <PageFooterBand Name="PageFooterBand1" Width="264.6" Height="35">
+      <LineObject Name="LineFoo" Left="0" Top="0" Width="264.6" Border.Width="1"/>
+      <TextObject Name="TFoo" Left="0" Top="8" Width="264.6" Height="20"
+                  Text="Printed: [DateTime.Now]" Format="Date" Format.Format="yyyy-MM-dd HH:mm"
+                  Font="Arial, 8pt" HorzAlign="Center"/>
+    </PageFooterBand>
+
+  </ReportPage>
+</Report>

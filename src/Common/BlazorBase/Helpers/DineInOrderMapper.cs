@@ -69,8 +69,9 @@ public static class DineInOrderMapper
                 CategoryName = item.CategoryName,
                 Price = item.Price,
                 Quantity = item.Quantity,
-                TotalAmount = item.Total, // Gross
-                TotalAfterDiscount = item.TotalAmount, // Net
+                TotalAmount = item.TotalAmount, 
+                TotalAfterDiscount = item.TotalAfterDiscount, 
+                Total = item.Total,
                 Discount = item.HasDiscount,
                 TotalDiscountPrice = item.TotalDiscountPrice,
                 TotalDiscountPercentage = item.DiscountPercentage,
@@ -163,8 +164,9 @@ public static class DineInOrderMapper
             CategoryName = item.CategoryName,
             Price = item.Price ?? 0,
             Quantity = item.Quantity ?? 0,
-            Total = item.TotalAmount ?? 0, // Gross on server
-            TotalAmount = item.TotalAfterDiscount ?? item.TotalAmount ?? 0, // Net on server
+            Total = item.Total, 
+            TotalAmount = item.TotalAmount, 
+            TotalAfterDiscount = item.TotalAfterDiscount,
             HasDiscount = item.Discount ?? false,
             DiscountPercentage = item.TotalDiscountPercentage,
             DiscountAmount = item.TotalDiscountAmount,

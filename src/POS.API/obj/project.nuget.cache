@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "zanjJeAKmjQ=",
+  "dgSpecHash": "I9vSMOg2vaE=",
   "success": true,
   "projectFilePath": "F:\\PointOfSaleProject\\src\\POS.API\\POS.API.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,14 @@
     "C:\\Users\\roma2\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\blazor.bootstrap\\3.3.1\\blazor.bootstrap.3.3.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\blazored.localstorage\\4.5.0\\blazored.localstorage.4.5.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\closedxml\\0.105.0\\closedxml.0.105.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\closedxml.parser\\2.0.0\\closedxml.parser.2.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\documentformat.openxml\\3.1.1\\documentformat.openxml.3.1.1.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\documentformat.openxml.framework\\3.1.1\\documentformat.openxml.framework.3.1.1.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\excelnumberformat\\1.1.0\\excelnumberformat.1.1.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\fastreport.compat\\2026.1.4\\fastreport.compat.2026.1.4.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\fastreport.opensource\\2026.1.4\\fastreport.opensource.2026.1.4.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\fastreport.opensource.export.pdfsimple\\2026.1.4\\fastreport.opensource.export.pdfsimple.2026.1.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\harfbuzzsharp\\8.3.0.1\\harfbuzzsharp.8.3.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\8.3.0.1\\harfbuzzsharp.nativeassets.macos.8.3.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\8.3.0.1\\harfbuzzsharp.nativeassets.win32.8.3.0.1.nupkg.sha512",
@@ -32,6 +40,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.codeanalysis.common\\4.5.0\\microsoft.codeanalysis.common.4.5.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.codeanalysis.csharp\\4.5.0\\microsoft.codeanalysis.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.codeanalysis.csharp.workspaces\\4.5.0\\microsoft.codeanalysis.csharp.workspaces.4.5.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\microsoft.codeanalysis.visualbasic\\4.0.1\\microsoft.codeanalysis.visualbasic.4.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.codeanalysis.workspaces.common\\4.5.0\\microsoft.codeanalysis.workspaces.common.4.5.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.data.sqlclient\\5.2.2\\microsoft.data.sqlclient.5.2.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\5.2.0\\microsoft.data.sqlclient.sni.runtime.5.2.0.nupkg.sha512",
@@ -46,15 +55,18 @@
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\8.0.0\\microsoft.extensions.caching.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.caching.memory\\8.0.0\\microsoft.extensions.caching.memory.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.caching.stackexchangeredis\\8.0.8\\microsoft.extensions.caching.stackexchangeredis.8.0.8.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.configuration\\8.0.0\\microsoft.extensions.configuration.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.configuration.binder\\8.0.0\\microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.1\\microsoft.extensions.dependencyinjection.8.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.dependencymodel\\8.0.2\\microsoft.extensions.dependencymodel.8.0.2.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.diagnostics\\8.0.0\\microsoft.extensions.diagnostics.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.diagnostics.abstractions\\8.0.0\\microsoft.extensions.diagnostics.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.features\\8.0.15\\microsoft.extensions.features.8.0.15.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\8.0.0\\microsoft.extensions.fileproviders.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\8.0.0\\microsoft.extensions.hosting.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.http\\8.0.0\\microsoft.extensions.http.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.identity.core\\8.0.8\\microsoft.extensions.identity.core.8.0.8.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.identity.stores\\8.0.8\\microsoft.extensions.identity.stores.8.0.8.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.localization\\8.0.12\\microsoft.extensions.localization.8.0.12.nupkg.sha512",
@@ -62,6 +74,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.logging\\8.0.0\\microsoft.extensions.logging.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.3\\microsoft.extensions.logging.abstractions.8.0.3.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.options\\8.0.2\\microsoft.extensions.options.8.0.2.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\8.0.0\\microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.identity.client\\4.61.3\\microsoft.identity.client.4.61.3.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.61.3\\microsoft.identity.client.extensions.msal.4.61.3.nupkg.sha512",
@@ -81,6 +94,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\pdfiumviewer.native.x86_64.v8-xfa\\2018.4.8.256\\pdfiumviewer.native.x86_64.v8-xfa.2018.4.8.256.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.8\\pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\questpdf\\2025.1.3\\questpdf.2025.1.3.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\rbush.signed\\4.0.0\\rbush.signed.4.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\serilog\\4.0.2\\serilog.4.0.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\serilog.aspnetcore\\8.0.3\\serilog.aspnetcore.8.0.3.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\serilog.enrichers.environment\\3.0.1\\serilog.enrichers.environment.3.0.1.nupkg.sha512",
@@ -91,6 +105,10 @@
     "C:\\Users\\roma2\\.nuget\\packages\\serilog.sinks.console\\6.0.0\\serilog.sinks.console.6.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\serilog.sinks.debug\\2.0.0\\serilog.sinks.debug.2.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\serilog.sinks.file\\6.0.0\\serilog.sinks.file.6.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\sixlabors.fonts\\1.0.0\\sixlabors.fonts.1.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\skiasharp\\3.119.2\\skiasharp.3.119.2.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\skiasharp.nativeassets.macos\\3.119.2\\skiasharp.nativeassets.macos.3.119.2.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.2\\skiasharp.nativeassets.win32.3.119.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\spire.pdf\\11.4.10\\spire.pdf.11.4.10.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\stackexchange.redis\\2.8.31\\stackexchange.redis.2.8.31.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\swashbuckle.aspnetcore\\6.8.1\\swashbuckle.aspnetcore.6.8.1.nupkg.sha512",
@@ -112,6 +130,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\system.drawing.common\\9.0.4\\system.drawing.common.9.0.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.formats.asn1\\6.0.0\\system.formats.asn1.6.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
@@ -131,5 +150,30 @@
     "C:\\Users\\roma2\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1608",
+      "level": "Warning",
+      "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.VisualBasic 4.0.1 requires Microsoft.CodeAnalysis.Common (= 4.0.1) but version Microsoft.CodeAnalysis.Common 4.5.0 was resolved.",
+      "projectPath": "F:\\PointOfSaleProject\\src\\POS.API\\POS.API.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\PointOfSaleProject\\src\\POS.API\\POS.API.csproj",
+      "libraryId": "Microsoft.CodeAnalysis.Common",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'AutoMapper' 13.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
+      "projectPath": "F:\\PointOfSaleProject\\src\\POS.API\\POS.API.csproj",
+      "warningLevel": 1,
+      "filePath": "F:\\PointOfSaleProject\\src\\POS.API\\POS.API.csproj",
+      "libraryId": "AutoMapper",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

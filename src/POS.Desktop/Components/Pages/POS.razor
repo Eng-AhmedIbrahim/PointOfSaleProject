@@ -57,7 +57,7 @@
                     <TooltipContent>
                         <div style="text-align:right; direction:rtl; min-width:120px; padding:4px 2px;">
                             <div style="font-weight:900; font-size:1rem; color:#4ade80; letter-spacing:0.5px;">
-                                @item.Price?.ToString("0.00") <span style="font-size:0.75rem; opacity:0.8;">ج.م</span>
+                                @item.Price?.ToString("0.##") <span style="font-size:0.75rem; opacity:0.8;">ج.م</span>
                             </div>
                             @if (!string.IsNullOrWhiteSpace(item.Description))
                             {

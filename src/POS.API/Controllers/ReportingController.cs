@@ -16,9 +16,9 @@ public class ReportingController : BaseApiController
     }
 
     [HttpGet("sales-summary")]
-    public async Task<ActionResult<SalesSummaryDto>> GetSalesSummary([FromQuery] DateTime posDate)
+    public async Task<ActionResult<SalesSummaryDto>> GetSalesSummary([FromQuery] DateTime posDate, [FromQuery] DateTime? endDate = null)
     {
-        var summary = await _reportingService.GetSalesSummaryAsync(posDate);
+        var summary = await _reportingService.GetSalesSummaryAsync(posDate, endDate);
         return Ok(summary);
     }
 
@@ -36,6 +36,13 @@ public class ReportingController : BaseApiController
         return Ok(orders);
     }
 
+    [HttpGet("pending-orders")]
+    public async Task<ActionResult<List<OrderDto>>> GetPendingOrders([FromQuery] DateTime posDate)
+    {
+        var orders = await _reportingService.GetPendingOrdersAsync(posDate);
+        return Ok(orders);
+    }
+
     [HttpGet("staff-orders")]
     public async Task<ActionResult<List<OrderDto>>> GetStaffOrders([FromQuery] DateTime posDate, [FromQuery] string staffId, [FromQuery] string staffType)
     {
@@ -44,9 +51,9 @@ public class ReportingController : BaseApiController
     }
 
     [HttpGet("sales-items-summary")]
-    public async Task<ActionResult<List<SalesItemSummaryDto>>> GetSalesItemsSummary([FromQuery] DateTime posDate)
+    public async Task<ActionResult<List<SalesItemSummaryDto>>> GetSalesItemsSummary([FromQuery] DateTime posDate, [FromQuery] DateTime? endDate = null)
     {
-        var summary = await _reportingService.GetSalesItemsSummaryAsync(posDate);
+        var summary = await _reportingService.GetSalesItemsSummaryAsync(posDate, endDate);
         return Ok(summary);
     }
 }

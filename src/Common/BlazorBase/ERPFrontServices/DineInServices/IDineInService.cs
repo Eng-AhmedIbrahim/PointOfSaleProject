@@ -1,7 +1,4 @@
-﻿using POS.Contract;
-using POS.Contract.Dtos.DineInDtos;
-
-namespace BlazorBase.ERPFrontServices.DineInServices;
+﻿namespace BlazorBase.ERPFrontServices.DineInServices;
 
 public interface IDineInService
 {

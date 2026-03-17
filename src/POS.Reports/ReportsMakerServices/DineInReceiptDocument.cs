@@ -1,4 +1,5 @@
-﻿using POS.Reports.Models.DineIn;
+using POS.Contract.Models.ReceiptModels;
+using POS.Contract.Models.ReceiptModels.DineIn;
 
 namespace POS.Reports.ReportsMakerServices;
 
@@ -120,6 +121,22 @@ public class DineInReceiptDocument : IDocument
                 }
                 text.AlignCenter();
             });
+
+        if (receipt.IsVoid)
+        {
+            column.Item()
+                .PaddingTop(6)
+                .Border(3)
+                .BorderColor(Colors.Red.Medium)
+                .AlignCenter()
+                .Text(text =>
+                {
+                    text.Span("X  ملغي  X")
+                        .Bold()
+                        .FontSize(40)
+                        .FontColor(Colors.Red.Medium);
+                });
+        }
     }
 
     private void BuildDateAndCashierInfo(ref ColumnDescriptor column)
@@ -163,6 +180,8 @@ public class DineInReceiptDocument : IDocument
                     .Element(CellStyle)
                     .Text("كابتن الصالة")
                     .AlignCenter();
+
+
             });
     }
 
@@ -192,6 +211,7 @@ public class DineInReceiptDocument : IDocument
                     TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
                     Attributes = first.Attributes,
                     IsVoided = first.IsVoided,
+                    VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
                     TotalDiscountPrice = g.Sum(x => x.TotalDiscountPrice ?? 0)
@@ -241,8 +261,25 @@ public class DineInReceiptDocument : IDocument
                 {
                     table.Cell().Element(CellStyle).Text(item.TotalAmount?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
-                    table.Cell().Element(CellStyle).Text(item.Name).AlignEnd();
+                    table.Cell().Element(CellStyle).AlignRight().Text(text => {
+                        text.Span(item.Name);
+                        if (item.IsVoided == true && item.Quantity == 0) {
+                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
+                        }
+                    });
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+
+                    // Add Voided hint if available and item still has active quantity
+                    if (item.VoidAmount > 0 && item.Quantity > 0)
+                    {
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(45)
+                            .Text($"✖ ملغي: {item.VoidAmount.Value.ToString("0.##")}")
+                            .FontSize(10)
+                            .FontColor(Colors.Red.Medium)
+                            .AlignRight();
+                    }
 
                     // Add Discount if available
                     if (item.HasDiscount)
@@ -307,7 +344,7 @@ public class DineInReceiptDocument : IDocument
                 table.Cell().Text(ArabicConstStrings.Tax).Bold().FontSize(15).Bold().AlignCenter();
             }
 
-            if (receipt.Discount.HasValue && Math.Abs(receipt.Discount.Value) > 1.0m)
+            if (receipt.Discount.HasValue && Math.Abs(receipt.Discount.Value) > 0.01m)
             {
                 table.Cell().Text(receipt.Discount.Value.ToString("0.##")).FontSize(13).Bold().AlignCenter();
                 table.Cell().Text(ArabicConstStrings.Discount).Bold().FontSize(15).Bold().AlignCenter();

@@ -1,4 +1,4 @@
-﻿namespace POS.Desktop.Components.DineInComponents;
+namespace POS.Desktop.Components.DineInComponents;
 
 public partial class TransferTable
 {
@@ -9,19 +9,30 @@ public partial class TransferTable
 
     protected override async Task OnInitializedAsync()
     {
+        var allTables = await _dineInService.GetTables();
+
         if (_commonProperties.DineInOrdersDetails != null)
         {
-            var allTables = await _dineInService.GetTables();
-
+            // Group by TableId to show each table only once in the source list
             OccupiedTables = _commonProperties.DineInOrdersDetails.Values
                 .SelectMany(x => x)
                 .Where(x => !string.IsNullOrEmpty(x.RelatedTableName))
+                .GroupBy(x => x.RelatedTableId)
+                .Select(g => g.First())
                 .ToList();
 
-            AvailableTables = allTables
+            // Source list can also include the currently active table explicitly if not already there
+            if (_commonProperties.TableId > 0 && !OccupiedTables.Any(t => t.RelatedTableId == _commonProperties.TableId))
+            {
+                var activeOrder = _commonProperties.GetActiveOrder();
+                if (activeOrder != null) OccupiedTables.Add(activeOrder);
+            }
+        }
+
+        // Available tables are those with status "Available" or "Closed" AND not currently occupied by an active order
+        AvailableTables = allTables
                 .Where(t => !OccupiedTables.Any(o => o.RelatedTableId == t.Id))
                 .ToList();
-        }
     }
 
     private void OnCurrentTableChanged(int? tableId)

@@ -52,12 +52,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>z9ykxcobte</Fingerprint>
-      <Integrity>eWT4fK4tA5ONYxp0jPoeIUbPhJb7IJtFwFCJcC9c/q4=</Integrity>
+      <Fingerprint>2pa7l27sib</Fingerprint>
+      <Integrity>GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>44660</FileLength>
-      <LastWriteTime>Sun, 08 Mar 2026 02:53:00 GMT</LastWriteTime>
+      <FileLength>58886</FileLength>
+      <LastWriteTime>Sun, 15 Mar 2026 15:53:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))">
@@ -732,12 +732,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>wv7cmireo1</Fingerprint>
-      <Integrity>FL+5CzkNz/TNcfHTN8RbOe6R1Zgo8/LleHU9mpwrFYk=</Integrity>
+      <Fingerprint>vdbgcrpgy6</Fingerprint>
+      <Integrity>owWF8tTVgcFJcmBhpQ/XwhwBP1NUqWMTMXEI88IC5iU=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>4027</FileLength>
-      <LastWriteTime>Sat, 07 Mar 2026 01:08:32 GMT</LastWriteTime>
+      <FileLength>4401</FileLength>
+      <LastWriteTime>Tue, 10 Mar 2026 01:32:54 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\pos.css'))">
@@ -832,12 +832,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>14bxsyczg8</Fingerprint>
-      <Integrity>gZpWTlargtdKvmMrJ4xyKLASHLh/Gm70iSuKzNbLsXA=</Integrity>
+      <Fingerprint>3cv9qeivja</Fingerprint>
+      <Integrity>HccFktaAUpqIYiQIKmlsUiMxELDxFR82NdWV2C2Ic/8=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>4648</FileLength>
-      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
+      <FileLength>5949</FileLength>
+      <LastWriteTime>Fri, 13 Mar 2026 03:17:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\site.js'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\tajawal_temp.css'))">

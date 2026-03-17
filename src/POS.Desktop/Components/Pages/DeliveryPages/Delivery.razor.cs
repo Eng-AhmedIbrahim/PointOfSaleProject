@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract.PosFeatureServices;
+using POS.Core.Services.Contract.PosFeatureServices;
 using POS.Desktop.Services;
 
 namespace POS.Desktop.Components.Pages.DeliveryPages;
@@ -125,7 +125,10 @@ public partial class Delivery : IDisposable
         {
             if (_commonProperties != null && _commonProperties.CustomerDetails != null)
             {
-                // Check if branch needs updating
+                var targetZoneId = _commonProperties.CustomerDetails.ZoneID;
+                var targetZoneName = _commonProperties.CustomerDetails.ZoneName;
+
+                // Sync branch if needed
                 if (_commonProperties.CustomerDetails.BranchId > 0 && 
                     (_commonProperties.BranchDetails == null || _commonProperties.BranchDetails.Id != _commonProperties.CustomerDetails.BranchId))
                 {
@@ -135,14 +138,38 @@ public partial class Delivery : IDisposable
                     await GetZones();
                 }
 
-                if (Zones != null && Zones.Any())
+                if (targetZoneId > 0)   
                 {
-                    SelectedZone = Zones.FirstOrDefault(z => z.Id == _commonProperties.CustomerDetails.ZoneID);
-                    
-                    // Update Fees just in case
-                    if (SelectedZone != null)
+                    if (Zones != null && Zones.Any())
                     {
-                        _commonProperties.CustomerDetails.ZoneFees = SelectedZone.DeliveryFee ?? 0;
+                        var zoneFromList = Zones.FirstOrDefault(z => z.Id == targetZoneId);
+                        if (zoneFromList != null)
+                        {
+                            SelectedZone = zoneFromList;
+                            _commonProperties.CustomerDetails.ZoneFees = zoneFromList.DeliveryFee ?? 0;
+                            _commonProperties.CustomerDetails.ZoneBonus = zoneFromList.ZoneBonus ?? 0;
+                        }
+                        else
+                        {
+                            // Create a temporary zone object if not found in list to at least show the name
+                            SelectedZone = new DeliveryZonesToReturnDto 
+                            { 
+                                Id = targetZoneId, 
+                                ZoneName = targetZoneName,
+                                DeliveryFee = _commonProperties.CustomerDetails.ZoneFees,
+                                BranchId = _commonProperties.CustomerDetails.BranchId
+                            };
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(targetZoneName))
+                    {
+                         SelectedZone = new DeliveryZonesToReturnDto 
+                         { 
+                             Id = targetZoneId, 
+                             ZoneName = targetZoneName,
+                             DeliveryFee = _commonProperties.CustomerDetails.ZoneFees,
+                             BranchId = _commonProperties.CustomerDetails.BranchId
+                         };
                     }
                 }
             }

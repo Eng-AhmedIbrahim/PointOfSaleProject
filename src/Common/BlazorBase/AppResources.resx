@@ -1326,6 +1326,9 @@
   <data name="AllowCloseWithoutPrint" xml:space="preserve">
     <value>Allow Closing Without Printing</value>
   </data>
+  <data name="MustPrintBeforeClose" xml:space="preserve">
+    <value>Must print receipt before closing table</value>
+  </data>
   <data name="EnableCaptainTipsDeduction" xml:space="preserve">
     <value>Enable Captain Tips Deduction</value>
   </data>
@@ -1448,5 +1451,95 @@
   </data>
   <data name="CashAmount" xml:space="preserve">
     <value>Cash Amount</value>
+  </data>
+  <data name="SalesEndOfDay" xml:space="preserve">
+    <value>Sales End Of Day</value>
+  </data>
+  <data name="CurrentPosDate" xml:space="preserve">
+    <value>Current POS Date</value>
+  </data>
+  <data name="CannotCloseDay" xml:space="preserve">
+    <value>Cannot Close Day</value>
+  </data>
+  <data name="ThereAre" xml:space="preserve">
+    <value>There are</value>
+  </data>
+  <data name="PleaseCompleteOrVoidAllOrdersBeforeClosing" xml:space="preserve">
+    <value>Please complete or void all orders before closing the day</value>
+  </data>
+  <data name="AllOrdersReadyToClose" xml:space="preserve">
+    <value>All orders are processed. Ready to close the day.</value>
+  </data>
+  <data name="CloseDayConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to end the business day?</value>
+  </data>
+  <data name="ThisActionWillResetOrderCountsAndAdvanceDate" xml:space="preserve">
+    <value>This action will reset order counts and advance the system date.</value>
+  </data>
+  <data name="ConfirmCloseDay" xml:space="preserve">
+    <value>Confirm Close Day</value>
+  </data>
+  <data name="CloseDay" xml:space="preserve">
+    <value>Close Day</value>
+  </data>
+  <data name="PrintEndOfDayReport" xml:space="preserve">
+    <value>Print End of Day Report</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="PendingOrders" xml:space="preserve">
+    <value>Pending Orders</value>
+  </data>
+  <data name="OperationSuccessful" xml:space="preserve">
+    <value>Operation Successful</value>
+  </data>
+  <data name="AccessRestricted" xml:space="preserve">
+    <value>Access Restricted</value>
+  </data>
+  <data name="DetailedSales" xml:space="preserve">
+    <value>Detailed Sales</value>
+  </data>
+  <data name="OrdersFound" xml:space="preserve">
+    <value>orders found</value>
+  </data>
+  <data name="PrintReport" xml:space="preserve">
+    <value>Print Report</value>
+  </data>
+  <data name="SearchByOrderIdOrCashier" xml:space="preserve">
+    <value>Search by Order ID or Cashier</value>
+  </data>
+  <data name="UniqueItems" xml:space="preserve">
+    <value>unique items</value>
+  </data>
+  <data name="VoidEntireOrder" xml:space="preserve">
+    <value>Void Entire Order</value>
+  </data>
+  <data name="ConfirmEntireOrderVoid" xml:space="preserve">
+    <value>Are you sure you want to void the entire order (including service and tax)?</value>
+  </data>
+  <data name="SelectAtLeastTwoTablesToMerge" xml:space="preserve">
+    <value>Please select at least two tables to merge</value>
+  </data>
+  <data name="SelectCurrentTable" xml:space="preserve">
+    <value>Select Current Table</value>
+  </data>
+  <data name="SelectAvailableTable" xml:space="preserve">
+    <value>Select Available Table</value>
+  </data>
+  <data name="TransferOrderToAnotherTable" xml:space="preserve">
+    <value>Transfer order to another table</value>
+  </data>
+  <data name="FromTable" xml:space="preserve">
+    <value>From Table</value>
+  </data>
+  <data name="ToTable" xml:space="preserve">
+    <value>To Table</value>
+  </data>
+  <data name="ReturnToStock" xml:space="preserve">
+    <value>Return items to stock</value>
+  </data>
+  <data name="EnableInventoryTracking" xml:space="preserve">
+    <value>Enable Inventory Tracking</value>
   </data>
 </root>

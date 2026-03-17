@@ -80,10 +80,6 @@
                             <RadzenFormField Text="@($"{Localizer["TipsAmount"]} EGP")" Variant="Radzen.Variant.Outlined">
                                 <RadzenNumeric TValue="decimal?" @bind-Value="_currentModel.Tips" Style="width:100%" />
                             </RadzenFormField>
-                            <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem" Class="rz-p-2">
-                                <RadzenSwitch @bind-Value="_addServiceBool" />
-                                <RadzenLabel Text="@Localizer["CombineServiceWithPrice"]" />
-                            </RadzenStack>
                         </div>
                     </div>
                 </div>
@@ -126,12 +122,12 @@
                         {
                             <div class="stack-options">
                                 <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
-                                    <RadzenCheckBox @bind-Value="_canCloseWithoutPrintBool" Name="chk1" />
-                                    <RadzenLabel Text="@Localizer["AllowCloseWithoutPrint"]" Component="chk1" />
+                                    <RadzenSwitch @bind-Value="_canCloseWithoutPrintBool" />
+                                    <RadzenLabel Text="@Localizer["AllowCloseWithoutPrint"]" />
                                 </RadzenStack>
                                 <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem">
-                                    <RadzenCheckBox @bind-Value="_deductCaptainBool" Name="chk2" />
-                                    <RadzenLabel Text="@Localizer["EnableCaptainTipsDeduction"]" Component="chk2" />
+                                    <RadzenSwitch @bind-Value="_deductCaptainBool" />
+                                    <RadzenLabel Text="@Localizer["EnableCaptainTipsDeduction"]" />
                                 </RadzenStack>
                                 @if (_currentModel.DeductCaptainTips == true)
                                 {
@@ -201,56 +197,138 @@
 </div>
 
 <style>
-    :root { --bg-soft: #f8fafc; --border-color: #e2e8f0; --primary-main: #2563eb; }
+    :root { 
+        --bg-soft: #f0f4f8; 
+        --border-color: #e2e8f0; 
+        --primary-main: #2563eb;
+        --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
 
-    .orders-settings-wrapper { background-color: var(--bg-soft); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .orders-settings-wrapper { 
+        background-color: var(--bg-soft); 
+        height: 100vh; 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; 
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
 
     .settings-header {
-        background: white; padding: 8px 24px;
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid var(--border-color); flex-shrink: 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 12px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #fff;
+        flex-shrink: 0;
+        z-index: 100;
     }
 
-    .header-main-info { display: flex; align-items: center; gap: 14px; }
-    .icon-box-modern { width: 44px; height: 44px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; }
-    .title-bold { font-weight: 800; color: #1e293b; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; }
-    .status-indicator { gap: 6px; }
+    .header-main-info { display: flex; align-items: center; gap: 16px; }
+    .icon-box-modern { 
+        width: 48px; 
+        height: 48px; 
+        border-radius: 14px; 
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); 
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    
+    .title-bold { font-weight: 850; color: #0f172a; letter-spacing: -0.5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+    .status-indicator { gap: 8px; margin-top: 4px; }
 
-    ::deep .header-tabs .rz-tabview-nav { border-bottom: none !important; }
+    ::deep .header-tabs .rz-tabview-nav { 
+        background: transparent !important;
+        border-bottom: none !important;
+        gap: 8px;
+    }
+    ::deep .header-tabs .rz-tabview-nav li { 
+        border-radius: 12px !important;
+        margin: 0 !important;
+        background: #f1f5f9 !important;
+        transition: 0.3s;
+    }
+    ::deep .header-tabs .rz-tabview-nav li.rz-tabview-selected { 
+        background: var(--primary-main) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
 
-    .main-content { padding: 12px 24px; flex: 1; overflow-y: auto; }
-    .loading-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .main-content { padding: 24px 32px; flex: 1; overflow-y: auto; }
 
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; padding-bottom: 100px; }
+    .cards-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); 
+        gap: 24px; 
+        padding-bottom: 120px; 
+    }
 
-    .glass-card { background: white; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-    .c-header { padding: 10px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-    .c-body { padding: 14px 16px; flex: 1; }
-    .flex-column-gap { display: flex; flex-direction: column; gap: 16px; }
-    .grid-fields-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .stack-options { display: flex; flex-direction: column; gap: 14px; }
-    .empty-state-modern { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; }
+    .glass-card { 
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        border-radius: 20px; 
+        border: 1px solid rgba(255,255,255,0.8); 
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .glass-card:hover { transform: translateY(-5px); }
 
-    .border-top-blue { border-top: 4px solid #3b82f6; }
-    .border-top-green { border-top: 4px solid #10b981; }
-    .border-top-orange { border-top: 4px solid #f59e0b; }
-    .border-top-purple { border-top: 4px solid #8b5cf6; }
+    .c-header { 
+        padding: 16px 20px; 
+        background: rgba(248, 250, 252, 0.5);
+        border-bottom: 1px solid #f1f5f9; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        font-weight: 800;
+        color: #334155;
+    }
+    .c-header i { font-size: 1.4rem; color: var(--primary-main); }
+    
+    .c-body { padding: 20px; flex: 1; }
+    .grid-fields-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    
+    .stack-options { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 16px; 
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .border-top-blue { border-top: 5px solid #3b82f6; }
+    .border-top-green { border-top: 5px solid #10b981; }
+    .border-top-orange { border-top: 5px solid #f59e0b; }
+    .border-top-purple { border-top: 5px solid #8b5cf6; }
 
     .sticky-footer {
-        position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-        width: auto; min-width: 300px;
-        background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-        padding: 8px 16px; border-radius: 20px;
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        width: auto; min-width: 320px;
+        background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px);
+        padding: 12px 24px; border-radius: 24px;
         display: flex; justify-content: center; align-items: center;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 1000;
-        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 1000;
+        border: 1px solid rgba(255,255,255,0.1);
     }
-    .save-btn-premium { border-radius: 10px !important; min-height: 38px !important; }
+    .save-btn-premium { 
+        border-radius: 14px !important; 
+        padding: 12px 32px !important;
+        background: var(--primary-main) !important;
+        border: none !important;
+    }
 
-    .pulse-text { animation: pulse 1.5s ease-in-out infinite; }
-    @@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    ::deep .rz-form-field-label { font-weight: 600 !important; color: #64748b !important; }
+    ::deep .rz-numeric-input, ::deep .rz-dropdown, ::deep .rz-textarea { 
+        border-radius: 10px !important;
+        border-color: #e2e8f0 !important;
+        background: #fff !important;
+    }
 </style>
 
 @code {

@@ -353,23 +353,25 @@
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InventoryItemDto" Title="@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد" : "Stock")" Width="130px" TextAlign="TextAlign.Center">
+                <RadzenDataGridColumn TItem="InventoryItemDto" Title="@(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد" : "Stock")" Width="145px" TextAlign="TextAlign.Center">
                     <Template Context="item">
                         <div class="d-flex align-items-center justify-content-center">
                             <RadzenNumeric TValue="decimal" Value="@item.CurrentQuantity" 
                                            Change="@(args => UpdateCurrentQuantity(item, args))" 
-                                           Style="width: 100px; height: 42px; font-weight: 950; border: 2px solid #d1fae5; border-radius: 8px; text-align: center; background: #f0fdf4; font-size: 1.3rem; color: #065f46;" 
+                                           Format="0.##"
+                                           Style="width: 120px; height: 42px; font-weight: 950; border: 2px solid #d1fae5; border-radius: 8px; text-align: center; background: #f0fdf4; font-size: 1.3rem; color: #065f46;" 
                                            ShowUpDown="false" Class="inventory-numeric-bold" />
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
 
-                <RadzenDataGridColumn TItem="InventoryItemDto" Title="@(Localizer.GetCurrentLanguage() == "ar" ? "حد الطلب" : "Reorder Level")" Width="130px" TextAlign="TextAlign.Center">
+                <RadzenDataGridColumn TItem="InventoryItemDto" Title="@(Localizer.GetCurrentLanguage() == "ar" ? "حد الطلب" : "Reorder Level")" Width="145px" TextAlign="TextAlign.Center">
                     <Template Context="item">
                         <div class="d-flex align-items-center justify-content-center">
                             <RadzenNumeric TValue="decimal" Value="@item.MinimumQuantity" 
                                            Change="@(args => UpdateMinQuantity(item, args))" 
-                                           Style="width: 100px; height: 42px; font-weight: 950; border: 2px solid #e2e8f0; border-radius: 8px; text-align: center; background: #fff; font-size: 1.3rem; color: #1e293b;" 
+                                           Format="0.##"
+                                           Style="width: 120px; height: 42px; font-weight: 950; border: 2px solid #e2e8f0; border-radius: 8px; text-align: center; background: #fff; font-size: 1.3rem; color: #1e293b;" 
                                            ShowUpDown="false" Class="inventory-numeric-bold" />
                         </div>
                     </Template>
@@ -381,6 +383,8 @@
                                            Click="@((args) => HandleAction(item, args))" Class="premium-split-btn">
                             <ChildContent>
                                 <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "تعديل رصيد" : "Stock Adjust")" Icon="tune" Value="adjust" />
+                                <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "تسجيل تالف" : "Damage Record")" Icon="broken_image" Value="damage" />
+                                <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "تسجيل هالك استهلاك" : "Waste Record")" Icon="delete_outline" Value="waste" />
                                 <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "جرد فعلي" : "Physical Count")" Icon="fact_check" Value="physical" />
                                 <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "رصيد أول المدة" : "Opening Stock")" Icon="play_circle" Value="opening" />
                                 <RadzenSplitButtonItem Text="@(Localizer.GetCurrentLanguage() == "ar" ? "سجل الحركات" : "History")" Icon="history" Value="history" />
@@ -632,14 +636,15 @@
                 Notes = "Manual adjustment from grid"
             });
             
-            if (response.Success)
+            if (response.Success && response.Data)
             {
                 Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "تم تحديث الكمية" : "Quantity updated", Severity.Success);
             }
             else 
             {
                 item.CurrentQuantity = originalValue; // Rollback UI
-                Snackbar.Add(response.Message, Severity.Error);
+                var errorMsg = response.Message ?? (Localizer.GetCurrentLanguage() == "ar" ? "فشل تحديث الكمية في قاعدة البيانات" : "Failed to update quantity in database");
+                Snackbar.Add(errorMsg, Severity.Error);
             }
         }
         catch (Exception ex)
@@ -657,6 +662,8 @@
         switch (action)
         {
             case "adjust": await OpenAdjustmentDialog(item); break;
+            case "damage": await OpenDamageDialog(item); break;
+            case "waste": await OpenWasteDialog(item); break;
             case "physical": await OpenPhysicalCountDialog(item); break;
             case "opening": await OpenOpeningStockForItem(item); break;
             case "history": await OpenHistory(item); break;
@@ -669,6 +676,22 @@
         var parameters = new DialogParameters { ["Item"] = item, ["Mode"] = InventoryDialog.DialogMode.Adjustment };
         var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = await DialogService.ShowAsync<InventoryDialog>(Localizer.GetCurrentLanguage() == "ar" ? "تعديل رصيد" : "Stock Adjustment", parameters, options);
+        if (!(await dialog.Result).Canceled) await LoadData();
+    }
+
+    private async Task OpenDamageDialog(InventoryItemDto item)
+    {
+        var parameters = new DialogParameters { ["Item"] = item, ["Mode"] = InventoryDialog.DialogMode.Damage };
+        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<InventoryDialog>(Localizer.GetCurrentLanguage() == "ar" ? "تسجيل تالف" : "Damage Recording", parameters, options);
+        if (!(await dialog.Result).Canceled) await LoadData();
+    }
+
+    private async Task OpenWasteDialog(InventoryItemDto item)
+    {
+        var parameters = new DialogParameters { ["Item"] = item, ["Mode"] = InventoryDialog.DialogMode.Waste };
+        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<InventoryDialog>(Localizer.GetCurrentLanguage() == "ar" ? "تسجيل هالك استهلاك" : "Waste Recording", parameters, options);
         if (!(await dialog.Result).Canceled) await LoadData();
     }
 
@@ -691,7 +714,7 @@
     private async Task OpenHistory(InventoryItemDto item)
     {
         var parameters = new DialogParameters { ["Item"] = item };
-        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
         await DialogService.ShowAsync<StockHistoryDialog>(Localizer.GetCurrentLanguage() == "ar" ? "سجل الحركات" : "Transaction History", parameters, options);
     }
 

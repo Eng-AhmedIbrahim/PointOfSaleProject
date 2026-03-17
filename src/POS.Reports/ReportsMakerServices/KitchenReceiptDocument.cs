@@ -1,4 +1,7 @@
-﻿namespace POS.Reports.ReportsMakerServices;
+using POS.Contract.Models.ReceiptModels;
+using POS.Contract.Models.ReceiptModels.Kitchen;
+
+namespace POS.Reports.ReportsMakerServices;
 
 public class KitchenReceiptDocument : IDocument
 {
@@ -84,23 +87,16 @@ public class KitchenReceiptDocument : IDocument
         {
             column.Item()
                 .PaddingTop(6)
-                .Border(2)
+                .Border(3)
                 .BorderColor(Colors.Red.Medium)
                 .AlignCenter()
                 .Text(text =>
                 {
                     text.Span("X  ملغي  X")
                         .Bold()
-                        .FontSize(24)
+                        .FontSize(40)
                         .FontColor(Colors.Red.Medium);
                 });
-            
-            column.Item()
-                .AlignCenter()
-                .Text("VOID")
-                .Bold()
-                .FontSize(14)
-                .FontColor(Colors.Red.Medium);
         }
 
         if (receipt.ParentOrderId.HasValue)
@@ -214,7 +210,8 @@ public class KitchenReceiptDocument : IDocument
                 {
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.Name);
-                        if (item.IsVoided == true || receipt.IsVoid) {
+                        // Only show (ملغي) if the entire receipt is a void receipt OR the item record is explicitly fully voided
+                        if (receipt.IsVoid || (item.IsVoided == true && item.Quantity == 0)) {
                             text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
                         }
                     });

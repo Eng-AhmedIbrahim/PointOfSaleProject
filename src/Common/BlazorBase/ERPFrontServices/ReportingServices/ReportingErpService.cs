@@ -13,9 +13,11 @@ public class ReportingErpService : IReportingErpService
         _httpClient = httpClient;
     }
 
-    public async Task<SalesSummaryDto> GetSalesSummary(DateTime posDate)
+    public async Task<SalesSummaryDto> GetSalesSummary(DateTime posDate, DateTime? endDate = null)
     {
-        var response = await _httpClient.GetFromJsonAsync<SalesSummaryDto>($"api/reporting/sales-summary?posDate={posDate:yyyy-MM-dd}");
+        var url = $"api/reporting/sales-summary?posDate={posDate:yyyy-MM-dd}";
+        if (endDate.HasValue) url += $"&endDate={endDate.Value:yyyy-MM-dd}";
+        var response = await _httpClient.GetFromJsonAsync<SalesSummaryDto>(url);
         return response ?? new SalesSummaryDto();
     }
 
@@ -41,9 +43,23 @@ public class ReportingErpService : IReportingErpService
         return response ?? new List<OrderDto>();
     }
 
-    public async Task<List<SalesItemSummaryDto>> GetSalesItemsSummary(DateTime posDate)
+    public async Task<List<SalesItemSummaryDto>> GetSalesItemsSummary(DateTime posDate, DateTime? endDate = null)
     {
-        var response = await _httpClient.GetFromJsonAsync<List<SalesItemSummaryDto>>($"api/reporting/sales-items-summary?posDate={posDate:yyyy-MM-dd}");
+        var url = $"api/reporting/sales-items-summary?posDate={posDate:yyyy-MM-dd}";
+        if (endDate.HasValue) url += $"&endDate={endDate.Value:yyyy-MM-dd}";
+        var response = await _httpClient.GetFromJsonAsync<List<SalesItemSummaryDto>>(url);
         return response ?? new List<SalesItemSummaryDto>();
+    }
+
+    public async Task<List<OrderDto>> GetPendingOrders(DateTime posDate)
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<OrderDto>>($"api/reporting/pending-orders?posDate={posDate:yyyy-MM-dd}");
+        return response ?? new List<OrderDto>();
+    }
+
+    public async Task<ReportResponseDto> GenerateReport(ReportRequestDto request)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/reports/generate", request);
+        return await response.Content.ReadFromJsonAsync<ReportResponseDto>() ?? new ReportResponseDto();
     }
 }

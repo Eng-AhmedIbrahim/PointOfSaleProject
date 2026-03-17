@@ -14,6 +14,7 @@ public record ApiEndpoints
     public string? UpdateAppDate { get; set; }
     public string? UpdateOrderNumber { get; set; }
     public string? UpdateTables { get; set; }
+    public string? CloseDay { get; set; }
     public string? GetAllDeliveryCustomerTitles { get; set; }
     public string? GetBranches { get; set; }
     public string? GetZoneByBranchId { get; set; }

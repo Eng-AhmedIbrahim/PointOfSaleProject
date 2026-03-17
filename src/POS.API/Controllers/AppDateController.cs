@@ -36,4 +36,11 @@ public class AppDateController : BaseApiController
         var mapped = _mapper.Map<AppDate, AppDateToReturnDto>(appDate);
         return Ok(mapped);
     }
+
+    [HttpPut("close-day")]
+    public async Task<ActionResult<bool>> CloseDay()
+    {
+        var result = await _appSettingService.CloseDayAsync();
+        return Ok(result);
+    }
 }

@@ -1,24 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using POS.API.Hubs;
-using POS.Contract.Dtos.DineIn;
-using POS.Contract.Dtos.OrderDtos;
-using POS.Contract.Dtos.VoidDtos;
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.VoidServices;
-using POS.Core.Services.Contract.OrderServices;
-using POS.Reports.Models.Kitchen;
-using POS.Reports.ReportsMakerServices;
-using QuestPDF.Fluent;
-using System.Text;
-using System.Text.Json;
-using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
-using Serilog;
-using POS.Reports.Models;
-using POS.Contract.Dtos.OrderDto;
-
-namespace POS.API.Controllers.VoidControllers;
+﻿namespace POS.API.Controllers.VoidControllers;
 
 public class VoidController : BaseApiController
 {

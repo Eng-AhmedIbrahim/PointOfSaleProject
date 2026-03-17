@@ -1,4 +1,4 @@
-﻿using POS.Contract;
+using POS.Contract;
 using POS.Contract.Dtos.DineInDtos;
 
 namespace BlazorBase.ERPFrontServices.DineInServices;
@@ -69,7 +69,7 @@ public class DineInService : IDineInService
     {
         return await GetApiResponseAsync<TableToReturnDto>(
              GetTablesRequest,
-             "Failed to retrieve Table Groups from the API."
+             "Failed to retrieve Tables from the API."
          );
     }
 

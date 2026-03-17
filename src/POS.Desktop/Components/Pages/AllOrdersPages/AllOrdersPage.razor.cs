@@ -1,4 +1,6 @@
-﻿namespace POS.Desktop.Components.Pages.AllOrdersPages;
+﻿using BlazorBase.Components.Shared;
+
+namespace POS.Desktop.Components.Pages.AllOrdersPages;
 
 public partial class AllOrdersPage
 {

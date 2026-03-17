@@ -1,4 +1,4 @@
-﻿using POS.Core.Entities.Delivery;
+using POS.Core.Entities.Delivery;
 using POS.Core.Specifications.BranchSpecs;
 
 namespace POS.Services.DeliveryServices;
@@ -14,8 +14,9 @@ public class DeliveryCustomerService : IDeliveryCustomerService
     }
     public async Task<DeliveryCustomerInfo?> GetCustomerByIdAsync(int customerId)
     {
+        _deliveryCustomerSpecs = new DeliveryCustomerSpecs(customerId);
         return await _unitOfWork.Repository<DeliveryCustomerInfo>()
-            .GetByIdAsync(customerId);
+            .GetByIdWithSpecificationAsync(_deliveryCustomerSpecs);
     }
 
     public async Task<DeliveryCustomerInfo?> GetCustomerWithAddressesAsync(int customerId)
@@ -45,7 +46,7 @@ public class DeliveryCustomerService : IDeliveryCustomerService
     {
         var address = customer.CustomerAddresses!.First();
         
-        if (address.BranchId == 0)
+        if (address.BranchId == 0 || address.BranchId == null)
         {
             if (!string.IsNullOrEmpty(address.BranchName))
             {
@@ -59,7 +60,7 @@ public class DeliveryCustomerService : IDeliveryCustomerService
             }
         }
 
-        if (address.DeliveryZoneId == 0)
+        if (address.DeliveryZoneId == 0 || address.DeliveryZoneId == null)
         {
             if (!string.IsNullOrEmpty(address.ZoneName))
             {

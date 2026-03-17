@@ -126,12 +126,31 @@ public class InventoryService : IInventoryService
         }
     }
 
-    public async Task UpdateStockAsync(int menuSalesItemId, decimal quantityChange, TransactionType type, string? referenceId = null, string? notes = null)
+    public async Task<bool> UpdateStockAsync(int menuSalesItemId, decimal quantityChange, TransactionType type, string? referenceId = null, string? notes = null, string? reason = null, string? imagePaths = null, string? createdBy = null)
     {
         try
         {
             var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
-            if (inventory == null || !inventory.TrackInventory) return;
+            if (inventory == null) 
+            {
+                Log.Warning("Inventory not found for item {itemId}", menuSalesItemId);
+                return false;
+            }
+
+            // Manual transactions (Adjustment, Damage, Waste, PhysicalCount, OpeningStock) 
+            // should always allow updating the quantity. 
+            // Only automatic deductions (Sale, Recipe) should respect TrackInventory.
+            bool isManual = type == TransactionType.Adjustment || 
+                            type == TransactionType.Damage || 
+                            type == TransactionType.Waste || 
+                            type == TransactionType.OpeningStock ||
+                            type == TransactionType.PhysicalCount;
+
+            if (!inventory.TrackInventory && !isManual) 
+            {
+                Log.Information("Skipping stock update for untracked item {itemId}", menuSalesItemId);
+                return true; // Skipping is "success" for automatic deduction
+            }
 
             inventory.CurrentQuantity += quantityChange;
             inventory.UpdatedAt = DateTime.UtcNow;
@@ -144,19 +163,33 @@ public class InventoryService : IInventoryService
                 Type = type,
                 ReferenceId = referenceId,
                 Notes = notes,
+                Reason = reason,
+                CreatedBy = createdBy,
                 CreatedAt = DateTime.UtcNow
             };
+
+            if (!string.IsNullOrEmpty(imagePaths))
+            {
+                var paths = imagePaths.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var path in paths)
+                {
+                    transaction.Images.Add(new InventoryTransactionImage { Base64Content = path });
+                }
+            }
 
             _unitOfWork.Repository<InventoryItem>().Update(inventory);
             await _unitOfWork.Repository<InventoryTransaction>().AddAsync(transaction);
             
-            Console.WriteLine($"[INVENTORY DEBUG] Calling CompleteAsync for ItemId: {menuSalesItemId}, Change: {quantityChange}");
             var result = await _unitOfWork.CompleteAsync();
-            Console.WriteLine($"[INVENTORY DEBUG] CompleteAsync result: {result}");
+            if (result == 0) throw new Exception("Database failed to save changes. Please try again.");
+            
+            Log.Information("[INVENTORY] UpdateStockAsync success for item {itemId}", menuSalesItemId);
+            return true;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error updating stock for item {itemId}", menuSalesItemId);
+            throw; // Re-throw to be caught by Controller for proper error reporting
         }
     }
 
@@ -374,65 +407,37 @@ public class InventoryService : IInventoryService
         }
     }
 
-    public async Task SetOpeningStockAsync(int menuSalesItemId, decimal openingQuantity, string? notes = null)
+    public async Task<bool> SetOpeningStockAsync(int menuSalesItemId, decimal openingQuantity, string? notes = null, string? createdBy = null)
     {
         try
         {
             var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
-            if (inventory == null) return;
+            if (inventory == null) return false;
 
             decimal difference = openingQuantity - inventory.CurrentQuantity;
-            inventory.CurrentQuantity = openingQuantity;
-            inventory.UpdatedAt = DateTime.UtcNow;
-
-            var transaction = new InventoryTransaction
-            {
-                InventoryItemId = inventory.Id,
-                QuantityChange = difference,
-                ResultingQuantity = openingQuantity,
-                Type = TransactionType.OpeningStock,
-                Notes = notes ?? "Opening stock entry",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _unitOfWork.Repository<InventoryItem>().Update(inventory);
-            await _unitOfWork.Repository<InventoryTransaction>().AddAsync(transaction);
-            await _unitOfWork.CompleteAsync();
+            return await UpdateStockAsync(menuSalesItemId, difference, TransactionType.OpeningStock, notes: notes, createdBy: createdBy);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error setting opening stock for item {itemId}", menuSalesItemId);
+            return false;
         }
     }
 
-    public async Task SetPhysicalStockAsync(int menuSalesItemId, decimal actualQuantity, string? notes = null)
+    public async Task<bool> SetPhysicalStockAsync(int menuSalesItemId, decimal actualQuantity, string? notes = null, string? createdBy = null)
     {
         try
         {
             var inventory = await GetInventoryByItemIdAsync(menuSalesItemId);
-            if (inventory == null) return;
+            if (inventory == null) return false;
 
             decimal difference = actualQuantity - inventory.CurrentQuantity;
-            inventory.CurrentQuantity = actualQuantity;
-            inventory.UpdatedAt = DateTime.UtcNow;
-
-            var transaction = new InventoryTransaction
-            {
-                InventoryItemId = inventory.Id,
-                QuantityChange = difference,
-                ResultingQuantity = actualQuantity,
-                Type = TransactionType.Adjustment,
-                Notes = notes ?? "Physical stock adjustment",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _unitOfWork.Repository<InventoryItem>().Update(inventory);
-            await _unitOfWork.Repository<InventoryTransaction>().AddAsync(transaction);
-            await _unitOfWork.CompleteAsync();
+            return await UpdateStockAsync(menuSalesItemId, difference, TransactionType.PhysicalCount, notes: notes, createdBy: createdBy);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error setting physical stock for item {itemId}", menuSalesItemId);
+            return false;
         }
     }
 

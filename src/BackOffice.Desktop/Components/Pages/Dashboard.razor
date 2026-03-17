@@ -5,9 +5,21 @@
 @inject IAppDateService AppDateService
 @inject ISnackbar Snackbar
 @inject BlazorBase.Services.LocalizationService LocalizerService
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthStateProvider
 
-<div class="dashboard-wrapper @(IsArabic ? "rtl-mode" : "")" dir="@(IsArabic ? "rtl" : "ltr")">
-    <!-- Header: Optimized for clarity -->
+<div class="dashboard-wrapper @(IsArabic ? "rtl-mode" : "") @( !_canViewDashboard ? "dashboard-disabled" : "")" dir="@(IsArabic ? "rtl" : "ltr")">
+    @if (!_canViewDashboard)
+    {
+        <div class="permission-overlay">
+            <div class="overlay-content">
+                <MudIcon Icon="@Icons.Material.Rounded.Lock" Size="Size.Large" Class="mb-4 text-muted" />
+                <h2 class="text-muted">@LocalizerService["AccessRestricted"]</h2>
+                <p class="text-muted">لا تملك صلاحية عرض لوحة البيانات الإحصائية</p>
+                <p class="text-muted small">You don't have permission to view dashboard analytics.</p>
+            </div>
+        </div>
+    }
 
     @if (IsLoading)
     {
@@ -16,7 +28,7 @@
             <p class="mt-4 text-muted">جاري تحميل البيانات... Loading Analytics</p>
         </div>
     }
-    else if (SummaryInfo != null)
+    else if (_canViewDashboard && SummaryInfo != null)
     {
         <!-- Key Metrics Row - Professional Cards -->
         <div class="metrics-premium-row mt-2">
@@ -228,6 +240,7 @@
     public SalesSummaryDto? SummaryInfo { get; set; }
     public List<SalesItemSummaryDto> ItemSummary { get; set; } = new();
     public bool IsLoading { get; set; } = true;
+    private bool _canViewDashboard = false;
 
     // Line Chart Options
     public string[] LineXLabels = { "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "00:00", "02:00", "04:00" };
@@ -247,9 +260,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var appDateObj = await AppDateService.GetAppDate();
-        SelectedDate = appDateObj?.PosDate ?? DateTime.Today;
-        await LoadData();
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _canViewDashboard = (await AuthorizationService.AuthorizeAsync(user, "CanViewDashboardAtBackOffice")).Succeeded;
+
+        if (_canViewDashboard)
+        {
+            var appDateObj = await AppDateService.GetAppDate();
+            SelectedDate = appDateObj?.PosDate ?? DateTime.Today;
+            await LoadData();
+        }
+        else
+        {
+            IsLoading = false;
+        }
     }
 
     private async Task LoadData()

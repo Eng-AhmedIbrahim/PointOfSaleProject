@@ -447,3 +447,44 @@
     background: #3b82f6;
     border-radius: 2px;
 }
+
+.dashboard-disabled {
+    position: relative;
+}
+
+.dashboard-disabled .metrics-premium-row,
+.dashboard-disabled .MudGrid {
+    filter: grayscale(1) blur(2px);
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.permission-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 250, 252, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 16px;
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.overlay-content MudIcon {
+    font-size: 64px;
+    color: #94a3b8;
+}

@@ -13,13 +13,43 @@
     top: 0;
     z-index: 1000;
     font-family: 'Tajawal', 'Roboto', sans-serif;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.top-nav-professional::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 1280px) {
+    .top-nav-professional {
+        gap: 10px;
+        padding: 0 12px;
+    }
+
+    .brand-tag {
+        display: none;
+    }
 }
 
 @media (max-width: 1024px) {
     .top-nav-professional {
-        gap: 12px;
-        padding: 8px 12px;
+        height: auto;
+        padding: 4px 10px;
+    }
+
+    .brand-name {
+        font-size: 0.95rem;
+    }
+
+    .tab-text {
+        font-size: 0.85rem;
+    }
+
+    .nav-actions {
+        gap: 8px;
     }
 }
 
@@ -71,7 +101,7 @@
     flex: 1;
     overflow-x: auto;
     scrollbar-width: none;
-    /* Firefox */
+    min-width: 0;
 }
 
 .nav-tabs-container::-webkit-scrollbar {
@@ -318,11 +348,27 @@
 .user-pill {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 14px 6px 6px;
+    gap: 8px;
+    padding: 4px 12px 4px 4px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 100px;
+    max-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .user-pill {
+        padding: 4px;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .nav-actions {
+        border: none !important;
+        padding: 0 !important;
+    }
 }
 
 .user-avatar {
@@ -373,4 +419,30 @@
 
 [dir="rtl"] .user-pill {
     padding: 6px 6px 6px 14px;
+}
+
+.language-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    color: #1e90ff;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.language-action:hover {
+    background: #1e90ff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.2);
+}
+
+.lang-text {
+    font-size: 0.85rem;
+    font-weight: 800;
 }

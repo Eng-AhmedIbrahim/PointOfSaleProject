@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
+namespace POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
 
 public class DeliveryCustomerDto
 {
@@ -13,4 +13,6 @@ public class DeliveryCustomerDto
     public string? FlatNumber { get; set; }
     public string? ClientAddress { get; set; }
     public string? AddressNote { get; set; }
+    public int? DeliveryZoneId { get; set; }
+    public int? BranchId { get; set; }
 }

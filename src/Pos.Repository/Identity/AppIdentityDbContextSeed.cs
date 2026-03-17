@@ -304,7 +304,24 @@ public static class AppIdentityDbContextSeed
                 "CanViewStaffAccounts", "CanPrintStaffAccounts",
 
                 // Global Feature Flags
-                "CanAccessPosSettingsFeature"
+                "CanAccessPosSettingsFeature",
+
+                // Back Office Permissions
+                "CanAccessBackOffice", "CanViewDashboardAtBackOffice", "CanManageCompanySettingsAtBackOffice",
+                "CanManageOrderSettingsAtBackOffice", "CanManagePrinterSettingsAtBackOffice", "CanManageSystemFeaturesAtBackOffice",
+                "CanSyncDataAtBackOffice", "CanManageUsersAtBackOffice", "CanManageRolesAtBackOffice",
+                "CanManagePermissionsAtBackOffice", "CanManageItemsAtBackOffice", "CanManageCategoriesAtBackOffice",
+                "CanManageTablesAtBackOffice", "CanManageZonesAtBackOffice", "CanManageInventoryAtBackOffice",
+                "CanAssignDriverAtBackOffice", "CanViewOrderAtBackOffice", "CanVoidOrderAtBackOffice",
+                "CanPrintOrderAtBackOffice", "CanPrintKitchenOrderAtBackOffice", "CanUnDispatchOrderAtBackOffice",
+                "CanCollectOrderAtBackOffice", "CanViewDriversListAtBackOffice", "CanViewVoidHistoryAtBackOffice",
+                "CanViewDriverSettlementAtBackOffice", "CanViewSummaryDetailsAtBackOffice", 
+                "CanPrintSummaryReportAtBackOffice", "CanPrintStaffAccountsAtBackOffice",
+                "CanViewBackOfficeTransactionsAtBackOffice", "CanViewBackOfficeReportsAtBackOffice",
+                "CanManageGeneralSettingsAtBackOffice", "CanManagePosSettingsAtBackOffice", "CanManageLanguageSettingsAtBackOffice",
+                "CanManagePaymentMethodsAtBackOffice", "CanManageRawMaterialsAtBackOffice", "CanManageSemiFinishedItemsAtBackOffice",
+                "CanManageRecipesAtBackOffice", "CanManageUnitsAtBackOffice", "CanViewQueriesAtBackOffice",
+                "CanViewRegistrationAtBackOffice", "CanViewClosingAtBackOffice"
             } },
 
             // ══════════════════════════════════════════════════════════════════

@@ -1,6 +1,8 @@
-﻿namespace POS.Desktop.Components.DineInComponents;
+using BlazorBase.Components.Shared;
 
-public partial class MenuButtons
+namespace POS.Desktop.Components.DineInComponents;
+
+public partial class MenuButtons : IDisposable
 {
     [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
@@ -16,6 +18,8 @@ public partial class MenuButtons
 
     protected override async Task OnInitializedAsync()
     {
+        _section4ButtonsServices.OnChanged += HandleStateChanged;
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -30,6 +34,13 @@ public partial class MenuButtons
             _canDineInVoid       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInVoidBtn")).Succeeded;
             _canDineInGuestCount = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDineInGuestCountBtn")).Succeeded;
         }
+    }
+
+    private void HandleStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        _section4ButtonsServices.OnChanged -= HandleStateChanged;
     }
 
     private async Task CreateDineInOrder()
@@ -122,9 +133,7 @@ public partial class MenuButtons
         {
             await _printOrderService.PrintInitialDineInOrder(orderDetails, true, false);
             
-            var newCount = await _dineInOrderService.IncrementPrintCountAsync(orderDetails.DatabaseId);
-            // Update the in-memory PrintCount to reflect the database change (newCount is the updated value)
-            orderDetails.PrintCount = newCount; 
+            // PrintCount is updated inside PrintInitialDineInOrder, just update UI
             StateHasChanged();
 
             _snackbar.Add(Localizer["PrintingReceipt"], Severity.Info);
@@ -230,6 +239,13 @@ public partial class MenuButtons
                 _snackbar.Add(Localizer["MustPrintBeforeClose"], Severity.Warning);
                 return;
             }
+            
+            // Re-check Appended items just in case (though button should be disabled)
+            if (mustPrint && (_commonProperties.AppendedTableItems?.Any() ?? false))
+            {
+                _snackbar.Add(Localizer["MustPrintBeforeClose"], Severity.Warning);
+                return;
+            }
 
             // Get payment information from BasicOrderDetails
             var paid = orderDetails.BasicOrderDetails?.Paid;
@@ -269,12 +285,14 @@ public partial class MenuButtons
     {
         var orderDetails = _commonProperties.GetActiveOrder();
         if (orderDetails == null) return true;
-        
-        var mustPrint = _commonProperties.DineInSettings?.CanCloseWithoutPrint == false;
-        if (!mustPrint) return false;
-        
-        // Use the in-memory PrintCount which should be updated after printing
-        return (orderDetails?.PrintCount ?? 0) == 0;
+
+        var canCloseWithoutPrint = _commonProperties.DineInSettings?.CanCloseWithoutPrint ?? true;
+        if (canCloseWithoutPrint) return false;
+
+        bool hasAppendedItems = _commonProperties.AppendedTableItems?.Any() ?? false;
+        bool isPrinted = (orderDetails.PrintCount) > 0;
+
+        return !isPrinted || hasAppendedItems;
     }
 
     private async Task SafeNavigateAsync(string uri)

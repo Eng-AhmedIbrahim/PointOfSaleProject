@@ -1,5 +1,6 @@
 ﻿using POS.Contract.Models;
 using POS.Contract.Dtos.PaymentDtos;
+using POS.Contract.Models.ReceiptModels;
 
 namespace BlazorBase;
 
@@ -120,7 +121,7 @@ public class CommonProperties
     public DateOnly? PosDate { get; set; } = new();
 
     public ICollection<OrderSettingToReturnDto> OrderSettings { get; set; } = new List<OrderSettingToReturnDto>();
-    public List<POS.Contract.Dtos.OrderDto.PosFeatureSettingToReturnDto> FeatureSettings { get; set; } = new();
+    public List<PosFeatureSettingToReturnDto> FeatureSettings { get; set; } = new();
     public TakeAwaySettings? TakeAwaySettings { get; set; }
     public DineInSettings? DineInSettings { get; set; }
     public DeliverySettings? DeliverySettings { get; set; }

@@ -62,6 +62,7 @@ public class AppDbContext : DbContext
     public DbSet<HqSetting> HqSettings { get; set; }
     public DbSet<InventoryItem> InventoryItems { get; set; }
     public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+    public DbSet<InventoryTransactionImage> InventoryTransactionImages { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     public DbSet<Unit> Units { get; set; }

@@ -81,35 +81,61 @@ public class InventoryController : BaseApiController
     [HttpPost("UpdateStock")]
     public async Task<IActionResult> UpdateStock([FromBody] UpdateStockDto updateDto)
     {
-        await _inventoryService.UpdateStockAsync(
-            updateDto.MenuSalesItemId, 
-            updateDto.QuantityChange, 
-            (TransactionType)updateDto.TransactionType,
-            notes: updateDto.Notes
-        );
-        return Ok(true);
+        try
+        {
+            var result = await _inventoryService.UpdateStockAsync(
+                updateDto.MenuSalesItemId, 
+                updateDto.QuantityChange, 
+                (TransactionType)updateDto.TransactionType,
+                notes: updateDto.Notes,
+                reason: updateDto.Reason,
+                imagePaths: updateDto.ImagePaths,
+                createdBy: updateDto.CreatedBy
+            );
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse(400, ex.Message));
+        }
     }
 
     [HttpPost("SetOpeningStock")]
     public async Task<IActionResult> SetOpeningStock([FromBody] UpdateStockDto updateDto)
     {
-        await _inventoryService.SetOpeningStockAsync(
-            updateDto.MenuSalesItemId, 
-            updateDto.QuantityChange, 
-            updateDto.Notes
-        );
-        return Ok(true);
+        try
+        {
+            var result = await _inventoryService.SetOpeningStockAsync(
+                updateDto.MenuSalesItemId, 
+                updateDto.QuantityChange, 
+                updateDto.Notes,
+                createdBy: updateDto.CreatedBy
+            );
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse(400, ex.Message));
+        }
     }
 
     [HttpPost("SetPhysicalStock")]
     public async Task<IActionResult> SetPhysicalStock([FromBody] UpdateStockDto updateDto)
     {
-        await _inventoryService.SetPhysicalStockAsync(
-            updateDto.MenuSalesItemId, 
-            updateDto.QuantityChange, 
-            updateDto.Notes
-        );
-        return Ok(true);
+        try
+        {
+            var result = await _inventoryService.SetPhysicalStockAsync(
+                updateDto.MenuSalesItemId, 
+                updateDto.QuantityChange, 
+                updateDto.Notes,
+                createdBy: updateDto.CreatedBy
+            );
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ApiResponse(400, ex.Message));
+        }
     }
 
     [HttpPost("Initialize")]
@@ -143,7 +169,10 @@ public class InventoryController : BaseApiController
             ResultingQuantity = t.ResultingQuantity,
             Type = t.Type.ToString(),
             ReferenceId = t.ReferenceId,
+            Reason = t.Reason,
+            ImagePaths = string.Join(";", t.Images.Select(img => img.Base64Content)),
             Notes = t.Notes,
+            CreatedBy = t.CreatedBy,
             CreatedAt = t.CreatedAt
         }).ToList();
         return Ok(dtos);
