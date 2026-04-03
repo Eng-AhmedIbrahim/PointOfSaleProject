@@ -113,8 +113,9 @@ public partial class AllOrdersPage
     {
         try
         {
-            await PrintOrderService.ReprintOrderAsync(order.OrderId, true, printCustomer: true, printKitchen: false);
-            Snackbar.Add(Localizer["OrderPrintedLocally"], Severity.Success);
+            var parameters = new DialogParameters { ["Order"] = order, ["PreviewMode"] = "Customer" };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<global::BackOffice.Desktop.Components.Pages.Transactions.OrderReceiptPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {
@@ -126,8 +127,9 @@ public partial class AllOrdersPage
     {
         try
         {
-            await PrintOrderService.ReprintOrderAsync(order.OrderId, isCopy: true, printCustomer: false, printKitchen: true);
-            Snackbar.Add(Localizer["OrderPrintedLocally"], Severity.Success);
+            var parameters = new DialogParameters { ["Order"] = order, ["PreviewMode"] = "Kitchen" };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<global::BackOffice.Desktop.Components.Pages.Transactions.OrderReceiptPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {

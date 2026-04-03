@@ -58,7 +58,7 @@
                                 <span class="label">@Localizer["TotalRevenue"]</span>
                                 <div class="value-container">
                                     <span class="value">@_summaryData.Overall.TotalRevenue.ToString("0.##")</span>
-                                    <span class="currency">EGP</span>
+                                    <span class="currency"></span>
                                 </div>
                             </div>
                             <div class="divider"></div>
@@ -103,6 +103,113 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="details-section fade-in">
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <div class="table-card glass orders">
+                                <div class="tc-header primary-bg">
+                                    <MudIcon Icon="@Icons.Material.Filled.Receipt" />
+                                    <span>@(IsArabic ? "تفاصيل الطلبات" : "Orders Details")</span>
+                                </div>
+                                <div class="tc-body">
+                                    @if (_summaryData.DetailedOrders != null && _summaryData.DetailedOrders.Any())
+                                    {
+                                        <MudTable T="POS.Contract.Dtos.OrderDtos.OrderDto" Items="@_summaryData.DetailedOrders" Dense="true" Hover="true" FixedHeader="true" Height="300px" Elevation="0" Striped="true" Virtualize="true">
+                                            <HeaderContent>
+                                                <MudTh>@(IsArabic ? "رقم الطلب" : "Order No")</MudTh>
+                                                <MudTh>@(IsArabic ? "النوع" : "Type")</MudTh>
+                                                <MudTh>@(IsArabic ? "الإجمالي" : "Total")</MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate Context="orderCtx">
+                                                <MudTd DataLabel="Order No" Style="font-weight: 700;">#@orderCtx.OrderId</MudTd>
+                                                <MudTd DataLabel="Type">
+                                                    <MudChip T="string" Size="MudBlazor.Size.Small" Variant="MudBlazor.Variant.Outlined" Color="MudBlazor.Color.Primary">@orderCtx.OrderType</MudChip>
+                                                </MudTd>
+                                                <MudTd DataLabel="Total" Style="font-weight: 800; color: #1e293b;">@orderCtx.GrandTotal?.ToString("0.##")</MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    }
+                                    else
+                                    {
+                                        <div class="empty-state">
+                                            <MudIcon Icon="@Icons.Material.Outlined.ReceiptLong" Size="Size.Large" Color="Color.Surface" />
+                                            <p>@(IsArabic ? "لا توجد طلبات في هذه الفترة" : "No orders in this period")</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <div class="table-card glass items">
+                                <div class="tc-header secondary-bg">
+                                    <MudIcon Icon="@Icons.Material.Filled.Fastfood" />
+                                    <span>@(IsArabic ? "تفاصيل الأصناف المباعة" : "Sold Items Details")</span>
+                                </div>
+                                <div class="tc-body">
+                                    @if (_salesItems != null && _salesItems.Any())
+                                    {
+                                        <MudTable T="POS.Contract.Dtos.ReportingDtos.SalesItemSummaryDto" Items="@_salesItems" Dense="true" Hover="true" FixedHeader="true" Height="300px" Elevation="0" Striped="true" Virtualize="true">
+                                            <HeaderContent>
+                                                <MudTh>@(IsArabic ? "اسم الصنف" : "Item Name")</MudTh>
+                                                <MudTh>@(IsArabic ? "الكمية" : "Qty")</MudTh>
+                                                <MudTh>@(IsArabic ? "الإجمالي" : "Total")</MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate Context="itemCtx">
+                                                <MudTd DataLabel="Item Name">@itemCtx.ItemName</MudTd>
+                                                <MudTd DataLabel="Qty" Style="font-weight: 700;">@itemCtx.Quantity</MudTd>
+                                                <MudTd DataLabel="Total" Style="font-weight: 800; color: #0f172a;">@itemCtx.TotalAmount.ToString("0.##")</MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    }
+                                    else
+                                    {
+                                        <div class="empty-state">
+                                            <MudIcon Icon="@Icons.Material.Outlined.Fastfood" Size="Size.Large" Color="Color.Surface" />
+                                            <p>@(IsArabic ? "لا توجد مبيعات في هذه الفترة" : "No sales items in this period")</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <div class="table-card glass voids">
+                                <div class="tc-header error-bg">
+                                    <MudIcon Icon="@Icons.Material.Filled.DeleteForever" />
+                                    <span>@(IsArabic ? "تفاصيل المرتجعات والإلغاء" : "Voids & Returns Details")</span>
+                                </div>
+                                <div class="tc-body">
+                                    @if (_summaryData.VoidEvents != null && _summaryData.VoidEvents.Any())
+                                    {
+                                        <MudTable T="POS.Contract.Dtos.ReportingDtos.VoidEventDto" Items="@_summaryData.VoidEvents" Dense="true" Hover="true" FixedHeader="true" Height="250px" Elevation="0" Striped="true" Virtualize="true">
+                                            <HeaderContent>
+                                                <MudTh>@(IsArabic ? "رقم الطلب" : "Order No")</MudTh>
+                                                <MudTh>@(IsArabic ? "بواسطة" : "Void By")</MudTh>
+                                                <MudTh>@(IsArabic ? "السبب" : "Reason")</MudTh>
+                                                <MudTh>@(IsArabic ? "المبلغ" : "Amount")</MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate Context="voidCtx">
+                                                <MudTd DataLabel="Order No" Style="font-weight: 700;">#@voidCtx.OrderId</MudTd>
+                                                <MudTd DataLabel="Void By">@voidCtx.VoidedByName</MudTd>
+                                                <MudTd DataLabel="Reason">@voidCtx.Reason</MudTd>
+                                                <MudTd DataLabel="Amount" Style="font-weight: 900; color: #e11d48;">@voidCtx.TotalVoidedAmount.ToString("0.##")</MudTd>
+                                            </RowTemplate>
+                                        </MudTable>
+                                    }
+                                    else
+                                    {
+                                        <div class="empty-state">
+                                            <MudIcon Icon="@Icons.Material.Outlined.DeleteOutline" Size="Size.Large" Color="Color.Surface" />
+                                            <p>@(IsArabic ? "لا توجد عمليات إلغاء في هذه الفترة" : "No void records in this period")</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </MudItem>
+                    </MudGrid>
+                </div>
             </div>
 
             <div class="sidebar-actions">
@@ -112,18 +219,21 @@
                 </div>
 
                 <div class="actions-grid">
-                    @if (_canViewDetails)
+                    @if (_canViewDetailedSales)
+                    {
+                        <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.ListAlt" Color="Color.Warning" Class="action-btn orange" OnClick="ShowDetailedSales">@(Localizer.GetCurrentLanguage() == "ar" ? "المبيعات التفصيلية" : "Detailed Sales")</MudButton>
+                    }
+                    
+                    @if (_canViewSalesItems)
                     {
                         <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.Analytics" Color="Color.Primary" Class="action-btn purple" OnClick="ShowSalesItems">@Localizer["SalesItems"]</MudButton>
                     }
-                    
+
                     @if (_canPrint)
                     {
                         <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.Summarize" Color="Color.Info" Class="action-btn blue" OnClick='@(() => PreviewFastReport("SalesSummary", Localizer.GetCurrentLanguage() == "ar" ? "ملخص المبيعات" : "Sales Summary"))'>@(Localizer.GetCurrentLanguage() == "ar" ? "ملخص المبيعات" : "Sales Summary")</MudButton>
-                        
-                        <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.Inventory" Color="Color.Success" Class="action-btn green" OnClick='@(() => PreviewFastReport("ItemSales", Localizer.GetCurrentLanguage() == "ar" ? "أصناف البيع" : "Item Sales"))'>@(Localizer.GetCurrentLanguage() == "ar" ? "أصناف البيع" : "Item Sales")</MudButton>
-                        
-                        <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.ListAlt" Color="Color.Warning" Class="action-btn orange" OnClick='@(() => PreviewFastReport("SalesDetailed", Localizer.GetCurrentLanguage() == "ar" ? "المبيعات التفصيلية" : "Detailed Sales"))'>@(Localizer.GetCurrentLanguage() == "ar" ? "المبيعات التفصيلية" : "Detailed Sales")</MudButton>
+
+                        <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.EventBusy" Color="Color.Error" Class="action-btn red" OnClick="PrintEndDayReport">@Localizer["PrintEndOfDayReport"]</MudButton>
                     }
 
                     <MudButton Variant="MudBlazor.Variant.Filled" StartIcon="@Icons.Material.Filled.Sync" Color="Color.Secondary" Class="action-btn pink" OnClick="LoadSummaryData">@Localizer["Refresh"]</MudButton>
@@ -270,10 +380,65 @@
     .fade-in { animation: fadeIn 0.4s ease-out forwards; }
     @@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* --- Detailed Sections Styling --- */
+    .details-section { 
+        margin-top: 12px;
+        padding-bottom: 20px;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+    .table-card:hover { transform: translateY(-5px); }
+
+    .tc-header {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        font-weight: 800;
+        font-size: 1rem;
+    }
+    .tc-header .mud-icon-root { font-size: 1.4rem !important; }
+
+    .primary-bg { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
+    .secondary-bg { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); }
+    .error-bg { background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%); }
+
+    .tc-body { padding: 8px; flex: 1; overflow: hidden; }
+    
+    .empty-state {
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        background: #f8fafc;
+        border-radius: 12px;
+        margin: 12px;
+        border: 2px dashed #e2e8f0;
+    }
+    .empty-state p { margin-top: 12px; font-weight: 600; font-size: 0.9rem; }
+
+    /* Table Fixes */
+    .mud-table-container { border-radius: 8px; }
+    .mud-table-head .mud-th { background-color: #f8fafc !important; font-weight: 800 !important; color: #475569 !important; font-size: 0.85rem !important; }
+    .mud-table-row:hover { background-color: #f1f5f9 !important; }
+
     @@media (max-width: 1280px) {
         .top-cards-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .payment-methods-grid { grid-template-columns: repeat(3, 1fr); }
-        .actions-grid { grid-template-columns: repeat(4, 1fr); }
+        .actions-grid { grid-template-columns: repeat(6, 1fr); gap: 8px; }
     }
     
     @@media (max-height: 800px) {

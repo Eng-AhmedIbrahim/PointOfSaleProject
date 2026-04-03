@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Threading;
 using BlazorBase.ERPFrontServices.OrderTrackServices;
 using BlazorBase.ERPFrontServices.ComplaintServices;
 using BlazorBase.ERPFrontServices.ReportingServices;
@@ -8,12 +9,16 @@ using BlazorBase.ERPFrontServices.SettingsServices;
 using BackOffice.Desktop.Services;
 using BlazorBase.ERPFrontServices.InventoryServices;
 using POS.Core.Services.Contract.PosFeatureServices;
+using POS.Core.Entities.Identity;
 using Radzen;
+using POS.Core.Services.Contract;
+using BlazorBase.ERPFrontServices.StaffMealServices;
 
 namespace BackOffice.Desktop;
 
 public partial class App : Application
 {
+    private static Mutex? _instanceMutex;
     private ServiceProvider? _serviceProvider;
     public static List<string> InMemoryLogs { get; } = new();
     private static readonly object _logLock = new();
@@ -29,6 +34,17 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        const string mutexName = "Global\\BackOffice_Desktop_SingleInstance";
+        _instanceMutex = new Mutex(true, mutexName, out bool createdNew);
+
+        if (!createdNew)
+        {
+            MessageBox.Show("نسخة من تطبيق BackOffice Desktop مفتوحة بالفعل على هذا الجهاز. الرجاء إغلاق النسخة القديمة قبل المحاولة مرة أخرى.", 
+                            "تكرار التشغيل", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Application.Current.Shutdown();
+            return;
+        }
+
         try
         {
             // Register global exception handlers
@@ -240,9 +256,11 @@ public partial class App : Application
         services.AddScoped<IDineInOrderFrontService, DineInOrderFrontService>();
         services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
         services.AddScoped<IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
+        services.AddScoped<IStaffMealService, StaffMealFrontService>();
         services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
         services.AddScoped<IVoidErpService, VoidErpService>();
         services.AddScoped<IReportingErpService, ReportingErpService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.ExpenseServices.IExpenseFrontService, BlazorBase.ERPFrontServices.ExpenseServices.ExpenseFrontService>();
         services.AddScoped<IPaymentMethodServices, BlazorBase.ERPFrontServices.PaymentMethodServices.PaymentMethodServices>();
         services.AddScoped<ISystemSettingsServices, SystemSettingsServices>();
         services.AddScoped<BlazorBase.ERPFrontServices.DataSyncServices.IDataSyncFrontService, BlazorBase.ERPFrontServices.DataSyncServices.DataSyncFrontService>();

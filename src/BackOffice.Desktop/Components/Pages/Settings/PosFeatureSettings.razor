@@ -52,7 +52,7 @@
                                                 </MudText>
                                                 <MudText Typo="Typo.caption" Color="Color.Secondary" Style="font-size: 0.7rem;">@setting.FeatureName</MudText>
                                             </div>
-                                            <MudSwitch @bind-Value="setting.Value" Color="Color.Primary" UnCheckedColor="Color.Default" Class="ml-n2" />
+                                            <MudSwitch T="bool" Value="setting.Value" ValueChanged="@((bool val) => OnSettingChanged(setting, val))" Color="Color.Primary" UnCheckedColor="Color.Default" Class="ml-n2" />
                                         </div>
                                     }
                                 </MudStack>
@@ -87,6 +87,25 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadSettings();
+    }
+
+    private void OnSettingChanged(PosFeatureSettingToReturnDto setting, bool newValue)
+    {
+        setting.Value = newValue;
+
+        // If a startup screen is being enabled, disable the other startup screens automatically (mutually exclusive)
+        if (newValue && setting.FeatureName != null && setting.FeatureName.StartsWith("Startup_"))
+        {
+            var otherStartupSettings = _settings.Where(s => 
+                s.FeatureName != null && 
+                s.FeatureName.StartsWith("Startup_") && 
+                s.FeatureName != setting.FeatureName);
+                
+            foreach (var other in otherStartupSettings)
+            {
+                other.Value = false;
+            }
+        }
     }
 
     private async Task LoadSettings()

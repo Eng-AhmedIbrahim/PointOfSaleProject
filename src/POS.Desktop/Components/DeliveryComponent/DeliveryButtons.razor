@@ -1,4 +1,4 @@
-﻿@inject NavigationManager _navigationManager
+@inject NavigationManager _navigationManager
 @inject CommonProperties _commonProperties
 @inject ISnackbar _snackbar
 @inject IDialogService _dialogService
@@ -63,7 +63,8 @@
     {
         <MudButton Variant="Variant.Filled"
                    Class="modern-action-button btn-info-gradient"
-                   Size="Size.Large">
+                   Size="Size.Large"
+                   OnClick="SearchCustomer">
             <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
                 <MudIcon Icon="@Icons.Material.Filled.Search" Class="action-icon" />
                 <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["Search"]</MudText>
@@ -75,9 +76,10 @@
     {
         <MudButton Variant="Variant.Filled"
                    Class="modern-action-button btn-info-gradient"
-                   Size="Size.Large">
+                   Size="Size.Large"
+                   OnClick="@(() => SafeNavigateAsync("/delivery-branch-orders"))">
             <MudStack Row="false" AlignItems="AlignItems.Center" Spacing="1">
-                <MudIcon Icon="@Icons.Material.Filled.ManageAccounts" Class="action-icon" />
+                <MudIcon Icon="@Icons.Material.Filled.StoreMallDirectory" Class="action-icon" />
                 <MudText Typo="Typo.subtitle2" Style="font-weight: 700;">@Localizer["BranchManagement"]</MudText>
             </MudStack>
         </MudButton>

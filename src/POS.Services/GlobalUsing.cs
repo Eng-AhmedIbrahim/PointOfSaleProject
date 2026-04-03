@@ -73,3 +73,5 @@ global using System.Linq.Expressions;
 global using System.Security.Claims;
 global using System.Text;
 global using System.Text.Json;
+global using POS.Contract.Dtos.AccountDtos;
+global using POS.Core.Entities.StaffMealEntity;

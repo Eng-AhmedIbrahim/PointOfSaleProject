@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers;
+namespace POS.API.Controllers;
 
 public class AccountController : BaseApiController
 {
@@ -148,6 +148,10 @@ public class AccountController : BaseApiController
         }
 
         var mappedUsers = _mapper.Map<List<UserDto>>(filteredUsers);
+        for (int i = 0; i < filteredUsers.Count; i++)
+        {
+            if (i < mappedUsers.Count) mappedUsers[i].UserId = filteredUsers[i].Id;
+        }
         return Ok(mappedUsers);
     }
 
@@ -161,6 +165,7 @@ public class AccountController : BaseApiController
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var mappedUser = _mapper.Map<UserDto>(user);
+            mappedUser.UserId = user.Id;
             mappedUser.Roles = userRoles.ToList();
             mappedUsers.Add(mappedUser);
         }
@@ -281,10 +286,17 @@ public class AccountController : BaseApiController
     }
 
     [HttpGet("get-users")]
-    public async Task<ActionResult<List<AppUser>>> GetAllUsers()
+    public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
         var users = await _authService.GetAllUsersAsync();
-        return Ok(users);
+        var mapped = _mapper.Map<List<UserDto>>(users);
+        
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (i < mapped.Count) mapped[i].UserId = users[i].Id;
+        }
+
+        return Ok(mapped);
     }
 
     [HttpGet("get-role/{roleName}")]
@@ -295,10 +307,14 @@ public class AccountController : BaseApiController
     }
 
     [HttpGet("get-user/{userId}")]
-    public async Task<ActionResult<AppUser>> GetUser(string userId)
+    public async Task<ActionResult<UserDto>> GetUser(string userId)
     {
         var user = await _authService.GetUserAsync(userId);
-        return user != null ? Ok(user) : NotFound("User not found");
+        if (user == null) return NotFound();
+
+        var mapped = _mapper.Map<UserDto>(user);
+        mapped.UserId = user.Id;
+        return Ok(mapped);
     }
 
     [HttpPost("remove-user-from-role")]

@@ -1,4 +1,4 @@
-﻿using BlazorBase.API;
+using BlazorBase.API;
 using BlazorBase.Helpers;
 using POS.Contract.Dtos.OrderDtos;
 using POS.Contract.Dtos.KitchenDtos;
@@ -91,7 +91,7 @@ public class OrderSettingsService : IOrderSettingsService
     public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
     {
         return await GetApiResponseAsync<OrderDto>(
-            () => _httpClient.GetAsync($"{_apiSettings.Endpoints!.CreateOrder}/{orderId}"),
+            () => _httpClient.GetAsync($"api/Order/{orderId}"),
             "Failed to retrieve order."
         );
     }

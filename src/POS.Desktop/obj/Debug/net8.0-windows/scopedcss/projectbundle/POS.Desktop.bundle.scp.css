@@ -1913,6 +1913,7 @@ main[b-24bswxj4yp] {
 .section-title[b-idgfjrznav] {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     color: #475569;
     font-weight: 600;

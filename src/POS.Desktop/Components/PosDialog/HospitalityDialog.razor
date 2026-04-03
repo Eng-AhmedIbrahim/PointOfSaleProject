@@ -1,0 +1,124 @@
+@using MudBlazor
+@using BlazorBase.ERPFrontServices.AccountServices
+@using POS.Contract.Dtos.AccountDtos
+@inject IAccountService AccountService
+@inject LocalizationService Localizer
+
+<MudDialog Class="hospitality-dialog-modern">
+    <TitleContent>
+        <div class="d-flex align-center gap-3 pa-4">
+            <div class="icon-circle hospitality-bg">
+                <MudIcon Icon="@Icons.Material.Filled.Favorite" Color="Color.Surface" Size="Size.Large" />
+            </div>
+            <div>
+                <MudText Typo="Typo.h5" Style="font-weight: 800; color: #1e293b;">تأكيد طلب ضيافة</MudText>
+                <MudText Typo="Typo.caption" Style="color: #64748b;">يرجى اختيار المسؤول عن طلب الضيافة وتوضيح السبب</MudText>
+            </div>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <div class="pa-6" style="direction:rtl; min-height:300px;">
+            <MudForm @ref="_form" @bind-IsValid="_isValid">
+                <div class="input-section mb-6">
+                    <MudAutocomplete T="UserDto" 
+                               Label="المسؤول عن الضيافة"
+                               Value="_selectedUser" 
+                               SearchFunc="SearchUsers"
+                               Required="true"
+                               RequiredError="يرجى اختيار المسؤول"
+                               ToStringFunc="@(u => u?.ArabicName ?? u?.UserName ?? "")"
+                               Variant="Variant.Outlined"
+                               ResetValueOnEmptyText="true"
+                               ValueChanged="OnUserSelected"
+                               Adornment="Adornment.End"
+                               AdornmentIcon="@Icons.Material.Filled.Person"
+                               PopOverClass="rtl-autocomplete-popover"
+                               Class="modern-input mb-4" />
+                    
+                    <MudTextField @bind-Value="_reason" 
+                                 Label="سبب الضيافة" 
+                                 Variant="Variant.Outlined" 
+                                 Lines="3" 
+                                 Required="true"
+                                 RequiredError="يرجى إدخال السبب"
+                                 Placeholder="اكتب سبب الضيافة هنا..."
+                                 Class="modern-input reason-field" />
+                </div>
+            </MudForm>
+
+            @if (_showError)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true" Class="mt-2" Style="border-radius:12px;">يرجى التحقق من إدخال كافة البيانات المطلوبة</MudAlert>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <div class="px-6 pb-6 w-100 d-flex gap-4">
+            <MudButton OnClick="Cancel" Variant="Variant.Outlined" FullWidth="true" Style="height: 55px; border-radius: 16px; font-weight: 700; border-width: 2px;">
+                @Localizer["Cancel"]
+            </MudButton>
+            <MudButton OnClick="Confirm" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" Style="height: 55px; border-radius: 16px; font-weight: 900; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);">
+                @Localizer["ConfirmHospitality"]
+            </MudButton>
+        </div>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .hospitality-dialog-modern { border-radius: 28px !important; overflow: hidden; min-width: 550px; background: #ffffff; }
+    .hospitality-bg { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+    .icon-circle { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2); }
+    
+    .modern-input .mud-input-outlined-border { border-color: #e2e8f0 !important; border-width: 2px !important; border-radius: 12px !important; }
+    .modern-input.mud-input-focus .mud-input-outlined-border { border-color: #4f46e5 !important; }
+    .modern-input label { font-weight: 600 !important; color: #64748b !important; }
+    .modern-input .mud-input { background: #f8fafc !important; }
+    
+    .rtl-autocomplete-popover .mud-list-item-text { text-align: right !important; direction: rtl !important; }
+    .reason-field { direction: rtl !important; text-align: right !important; }
+</style>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private UserDto? _selectedUser;
+    private string? _reason;
+    private bool _showError = false;
+    private List<UserDto> _users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = (await AccountService.GetUsers()).ToList();
+    }
+
+    private void OnUserSelected(UserDto user)
+    {
+        _selectedUser = user;
+        _showError = false;
+    }
+
+    private async Task<IEnumerable<UserDto>> SearchUsers(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value)) return _users;
+        return _users.Where(u => 
+            (u.UserName?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (u.ArabicName?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Confirm()
+    {
+        await _form.Validate();
+        if (!_isValid || _selectedUser == null || string.IsNullOrWhiteSpace(_reason))
+        {
+            _showError = true;
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok((_selectedUser, _reason)));
+    }
+    
+    private MudForm _form = default!;
+    private bool _isValid;
+}

@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.CompanyDtos;
+namespace POS.Contract.Dtos.CompanyDtos;
 
 public class UpdatedBranchDto
 {
@@ -22,4 +22,5 @@ public class UpdatedBranchDto
     public bool Active { get; set; } = true;
     public bool Suspend { get; set; } = false;
     public DateTime UpdateDate { get; set; }
+    public string? Currency { get; set; } = "EGP";
 }

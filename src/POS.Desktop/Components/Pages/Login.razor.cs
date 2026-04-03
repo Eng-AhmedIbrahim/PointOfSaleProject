@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Windows;
 
@@ -13,8 +13,7 @@ public partial class Login
     private ElementReference pinInput;
 
     [Inject] private AuthenticationStateProvider _authenticationStateProvider { get; set; } = default!;
-
-
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
     private void AddDigit(string digit)
         => _pin += digit;
 
@@ -95,11 +94,37 @@ public partial class Login
                     await customAuthStateProvider.NotifyUserAuthentication(token);
                 }
 
+                // Load settings for startup screen
+                if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
+                    _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
+
+                string startupUrl = "/pos"; // Default fallback
+                _commonProperties.CurrentPosMode = "TakeAway";
+
+                if (_commonProperties.FeatureSettings != null)
+                {
+                    if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Delivery")?.Value == true)
+                    {
+                        startupUrl = "/delivery";
+                        _commonProperties.CurrentPosMode = "Delivery";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_DineIn")?.Value == true)
+                    {
+                        startupUrl = "/dinein";
+                        _commonProperties.CurrentPosMode = "DineIn";
+                    }
+                    else // TakeAway or default
+                    {
+                        startupUrl = "/pos";
+                        _commonProperties.CurrentPosMode = "TakeAway";
+                    }
+                }
+
                 _commonProperties.TableItems = new List<TableItem>(); // Explicitly clear right before navigation to avoid NavLock
                 _commonProperties.NotifyStateChanged();
                 
                 // Safe navigation for Blazor Hybrid after login
-                await SafeNavigateAsync("/pos");
+                await SafeNavigateAsync(startupUrl);
             }
             else
             {

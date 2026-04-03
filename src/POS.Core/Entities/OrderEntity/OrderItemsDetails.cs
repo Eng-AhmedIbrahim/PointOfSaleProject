@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using POS.Core.Entities.DineIn;
 
@@ -39,6 +39,12 @@ public class OrderItemsDetails:BaseEntity
     public bool? PrintInBackupReceiptFromCategory { get; set; }
     public bool? PrintInBackupReceiptFromItem { get; set; }
     public bool? ByWeight { get; set; }
+
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
 
     public Orders? Order { get; set; }
     

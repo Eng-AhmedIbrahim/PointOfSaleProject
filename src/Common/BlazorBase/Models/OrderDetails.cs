@@ -10,6 +10,15 @@ public class OrderDetails
     public List<TableItem> Items { get; set; } = new List<TableItem>();
     public bool? IsVoided { get; set; }
 
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleId { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeId { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
+
     public decimal? Account { get; set; }
     public OrderDiscount OrderDiscount { get; set; } = new();
 

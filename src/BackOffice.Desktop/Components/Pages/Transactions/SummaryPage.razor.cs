@@ -19,11 +19,13 @@ public partial class SummaryPage
     [Parameter]
     public string? End { get; set; }
 
-    private bool _canViewDetails;
+    private bool _canViewDetailedSales;
+    private bool _canViewSalesItems;
     private bool _canPrint;
     private SalesSummaryDto _summaryData = new();
+    private List<SalesItemSummaryDto> _salesItems = new();
     private bool _isLoading = true;
-    private MudBlazor.DateRange _dateRange = new MudBlazor.DateRange(null, null);
+    private DateRange _dateRange = new DateRange(null, null);
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,7 +35,8 @@ public partial class SummaryPage
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canViewDetails = (await AuthorizationService.AuthorizeAsync(user, "CanViewSummaryDetailsAtBackOffice")).Succeeded;
+            _canViewDetailedSales = (await AuthorizationService.AuthorizeAsync(user, "CanViewSummaryDetailsAtBackOffice")).Succeeded;
+            _canViewSalesItems = (await AuthorizationService.AuthorizeAsync(user, "CanViewSalesItemsAtBackOffice")).Succeeded;
             _canPrint = (await AuthorizationService.AuthorizeAsync(user, "CanPrintSummaryReportAtBackOffice")).Succeeded;
         }
 
@@ -100,8 +103,9 @@ public partial class SummaryPage
             }
 
             _summaryData = await ReportingService.GetSalesSummary(startDate, endDate);
+            _salesItems = await ReportingService.GetSalesItemsSummary(startDate, endDate);
             if (string.IsNullOrEmpty(_summaryData.Overall.Currency))
-                _summaryData.Overall.Currency = "L.E";
+                _summaryData.Overall.Currency = "EGP";
         }
         catch (Exception ex)
         {
@@ -126,13 +130,28 @@ public partial class SummaryPage
             var startDate = _dateRange.Start ?? DateTime.Today;
             var endDate = _dateRange.End ?? startDate;
             var items = await ReportingService.GetSalesItemsSummary(startDate, endDate);
-            var parameters = new DialogParameters { ["Items"] = items };
-            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false, NoHeader = true };
-            await DialogService.ShowAsync<SalesItemsDialog>("", parameters, options);
+            var parameters = new DialogParameters { ["Items"] = items, ["SelectedDate"] = startDate };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false, NoHeader = false };
+            await DialogService.ShowAsync<global::BackOffice.Desktop.Components.Pages.Transactions.SummaryPages.SalesItemsDialog>("", parameters, options);
         }
         catch (Exception ex)
         {
             Snackbar.Add("Error loading sales items: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task ShowDetailedSales()
+    {
+        try
+        {
+            var startDate = _dateRange.Start ?? DateTime.Today;
+            var parameters = new DialogParameters { ["SelectedDate"] = startDate };
+            var options = new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true };
+            await DialogService.ShowAsync<global::BackOffice.Desktop.Components.Pages.Transactions.SummaryPages.DetailedSalesDialog>("", parameters, options);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error loading detailed sales: " + ex.Message, Severity.Error);
         }
     }
 
@@ -151,5 +170,21 @@ public partial class SummaryPage
 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Large, FullWidth = true, FullScreen = true };
         await DialogService.ShowAsync<ReportViewerDialog>(reportName, parameters, options);
+    }
+
+    private async Task PrintEndDayReport()
+    {
+        try
+        {
+            var startDate = _dateRange.Start ?? DateTime.Today;
+            var endDate = _dateRange.End ?? startDate;
+            var items = await ReportingService.GetSalesItemsSummary(startDate, endDate);
+            await PrintOrderService.PrintEndDayReportAsync(_summaryData, items, null, false, true);
+            Snackbar.Add("End of day report sent to printer", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error printing report: " + ex.Message, Severity.Error);
+        }
     }
 }

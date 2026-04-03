@@ -1,9 +1,15 @@
+using BlazorBase.ERPFrontServices.ComplaintServices;
+using BlazorBase.ERPFrontServices.DeliveryServices;
+using POS.Desktop.Components.PosDialog;
+using POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
+
 namespace POS.Desktop.Components.DeliveryComponent;
 
 public partial class DeliveryButtons
 {
     [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    [Inject] private IComplaintServices _complaintServices { get; set; } = default!;
 
     private bool _canOrder;
     private bool _canAddNew;
@@ -31,6 +37,52 @@ public partial class DeliveryButtons
             _canToggleDir    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryToggleDirectionBtn")).Succeeded;
         }
     }
+
+    private async Task SearchCustomer()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await _dialogService.ShowAsync<CustomerSearchDialog>(
+            Localizer["Search"], options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled && result.Data is DeliveryCustomerToReturnDto selected)
+        {
+            // Populate phone so that HandleKeyDown logic kicks in as if the user typed and pressed Enter
+            _commonProperties.CustomerDetails ??= new();
+            _commonProperties.CustomerDetails.FirstPhoneNumber = selected.FirstPhoneNumber;
+
+            // Populate basic info directly
+            _commonProperties.CustomerDetails.CustomerName = selected.CustomerName;
+            _commonProperties.CustomerDetails.SecondPhoneNumber = selected.SecondPhoneNumber;
+            _commonProperties.CustomerDetails.ClientTitle = selected.ClientTitle;
+            _commonProperties.CustomerDetails.Id = selected.Id;
+
+            // Populate first address if available
+            var firstAddr = selected.CustomerAddresses?.FirstOrDefault();
+            if (firstAddr != null)
+            {
+                _commonProperties.CustomerDetails.ClientAddress = firstAddr.ClientAddress;
+                _commonProperties.CustomerDetails.FloorNumber = firstAddr.FloorNumber;
+                _commonProperties.CustomerDetails.FlatNumber = firstAddr.FlatNumber;
+                _commonProperties.CustomerDetails.HomeNumber = firstAddr.HomeNumber;
+                _commonProperties.CustomerDetails.AddressNote = firstAddr.AddressNote;
+                _commonProperties.CustomerDetails.ZoneID = firstAddr.DeliveryZoneId;
+                _commonProperties.CustomerDetails.ZoneName = firstAddr.ZoneName;
+                _commonProperties.CustomerDetails.ZoneFees = firstAddr.DeliveryFee;
+                _commonProperties.CustomerDetails.ZoneBonus = firstAddr.ZoneBonus;
+                _commonProperties.CustomerDetails.BranchId = firstAddr.BranchId;
+                _commonProperties.CustomerDetails.BranchName = firstAddr.BranchName;
+            }
+
+            // Trigger address-selected callback so Delivery.razor syncs zone UI
+            _handelDeliveryInvocation.TriggerAddressSelected();
+            _snackbar.Add(
+                (_isArabic ? $"تم تحميل بيانات العميل: {selected.CustomerName}" : $"Customer loaded: {selected.CustomerName}"),
+                Severity.Success);
+        }
+    }
+
+    private bool _isArabic => Localizer.GetCurrentLanguage() == "ar";
 
     private async Task ShowComplaints()
     {

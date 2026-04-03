@@ -1,6 +1,7 @@
 @using POS.Contract.Dtos.OrderDtos
 @inject LocalizationService Localizer
 @inject ISnackbar Snackbar
+@inject IPrintOrderService _printOrderService
 @inject IPrinterServices PrinterServices
 
 @{
@@ -412,25 +413,25 @@
         _previewDriver = settlement;
     }
 
-    private void PrintSettlement(DriverSettlementDto settlement)
+    private async Task PrintSettlement(DriverSettlementDto settlement)
     {
         var isAr = Localizer.GetCurrentLanguage() == "ar";
         Snackbar.Add(isAr ? $"جاري طباعة تسوية {settlement.DriverName}..." : $"Printing {settlement.DriverName} settlement...", Severity.Info);
-        // TODO: wire to actual print service when available
+        await _printOrderService.PrintDriverSettlementAsync(settlement, PosDate);
     }
 
-    private void PrintSettlementTo(DriverSettlementDto settlement, string printerName)
+    private async Task PrintSettlementTo(DriverSettlementDto settlement, string printerName)
     {
         var isAr = Localizer.GetCurrentLanguage() == "ar";
         Snackbar.Add(isAr ? $"إرسال إلى {printerName}..." : $"Sending to {printerName}...", Severity.Info);
-        // TODO: wire to actual print service when available
+        await _printOrderService.PrintDriverSettlementAsync(settlement, PosDate, printerName);
     }
 
-    private void PrintAll()
+    private async Task PrintAll()
     {
         var isAr = Localizer.GetCurrentLanguage() == "ar";
         foreach (var s in Settlements)
-            PrintSettlement(s);
+            await _printOrderService.PrintDriverSettlementAsync(s, PosDate);
         Snackbar.Add(isAr ? "تم إرسال جميع التسويات للطباعة" : "All settlements sent to printer", Severity.Success);
     }
 

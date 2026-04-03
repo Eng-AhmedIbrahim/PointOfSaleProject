@@ -1,4 +1,4 @@
-﻿@using POS.Contract
+@using POS.Contract
 @using POS.Contract.Dtos.OrderDtos
 @using BlazorBase.ERPFrontServices.CartServices
 @using BlazorBase.ERPFrontServices.PrintOrderServices
@@ -163,7 +163,7 @@
         var appDateToReturnDto = await _appDateService.GetAppDate();
 
         CurrentDeliveryOrder.DriverID = SelectedDriverId;
-        CurrentDeliveryOrder.DriverName = driver.UserName;
+        CurrentDeliveryOrder.DriverName = !string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName;
         CurrentDeliveryOrder.OrderState = OrderStates.Dispatched.ToString();
         CurrentDeliveryOrder.AssignTime = appDateToReturnDto.PosDate.Date.Add(DateTime.Now.TimeOfDay);
         CurrentDeliveryOrder.DispatchID = _commonProperties.CurrentUserId;

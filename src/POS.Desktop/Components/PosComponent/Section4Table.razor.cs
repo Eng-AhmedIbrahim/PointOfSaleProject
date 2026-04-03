@@ -1,4 +1,4 @@
-﻿namespace POS.Desktop.Components.PosComponent;
+namespace POS.Desktop.Components.PosComponent;
 
 public partial class Section4Table
 {
@@ -11,6 +11,7 @@ public partial class Section4Table
     
     [Inject] public IInventoryFrontService InventoryService { get; set; } = default!;
     [Inject] public IPosFeatureSettingsService FeatureSettingsService { get; set; } = default!;
+    [Inject] public CommonProperties _commonProperties { get; set; } = default!;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -85,7 +86,6 @@ public partial class Section4Table
                     var inventory = response.Data;
                     if (inventory.TrackInventory)
                     {
-                        // Calculate total items in cart excluding this line
                         decimal otherCartQty = Items?
                             .Where(i => i.Id == item.Id && i != item && !i.IsReadOnly && !i.IsVoided)
                             .Sum(i => i.Quantity) ?? 0;
@@ -98,11 +98,45 @@ public partial class Section4Table
                             string msg = Localizer.GetCurrentLanguage() == "ar"
                                 ? $"الكمية المطلوبة ({newQuantity}) غير متوفرة. المتاح لهذا الصنف: {availableForThisLine:0.##}"
                                 : $"Quantity ({newQuantity}) not available. Available: {availableForThisLine:0.##}";
-                            
+
                             Snackbar.Add(msg, Severity.Error);
-                            await InvokeAsync(StateHasChanged); // Force UI refresh to reset value
+                            await InvokeAsync(StateHasChanged);
                             return;
                         }
+                    }
+                }
+            }
+
+            // Check Staff Meal budget if increasing
+            if (_commonProperties.CurrentStaffMeal != null)
+            {
+                bool isAmountMode = _commonProperties.CurrentStaffMeal.DailyAmountLimit > 0;
+                decimal qtyDiff = newQuantity - item.Quantity;
+
+                if (!isAmountMode)
+                {
+                    // COUNT MODE: check MealLimit
+                    var mealLimit = _commonProperties.CurrentStaffMeal.MealLimit;
+                    decimal totalCartQty = Items?.Where(i => !i.IsVoided).Sum(i => i.Quantity) ?? 0;
+                    if (totalCartQty + qtyDiff > mealLimit)
+                    {
+                        Snackbar.Add(Localizer.GetCurrentLanguage() == "ar"
+                            ? $"تخطيت الحد الأقصى للوجبة ({mealLimit})"
+                            : $"Meal limit reached ({mealLimit})", Severity.Error);
+                        await InvokeAsync(StateHasChanged);
+                        return;
+                    }
+                }
+                else
+                {
+                    // AMOUNT MODE: check monetary budget only
+                    decimal itemOriginalPrice = item.OriginalPrice ?? 0;
+                    decimal currentSpentInOrder = Items?.Where(i => !i.IsVoided).Sum(i => (i.OriginalPrice ?? 0) * i.Quantity) ?? 0;
+                    if (currentSpentInOrder + (itemOriginalPrice * qtyDiff) > _commonProperties.RemainingStaffMealAmount)
+                    {
+                        Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد المتبقي غير كافي" : "Insufficient balance", Severity.Error);
+                        await InvokeAsync(StateHasChanged);
+                        return;
                     }
                 }
             }

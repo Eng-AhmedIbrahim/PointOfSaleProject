@@ -52,12 +52,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>2pa7l27sib</Fingerprint>
-      <Integrity>GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA=</Integrity>
+      <Fingerprint>qvtmwm564f</Fingerprint>
+      <Integrity>xkifTJPpExA/iEhtbY8jQk7zAMtV+xtRdaCk+a+EJBk=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>58886</FileLength>
-      <LastWriteTime>Sun, 15 Mar 2026 15:53:20 GMT</LastWriteTime>
+      <FileLength>58797</FileLength>
+      <LastWriteTime>Fri, 03 Apr 2026 00:57:18 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))">

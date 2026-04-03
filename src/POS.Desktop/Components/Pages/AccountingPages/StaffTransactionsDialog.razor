@@ -26,14 +26,25 @@
                     </div>
                 </div>
                 
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Info" 
-                           StartIcon="@Icons.Material.Filled.Assessment" 
-                           OnClick="PrintStaffSummary" 
-                           Class="rounded-pill px-4"
-                           Style="height: 40px; font-weight: 700; font-size: 0.85rem;">
-                    @(Localizer.GetCurrentLanguage() == "ar" ? "معاينة تقرير المبيعات" : "Preview Sales Report")
-                </MudButton>
+                <div class="d-flex align-center gap-2">
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Info" 
+                               StartIcon="@Icons.Material.Filled.ListAlt" 
+                               OnClick="@(async () => await PrintStaffReport(true))" 
+                               Class="rounded-pill px-4"
+                               Style="height: 40px; font-weight: 700; font-size: 0.85rem;">
+                        @(Localizer.GetCurrentLanguage() == "ar" ? "تقرير المبيعات" : "Sales Report")
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Success" 
+                               StartIcon="@Icons.Material.Filled.Assessment" 
+                               OnClick="@(async () => await PrintStaffReport(false))" 
+                               Class="rounded-pill px-4 shadow-sm"
+                               Style="height: 40px; font-weight: 700; font-size: 0.85rem;">
+                        @(Localizer.GetCurrentLanguage() == "ar" ? "ملخص المبيعات" : "Sales Summary")
+                    </MudButton>
+                </div>
             </div>
         </div>
     </TitleContent>
@@ -93,7 +104,7 @@
                                     <MudIconButton Icon="@Icons.Material.Filled.LocalPrintshop" 
                                                    Color="Color.Default" 
                                                    Size="Size.Small" 
-                                                   OnClick="@(() => PrintOrder(context))" 
+                                                   OnClick="@(() => OpenOrderReceipt(context))" 
                                                    Class="hover-btn" />
                                 </MudTooltip>
                             </MudTd>
@@ -196,21 +207,21 @@
         _ => Color.Default
     };
 
-    private async Task PrintOrder(OrderDto order)
+    private async Task OpenOrderReceipt(OrderDto order)
     {
         try 
         {
-            Snackbar.Add(Localizer["PrintingStarted"], Severity.Info);
-            await _printOrderService.ReprintOrderAsync(order.OrderId, isCopy: true);
-            Snackbar.Add(Localizer["PrintCommandSent"], Severity.Success);
+            var parameters = new MudBlazor.DialogParameters { ["Order"] = order, ["PreviewMode"] = "Customer" };
+            var options = new MudBlazor.DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true };
+            await DialogService.ShowAsync<global::POS.Desktop.Components.Pages.SummaryPages.OrderReceiptPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {
-            Snackbar.Add(Localizer["PrintingFailed"] + ": " + ex.Message, Severity.Error);
+            Snackbar.Add(Localizer["Error"] + ": " + ex.Message, Severity.Error);
         }
     }
 
-    private async Task PrintStaffSummary()
+    private async Task PrintStaffReport(bool showOrders = true)
     {
         try
         {
@@ -219,6 +230,8 @@
                 ["ReportTitle"] = Localizer.GetCurrentLanguage() == "ar" ? $"تقرير مبيعات: {StaffName}" : $"Sales Report: {StaffName}",
                 ["BranchName"] = _commonProperties.BranchDetails?.Name ?? "Main Branch",
                 ["ReportDate"] = SelectedDate,
+                ["InitialShowOrderDetails"] = showOrders,
+                ["IsStaffReport"] = true,
                 ["Items"] = Orders.SelectMany(o => o.OrderDetails ?? new List<TableItem>())
                                   .GroupBy(i => i.Name)
                                   .Select(g => new SalesItemSummaryDto 
@@ -238,8 +251,25 @@
                         CashAmount = Orders.Where(o => o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
                         CreditAmount = Orders.Where(o => o.PaymentMethod != PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
                         TotalDiscount = Orders.Sum(o => o.TotalDiscount ?? 0),
-                        VoidAmount = Orders.Sum(o => o.VoidAmount ?? 0),
-                        VoidCount = Orders.Count(o => (o.VoidAmount ?? 0) > 0)
+                        VoidAmount = Orders.Sum(o => (o.VoidAmount ?? (o.OrderState == "Voided" ? o.GrandTotal : 0) ?? 0)),
+                        VoidCount = Orders.Count(o => (o.VoidAmount ?? 0) > 0 || o.OrderState == "Voided"),
+                        ModeDetails = Orders.GroupBy(o => o.OrderType).Select(g => new ModeDetails {
+                            ModeTitle = g.Key ?? "N/A",
+                            OrderCount = g.Count(),
+                            Subtotal = g.Sum(x => x.SubTotal ?? (x.GrandTotal ?? 0)),
+                            Discount = g.Sum(x => x.TotalDiscount ?? 0),
+                            GrandTotal = g.Sum(x => x.GrandTotal ?? 0)
+                        }).ToList()
+                    },
+                    CashierSummaries = new List<AccountSummaryDto> {
+                        new AccountSummaryDto {
+                            Name = StaffName,
+                            OrderCount = Orders.Count,
+                            CashAmount = Orders.Where(o => o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
+                            CreditAmount = Orders.Where(o => o.PaymentMethod != PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
+                            DiscountAmount = Orders.Sum(o => o.TotalDiscount ?? 0),
+                            VoidAmount = Orders.Sum(o => (o.VoidAmount ?? (o.OrderState == "Voided" ? o.GrandTotal : 0) ?? 0))
+                        }
                     }
                 }
             };

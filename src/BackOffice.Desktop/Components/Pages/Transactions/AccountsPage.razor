@@ -76,19 +76,25 @@
                 </div>
             </div>
             
-            <div class="footer-actions d-grid gap-3" style="grid-template-columns: 1fr 1fr;">
-                <MudButton Variant="MudBlazor.Variant.Filled"
-                           Color="Color.Info" 
-                           StartIcon="@Icons.Material.Filled.Print" 
-                           Class="py-3 rounded-lg"
-                           Style="font-weight: 800;"
-                           OnClick="PrintAccountsReport">@(Localizer.GetCurrentLanguage() == "ar" ? "طباعة الكل" : "Print All")</MudButton>
+            <div class="footer-actions">
+                <div class="footer-actions-top">
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Info" 
+                               StartIcon="@Icons.Material.Filled.Print" 
+                               Class="action-btn"
+                               OnClick="PrintAccountsReport">@(Localizer.GetCurrentLanguage() == "ar" ? "طباعة الكل" : "Print All")</MudButton>
+
+                    <MudButton Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Secondary" 
+                               StartIcon="@Icons.Material.Filled.Assignment" 
+                               Class="action-btn"
+                               OnClick="@(() => PrintDetailedAccountsReport())">@(Localizer.GetCurrentLanguage() == "ar" ? "تقرير مفصل" : "Detailed Report")</MudButton>
+                </div>
 
                 <MudButton Variant="MudBlazor.Variant.Filled"
                            Color="Color.Error" 
                            StartIcon="@Icons.Material.Filled.Close" 
-                           Class="py-3 rounded-lg"
-                           Style="font-weight: 800;"
+                           Class="action-btn-close"
                            OnClick="GoBack">@Localizer["Close"]</MudButton>
             </div>
         </div>
@@ -136,6 +142,28 @@
     .footer-stats-grid { display: flex; justify-content: space-around; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; }
     .empty-state { padding: 50px; text-align: center; color: #94a3b8; }
     .fade-in { animation: fadeIn 0.4s ease-in-out; }
+
+    .footer-actions { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+    .footer-actions-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .action-btn {
+        height: 52px !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        border-radius: 12px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+        width: 100% !important;
+    }
+    .action-btn-close {
+        height: 46px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+        width: 100% !important;
+        opacity: 0.9;
+    }
     
     ::deep .custom-table {
         height: 100% !important;

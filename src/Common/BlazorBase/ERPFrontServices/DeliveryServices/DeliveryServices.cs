@@ -52,6 +52,17 @@ public class DeliveryServices : IDeliveryServices
         )??new();
     }
 
+    public async Task<IReadOnlyList<DeliveryCustomerToReturnDto>> GetAllCustomersAsync()
+    {
+        return await GetApiResponseAsync<List<DeliveryCustomerToReturnDto>>(
+            GetAllDeliveryCustomersRequest,
+            "Failed to retrieve all customers from the API."
+        ) ?? new List<DeliveryCustomerToReturnDto>();
+    }
+
+    private async Task<HttpResponseMessage> GetAllDeliveryCustomersRequest()
+        => await _httpClient.GetAsync(_apiSettings.Endpoints!.GetAllDeliveryCustomers);
+
 
     public async Task<DeliveryCustomerToReturnDto> CreateClientAsync(DeliveryCustomerDto deliveryCustomer)
     {

@@ -1,4 +1,4 @@
-﻿namespace Pos.Repository.Data;
+namespace Pos.Repository.Data;
 
 using POS.Core.Entities.Settings;
 
@@ -58,6 +58,7 @@ public class AppDbContext : DbContext
     public DbSet<OrderVoid> OrderVoids { get; set; }
     public DbSet<OrderVoidItem> OrderVoidItems { get; set; }
     public DbSet<POS.Core.Entities.Payment.PaymentMethodEntity> PaymentMethods { get; set; }
+    public DbSet<POS.Core.Entities.Payment.Expense> Expenses { get; set; }
     public DbSet<POS.Core.Entities.Settings.DispatcherSetting> DispatcherSettings { get; set; }
     public DbSet<HqSetting> HqSettings { get; set; }
     public DbSet<InventoryItem> InventoryItems { get; set; }
@@ -67,4 +68,10 @@ public class AppDbContext : DbContext
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
     public DbSet<Unit> Units { get; set; }
     public DbSet<ItemType> ItemTypes { get; set; }
+
+    // Staff Meals
+    public DbSet<POS.Core.Entities.StaffMealEntity.StaffMealConfig> StaffMealConfigs { get; set; }
+    public DbSet<POS.Core.Entities.StaffMealEntity.StaffMealGroup> StaffMealGroups { get; set; }
+    public DbSet<POS.Core.Entities.StaffMealEntity.StaffMealGroupItem> StaffMealGroupItems { get; set; }
+    public DbSet<POS.Core.Entities.StaffMealEntity.StaffMealUsage> StaffMealUsages { get; set; }
 }

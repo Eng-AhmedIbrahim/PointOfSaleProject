@@ -382,5 +382,29 @@
     "ModuleName": "Inventory",
     "ScreenName": "Inventory Management",
     "Value": true
+  },
+  {
+    "FeatureName": "Startup_TakeAway",
+    "NameEn": "Default Screen: Take Away",
+    "NameAr": "الشاشة الافتراضية: التيك أوي",
+    "ModuleName": "Startup",
+    "ScreenName": "General",
+    "Value": true
+  },
+  {
+    "FeatureName": "Startup_Delivery",
+    "NameEn": "Default Screen: Delivery",
+    "NameAr": "الشاشة الافتراضية: التوصيل",
+    "ModuleName": "Startup",
+    "ScreenName": "General",
+    "Value": false
+  },
+  {
+    "FeatureName": "Startup_DineIn",
+    "NameEn": "Default Screen: Dine-In",
+    "NameAr": "الشاشة الافتراضية: الصالة",
+    "ModuleName": "Startup",
+    "ScreenName": "General",
+    "Value": false
   }
 ]

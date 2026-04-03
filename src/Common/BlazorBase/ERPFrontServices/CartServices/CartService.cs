@@ -199,7 +199,16 @@ public class CartService : ICartService
         decimal amountAfterOrderDiscount = netAmountAfterLine;
         decimal orderDiscountValue = 0M;
 
-        if (_commonProperties.OrderDiscount != null)
+        if (_commonProperties.IsHospitalityMode)
+        {
+            orderDiscountValue = netAmountAfterLine;
+            if (_commonProperties.OrderDiscount != null) 
+            {
+                _commonProperties.OrderDiscount.Percentage = 100;
+                _commonProperties.OrderDiscount.DiscountType = "Percentage";
+            }
+        }
+        else if (_commonProperties.OrderDiscount != null)
         {
             if (_commonProperties.OrderDiscount.Percentage > 0)
             {
@@ -361,6 +370,8 @@ public class CartService : ICartService
         _commonProperties.CustomerName = "";
         _commonProperties.CustomerPhone = "";
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
+        _commonProperties.ClearStaffMeal();
+        _commonProperties.ClearHospitality();
     }
 
     public void ClearTakeAwayOrderAttributes()
@@ -377,6 +388,8 @@ public class CartService : ICartService
         _commonProperties.CustomerPhone = "";
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
         _commonProperties.UpdateDeliveryOrder = false;
+        _commonProperties.ClearStaffMeal();
+        _commonProperties.ClearHospitality();
     }
 
     public void RemoveItemDiscount()

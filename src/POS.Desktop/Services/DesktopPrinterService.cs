@@ -104,15 +104,34 @@ public class DesktopPrinterService : IPrinterServices
                     PrintController = new StandardPrintController()
                 };
 
-                // Calculate height dynamically from PDF
+                // Calculate width and height dynamically from PDF
+                double pageWidthPoints = pdfDocument.PageSizes.Count > 0 ? pdfDocument.PageSizes[0].Width : 226; // Default to ~80mm if unknown
                 double pageHeightPoints = pdfDocument.PageSizes.Count > 0 ? pdfDocument.PageSizes[0].Height : 842;
+                
+                int widthInHundredths = (int)(pageWidthPoints / 72.0 * 100.0);
                 int heightInHundredths = (int)(pageHeightPoints / 72.0 * 100.0);
                 
-                // Use Custom Paper Size (72mm = 285 hundredths) which is the standard PRINTABLE area for 80mm paper
-                // Reducing from 315 to 285 fixes the "cutting from right" issue by respecting the non-printable margins
-                var customSize = new PaperSize("Receipt72mm", 285, heightInHundredths)
+                // Determine paper name and kind
+                string paperName = "CustomSize";
+                int paperKindInt = (int)PaperKind.Custom;
+
+                // Optimization: If it's a receipt (Width around 80mm / 315 hundredths)
+                // we keep the 285 logic to avoid cutting from right on thermal printers.
+                // Otherwise (e.g. A4 which is ~827 hundredths), we use the detected width.
+                if (widthInHundredths < 450) 
                 {
-                    RawKind = (int)PaperKind.Custom
+                    widthInHundredths = 285; 
+                    paperName = "Receipt72mm";
+                }
+                else if (widthInHundredths >= 800 && widthInHundredths <= 850)
+                {
+                    paperName = "A4";
+                    paperKindInt = (int)PaperKind.A4;
+                }
+
+                var customSize = new PaperSize(paperName, widthInHundredths, heightInHundredths)
+                {
+                    RawKind = paperKindInt
                 };
 
                 printDoc.DefaultPageSettings.PaperSize = customSize;

@@ -219,7 +219,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "POS.Core.Entities.Identity.AppUser",
+        "Type": "POS.Contract.Dtos.AccountDtos.UserDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -239,7 +239,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[POS.Core.Entities.Identity.AppUser, POS.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.AccountDtos.UserDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -2811,6 +2811,79 @@
     ]
   },
   {
+    "ContainingType": "POS.API.Controllers.ExpensesController",
+    "Method": "GetExpenses",
+    "RelativePath": "api/Expenses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "from",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "to",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[POS.Contract.Dtos.ReportingDtos.ExpenseDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ExpensesController",
+    "Method": "AddExpense",
+    "RelativePath": "api/Expenses",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expense",
+        "Type": "POS.Contract.Dtos.ReportingDtos.ExpenseDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.ReportingDtos.ExpenseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.ExpensesController",
+    "Method": "DeleteExpense",
+    "RelativePath": "api/Expenses/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.InventoryController",
     "Method": "GetByItemId",
     "RelativePath": "api/Inventory/{itemId}",
@@ -4568,6 +4641,254 @@
     "ReturnTypes": [
       {
         "Type": "POS.Contract.Dtos.SettingsDtos.DispatcherSettingsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "BatchUpsertConfigs",
+    "RelativePath": "api/StaffMeal/batch-upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "configs",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.AccountDtos.StaffMealConfigDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "GetConfig",
+    "RelativePath": "api/StaffMeal/config/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealConfigDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "GetAllConfigs",
+    "RelativePath": "api/StaffMeal/configs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.AccountDtos.StaffMealConfigDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "UpsertGroup",
+    "RelativePath": "api/StaffMeal/group",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "group",
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealGroupDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "GetGroupById",
+    "RelativePath": "api/StaffMeal/group/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealGroupDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "DeleteGroup",
+    "RelativePath": "api/StaffMeal/group/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "GetAllGroups",
+    "RelativePath": "api/StaffMeal/groups",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[POS.Contract.Dtos.AccountDtos.StaffMealGroupDto, POS.Contract, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "GetStatus",
+    "RelativePath": "api/StaffMeal/status/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealStatusDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "UpsertConfig",
+    "RelativePath": "api/StaffMeal/upsert",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "config",
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealConfigDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.StaffMealController",
+    "Method": "RecordUsage",
+    "RelativePath": "api/StaffMeal/usage",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "usage",
+        "Type": "POS.Contract.Dtos.AccountDtos.StaffMealUsageDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
         "MediaTypes": [
           "text/plain",
           "application/json",

@@ -2,49 +2,53 @@
 @using MudBlazor
 @inject LocalizationService Localizer
 
-<MudDialog DisableSidePadding="true">
+<MudDialog DisableSidePadding="true" Class="premium-dialog">
     <DialogContent>
-        <MudContainer Style="max-height: 400px; overflow-y: auto;">
-            <MudText Typo="Typo.h6" Align="Align.Center" GutterBottom="true">
-                @Localizer["ActiveOrderFound"] #@ActiveOrder.OrderId
-            </MudText>
+        <MudContainer Style="max-height: 500px; overflow-y: auto;" Class="px-4">
             
-            <MudAlert Severity="Severity.Info" Class="my-2">
+            <div class="d-flex align-center gap-3 mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Large" />
+                <MudText Typo="Typo.h5" Style="font-weight: 800; color: #1e293b;">
+                    @Localizer["ActiveOrders"]
+                </MudText>
+            </div>
+            
+            <MudAlert Severity="Severity.Warning" Class="mb-4 rounded-lg" Elevation="2">
                 @Localizer["ActiveOrderDescription"]
             </MudAlert>
 
-            <MudGrid>
-                <MudItem xs="6">
-                    <MudText Typo="Typo.subtitle2">@Localizer["OrderDate"]:</MudText>
-                    <MudText Typo="Typo.body2">@ActiveOrder.OrderDate?.ToString("g")</MudText>
-                </MudItem>
-                <MudItem xs="6">
-                    <MudText Typo="Typo.subtitle2">@Localizer["TotalAmount"]:</MudText>
-                    <MudText Typo="Typo.body2" Color="Color.Primary" Style="font-weight:bold">
-                        @ActiveOrder.GrandTotal?.ToString("F2")
-                    </MudText>
-                </MudItem>
-                 <MudItem xs="6">
-                    <MudText Typo="Typo.subtitle2">@Localizer["Status"]:</MudText>
-                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">@ActiveOrder.OrderState</MudChip>
-                </MudItem>
-            </MudGrid>
-
-            <MudDivider Class="my-3" />
-
-            <MudText Typo="Typo.subtitle1" GutterBottom="true">@Localizer["OrderItems"]</MudText>
-            @if (ActiveOrder.OrderDetails != null && ActiveOrder.OrderDetails.Any())
+            @if (ActiveOrders != null && ActiveOrders.Any())
             {
-                <MudTable Items="@ActiveOrder.OrderDetails" Dense="true" Hover="true" Elevation="0">
+                <MudTable Items="@ActiveOrders" Dense="false" Hover="true" Elevation="2" Class="active-orders-table rounded-lg overflow-hidden">
                     <HeaderContent>
-                        <MudTh>@Localizer["Item"]</MudTh>
-                        <MudTh>@Localizer["Qty"]</MudTh>
-                        <MudTh>@Localizer["Price"]</MudTh>
+                        <MudTh Style="font-weight: 700; color: #475569;">@Localizer["OrderId"]</MudTh>
+                        <MudTh Style="font-weight: 700; color: #475569;">@Localizer["Date"]</MudTh>
+                        <MudTh Style="font-weight: 700; color: #475569;">@Localizer["TotalAmount"]</MudTh>
+                        <MudTh Style="font-weight: 700; color: #475569; text-align: center;">@Localizer["Actions"]</MudTh>
                     </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Item">@context.Name</MudTd>
-                        <MudTd DataLabel="Qty">@context.Quantity</MudTd>
-                        <MudTd DataLabel="Price">@context.TotalAmount?.ToString("F2")</MudTd>
+                    <RowTemplate Context="order">
+                        <MudTd DataLabel="@Localizer["OrderId"]">
+                            <MudText Typo="Typo.subtitle2" Style="font-weight: 800;">#@order.OrderId</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Date"]">
+                            <MudText Typo="Typo.body2" Style="font-weight: 600; color: #64748b;">
+                                @order.OrderDate?.ToString("dd/MM/yyyy HH:mm")
+                            </MudText>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["TotalAmount"]">
+                            <MudText Typo="Typo.subtitle1" Color="Color.Primary" Style="font-weight: 800;">
+                                @order.GrandTotal?.ToString("F2")
+                            </MudText>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Actions"]" Style="text-align: center;">
+                            <MudButton OnClick="@(() => EditExisting(order))" 
+                                       Variant="Variant.Filled" 
+                                       Color="Color.Primary" 
+                                       Size="Size.Small"
+                                       Style="font-weight: 700; border-radius: 8px; padding: 4px 16px;">
+                                @Localizer["Edit"]
+                            </MudButton>
+                        </MudTd>
                     </RowTemplate>
                 </MudTable>
             }
@@ -55,11 +59,25 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="CreateNew" Variant="Variant.Text" Color="Color.Secondary">
-            @Localizer["CreateNewOrder"]
-        </MudButton>
-        <MudButton OnClick="EditExisting" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
-            @Localizer["EditExistingOrder"]
-        </MudButton>
+        <div class="px-4 pb-4 w-100 d-flex justify-start">
+            <MudButton OnClick="CreateNew" Variant="Variant.Outlined" Color="Color.Secondary" Style="font-weight: 700; border-radius: 8px; height: 42px; border-width: 2px;">
+                @Localizer["CreateNewOrder"]
+            </MudButton>
+        </div>
     </DialogActions>
 </MudDialog>
+
+<style>
+    .active-orders-table {
+        border: 1px solid #e2e8f0;
+    }
+    .active-orders-table .mud-table-head {
+        background-color: #f8fafc;
+    }
+    .premium-dialog {
+        border-radius: 16px !important;
+    }
+    .premium-dialog .mud-dialog-title {
+        display: none; /* Hide default title bar, we use custom header */
+    }
+</style>

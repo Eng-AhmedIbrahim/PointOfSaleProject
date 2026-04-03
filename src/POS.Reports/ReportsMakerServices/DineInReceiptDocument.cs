@@ -93,6 +93,63 @@ public class DineInReceiptDocument : IDocument
                 text.AlignCenter();
             });
 
+        if (receipt.IsHospitality)
+        {
+            column.Item().PaddingTop(2).Text(text => {
+                text.Span("ضـيـافـة")
+                    .Bold()
+                    .FontSize(22)
+                    .FontColor(Colors.Red.Medium);
+                text.AlignCenter();
+            });
+
+            if (!string.IsNullOrEmpty(receipt.HospitalityResponsibleName))
+            {
+                column.Item().PaddingRight(5).Text(text => {
+                    text.Span(receipt.HospitalityResponsibleName)
+                        .FontSize(14);
+                    text.Span(" :المسؤول")
+                        .Bold()
+                        .FontSize(14);
+                    text.AlignRight();
+                });
+            }
+
+            if (!string.IsNullOrEmpty(receipt.HospitalityReason))
+            {
+                column.Item().PaddingRight(5).Text(text => {
+                    text.Span(receipt.HospitalityReason)
+                        .FontSize(12);
+                    text.Span(" :السبب")
+                        .Bold()
+                        .FontSize(12);
+                    text.AlignRight();
+                });
+            }
+        }
+
+        if (receipt.IsStaffMeal)
+        {
+            column.Item().PaddingTop(2).Text(text => {
+                text.Span("وجبة موظف")
+                    .Bold()
+                    .FontSize(20);
+                text.AlignCenter();
+            });
+
+            if (!string.IsNullOrEmpty(receipt.StaffMealEmployeeName))
+            {
+                column.Item().Text(text => {
+                    text.Span("الموظف: ")
+                        .Bold()
+                        .FontSize(14);
+                    text.Span(receipt.StaffMealEmployeeName)
+                        .FontSize(14);
+                    text.AlignCenter();
+                });
+            }
+        }
+
         /*Header * Type */
         column.Item()
             .PaddingTop(1)
@@ -107,9 +164,12 @@ public class DineInReceiptDocument : IDocument
                     text.EmptyLine();
                 }
 
-                text.Span(receipt.ReceiptType)
-                    .Bold()
-                    .FontSize(18);
+                if (!receipt.IsHospitality && !receipt.IsStaffMeal)
+                {
+                    text.Span(receipt.ReceiptType)
+                        .Bold()
+                        .FontSize(18);
+                }
 
                 if (receipt.IsCopy)
                 {

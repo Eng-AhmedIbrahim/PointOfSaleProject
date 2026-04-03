@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Models;
+namespace POS.Contract.Models;
 
 public class TableItem
 {
@@ -8,6 +8,7 @@ public class TableItem
     public string? Name { get; set; }
     public decimal? Price { get; set; }
     public decimal? Total { get; set; }
+    public decimal? OriginalPrice { get; set; }
     public decimal? ExtraPrice { get; set; }
     public string? LineComment { get; set; }
     public string? NameAr { get; set; }
@@ -46,6 +47,11 @@ public class TableItem
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
 
+    public bool IsStaffMeal { get; set; }
+    public string? StaffName { get; set; }
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+
     public TableItem Clone()
     {
         return new TableItem
@@ -76,15 +82,20 @@ public class TableItem
             TotalAfterDiscount = this.TotalAfterDiscount,
             IsVoided = this.IsVoided,
             TotalVoidAmount = this.TotalVoidAmount,
+            IsStaffMeal = this.IsStaffMeal,
+            StaffName = this.StaffName,
             VoidBy = this.VoidBy,
             VoidByName = this.VoidByName,
             VoidTime = this.VoidTime,
             VoidReason = this.VoidReason,
+            OriginalPrice = this.OriginalPrice,
             ExtraPrice = this.ExtraPrice,
             ByWeight = this.ByWeight,
             WeightQty = this.WeightQty,
             ItemTax = this.ItemTax,
-            ItemTaxAmount = this.ItemTaxAmount
+            ItemTaxAmount = this.ItemTaxAmount,
+            IsHospitality = this.IsHospitality,
+            HospitalityResponsibleName = this.HospitalityResponsibleName
         };
     }
 }

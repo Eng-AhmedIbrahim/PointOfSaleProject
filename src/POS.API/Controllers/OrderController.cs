@@ -55,7 +55,7 @@ public class OrderController : BaseApiController
             var orderSettings = orderDto.OrderSettings!.FirstOrDefault(o => o.OrderType == orderType.ToString());
             order.OrderType = orderType;
 
-            if (orderType == OrderTypes.TakeAway)
+            if (orderType == OrderTypes.TakeAway || orderType == OrderTypes.Staff || orderType == OrderTypes.Hospitality)
             {
                 BackupTakeawayOrder(orderDto, order);
                 var createdOrder = await _orderService.CreateOrderAsync(order);
@@ -67,15 +67,18 @@ public class OrderController : BaseApiController
                 {
                     if (orderDto.SkipPrintingOnServer != true)
                     {
-                        List<string> branchDetails = await GetBranchDetails(orderDto);
-                        await printTakeAwayReceipts(orderDto, createdOrder, branchDetails);
+                        if (orderType == OrderTypes.TakeAway || orderType == OrderTypes.Hospitality)
+                        {
+                            List<string> branchDetails = await GetBranchDetails(orderDto);
+                            await printTakeAwayReceipts(orderDto, createdOrder, branchDetails);
+                        }
 
-                        if (orderSettings!.FullKitchenReceiptCount > 0)
+                        if (orderSettings?.FullKitchenReceiptCount > 0)
                         {
                             await PrintBackupReceipts(orderDto, createdOrder);
                         }
 
-                        if (orderSettings.SeparateReceiptCount > 0)
+                        if (orderSettings?.SeparateReceiptCount > 0)
                         {
                             await PrintKitchenReceipts(orderDto, createdOrder);
                         }
@@ -283,7 +286,7 @@ public class OrderController : BaseApiController
                 List<string> branchDetails = await GetBranchDetails(orderDto);
                 if (string.Equals(orderDto.OrderType, OrderTypes.Delivery.ToString(), StringComparison.OrdinalIgnoreCase))
                     await printDeliveryReceipts(orderDto, updatedOrder, branchDetails, isFollowUp: true);
-                else
+                else if (string.Equals(orderDto.OrderType, OrderTypes.TakeAway.ToString(), StringComparison.OrdinalIgnoreCase))
                     await printTakeAwayReceipts(orderDto, updatedOrder, branchDetails, isFollowUp: true);
 
                 if (orderSettings.FullKitchenReceiptCount > 0)
@@ -645,6 +648,13 @@ public class OrderController : BaseApiController
             TableName = OrderDto.TableName,
             OrderType = orderType,
             CallCenterOrderId = OrderDto.CallCenterOrderId,
+            IsHospitality = OrderDto.IsHospitality,
+            HospitalityResponsibleId = OrderDto.HospitalityResponsibleId,
+            HospitalityResponsibleName = OrderDto.HospitalityResponsibleName,
+            HospitalityReason = OrderDto.HospitalityReason,
+            IsStaffMeal = OrderDto.IsStaffMeal,
+            StaffMealEmployeeId = OrderDto.StaffMealEmployeeId,
+            StaffMealEmployeeName = OrderDto.StaffMealEmployeeName,
             OrderDetails = OrderDto.OrderDetails?.Select(detail => new OrderItemsDetails
             {
                 MenuSalesItemId = detail.Id,
@@ -673,6 +683,10 @@ public class OrderController : BaseApiController
                 UnitPrice = detail.Price,  // ✅ إضافة حفظ سعر الوحدة
                 CategoryId = detail.CategoryId,  // ✅ إضافة حفظ معرف الفئة
                 CategoryName = detail.CategoryName,  // ✅ إضافة حفظ اسم الفئة
+                IsHospitality = detail.IsHospitality,
+                HospitalityResponsibleName = detail.HospitalityResponsibleName,
+                IsStaffMeal = detail.IsStaffMeal,
+                StaffMealEmployeeName = detail.StaffName,
                 OrderItemAttributes = detail.Attributes?
                 .Where(a => a.Id < 5000)
                 .Select(a => new OrderItemAttributes
@@ -841,7 +855,7 @@ public class OrderController : BaseApiController
 
         return outputPath;
     }
-    private async Task PrintBackupReceipts( OrderDto Order, Orders createdOrder, bool isFollowUp = false, string KitchenType = "Backup")
+    private async Task PrintBackupReceipts( OrderDto Order, Orders createdOrder, bool isFollowUp = false, string KitchenType = "Packup")
     {
 
         var filteredItems = Order.OrderDetails!

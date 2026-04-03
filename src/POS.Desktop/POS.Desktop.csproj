@@ -41,6 +41,7 @@
     <ProjectReference Include="..\POS.Authorization\POS.Authorization.csproj" />
     <ProjectReference Include="..\POS.Core\POS.Core.csproj" />
     <ProjectReference Include="..\POS.Reports\POS.Reports.csproj" />
+    <ProjectReference Include="..\POS.Services\POS.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

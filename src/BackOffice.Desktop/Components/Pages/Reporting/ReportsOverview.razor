@@ -135,10 +135,43 @@
                     },
                     new ReportInfo {
                         Id = "StaffSales",
-                        Name = IsArabic ? "مبيعات الموظفين" : "Staff Sales",
-                        Description = IsArabic ? "مبيعات الكاشير والويتر والدليفري" : "Sales by Cashier, Waiter, and Driver",
+                        Name = IsArabic ? "مبيعات العاملين" : "Workers Sales",
+                        Description = IsArabic ? "أداء الكاشير والويتر والدليفري" : "Performance for Cashier, Waiter, and Driver",
                         Icon = Icons.Material.Rounded.People
+                    },
+                    new ReportInfo {
+                        Id = "StaffMeals",
+                        Name = IsArabic ? "وجبات العاملين" : "Workers Meals",
+                        Description = IsArabic ? "تقرير الوجبات المستهلكة للعاملين" : "Report of consumed workers meals",
+                        Icon = Icons.Material.Rounded.Fastfood
+                    },
+                    new ReportInfo {
+                        Id = "HospitalityReport",
+                        Name = IsArabic ? "تقرير الضيافة" : "Hospitality Report",
+                        Description = IsArabic ? "سجل جميع طلبات الضيافة والمسئولين" : "Log of all hospitality orders and reasons",
+                        Icon = Icons.Material.Rounded.WineBar
+                    },
+                    new ReportInfo {
+                        Id = "PnLReport",
+                        Name = IsArabic ? "الأرباح والخسائر (P&L)" : "Profit & Loss",
+                        Description = IsArabic ? "ملخص الإيرادات والمصروفات وصافي الربح" : "Summary of revenues, expenses, and net profit",
+                        Icon = Icons.Material.Rounded.Analytics
                     }
+                }
+            },
+            new ReportCategory
+            {
+                Title = IsArabic ? "خدمة العملاء والتوصيل" : "Call Center & Delivery",
+                Icon = Icons.Material.Rounded.SupportAgent,
+                Color = Color.Warning,
+                ColorHex = "#f59e0b",
+                Reports = new List<ReportInfo>
+                {
+                    new ReportInfo { Id = "CustomerDirectory", Name = IsArabic ? "دليل العملاء" : "Customer Directory", Description = IsArabic ? "سجل كافة العملاء وبياناتهم" : "Log of all customers and their info", Icon = Icons.Material.Rounded.ContactPhone },
+                    new ReportInfo { Id = "DeliveryOrders", Name = IsArabic ? "طلبات التوصيل" : "Delivery Orders", Description = IsArabic ? "سجل طلبات الدليفري وتفاصيلها" : "Log of delivery orders and details", Icon = Icons.Material.Rounded.DeliveryDining },
+                    new ReportInfo { Id = "DeliveryAreas", Name = IsArabic ? "مناطق التوصيل (المناطق الأكثر طلباً)" : "Delivery Areas", Description = IsArabic ? "تحليل مبيعات وطلبات كل منطقة" : "Analysis of sales and orders by zone", Icon = Icons.Material.Rounded.Map },
+                    new ReportInfo { Id = "VipCustomers", Name = IsArabic ? "العملاء الأكثر طلباً (VIP)" : "VIP Customers", Description = IsArabic ? "ترتيب العملاء حسب عدد الطلبات" : "Customers ranked by order count", Icon = Icons.Material.Rounded.WorkspacePremium },
+                    new ReportInfo { Id = "DormantCustomers", Name = IsArabic ? "العملاء المنقطعين" : "Dormant Customers", Description = IsArabic ? "العملاء الذين لم يطلبوا منذ فترة" : "Customers inactive for a specified period", Icon = Icons.Material.Rounded.Snooze }
                 }
             },
             new ReportCategory
@@ -222,6 +255,15 @@
             additionalFilters = result.Data as Dictionary<string, string>;
             // Staff report uses SalesDetailed template with filters
             report = new ReportInfo { Id = "SalesDetailed", Name = report.Name };
+        }
+        else if (report.Id == "DormantCustomers")
+        {
+            var options = new MudBlazor.DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+            var dialog = await DialogService.ShowAsync<DormantCustomerDaysDialog>("", options);
+            var result = await dialog.Result;
+            if (result == null || result.Canceled) return;
+
+            additionalFilters = result.Data as Dictionary<string, string>;
         }
 
         var dialogParams = new DialogParameters<ReportViewerDialog>

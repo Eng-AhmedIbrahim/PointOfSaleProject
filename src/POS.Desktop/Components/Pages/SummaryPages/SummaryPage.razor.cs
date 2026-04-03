@@ -1,4 +1,3 @@
-using global::POS.Contract.Dtos.ReportingDtos;
 namespace POS.Desktop.Components.Pages.SummaryPages;
 
 public partial class SummaryPage
@@ -7,8 +6,10 @@ public partial class SummaryPage
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
     [Inject] private IDialogService DialogService { get; set; } = default!;
     [Inject] private IPrintOrderService PrintOrderService { get; set; } = default!;
+    [Inject] private IBranchService BranchService { get; set; } = default!;
 
-    private bool _canViewDetails;
+    private bool _canViewDetailedSales;
+    private bool _canViewSalesItems;
     private bool _canPrint;
     private bool _canPosSettingsFeature;
     private SalesSummaryDto _summaryData = new();
@@ -23,7 +24,8 @@ public partial class SummaryPage
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canViewDetails = (await AuthorizationService.AuthorizeAsync(user, "CanViewSummaryDetails")).Succeeded;
+            _canViewDetailedSales = (await AuthorizationService.AuthorizeAsync(user, "CanViewDetailedSales")).Succeeded;
+            _canViewSalesItems = (await AuthorizationService.AuthorizeAsync(user, "CanViewSalesItems")).Succeeded;
             _canPrint = (await AuthorizationService.AuthorizeAsync(user, "CanPrintSummaryReport")).Succeeded;
         }
 
@@ -56,7 +58,7 @@ public partial class SummaryPage
         try
         {
             var items = await ReportingService.GetSalesItemsSummary(SelectedDate);
-            var parameters = new DialogParameters { ["Items"] = items };
+            var parameters = new DialogParameters { ["Items"] = items, ["SelectedDate"] = SelectedDate };
             var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false, NoHeader = true };
             await DialogService.ShowAsync<SalesItemsDialog>("", parameters, options);
         }
@@ -71,11 +73,17 @@ public partial class SummaryPage
         try
         {
             var items = await ReportingService.GetSalesItemsSummary(SelectedDate);
-            
+            var branches = await BranchService.GetBranches();
+            var branchName = _commonProperties.StoreName;
+            if (branches != null && branches.Any())
+            {
+                branchName = branches.First().Name;
+            }
+
             var parameters = new DialogParameters
             {
-                ["ReportTitle"] = Localizer["SalesItemsSummary"],
-                ["BranchName"] = _commonProperties.StoreName,
+                ["ReportTitle"] = Localizer["SalesSummary"],
+                ["BranchName"] = branchName,
                 ["ReportDate"] = SelectedDate,
                 ["Items"] = items,
                 ["SummaryData"] = _summaryData
@@ -87,6 +95,20 @@ public partial class SummaryPage
         catch (Exception ex)
         {
             Snackbar.Add("Error preparing preview: " + ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task PrintEndDayReport()
+    {
+        try
+        {
+            var items = await ReportingService.GetSalesItemsSummary(SelectedDate);
+            await PrintOrderService.PrintEndDayReportAsync(_summaryData, items, null, false, true);
+            Snackbar.Add("End of day report sent to printer", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error: " + ex.Message, Severity.Error);
         }
     }
 

@@ -102,4 +102,15 @@ public class Orders : BaseEntity
     
     public string? DeliveryBranchUrl { get; set; }
     public string? CallCenterApiUrl { get; set; }
+
+    // Hospitality
+    public bool? IsHospitality { get; set; }
+    public string? HospitalityResponsibleId { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+
+    // Staff Meals
+    public bool? IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeId { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
 }

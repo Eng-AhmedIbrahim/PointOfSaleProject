@@ -1,4 +1,4 @@
-﻿namespace POS.Authorization.Models;
+namespace POS.Authorization.Models;
 
 public static class Permissions
 {
@@ -33,6 +33,7 @@ public static class Permissions
         { "CanAccessFooterPaymentMethodBtn", "CanAccessFooterPaymentMethodBtn" },
         { "CanAccessFooterQuickPaymentBtn",  "CanAccessFooterQuickPaymentBtn" },
         { "CanAccessFooterMealsBtn",         "CanAccessFooterMealsBtn" },
+        { "CanAccessFooterHospitalityBtn",   "CanAccessFooterHospitalityBtn" },
         { "CanAccessFooterWaitingBtn",       "CanAccessFooterWaitingBtn" },
         { "CanAccessFooterSettingsBtn",      "CanAccessFooterSettingsBtn" },
 
@@ -79,6 +80,9 @@ public static class Permissions
 
         // ── Summary Actions ───────────────────────────────────────────────────
         { "CanViewSummaryDetails", "CanViewSummaryDetails" },
+        { "CanViewSalesItems", "CanViewSalesItems" },
+        { "CanPrintSalesItems", "CanPrintSalesItems" },
+        { "CanViewDetailedSales", "CanViewDetailedSales" },
         { "CanPrintSummaryReport", "CanPrintSummaryReport" },
 
         // ── Accounts Actions ──────────────────────────────────────────────────
@@ -128,5 +132,16 @@ public static class Permissions
         { "CanPrintStaffAccountsAtBackOffice", "CanPrintStaffAccountsAtBackOffice" },
         { "CanViewSummaryDetailsAtBackOffice", "CanViewSummaryDetailsAtBackOffice" },
         { "CanPrintSummaryReportAtBackOffice", "CanPrintSummaryReportAtBackOffice" },
+        { "CanViewSalesItemsAtBackOffice", "CanViewSalesItemsAtBackOffice" },
+        { "CanPrintSalesItemsAtBackOffice", "CanPrintSalesItemsAtBackOffice" },
+        { "CanViewStaffMealsReportAtBackOffice", "CanViewStaffMealsReportAtBackOffice" },
+        { "CanManageStaffMealConfigsAtBackOffice", "CanManageStaffMealConfigsAtBackOffice" },
+        { "CanViewHospitalityReportAtBackOffice", "CanViewHospitalityReportAtBackOffice" },
+
+        // ── Branch Delivery Orders Page ───────────────────────────────────────
+        { "CanViewBranchDeliveryOrderDetails", "CanViewBranchDeliveryOrderDetails" },
+        { "CanPrintBranchCustomerReceipt",     "CanPrintBranchCustomerReceipt" },
+        { "CanPrintBranchDeliveryReceipt",     "CanPrintBranchDeliveryReceipt" },
+        { "CanVoidBranchDeliveryOrder",        "CanVoidBranchDeliveryOrder" },
     };
 }

@@ -1,4 +1,4 @@
-﻿using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.ReportingDtos;
 using Serilog;
 
@@ -16,7 +16,13 @@ public class PrintOrderService : IPrintOrderService
         _orderSettingsService = orderSettingsService;
     }
 
-    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId, bool printCustomer = true, bool printKitchen = true, bool isClosing = false, bool isUpdate = false)
+    public async Task PrintInitialDineInOrder(DineInOrderDetails orderId, 
+        bool printCustomer = true, 
+        bool printKitchen = true, 
+        bool isClosing = false, 
+        bool isUpdate = false,
+        bool isPrePrint = false,
+        string? printerName = null)
     {
         BackupMainOrderDtoDetails(null!, null!, null!);
         BackupDineInDate(orderId);
@@ -151,7 +157,7 @@ public class PrintOrderService : IPrintOrderService
         return null;
     }
 
-    public async Task<bool> ReprintOrderAsync(int orderId, bool isCopy = false, bool printCustomer = true, bool printKitchen = true)
+    public async Task<bool> ReprintOrderAsync(int orderId, bool isCopy = false, bool printCustomer = true, bool printKitchen = true, string? printerName = null)
     {
         // Currently just returning true to satisfy interface.
         // Logic can be expanded if needed for non-desktop scenarios.
@@ -215,9 +221,53 @@ public class PrintOrderService : IPrintOrderService
         return Task.CompletedTask;
     }
 
+    public Task PrintEndDayReportAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null)
     {
         // Default no-op implementation for non-desktop scenarios
         return Task.CompletedTask;
+    }
+
+    public Task PrintStaffPerformanceAsync(SalesSummaryDto summary, string? printerName = null, bool useA4 = false, bool isArabic = true, bool showOrders = false, string? specificStaffId = null)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<bool> PrintStaffMealOrder(string employeeName, List<TableItem> items)
+    {
+        _commonProperties.OrderDto!.OrderId = _commonProperties.CurrentOrderId;
+        _commonProperties.OrderDto.OrderType = "Staff";
+        _commonProperties.OrderDto.OrderDetails = items;
+        _commonProperties.OrderDto.CashierId = _commonProperties.CurrentUserId;
+        _commonProperties.OrderDto.CashierName = _commonProperties.CurrentUser;
+        _commonProperties.OrderDto.CustomerName = employeeName;
+        _commonProperties.OrderDto.GrandTotal = 0;
+        _commonProperties.OrderDto.SubTotal = 0;
+        _commonProperties.OrderDto.OrderDate = _commonProperties.PosDate?.ToDateTime(TimeOnly.FromDateTime(DateTime.Now));
+        _commonProperties.OrderDto.OrderState = "Completed";
+
+        var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
+        return result is not null;
+    }
+
+    public async Task<bool> PrintHospitalityOrder(string hospitalityTitle, List<TableItem> items)
+    {
+        _commonProperties.OrderDto!.OrderId = _commonProperties.CurrentOrderId;
+        _commonProperties.OrderDto.OrderType = "Hospitality";
+        _commonProperties.OrderDto.OrderDetails = items;
+        _commonProperties.OrderDto.CashierId = _commonProperties.CurrentUserId;
+        _commonProperties.OrderDto.CashierName = _commonProperties.CurrentUser;
+        _commonProperties.OrderDto.CustomerName = hospitalityTitle;
+        _commonProperties.OrderDto.GrandTotal = 0;
+        _commonProperties.OrderDto.SubTotal = 0;
+        _commonProperties.OrderDto.OrderDate = _commonProperties.PosDate?.ToDateTime(TimeOnly.FromDateTime(DateTime.Now));
+        _commonProperties.OrderDto.OrderState = "Completed";
+
+        var result = await _orderSettingsService.CreateOrderAsync(_commonProperties.OrderDto!);
+        return result is not null;
     }
 }

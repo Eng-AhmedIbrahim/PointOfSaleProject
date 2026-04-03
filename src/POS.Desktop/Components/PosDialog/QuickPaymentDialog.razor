@@ -196,16 +196,26 @@
 
     private void Cancel() => _commonProperties.QuickPaymentDialogReference?.Close();
 
+    private bool _isProcessing = false;
     private void Submit()
     {
-        _commonProperties.OrderDto!.Paid = PaidAmount;
-        _commonProperties.OrderDto.Remaining = RemainingChange;
-        _commonProperties.QuickPaymentDialogReference?.Close(DialogResult.Ok(true));
+        if (_isProcessing) return;
+        _isProcessing = true;
+        try
+        {
+            _commonProperties.OrderDto!.Paid = PaidAmount;
+            _commonProperties.OrderDto.Remaining = RemainingChange;
+            _commonProperties.QuickPaymentDialogReference?.Close(DialogResult.Ok(true));
+        }
+        finally { _isProcessing = false; }
     }
 
     private async Task PrintOrder()
     {
-        if (_commonProperties!.TableItems!.Any())
+        if (_isProcessing || !_commonProperties!.TableItems!.Any()) return;
+        
+        _isProcessing = true;
+        try
         {
             _commonProperties.OrderDto!.Paid = PaidAmount;
             _commonProperties.OrderDto.Remaining = RemainingChange;
@@ -236,6 +246,10 @@
             _services.NotifyStateChanged();
 
             _commonProperties.QuickPaymentDialogReference?.Close(DialogResult.Ok(true));
+        }
+        finally
+        {
+            _isProcessing = false;
         }
     }
 

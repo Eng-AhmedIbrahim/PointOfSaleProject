@@ -82,15 +82,24 @@ public partial class AccountsPage
         {
             var parameters = new DialogParameters
             {
-                ["ReportTitle"] = Localizer.GetCurrentLanguage() == "ar" ? "تقرير حسابات الموظفين" : "Staff Accounts Report",
+                ["ReportTitle"] = _localizer.GetCurrentLanguage() == "ar" ? "تقرير حسابات الموظفين" : "Staff Accounts Report",
                 ["BranchName"] = _commonProperties.StoreName,
                 ["ReportDate"] = _selectedDate ?? DateTime.Today,
-                ["Items"] = _summaries.Select(s => new SalesItemSummaryDto 
-                { 
-                    ItemName = s.Name, 
-                    Quantity = s.OrderCount, 
-                    TotalAmount = s.TotalAmount 
-                }).ToList()
+                ["InitialShowOrderDetails"] = false,
+                ["IsStaffReport"] = true,
+                ["SummaryData"] = new SalesSummaryDto
+                {
+                    PosDate = _selectedDate ?? DateTime.Today,
+                    CashierSummaries = _summaries,
+                    Overall = new OverallSummaryDto
+                    {
+                        TotalSales = _summaries.Sum(s => s.TotalAmount),
+                        CashAmount = _summaries.Sum(s => s.CashAmount),
+                        CreditAmount = _summaries.Sum(s => s.CreditAmount),
+                        VoidAmount = _summaries.Sum(s => s.VoidAmount),
+                        TotalDiscount = _summaries.Sum(s => s.DiscountAmount)
+                    }
+                }
             };
             
             var options = new DialogOptions { FullScreen = true, CloseButton = false, NoHeader = true };
@@ -100,6 +109,47 @@ public partial class AccountsPage
         {
             _snackbar.Add("Error preparing preview: " + ex.Message, Severity.Error);
         }
+    }
+
+    private async Task PrintDetailedAccountsReport()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            // Fetch ALL orders for the day to enable per-staff breakdown
+            var allOrders = await _reportingService.GetTodayOrders(_selectedDate ?? DateTime.Today);
+            
+            var parameters = new DialogParameters
+            {
+                ["ReportTitle"] = _localizer.GetCurrentLanguage() == "ar" ? "تقرير حسابات مفصل" : "Detailed Staff Report",
+                ["BranchName"] = _commonProperties.StoreName,
+                ["ReportDate"] = _selectedDate ?? DateTime.Today,
+                ["InitialShowOrderDetails"] = true,
+                ["InitialShowStaffDetails"] = true,
+                ["IsStaffReport"] = true,
+                ["SummaryData"] = new SalesSummaryDto
+                {
+                    PosDate = _selectedDate ?? DateTime.Today,
+                    CashierSummaries = _summaries,
+                    DetailedOrders = allOrders,
+                    Overall = new OverallSummaryDto
+                    {
+                        TotalSales = _summaries.Sum(s => s.TotalAmount),
+                        CashAmount = _summaries.Sum(s => s.CashAmount),
+                        CreditAmount = _summaries.Sum(s => s.CreditAmount),
+                        VoidAmount = _summaries.Sum(s => s.VoidAmount),
+                        TotalDiscount = _summaries.Sum(s => s.DiscountAmount)
+                    }
+                }
+            };
+            
+            var options = new DialogOptions { FullScreen = true, CloseButton = false, NoHeader = true };
+            await _dialogService.ShowAsync<ReportPreviewDialog>("", parameters, options);
+        }
+        catch (Exception ex) { _snackbar.Add(ex.Message, Severity.Error); }
+        finally { _isLoading = false; StateHasChanged(); }
     }
 
     private void GoBack()

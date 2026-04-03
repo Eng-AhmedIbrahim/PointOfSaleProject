@@ -1,4 +1,4 @@
-﻿namespace POS.Core.Entities.Company;
+namespace POS.Core.Entities.Company;
 
 public class Branch : BaseEntity
 {
@@ -15,6 +15,7 @@ public class Branch : BaseEntity
     public bool Suspend { get; set; } = false;
     public DateTime CreationDate { get; set; }
     public DateTime? UpdateDate { get; set; }
+    public string? Currency { get; set; } = "EGP";
 
     public string? ApiUrl { get; set; }
     public int? CompanyId { get; set; }

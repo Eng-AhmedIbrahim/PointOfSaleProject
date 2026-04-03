@@ -216,7 +216,14 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)) // هنعمل مابنج تاني للجوه
             .ForMember(dest => dest.MachineName, opt => opt.MapFrom(src => src.MachineName))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
-            .ForMember(dest => dest.CallCenterOrderId, opt => opt.MapFrom(src => src.CallCenterOrderId));
+            .ForMember(dest => dest.CallCenterOrderId, opt => opt.MapFrom(src => src.CallCenterOrderId))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleId, opt => opt.MapFrom(src => src.HospitalityResponsibleId))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.HospitalityReason, opt => opt.MapFrom(src => src.HospitalityReason))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeId, opt => opt.MapFrom(src => src.StaffMealEmployeeId))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName));
 
         CreateMap<OrderItemsDetails, TableItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.MenuSalesItemId))
@@ -232,6 +239,10 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromItem))
             .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory))
             .ForMember(dest => dest.ByWeight, opt => opt.MapFrom(src => src.ByWeight ?? false))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.OrderItemAttributes != null 
                 ? src.OrderItemAttributes.Select(a => new POS.Contract.Models.AttributeDto { Id = a.AttributeItemId, Name = a.AttributeName, ExtraPrice = a.ExtraPrice }).ToList() 
                 : new List<POS.Contract.Models.AttributeDto>()));
@@ -249,6 +260,10 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))
             .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromItem))
             .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
             .ReverseMap()
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments))
@@ -256,7 +271,11 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))
             .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromItem))
-            .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory));
+            .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName));
 
         CreateMap<OrderItemComment, OrderItemCommentDto>().ReverseMap();
         CreateMap<OrderItemAttributes, OrderItemAttributesDto>().ReverseMap();
@@ -289,6 +308,13 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.ScheduleDateTime, opt => opt.MapFrom(src => src.ScheduleDateTime))
             .ForMember(dest => dest.MaleCount, opt => opt.MapFrom(src => src.MaleCount))
             .ForMember(dest => dest.FemaleCount, opt => opt.MapFrom(src => src.FemaleCount))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleId, opt => opt.MapFrom(src => src.HospitalityResponsibleId))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.HospitalityReason, opt => opt.MapFrom(src => src.HospitalityReason))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeId, opt => opt.MapFrom(src => src.StaffMealEmployeeId))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
             .ReverseMap()
             .ForMember(dest => dest.OrderID, opt => opt.MapFrom(src => src.OrderId))
             .ForMember(dest => dest.BranchID, opt => opt.MapFrom(src => src.BranchId))
@@ -308,6 +334,13 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.ScheduleDateTime, opt => opt.MapFrom(src => src.ScheduleDateTime))
             .ForMember(dest => dest.MaleCount, opt => opt.MapFrom(src => src.MaleCount))
             .ForMember(dest => dest.FemaleCount, opt => opt.MapFrom(src => src.FemaleCount))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleId, opt => opt.MapFrom(src => src.HospitalityResponsibleId))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.HospitalityReason, opt => opt.MapFrom(src => src.HospitalityReason))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeId, opt => opt.MapFrom(src => src.StaffMealEmployeeId))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
             .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState == "Open" ? OrderStates.Pending : 
                                                                   src.OrderState == "Reserved" ? OrderStates.Reserved : OrderStates.Completed));
 

@@ -50,6 +50,7 @@ public partial class Section4Buttons
         else
             _cartService.ClearTakeAwayOrderAttributes();
 
+        _commonProperties.ClearStaffMeal();
         _cartService.CalculateSection4Table();
         _services.NotifyStateChanged();
     }

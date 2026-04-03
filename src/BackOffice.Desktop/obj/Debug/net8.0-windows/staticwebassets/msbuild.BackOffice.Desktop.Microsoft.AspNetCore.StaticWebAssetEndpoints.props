@@ -24,17 +24,17 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"ya20zhu6bv"},{"Name":"integrity","Value":"sha256-Vq2JISPSWni7LEwYNwUjDGEN3TNN8/z4nK4nB5LbFAs="},{"Name":"label","Value":"app.css"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2663"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022Vq2JISPSWni7LEwYNwUjDGEN3TNN8/z4nK4nB5LbFAs=\u0022"},{"Name":"Last-Modified","Value":"Sat, 07 Mar 2026 02:51:34 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="BackOffice.Desktop.2pa7l27sib.styles.css">
+    <StaticWebAssetEndpoint Include="BackOffice.Desktop.qvtmwm564f.styles.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"2pa7l27sib"},{"Name":"integrity","Value":"sha256-GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA="},{"Name":"label","Value":"BackOffice.Desktop.styles.css"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"58886"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Mar 2026 15:53:20 GMT"},{"Name":"Link","Value":"\u003C_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css\u003E; rel=\u0022preload\u0022; as=\u0022style\u0022"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"qvtmwm564f"},{"Name":"integrity","Value":"sha256-xkifTJPpExA/iEhtbY8jQk7zAMtV\u002BxtRdaCk\u002Ba\u002BEJBk="},{"Name":"label","Value":"BackOffice.Desktop.styles.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"58797"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022xkifTJPpExA/iEhtbY8jQk7zAMtV\u002BxtRdaCk\u002Ba\u002BEJBk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 03 Apr 2026 00:57:18 GMT"},{"Name":"Link","Value":"\u003C_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css\u003E; rel=\u0022preload\u0022; as=\u0022style\u0022"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="BackOffice.Desktop.styles.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"58886"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022GuFkQRQtr7zuilhccoDwdJ4W6UPkDA2Cv1zLglsz9qA=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Mar 2026 15:53:20 GMT"},{"Name":"Link","Value":"\u003C_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css\u003E; rel=\u0022preload\u0022; as=\u0022style\u0022"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-xkifTJPpExA/iEhtbY8jQk7zAMtV\u002BxtRdaCk\u002Ba\u002BEJBk="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"58797"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022xkifTJPpExA/iEhtbY8jQk7zAMtV\u002BxtRdaCk\u002Ba\u002BEJBk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 03 Apr 2026 00:57:18 GMT"},{"Name":"Link","Value":"\u003C_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css\u003E; rel=\u0022preload\u0022; as=\u0022style\u0022"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="basicdata/categorymanagement.5frq5xcfue.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))</AssetFile>

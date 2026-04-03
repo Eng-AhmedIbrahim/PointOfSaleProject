@@ -1,4 +1,4 @@
-﻿using BlazorBase.Components.Shared;
+using BlazorBase.Components.Shared;
 
 namespace POS.Desktop.Components.Pages.AllOrdersPages;
 
@@ -114,8 +114,9 @@ public partial class AllOrdersPage
     {
         try
         {
-            await PrintOrderService.ReprintOrderAsync(order.Id, true, printCustomer: true, printKitchen: false);
-            Snackbar.Add(Localizer["OrderPrintedLocally"], Severity.Success);
+            var parameters = new DialogParameters { ["Order"] = order, ["PreviewMode"] = "Customer" };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<global::POS.Desktop.Components.Pages.SummaryPages.OrderReceiptPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {
@@ -127,8 +128,9 @@ public partial class AllOrdersPage
     {
         try
         {
-            await PrintOrderService.ReprintOrderAsync(order.Id, isCopy: true, printCustomer: false, printKitchen: true);
-            Snackbar.Add(Localizer["OrderPrintedLocally"], Severity.Success);
+            var parameters = new DialogParameters { ["Order"] = order, ["PreviewMode"] = "Kitchen" };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<global::POS.Desktop.Components.Pages.SummaryPages.OrderReceiptPreviewDialog>("", parameters, options);
         }
         catch (Exception ex)
         {

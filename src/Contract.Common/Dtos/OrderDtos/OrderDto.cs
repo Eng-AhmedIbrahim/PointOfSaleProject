@@ -1,4 +1,4 @@
-﻿using POS.Contract.Dtos.OrderDto;
+using POS.Contract.Dtos.OrderDto;
 
 namespace POS.Contract.Dtos.OrderDtos;
 
@@ -13,6 +13,8 @@ public class OrderDto
     public int BranchId { get; set; }
     public string? BranchName { get; set; }
     public string? CashierId { get; set; }
+    public string? StaffName => CashierName; // Default to CashierName for generic reports
+    public string? StaffId => CashierId;     // Default to CashierId for generic reports
     public string? FooterMessage { get; set; }
     public string? CustomerPhone { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
@@ -111,4 +113,15 @@ public class OrderDto
     public int? CallCenterOrderId { get; set; }
     public string? CallCenterApiUrl { get; set; }
     public int? ParentOrderId { get; set; }
+
+    // Hospitality
+    public bool? IsHospitality { get; set; }
+    public string? HospitalityResponsibleId { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+
+    // Staff Meals
+    public bool? IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeId { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
 }

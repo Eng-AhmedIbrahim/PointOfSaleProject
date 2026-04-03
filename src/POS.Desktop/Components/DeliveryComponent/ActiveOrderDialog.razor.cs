@@ -8,8 +8,8 @@ public partial class ActiveOrderDialog
 {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public OrderDto ActiveOrder { get; set; } = new();
+    [Parameter] public List<OrderDto> ActiveOrders { get; set; } = new();
 
     void CreateNew() => MudDialog.Close(DialogResult.Ok(false));
-    void EditExisting() => MudDialog.Close(DialogResult.Ok(true));
+    void EditExisting(OrderDto order) => MudDialog.Close(DialogResult.Ok(order));
 }

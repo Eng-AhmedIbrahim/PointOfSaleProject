@@ -48,6 +48,15 @@ public class DineInOrderDto
     public string? ReservationCustomerName { get; set; }
     public string? ReservationCustomerPhone { get; set; }
     
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleId { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeId { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
+    
     public List<OrderItemsDetailsDto>? OrderDetails { get; set; } = new();
 }
 
@@ -88,6 +97,12 @@ public class OrderItemsDetailsDto
     public string? VoidByName { get; set; }
     public DateTime? VoidTime { get; set; }
     public string? VoidReason { get; set; }
+
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
 }
 
 public class OrderItemCommentDto

@@ -1,4 +1,4 @@
-﻿@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BlazorBase.Services.LocalizationService LocalizerService
 @inject NavigationManager NavigationManager
 @inject POS.Core.Services.Contract.PosFeatureServices.IPosFeatureSettingsService FeatureSettingsService
@@ -161,6 +161,27 @@
                         </ChildContent>
                     </MudMenu>
 
+                    @if (_canManageUsers) {
+                        <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
+                            <ActivatorContent>
+                                <MudMenuItem Class="px-3" Style="border-radius:12px;">
+                                    <div class="menu-item-content d-flex align-center gap-2">
+                                        <span class="d-flex align-center gap-3">
+                                            <MudIcon Icon="@Icons.Material.Rounded.Fastfood" Size="Size.Small" /> 
+                                            @LocalizerService["WorkersMeals"]
+                                        </span>
+                                        <MudIcon Icon="@(LocalizerService.GetCurrentLanguage() == "ar" ? Icons.Material.Rounded.ChevronLeft : Icons.Material.Rounded.ChevronRight)" Size="Size.Small" Class="text-muted" />
+                                    </div>
+                                </MudMenuItem>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem Href="/settings/workers-meals"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Settings" Size="Size.Small" /> @LocalizerService["WorkersMealsManagement"]</div></MudMenuItem>
+                                <MudMenuItem Href="/basicdata/workers-meals-groups"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Category" Size="Size.Small" /> @LocalizerService["StaffMealGroups"]</div></MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
+                        <MudDivider Class="my-2" />
+                    }
+
                     <MudMenu ActivationEvent="MouseEvent.MouseOver" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopRight" ListClass="pa-2" PopoverClass="settings-menu-popover">
                         <ActivatorContent>
                             <MudMenuItem Class="px-3" Style="border-radius:12px;">
@@ -255,6 +276,7 @@
                 </ActivatorContent>
                 <ChildContent>
                     <MudMenuItem Href="/transactions/accounts"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.AccountBalance" Size="Size.Small" /> @LocalizerService["Accounts"]</div></MudMenuItem>
+                    <MudMenuItem Href="/transactions/expenses"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Payments" Size="Size.Small" /> @(LocalizerService.GetCurrentLanguage() == "ar" ? "المصروفات والمدفوعات" : "Expenses & Payouts")</div></MudMenuItem>
                     <MudMenuItem Href="/transactions/summary"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.BarChart" Size="Size.Small" /> @LocalizerService["Summary"]</div></MudMenuItem>
                     <MudMenuItem Href="/transactions/all-orders"><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.ListAlt" Size="Size.Small" /> @LocalizerService["AllOrders"]</div></MudMenuItem>
                     <MudDivider Class="my-2" />
@@ -263,13 +285,6 @@
             </MudMenu>
         }
 
-        @if (_canViewQueries)
-        {
-            <div class="tab-item">
-                <MudIcon Icon="@Icons.Material.Rounded.Search" Size="Size.Small" Class="tab-icon" />
-                <span class="tab-text">@LocalizerService["Queries"]</span>
-            </div>
-        }
 
         @if (_canViewReports)
         {

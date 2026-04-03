@@ -213,14 +213,50 @@
   <data name="Print" xml:space="preserve">
     <value>طباعة</value>
   </data>
+  <data name="PrintSummary" xml:space="preserve">
+    <value>طباعة الملخص</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>إجراءات سريعة</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>الإجمالي</value>
   </data>
   <data name="Tax" xml:space="preserve">
     <value>الضريبة</value>
   </data>
+  <data name="UniqueItems" xml:space="preserve">
+    <value>صنف فريد</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>الصنف</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>القسم</value>
+  </data>
+  <data name="Qty" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>البحث</value>
+  </data>
+  <data name="SalesItemsSummary" xml:space="preserve">
+    <value>مبيعات الأصناف</value>
+  </data>
   <data name="Service" xml:space="preserve">
     <value>الخدمة</value>
+  </data>
+  <data name="Pickup" xml:space="preserve">
+    <value>بيك اب</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>إجراءات</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>عرض</value>
   </data>
   <data name="Account" xml:space="preserve">
     <value>الحساب</value>
@@ -761,6 +797,33 @@
   </data>
   <data name="ComplaintsManagement" xml:space="preserve">
     <value>إدارة الشكاوى</value>
+  </data>
+  <data name="StaffMeals" xml:space="preserve">
+    <value>وجبات الموظفين</value>
+  </data>
+  <data name="StaffMealAdded" xml:space="preserve">
+    <value>تم إضافة وجبة الموظف للطلب</value>
+  </data>
+  <data name="NoMealPlanAssigned" xml:space="preserve">
+    <value>لا يوجد نظام وجبات مخصص لهذا المستخدم</value>
+  </data>
+  <data name="DailyLimitReached" xml:space="preserve">
+    <value>عفواً، لقد وصلت للحد الأقصى للوجبات اليوم</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>متبقي</value>
+  </data>
+  <data name="ApplyMeal" xml:space="preserve">
+    <value>تنفيذ الوجبة</value>
+  </data>
+  <data name="StaffMealInstruction" xml:space="preserve">
+    <value>سيتم إضافة الوجبة المخصصة لك في الطلب الحالي بسعر 0 ج.م</value>
+  </data>
+  <data name="UserNotAuthenticated" xml:space="preserve">
+    <value>يجب تسجيل الدخول أولاً</value>
+  </data>
+  <data name="TotalComplaints" xml:space="preserve">
+    <value>إجمالي الشكاوى</value>
   </data>
   <data name="ComplaintNumber" xml:space="preserve">
     <value>رقم الشكوى</value>
@@ -1541,5 +1604,131 @@
   </data>
   <data name="EnableInventoryTracking" xml:space="preserve">
     <value>تفعيل نظام المخازن</value>
+  </data>
+  <data name="Hospitality" xml:space="preserve">
+    <value>ضيافة</value>
+  </data>
+  <data name="ConfirmHospitality" xml:space="preserve">
+    <value>هل تريد تأكيد أوردر الضيافة؟</value>
+  </data>
+  <data name="HospitalityOrderConfirmed" xml:space="preserve">
+    <value>تم تنفيذ أوردر الضيافة بنجاح</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>تأكيد</value>
+  </data>
+  <data name="NoItemsToProcess" xml:space="preserve">
+    <value>لا يوجد أصناف في الكارت</value>
+  </data>
+  <data name="PrintingFailed" xml:space="preserve">
+    <value>فشل الطباعة</value>
+  </data>
+  <data name="WorkersMealAdded" xml:space="preserve">
+    <value>تمت إضافة وجبة العاملين بنجاح</value>
+  </data>
+  <data name="WorkersMeals" xml:space="preserve">
+    <value>وجبات العاملين</value>
+  </data>
+  <data name="WorkersMealsManagement" xml:space="preserve">
+    <value>إدارة وجبات العاملين</value>
+  </data>
+  <data name="WorkersMealsManagementDesc" xml:space="preserve">
+    <value>إدارة تخصيص الوجبات اليومية للعاملين وحدود الاستخدام</value>
+  </data>
+  <data name="AddNewConfig" xml:space="preserve">
+    <value>إضافة إعداد جديد</value>
+  </data>
+  <data name="EditConfig" xml:space="preserve">
+    <value>تعديل الإعداد</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>اختر العامل</value>
+  </data>
+  <data name="SelectMealItem" xml:space="preserve">
+    <value>اختر الوجبة</value>
+  </data>
+  <data name="DailyLimit" xml:space="preserve">
+    <value>الحد اليومي</value>
+  </data>
+  <data name="AssignedPrice" xml:space="preserve">
+    <value>السعر المخصص</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="NoStaffMealsFound" xml:space="preserve">
+    <value>لم يتم العثور على وجبات مخصصة</value>
+  </data>
+  <data name="SpecificItem" xml:space="preserve">
+    <value>صنف محدد</value>
+  </data>
+  <data name="ByCategory" xml:space="preserve">
+    <value>بناءً على الفئة</value>
+  </data>
+  <data name="ByStaffGroup" xml:space="preserve">
+    <value>مجموعة عاملين</value>
+  </data>
+  <data name="SelectMealCategory" xml:space="preserve">
+    <value>اختر قسم الوجبات</value>
+  </data>
+  <data name="SelectStaffGroup" xml:space="preserve">
+    <value>اختر مجموعة العاملين</value>
+  </data>
+  <data name="StaffMealGroups" xml:space="preserve">
+    <value>مجموعات وجبات العاملين</value>
+  </data>
+  <data name="StaffMealGroupManagement" xml:space="preserve">
+    <value>إدارة مجموعات وجبات العاملين</value>
+  </data>
+  <data name="StaffMealGroupManagementDesc" xml:space="preserve">
+    <value>إدارة المجموعات المخصصة لوجبات العاملين</value>
+  </data>
+  <data name="StaffMeals" xml:space="preserve">
+    <value>وجبات العاملين</value>
+  </data>
+  <data name="SearchForStaffMember" xml:space="preserve">
+    <value>ابحث عن موظف</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>أهلاً بك</value>
+  </data>
+  <data name="SelectYourMealItemsFromPOS" xml:space="preserve">
+    <value>قم باختيار الأصناف من شاشة البيع</value>
+  </data>
+  <data name="YourMealContent" xml:space="preserve">
+    <value>محتوى الوجبة</value>
+  </data>
+  <data name="AllowedToday" xml:space="preserve">
+    <value>المسموح به اليوم</value>
+  </data>
+  <data name="DailyLimitReached" xml:space="preserve">
+    <value>تم الوصول للحد اليومي</value>
+  </data>
+  <data name="ComeBackTomorrowForMore" xml:space="preserve">
+    <value>عد غداً للمزيد من الوجبات</value>
+  </data>
+  <data name="NoConfigFound" xml:space="preserve">
+    <value>لا يوجد إعداد وجبة</value>
+  </data>
+  <data name="ContactAdminToSetupMeal" xml:space="preserve">
+    <value>تواصل مع الإدارة لإعداد وجبتك</value>
+  </data>
+  <data name="PleaseSelectEmployeeToViewMeal" xml:space="preserve">
+    <value>يرجى اختيار الموظف لعرض الوجبة</value>
+  </data>
+  <data name="ScanBadgeOrSearchByName" xml:space="preserve">
+    <value>امسح الكارت أو ابحث بالاسم</value>
+  </data>
+  <data name="StartMyOrder" xml:space="preserve">
+    <value>ابدأ الطلب</value>
+  </data>
+  <data name="LoadingUserStatus" xml:space="preserve">
+    <value>جاري تحميل حالة الموظف</value>
+  </data>
+  <data name="StaffMealModeActivated" xml:space="preserve">
+    <value>تم تفعيل وضع وجبات العاملين</value>
+  </data>
+  <data name="MealLimit" xml:space="preserve">
+    <value>أصناف الوجبة الواحدة</value>
   </data>
 </root>

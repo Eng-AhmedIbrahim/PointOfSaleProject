@@ -10,6 +10,7 @@ public interface IDeliveryServices
     public Task<IReadOnlyList<DeliveryZonesToReturnDto>> GetAllDeliveryZonesAsync();
     public Task<IReadOnlyList<DeliveryZonesToReturnDto>> GetDeliveryZoneByBranchAsync(int branchId);
     public Task<DeliveryCustomerToReturnDto> GetClientByPhoneNumberAsync(string phoneNumber);
+    public Task<IReadOnlyList<DeliveryCustomerToReturnDto>> GetAllCustomersAsync();
     public Task<DeliveryCustomerToReturnDto> CreateClientAsync(DeliveryCustomerDto deliveryCustomer);
     public Task<CustomerNewAddressDto> AddNewCustomerAddressAsync(CustomerNewAddressDto newDeliveryCustomerAddress);
     public Task<ServiceResponse<DeliveryZonesToReturnDto>> CreateZone(DeliveryZoneDto newZone);

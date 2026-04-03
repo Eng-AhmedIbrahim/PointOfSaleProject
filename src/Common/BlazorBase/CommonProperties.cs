@@ -1,4 +1,4 @@
-﻿using POS.Contract.Models;
+using POS.Contract.Models;
 using POS.Contract.Dtos.PaymentDtos;
 using POS.Contract.Models.ReceiptModels;
 
@@ -138,6 +138,38 @@ public class CommonProperties
     public BranchToReturnDto? BranchDetails { get; set; } = new();
 
     public string? OrderNote { get; set; }
+    
+    #region Staff Meals
+    public global::POS.Contract.Dtos.AccountDtos.StaffMealConfigDto? CurrentStaffMeal { get; set; }
+    public List<int> AllowedStaffItemIds { get; set; } = new();
+    public List<int> AllowedStaffCategoryIds { get; set; } = new();
+    public List<MenuSalesItemsToReturnDto> AllowedStaffMenuItems { get; set; } = new();
+    public int RemainingStaffMeals { get; set; }
+    public decimal RemainingStaffMealAmount { get; set; }
+    public void ClearStaffMeal()
+    {
+        CurrentStaffMeal = null;
+        AllowedStaffItemIds.Clear();
+        AllowedStaffCategoryIds.Clear();
+        AllowedStaffMenuItems.Clear();
+        RemainingStaffMeals = 0;
+        RemainingStaffMealAmount = 0;
+        NotifyStateChanged();
+    }
+    #endregion
+
+    #region Hospitality
+    public string? HospitalityResponsiblePerson { get; set; }
+    public string? HospitalityReason { get; set; }
+    public bool IsHospitalityMode { get; set; } = false;
+    public void ClearHospitality()
+    {
+        HospitalityResponsiblePerson = null;
+        HospitalityReason = null;
+        IsHospitalityMode = false;
+        NotifyStateChanged();
+    }
+    #endregion
 
     // Distribution properties
     public Dictionary<UserToReturnDto, string> Drivers { get; set; } = new();

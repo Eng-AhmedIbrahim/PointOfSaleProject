@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System.IO;
 using System.Windows;
+using System.Threading;
 using BlazorBase;
 using BlazorBase.ERPFrontServices.PrintOrderServices;
 using POS.Desktop.Auth;
@@ -40,11 +41,16 @@ using POS.Core.Services.Contract.PosFeatureServices;
 using Microsoft.Extensions.Localization;
 using ERPFront.HubSettings;
 using ERPFront.Models;
+using POS.Core.Services.Contract;
+using POS.Core.Entities.Identity;
+using POS.Services.StaffMealServices;
+using BlazorBase.ERPFrontServices.StaffMealServices;
 
 namespace POS.Desktop;
 
 public partial class App : Application
 {
+    private static Mutex? _instanceMutex;
     private ServiceProvider? _serviceProvider;
     public static List<string> InMemoryLogs { get; } = new();
     private static readonly object _logLock = new();
@@ -60,6 +66,17 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        const string mutexName = "Global\\StorePOS_Desktop_SingleInstance";
+        _instanceMutex = new Mutex(true, mutexName, out bool createdNew);
+
+        if (!createdNew)
+        {
+            MessageBox.Show("نسخة من تطبيق POS مفتوحة بالفعل على هذا الجهاز. الرجاء إغلاق النسخة القديمة قبل المحاولة مرة أخرى.", 
+                            "تكرار التشغيل", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Application.Current.Shutdown();
+            return;
+        }
+
         try
         {
             // Register global exception handlers
@@ -259,10 +276,13 @@ public partial class App : Application
         services.AddSingleton<CallCenterNotificationService>();
 
         // Category services
-        services.AddScoped<ICategoryServices, CategoryService>();
-        services.AddScoped<IDineInOrderFrontService, DineInOrderFrontService>();
-        services.AddScoped<IOrderTrackFrontService, OrderTrackFrontService>();
-        services.AddScoped<IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
+        services.AddScoped<BlazorBase.ERPFrontServices.CategoryServices.ICategoryServices, BlazorBase.ERPFrontServices.CategoryServices.CategoryService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.DineInOrderServices.IDineInOrderFrontService, BlazorBase.ERPFrontServices.DineInOrderServices.DineInOrderFrontService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.OrderTrackServices.IOrderTrackFrontService, BlazorBase.ERPFrontServices.OrderTrackServices.OrderTrackFrontService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.ComplaintServices.IComplaintServices, BlazorBase.ERPFrontServices.ComplaintServices.ComplaintServices>();
+        services.AddScoped<BlazorBase.ERPFrontServices.AccountServices.IAccountService, BlazorBase.ERPFrontServices.AccountServices.AccountService>();
+        services.AddScoped<BlazorBase.ERPFrontServices.ItemServices.IItemService, BlazorBase.ERPFrontServices.ItemServices.ItemService>();
+        services.AddScoped<IStaffMealService, StaffMealFrontService>();
         services.AddScoped<BlazorBase.ERPFrontServices.DistributionServices.IDistributionErpService, BlazorBase.ERPFrontServices.DistributionServices.DistributionErpService>();
         services.AddScoped<IVoidErpService, VoidErpService>();
         services.AddScoped<IReportingErpService, ReportingErpService>();
@@ -306,6 +326,7 @@ public partial class App : Application
 
         services.AddScoped<IPosFeatureSettingsService, DesktopPosFeatureSettingsService>();
         services.AddScoped<IPrinterServices, DesktopPrinterService>();
+        services.AddScoped<IDesktopPrintingService, DesktopPrintingService>();
 
         // Authentication & Authorization
         services.AddAuthenticationCore();

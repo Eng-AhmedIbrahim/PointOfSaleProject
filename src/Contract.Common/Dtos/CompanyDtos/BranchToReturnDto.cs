@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.CompanyDtos;
+namespace POS.Contract.Dtos.CompanyDtos;
 
 public class BranchToReturnDto
 {
@@ -16,4 +16,5 @@ public class BranchToReturnDto
     public bool Active { get; set; } = true;
     public bool Suspend { get; set; } = false;
     public string? ApiUrl { get; set; }
+    public string? Currency { get; set; } = "EGP";
 }

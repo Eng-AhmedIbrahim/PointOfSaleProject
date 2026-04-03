@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.CompanyDtos;
+namespace POS.Contract.Dtos.CompanyDtos;
 
 public class BranchDto
 {
@@ -20,4 +20,5 @@ public class BranchDto
     public bool Active { get; set; } = true;
     public bool Suspend { get; set; } = false;
     public DateTime CreationDate { get; set; }
+    public string? Currency { get; set; } = "EGP";
 }

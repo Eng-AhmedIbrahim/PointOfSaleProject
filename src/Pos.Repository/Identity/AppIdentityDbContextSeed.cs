@@ -1,4 +1,4 @@
-﻿namespace Pos.Repository.Identity;
+namespace Pos.Repository.Identity;
 
 public static class AppIdentityDbContextSeed
 {
@@ -28,6 +28,7 @@ public static class AppIdentityDbContextSeed
             var existing = await context.Permissions.FirstOrDefaultAsync(p => p.Name == perm.Name);
             if (existing == null)
             {
+                perm.Id = 0; // Fixes SQL identity insert error
                 await context.Permissions.AddAsync(perm);
             }
             else
@@ -298,7 +299,7 @@ public static class AppIdentityDbContextSeed
                 "CanCompleteWaitingOrder", "CanRemoveWaitingOrder",
 
                 // Summary Actions
-                "CanViewSummaryDetails", "CanPrintSummaryReport",
+                "CanViewSummaryDetails", "CanViewDetailedSales", "CanViewSalesItems", "CanPrintSalesItems", "CanPrintSummaryReport",
 
                 // Accounts Actions
                 "CanViewStaffAccounts", "CanPrintStaffAccounts",
@@ -367,7 +368,7 @@ public static class AppIdentityDbContextSeed
                 "CanCompleteWaitingOrder", "CanRemoveWaitingOrder",
 
                 // Summary Actions
-                "CanViewSummaryDetails", "CanPrintSummaryReport",
+                "CanViewSummaryDetails", "CanViewDetailedSales", "CanViewSalesItems", "CanPrintSalesItems", "CanPrintSummaryReport",
 
                 // Accounts Actions
                 "CanViewStaffAccounts", "CanPrintStaffAccounts"

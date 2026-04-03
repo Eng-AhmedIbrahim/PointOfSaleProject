@@ -30,14 +30,19 @@
             </RadzenFormField>
 
             <RadzenRow Gap="1rem">
-                <RadzenColumn SizeMD="6" Size="12">
+                <RadzenColumn SizeMD="4" Size="12">
                     <RadzenFormField Text="@Localizer["BranchName"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
                         <RadzenTextBox @bind-Value="_branchModel.Name" Style="width:100%" />
                     </RadzenFormField>
                 </RadzenColumn>
-                <RadzenColumn SizeMD="6" Size="12">
+                <RadzenColumn SizeMD="4" Size="12">
                     <RadzenFormField Text="@Localizer["Phone1"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
                         <RadzenTextBox @bind-Value="_branchModel.Phone1" Style="width:100%" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn SizeMD="4" Size="12">
+                    <RadzenFormField Text="@Localizer["Currency"]" Variant="Radzen.Variant.Outlined" Style="width:100%">
+                        <RadzenTextBox @bind-Value="_branchModel.Currency" Style="width:100%" />
                     </RadzenFormField>
                 </RadzenColumn>
             </RadzenRow>
@@ -135,7 +140,8 @@
                 LogoWidth = Branch.LogoWidth,
                 LogoHeight = Branch.LogoHeight,
                 ImagePath = Branch.ImagePath,
-                CompanyId = Branch.CompanyId
+                CompanyId = Branch.CompanyId,
+                Currency = Branch.Currency
             };
         }
         else if (_companies != null && _companies.Any())
@@ -282,7 +288,8 @@
                 LogoWidth = _branchModel.LogoWidth,
                 LogoHeight = _branchModel.LogoHeight,
                 ImagePath = _branchModel.ImagePath,
-                CompanyId = _branchModel.CompanyId
+                CompanyId = _branchModel.CompanyId,
+                Currency = _branchModel.Currency
             };
 
             var result = await BranchService.UpdateBranch(updateModel);

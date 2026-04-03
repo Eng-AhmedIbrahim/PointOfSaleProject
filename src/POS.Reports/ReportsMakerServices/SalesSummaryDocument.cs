@@ -1,31 +1,24 @@
 namespace POS.Reports.ReportsMakerServices;
 
-public enum ReportPageFormat
-{
-    Cashier, // 7.2cm / 80mm
-    A4
-}
-
 public class SalesSummaryDocument : IDocument
 {
     private readonly SalesSummaryDto _summary;
-    private readonly List<SalesItemSummaryDto> _items;
-    private readonly string _storeName;
+    private readonly List<SalesItemSummaryDto> _catItems;
+    private readonly string _branchName;
     private readonly string _logoPath;
     private readonly ReportPageFormat _format;
     private readonly bool _isArabic;
 
-    public SalesSummaryDocument(
-        SalesSummaryDto summary,
-        List<SalesItemSummaryDto> items,
-        string storeName,
-        string logoPath,
-        ReportPageFormat format = ReportPageFormat.Cashier,
+    public SalesSummaryDocument(SalesSummaryDto summary,
+        List<SalesItemSummaryDto> catItems, 
+        string branchName, 
+        string logoPath, 
+        ReportPageFormat format, 
         bool isArabic = true)
     {
         _summary = summary;
-        _items = items;
-        _storeName = storeName;
+        _catItems = catItems;
+        _branchName = branchName;
         _logoPath = logoPath;
         _format = format;
         _isArabic = isArabic;
@@ -35,11 +28,20 @@ public class SalesSummaryDocument : IDocument
 
     public void Compose(IDocumentContainer container)
     {
+        
+        var voidOrders = (_summary.DetailedOrders ?? new List<Contract.Dtos.OrderDtos.OrderDto>())
+                         .Where(o => (o.VoidAmount ?? 0) > 0).ToList();
+
+        var vEvents = _summary.VoidEvents ?? new List<VoidEventDto>();
+
+        var discountOrders = (_summary.DetailedOrders ?? new List<Contract.Dtos.OrderDtos.OrderDto>())
+                             .Where(o => (o.TotalDiscount ?? 0) > 0 || (o.TotalOrderDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0).ToList();
+
         container.Page(page =>
         {
             if (_format == ReportPageFormat.Cashier)
             {
-                page.ContinuousSize(7.2f, Unit.Centimetre);
+                page.ContinuousSize(8f, Unit.Centimetre);
                 page.Margin(2, Unit.Millimetre);
             }
             else
@@ -49,458 +51,325 @@ public class SalesSummaryDocument : IDocument
             }
 
             page.PageColor(Colors.White);
+            
+            var baseStyle = 
+            TextStyle.Default
+            .FontFamily("Arial", "Noto Sans Arabic")
+            .FontSize(_format == ReportPageFormat.Cashier ? 9 : 11);
+            
+            page.DefaultTextStyle(baseStyle);
 
-            page.DefaultTextStyle(x =>
-                x.FontFamily("Noto Sans", "Noto Sans Arabic")
-                 .FontSize(_format == ReportPageFormat.Cashier ? 9 : 11));
+            if (_isArabic)
+                page.ContentFromRightToLeft();
 
-            if (_format == ReportPageFormat.A4)
+            var contentFontSize = _format == ReportPageFormat.Cashier ? 8 : 10;
+            var headerFontSize = _format == ReportPageFormat.Cashier ? 9 : 12;
+
+            page.Content().Column(col =>
             {
-                page.Header().Element(BuildHeaderA4);
-            }
-
-            page.Content().PaddingVertical(5).Column(column =>
-            {
-                if (_format == ReportPageFormat.Cashier)
-                {
-                    BuildHeaderCashier(column);
-                }
-
-                BuildFinancialSummary(column);
+                col.Spacing(2);
                 
+                // 1. Title
+                col.Item().AlignCenter().Text(_isArabic ? "ملخص المبيعات" : "Sales Summary").FontSize(14).Bold();
+                
+                // 2. Branch Info Table (Match First Screenshot)
+                col.Item().PaddingTop(5).Table(t =>
+                {
+                    t.ColumnsDefinition(cd => { cd.RelativeColumn(3); cd.RelativeColumn(3); });
+                    t.Cell().Border(1).Padding(2).AlignCenter().Text(_isArabic ? "اسم الفرع" : "Branch").Bold();
+                    t.Cell().Border(1).Padding(2).AlignCenter().Text(_branchName);
+                    t.Cell().Border(1).Padding(2).AlignCenter().Text(_isArabic ? "التاريخ" : "Date").Bold();
+                    t.Cell().Border(1).Padding(2).AlignCenter().Text(_summary.PosDate.ToString("yyyy-MM-dd"));
+                });
+
+                // 3. Net Revenue Section (Dark Header)
+                ComposeSectionHeader(col, _isArabic ? "صافي الإيراد" : "Net Revenue", headerFontSize);
+                col.Item().Table(t =>
+                {
+                    t.ColumnsDefinition(cd => { cd.RelativeColumn(3); cd.RelativeColumn(2); });
+                    AddFinancialRow(t, _isArabic ? "صافي المبيعات" : "Net Sales", _summary.Overall.TotalSales.ToString("0.##"));
+                    AddFinancialRow(t, _isArabic ? "نقدي" : "Cash", _summary.Overall.CashAmount.ToString("0.##"));
+                    AddFinancialRow(t, _isArabic ? "فيزا / بطاقة" : "Visa / Card", _summary.Overall.CreditAmount.ToString("0.##"));
+                });
+
+                // 4. Sales Distribution
+                ComposeSectionHeader(col, _isArabic ? "توزيع المبيعات" : "Sales Distribution", headerFontSize);
+                col.Item().Table(t =>
+                {
+                    t.ColumnsDefinition(cd => { 
+                        cd.RelativeColumn(2); // النوع
+                        cd.RelativeColumn(1.2f); // العدد
+                        cd.RelativeColumn(1.8f); // الخصم
+                        cd.RelativeColumn(1.8f); // الفويد
+                        cd.RelativeColumn(2); // الإجمالي
+                    });
+                    t.Header(h =>
+                    {
+                        h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "النوع" : "Type").Bold().FontSize(contentFontSize);
+                        h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "العدد" : "Qty").Bold().FontSize(contentFontSize);
+                        h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الخصم" : "Discount").Bold().FontSize(contentFontSize);
+                        h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الفويد" : "Void").Bold().FontSize(contentFontSize);
+                        h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الإجمالي" : "Total").Bold().FontSize(contentFontSize);
+                    });
+
+                    foreach (var m in _summary.Overall.ModeDetails)
+                    {
+                        var voidAmount = 0m;
+                        var vList = _summary.VoidEvents ?? new List<VoidEventDto>();
+                        if (m.ModeTitle.Contains("صالة") || m.ModeTitle.Contains("Dine"))
+                            voidAmount = vList.Where(v => v.OrderType.Equals("DineIn", StringComparison.OrdinalIgnoreCase)).Sum(v => v.TotalVoidedAmount);
+                        else if (m.ModeTitle.Contains("تيك") || m.ModeTitle.Contains("Take"))
+                            voidAmount = vList.Where(v => v.OrderType.Equals("TakeAway", StringComparison.OrdinalIgnoreCase)).Sum(v => v.TotalVoidedAmount);
+                        else if (m.ModeTitle.Contains("توصيل") || m.ModeTitle.Contains("Delivery"))
+                            voidAmount = vList.Where(v => v.OrderType.Equals("Delivery", StringComparison.OrdinalIgnoreCase)).Sum(v => v.TotalVoidedAmount);
+
+                        t.Cell().Border(1).Padding(1).AlignCenter().Text(m.ModeTitle).FontSize(contentFontSize);
+                        t.Cell().Border(1).Padding(1).AlignCenter().Text(m.OrderCount.ToString()).FontSize(contentFontSize);
+                        t.Cell().Border(1).Padding(1).AlignCenter().Text(m.Discount.ToString("0.##")).FontSize(contentFontSize);
+                        t.Cell().Border(1).Padding(1).AlignCenter().Text(voidAmount.ToString("0.##")).FontSize(contentFontSize);
+                        t.Cell().Border(1).Padding(1).AlignCenter().Text(m.GrandTotal.ToString("0.##")).FontSize(contentFontSize);
+                    }
+                });
+
+                // 5. Discounts & Voids
+                ComposeSectionHeader(col, _isArabic ? "الخصومات والفويد" : "Discounts & Voids", headerFontSize);
+                col.Item().Table(t =>
+                {
+                    t.ColumnsDefinition(cd => { cd.RelativeColumn(); cd.RelativeColumn(); });
+                    AddFinancialRow(t, _isArabic ? "إجمالي الخصم" : "Total Discount", _summary.Overall.TotalDiscount.ToString("0.##"), contentFontSize);
+                    AddFinancialRow(t, _isArabic ? "إجمالي الفويد" : "Total Void", _summary.Overall.VoidAmount.ToString("0.##"), contentFontSize);
+                });
+
+                // 6. Order Details Table (Match First Screenshot)
+                ComposeSectionHeader(col, _isArabic ? "تفاصيل الأوردرات" : "Order Details", headerFontSize);
                 if (_summary.DetailedOrders != null && _summary.DetailedOrders.Any())
                 {
-                    BuildDetailedOrdersTable(column);
-                }
-                else
-                {
-                    BuildItemsTable(column);
-                }
-
-                if (_summary.CashierSummaries != null && _summary.CashierSummaries.Any())
-                {
-                    BuildCashierSummariesTable(column);
-                }
-            });
-
-            page.Footer().Element(BuildFooter);
-        });
-    }
-
-    private void BuildHeaderCashier(ColumnDescriptor column)
-    {
-        column.Item().AlignCenter().Text(_storeName).FontSize(14).Bold();
-        
-        if (!string.IsNullOrWhiteSpace(_logoPath) && File.Exists(_logoPath))
-        {
-            column.Item().AlignCenter().Height(40).Image(_logoPath).FitArea();
-        }
-
-        string title = _isArabic ? "ملخص مبيعات الأصناف" : "Sales Items Summary";
-        column.Item().AlignCenter().Text(title).FontSize(10).Bold();
-        if (!string.IsNullOrEmpty(_summary.StaffName))
-        {
-            column.Item().Row(row =>
-            {
-                if (_isArabic)
-                {
-                    row.RelativeItem().AlignLeft().Text(_summary.StaffName);
-                    row.RelativeItem().AlignRight().Text("الكاشير");
-                }
-                else
-                {
-                    row.RelativeItem().AlignLeft().Text("Staff");
-                    row.RelativeItem().AlignRight().Text(_summary.StaffName);
-                }
-            });
-        }
-        column.Item().PaddingVertical(2).LineHorizontal(1);
-    }
-
-    private void BuildHeaderA4(IContainer container)
-    {
-        container.Row(row =>
-        {
-            if (_isArabic)
-            {
-                row.RelativeItem().Column(column =>
-                {
-                    column.Item().Text(_storeName).FontSize(24).ExtraBold().FontColor(Colors.Blue.Darken4);
-                    string titleStr = _isArabic ? "مـلـخـص الـمـبـيـعـات" : "Sales Summary Report";
-                    column.Item().Text(titleStr).FontSize(16).Bold().Underline();
-                    
-                    if (!string.IsNullOrEmpty(_summary.StaffName))
+                    col.Item().Table(t =>
                     {
-                        column.Item().Text($"{(_isArabic ? "بواسطة:" : "By:")} {_summary.StaffName}").FontSize(11).SemiBold();
-                    }
-                    
-                    column.Item().Text($"{(_isArabic ? "التاريخ:" : "Date:")} {_summary.PosDate:yyyy-MM-dd}").FontSize(11);
-                });
-
-                if (!string.IsNullOrWhiteSpace(_logoPath) && File.Exists(_logoPath))
-                    row.ConstantItem(90).Height(90).Image(_logoPath).FitArea();
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(_logoPath) && File.Exists(_logoPath))
-                    row.ConstantItem(90).Height(90).Image(_logoPath).FitArea();
-
-                row.RelativeItem().Column(column =>
-                {
-                    column.Item().AlignRight().Text(_storeName).FontSize(24).ExtraBold().FontColor(Colors.Blue.Darken4);
-                    string titleStr = _isArabic ? "Sales Summary Report" : "SALES SUMMARY REPORT";
-                    column.Item().AlignRight().Text(titleStr).FontSize(16).Bold().Underline();
-                    
-                    if (!string.IsNullOrEmpty(_summary.StaffName))
-                    {
-                        column.Item().AlignRight().Text($"{(_isArabic ? "By:" : "By:")} {_summary.StaffName}").FontSize(11).SemiBold();
-                    }
-                    
-                    column.Item().AlignRight().Text($"{(_isArabic ? "Date:" : "Date:")} {_summary.PosDate:yyyy-MM-dd}").FontSize(11);
-                });
-            }
-        });
-    }
-
-    private void BuildFinancialSummary(ColumnDescriptor column)
-    {
-        if (_format == ReportPageFormat.A4)
-        {
-            column.Item().PaddingTop(10).PaddingBottom(5).LineHorizontal(1.5f).LineColor(Colors.Grey.Darken3);
-            column.Item().Row(row =>
-            {
-                if (_isArabic)
-                {
-                    row.RelativeItem().Column(col => {
-                        AddMoneyRow(col, _summary.Overall.TotalRevenue, "إجمالي المبيعات", true);
-                        col.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                        AddMoneyRow(col, _summary.TakeAway.Total, "مبيعات تيك أواي");
-                        AddMoneyRow(col, _summary.DineIn.Total, "مبيعات صالة");
-                        AddMoneyRow(col, _summary.Delivery.Total, "مبيعات دليفري");
+                        t.ColumnsDefinition(cd => { cd.RelativeColumn(1); cd.RelativeColumn(3); cd.RelativeColumn(2); });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "رقم" : "No").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "النوع" : "Type").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الإجمالي" : "Total").Bold().FontSize(contentFontSize);
+                        });
+                        foreach (var o in _summary.DetailedOrders)
+                        {
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text($"#{o.OrderId}").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(o.OrderType).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(o.GrandTotal?.ToString("0.##")).FontSize(contentFontSize);
+                        }
                     });
-                    row.ConstantItem(40);
-                    row.RelativeItem().Column(col => {
-                        AddMoneyRow(col, _summary.Overall.TotalSales, "صافي المحصل", true);
-                        col.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                        AddMoneyRow(col, _summary.Overall.CashAmount, "نقدي");
-                        AddMoneyRow(col, _summary.Overall.CreditAmount, "فيزا");
+                }
+
+                // 7. Item Details Table (Match First Screenshot)
+                ComposeSectionHeader(col, _isArabic ? "تفاصيل الأصناف" : "Item Sales", headerFontSize);
+                if (_catItems != null && _catItems.Any())
+                {
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(cd => { cd.RelativeColumn(1); cd.RelativeColumn(4); cd.RelativeColumn(2); });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "كم" : "Qty").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الصنف" : "Item").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الإجمالي" : "Total").Bold().FontSize(contentFontSize);
+                        });
+                        foreach (var itm in _catItems)
+                        {
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(itm.Quantity.ToString("G29")).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).Text(itm.ItemName).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignRight().Text(itm.TotalAmount.ToString("0.##")).FontSize(contentFontSize);
+                        }
                         
-                        col.Item().PaddingTop(5);
-                        int discCount = _summary.DetailedOrders?.Count(o => (o.TotalDiscount ?? 0) > 0) ?? 0;
-                        int voidCount = _summary.DetailedOrders?.Count(o => (o.VoidAmount ?? 0) > 0) ?? (int)_summary.Overall.VoidCount;
-                        AddMoneyRow(col, _summary.Overall.TotalDiscount, $"إجمالي الخصم ({discCount})");
-                        AddMoneyRow(col, _summary.Overall.VoidAmount, $"إجمالي الفويد ({voidCount})");
+                        t.Cell().ColumnSpan(2).Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الإجمالي الكلي" : "Grand Total").Bold().FontSize(9);
+                        t.Cell().Border(1).Padding(1).AlignRight().Text(_catItems.Sum(x => x.TotalAmount).ToString("0.##")).Bold().FontSize(9);
                     });
                 }
-                else
+
+                var discountList = (_summary.DetailedOrders ?? new List<POS.Contract.Dtos.OrderDtos.OrderDto>())
+                                    .Where(o => (o.TotalDiscount ?? 0) > 0 || (o.TotalOrderDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0).ToList();
+                if (discountList != null && discountList.Any())
                 {
-                    row.RelativeItem().Column(col => {
-                        AddMoneyRow(col, _summary.Overall.TotalRevenue, "Total Sales", true);
-                        col.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                        AddMoneyRow(col, _summary.TakeAway.Total, "Take Away Sales");
-                        AddMoneyRow(col, _summary.DineIn.Total, "Dine In Sales");
-                        AddMoneyRow(col, _summary.Delivery.Total, "Delivery Sales");
+                    ComposeSectionHeader(col, _isArabic ? "تفاصيل الخصومات" : "Discount Details", headerFontSize);
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(cd => { 
+                            cd.RelativeColumn(1); // رقم
+                            cd.RelativeColumn(2); // النوع
+                            cd.RelativeColumn(2); // المستخدم
+                            cd.RelativeColumn(3); // السبب
+                            cd.RelativeColumn(2); // القيمة
+                        });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "رقم" : "No").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "النوع" : "Type").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "المستخدم" : "User").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "السبب" : "Reason").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "القيمة" : "Amount").Bold().FontSize(contentFontSize);
+                        });
+                        foreach (var o in discountList)
+                        {
+                            var discountAmt = (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount : o.DiscountedItems);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text($"#{o.OrderId}").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(o.OrderType ?? "-").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(string.IsNullOrEmpty(o.DiscountByName) ? (o.CashierName ?? "-") : o.DiscountByName).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(string.IsNullOrEmpty(o.DiscountReason) ? "-" : o.DiscountReason).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(discountAmt?.ToString("0.##")).FontSize(contentFontSize);
+                        }
                     });
-                    row.ConstantItem(40);
-                    row.RelativeItem().Column(col => {
-                        AddMoneyRow(col, _summary.Overall.TotalSales, "Net Collected", true);
-                        col.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                        AddMoneyRow(col, _summary.Overall.CashAmount, "Cash");
-                        AddMoneyRow(col, _summary.Overall.CreditAmount, "Visa");
+                }
 
-                        col.Item().PaddingTop(5);
-                        int discCount = _summary.DetailedOrders?.Count(o => (o.TotalDiscount ?? 0) > 0) ?? 0;
-                        int voidCount = _summary.DetailedOrders?.Count(o => (o.VoidAmount ?? 0) > 0) ?? (int)_summary.Overall.VoidCount;
-                        AddMoneyRow(col, _summary.Overall.TotalDiscount, $"Total Discount ({discCount})");
-                        AddMoneyRow(col, _summary.Overall.VoidAmount, $"Total Void ({voidCount})");
+                // 8. Void Details (Table Format)
+                var extractedVoids = new List<VoidEventDto>();
+                if (_summary.DetailedOrders != null)
+                {
+                    foreach (var o in _summary.DetailedOrders)
+                    {
+                        var itemVoids = (o.OrderDetails ?? new List<POS.Contract.Models.TableItem>())
+                                        .Where(i => (i.VoidAmount ?? 0) > 0 || i.IsVoided).ToList();
+                        
+                        decimal sumItemVoids = 0;
+                        foreach (var iv in itemVoids)
+                        {
+                            var amt = iv.VoidAmount ?? iv.Total ?? 0;
+                            sumItemVoids += amt;
+                            
+                            var userName = !string.IsNullOrEmpty(iv.VoidByName) ? iv.VoidByName : (!string.IsNullOrEmpty(o.VoidByName) ? o.VoidByName : "System");
+                            var reason = !string.IsNullOrEmpty(iv.VoidReason) ? iv.VoidReason : (!string.IsNullOrEmpty(o.VoidReason) ? o.VoidReason : "N/A");
+                            
+                            extractedVoids.Add(new VoidEventDto {
+                                OrderId = o.OrderId,
+                                OrderType = o.OrderType ?? "-",
+                                VoidedByName = userName,
+                                Reason = reason,
+                                TotalVoidedAmount = amt
+                            });
+                        }
+
+                        var orderVoidAmt = o.VoidAmount ?? (o.OrderState == "Voided" ? o.GrandTotal ?? 0 : 0);
+                        if (orderVoidAmt > sumItemVoids + 0.05m)
+                        {
+                            extractedVoids.Add(new VoidEventDto {
+                                OrderId = o.OrderId,
+                                OrderType = o.OrderType ?? "-",
+                                VoidedByName = !string.IsNullOrEmpty(o.VoidByName) ? o.VoidByName : "System",
+                                Reason = !string.IsNullOrEmpty(o.VoidReason) ? o.VoidReason : "N/A",
+                                TotalVoidedAmount = orderVoidAmt - sumItemVoids
+                            });
+                        }
+                    }
+                }
+
+                if (extractedVoids.Any() || (_summary.Overall.VoidCount != 0 && _summary.Overall.VoidAmount > 0))
+                {
+                    // Group multiple void events for the same order into one row
+                    var groupedVoids = extractedVoids
+                        .GroupBy(v => v.OrderId)
+                        .Select(g => new
+                        {
+                            OrderId = g.Key,
+                            OrderType = g.First().OrderType,
+                            Users = string.Join(" / ", g.Select(x => x.VoidedByName).Where(n => !string.IsNullOrEmpty(n) && n != "System").Distinct()),
+                            Reasons = string.Join(" | ", g.Select(x => x.Reason).Where(r => !string.IsNullOrEmpty(r) && r != "N/A")),
+                            TotalVoidMessage = g.Sum(x => x.TotalVoidedAmount)
+                        }).ToList();
+
+                    ComposeSectionHeader(col, _isArabic ? "تفاصيل الفويدات" : "Void Details", headerFontSize);
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(cd => { 
+                            cd.RelativeColumn(1); // رقم
+                            cd.RelativeColumn(2); // النوع
+                            cd.RelativeColumn(2); // المستخدم
+                            cd.RelativeColumn(3); // السبب
+                            cd.RelativeColumn(2); // القيمة
+                        });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "رقم" : "No").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "النوع" : "Type").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "المستخدم" : "User").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "السبب" : "Reason").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "القيمة" : "Amount").Bold().FontSize(contentFontSize);
+                        });
+                        
+                        foreach (var v in groupedVoids)
+                        {
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text($"#{v.OrderId}").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(v.OrderType ?? "-").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(string.IsNullOrEmpty(v.Users) ? "-" : v.Users).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(string.IsNullOrEmpty(v.Reasons) ? "-" : v.Reasons).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(v.TotalVoidMessage.ToString("0.##")).FontSize(contentFontSize);
+                        }
                     });
                 }
-            });
-            column.Item().PaddingVertical(10).LineHorizontal(1.5f).LineColor(Colors.Grey.Darken3);
-        }
-        else
-        {
-            column.Item().Column(fin =>
-            {
-                if (_isArabic)
+
+                // 9. Staff Orders
+                var staffOrders = (_summary.DetailedOrders ?? new List<Contract.Dtos.OrderDtos.OrderDto>())
+                                  .Where(o => string.Equals(o.OrderType, "Staff", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (staffOrders.Any())
                 {
-                    AddMoneyRow(fin, _summary.Overall.TotalRevenue, "إجمالي المبيعات", true);
-                    fin.Item().PaddingVertical(1).LineHorizontal(0.5f);
-                    AddMoneyRow(fin, _summary.TakeAway.Total, "تيك أواي");
-                    AddMoneyRow(fin, _summary.DineIn.Total, "صالة");
-                    AddMoneyRow(fin, _summary.Delivery.Total, "دليفري");
-                    
-                    fin.Item().PaddingVertical(2).LineHorizontal(0.8f);
-                    
-                    AddMoneyRow(fin, _summary.Overall.TotalSales, "صافي المحصل", true);
-                    AddMoneyRow(fin, _summary.Overall.CashAmount, "- نقدي");
-                    AddMoneyRow(fin, _summary.Overall.CreditAmount, "- فيزا");
-                    
-                    fin.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                    
-                    int discCount = _summary.DetailedOrders?.Count(o => (o.TotalDiscount ?? 0) > 0) ?? 0;
-                    int voidCount = _summary.DetailedOrders?.Count(o => (o.VoidAmount ?? 0) > 0) ?? (int)_summary.Overall.VoidCount;
-                    AddMoneyRow(fin, _summary.Overall.TotalDiscount, $"الخصم ({discCount})");
-                    AddMoneyRow(fin, _summary.Overall.VoidAmount, $"الفويد ({voidCount})");
+                    ComposeSectionHeader(col, _isArabic ? "وجبات العاملين" : "Staff Meals", headerFontSize);
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(cd => { cd.RelativeColumn(1); cd.RelativeColumn(2); cd.RelativeColumn(1); });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "رقم" : "No").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الموظف" : "Staff").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الوقت" : "Time").Bold().FontSize(contentFontSize);
+                        });
+                        foreach (var o in staffOrders)
+                        {
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text($"#{o.OrderId}").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(!string.IsNullOrEmpty(o.StaffMealEmployeeName) ? o.StaffMealEmployeeName : (o.CustomerName ?? o.TakeAwayCustomerName ?? "-")).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(o.OrderDate?.ToString("HH:mm")).FontSize(contentFontSize);
+                        }
+                    });
                 }
-                else
+
+                // 10. Hospitality Orders
+                var hospOrders = (_summary.DetailedOrders ?? new List<Contract.Dtos.OrderDtos.OrderDto>())
+                                  .Where(o => string.Equals(o.OrderType, "Hospitality", StringComparison.OrdinalIgnoreCase)).ToList();
+                if (hospOrders.Any())
                 {
-                    AddMoneyRow(fin, _summary.Overall.TotalRevenue, "Total Sales", true);
-                    fin.Item().PaddingVertical(1).LineHorizontal(0.5f);
-                    AddMoneyRow(fin, _summary.TakeAway.Total, "Take Away");
-                    AddMoneyRow(fin, _summary.DineIn.Total, "Dine In");
-                    AddMoneyRow(fin, _summary.Delivery.Total, "Delivery");
-                    
-                    fin.Item().PaddingVertical(2).LineHorizontal(0.8f);
-
-                    AddMoneyRow(fin, _summary.Overall.TotalSales, "Net Collected", true);
-                    AddMoneyRow(fin, _summary.Overall.CashAmount, "- Cash");
-                    AddMoneyRow(fin, _summary.Overall.CreditAmount, "- Visa");
-                    
-                    fin.Item().PaddingVertical(2).LineHorizontal(0.5f);
-                    
-                    int discCount = _summary.DetailedOrders?.Count(o => (o.TotalDiscount ?? 0) > 0) ?? 0;
-                    int voidCount = _summary.DetailedOrders?.Count(o => (o.VoidAmount ?? 0) > 0) ?? (int)_summary.Overall.VoidCount;
-                    AddMoneyRow(fin, _summary.Overall.TotalDiscount, $"Discount ({discCount})");
-                    AddMoneyRow(fin, _summary.Overall.VoidAmount, $"Void ({voidCount})");
+                    ComposeSectionHeader(col, _isArabic ? "طلبات الضيافة" : "Hospitality", headerFontSize);
+                    col.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(cd => { cd.RelativeColumn(1.2f); cd.RelativeColumn(2.4f); cd.RelativeColumn(2.4f); cd.RelativeColumn(1.5f); });
+                        t.Header(h =>
+                        {
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "رقم" : "No").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "المسئول" : "Resp.").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "السبب" : "Reason").Bold().FontSize(contentFontSize);
+                            h.Cell().Border(1).Padding(1).AlignCenter().Text(_isArabic ? "الوقت" : "Time").Bold().FontSize(contentFontSize);
+                        });
+                        foreach (var o in hospOrders)
+                        {
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text($"#{o.OrderId}").FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(!string.IsNullOrEmpty(o.HospitalityResponsibleName) ? o.HospitalityResponsibleName : (o.CashierName ?? "-")).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(!string.IsNullOrEmpty(o.HospitalityReason) ? o.HospitalityReason : (o.CustomerName ?? o.TakeAwayCustomerName ?? "-")).FontSize(contentFontSize);
+                            t.Cell().Border(1).Padding(1).AlignCenter().Text(o.OrderDate?.ToString("HH:mm")).FontSize(contentFontSize);
+                        }
+                    });
                 }
-                fin.Item().PaddingVertical(4).LineHorizontal(1);
+
+                // 11. Printed Date
+                col.Item().PaddingTop(10).AlignCenter().Text($"{DateTime.Now:HH:mm yyyy-MM-dd}").FontSize(7);
             });
-        }
-    }
-
-    private void AddMoneyRow(ColumnDescriptor column, decimal value, string label, bool highlight = false)
-    {
-        column.Item().Row(row =>
-        {
-            if (_isArabic)
-            {
-                row.RelativeItem().AlignLeft().Text(value.ToString("0.##"))
-                    .FontSize(highlight ? (_format == ReportPageFormat.A4 ? 12 : 10) : (_format == ReportPageFormat.A4 ? 10 : 9))
-                    .Bold();
-
-                row.RelativeItem().AlignRight().Text(label)
-                    .FontSize(highlight ? (_format == ReportPageFormat.A4 ? 12 : 10) : (_format == ReportPageFormat.A4 ? 10 : 9))
-                    .Bold();
-            }
-            else
-            {
-                row.RelativeItem().AlignLeft().Text(label)
-                    .FontSize(highlight ? (_format == ReportPageFormat.A4 ? 12 : 10) : (_format == ReportPageFormat.A4 ? 10 : 9))
-                    .Bold();
-
-                row.RelativeItem().AlignRight().Text(value.ToString("0.##"))
-                    .FontSize(highlight ? (_format == ReportPageFormat.A4 ? 12 : 10) : (_format == ReportPageFormat.A4 ? 10 : 9))
-                    .Bold();
-            }
         });
     }
 
-    private void BuildItemsTable(ColumnDescriptor column)
+    private void ComposeSectionHeader(ColumnDescriptor col, string title, float fontSize = 9)
     {
-        string sectionTitle = _isArabic ? "تفاصيل الأصناف المباعة" : "Sold Items Details";
-        column.Item().PaddingVertical(2).Text(sectionTitle).FontSize(10).Bold().Underline();
-        
-        column.Item().Table(table =>
-        {
-            table.ColumnsDefinition(cols =>
-            {
-                if (_isArabic)
-                {
-                    cols.RelativeColumn(2); // Total
-                    cols.RelativeColumn(_format == ReportPageFormat.A4 ? 4 : 3); // Name
-                    cols.RelativeColumn(1); // Qty
-                }
-                else
-                {
-                    cols.RelativeColumn(1); // Qty
-                    cols.RelativeColumn(_format == ReportPageFormat.A4 ? 4 : 3); // Name
-                    cols.RelativeColumn(2); // Total
-                }
-            });
-
-            table.Header(header =>
-            {
-                if (_isArabic)
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("إجمالي").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("الصنف").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("كمية").Bold();
-                }
-                else
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Qty").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Item").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Total").Bold();
-                }
-            });
-
-            foreach (var item in _items)
-            {
-                if (_isArabic)
-                {
-                    table.Cell().Element(CellStyle).AlignCenter().Text(item.TotalAmount.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignRight().Text(item.ItemName);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString("0.##"));
-                }
-                else
-                {
-                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignLeft().Text(item.ItemName);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(item.TotalAmount.ToString("0.##"));
-                }
-            }
-        });
+        col.Item().PaddingTop(5).Background(Colors.Black).Padding(2).AlignCenter().Text(title).FontColor(Colors.White).Bold().FontSize(fontSize);
     }
 
-    private void BuildDetailedOrdersTable(ColumnDescriptor column)
+    private void AddFinancialRow(TableDescriptor t, string lbl, string val, float fontSize = 8)
     {
-        string sectionTitle = _isArabic ? "تفاصيل الأوردرات" : "Orders Details";
-        column.Item().PaddingVertical(2).Text(sectionTitle).FontSize(10).Bold().Underline();
-
-        column.Item().Table(table =>
-        {
-            table.ColumnsDefinition(cols =>
-            {
-                if (_isArabic)
-                {
-                    cols.RelativeColumn(2); // Total
-                    cols.RelativeColumn(1.5f); // Void
-                    cols.RelativeColumn(1.5f); // Discount
-                    cols.RelativeColumn(3); // Order ID / Type
-                }
-                else
-                {
-                    cols.RelativeColumn(3); // Order ID / Type
-                    cols.RelativeColumn(1.5f); // Discount
-                    cols.RelativeColumn(1.5f); // Void
-                    cols.RelativeColumn(2); // Total
-                }
-            });
-
-            table.Header(header =>
-            {
-                if (_isArabic)
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("الإجمالي").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("فويد").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("خصم").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("الأوردر").Bold();
-                }
-                else
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Order").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Disc").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Void").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Total").Bold();
-                }
-            });
-
-            foreach (var order in _summary.DetailedOrders!)
-            {
-                if (_isArabic)
-                {
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.GrandTotal?.ToString("0.##") ?? "0.00");
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.VoidAmount?.ToString("0.##") ?? "0.00").FontColor(Colors.Red.Medium);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.TotalDiscount?.ToString("0.##") ?? "0.00").FontColor(Colors.Green.Medium);
-                    table.Cell().Element(CellStyle).AlignRight().Text($"{order.OrderType} #{order.OrderId}");
-                }
-                else
-                {
-                    table.Cell().Element(CellStyle).AlignLeft().Text($"{order.OrderType} #{order.OrderId}");
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.TotalDiscount?.ToString("0.##") ?? "0.00").FontColor(Colors.Green.Medium);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.VoidAmount?.ToString("0.##") ?? "0.00").FontColor(Colors.Red.Medium);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(order.GrandTotal?.ToString("0.##") ?? "0.00");
-                }
-            }
-        });
-    }
-
-    private void BuildCashierSummariesTable(ColumnDescriptor column)
-    {
-        string sectionTitle = _isArabic ? "مبيعات الكاشيرات" : "Cashier Sales Breakdown";
-        column.Item().PaddingTop(5).PaddingVertical(2).Text(sectionTitle).FontSize(10).Bold().Underline();
-
-        column.Item().Table(table =>
-        {
-            table.ColumnsDefinition(cols =>
-            {
-                if (_isArabic)
-                {
-                    cols.RelativeColumn(2); // Total
-                    cols.RelativeColumn(1.5f); // Credit
-                    cols.RelativeColumn(1.5f); // Cash
-                    cols.RelativeColumn(3); // Name
-                }
-                else
-                {
-                    cols.RelativeColumn(3); // Name
-                    cols.RelativeColumn(1.5f); // Cash
-                    cols.RelativeColumn(1.5f); // Credit
-                    cols.RelativeColumn(2); // Total
-                }
-            });
-
-            table.Header(header =>
-            {
-                if (_isArabic)
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("الإجمالي").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("فيزا").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("نقدي").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("الكاشير").Bold();
-                }
-                else
-                {
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Cashier").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Cash").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Visa").Bold();
-                    header.Cell().Element(CellStyle).AlignCenter().Text("Total").Bold();
-                }
-            });
-
-            foreach (var cashier in _summary.CashierSummaries)
-            {
-                if (_isArabic)
-                {
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.TotalAmount.ToString("0.##")).SemiBold();
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.CreditAmount.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.CashAmount.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignRight().Text(cashier.Name);
-                }
-                else
-                {
-                    table.Cell().Element(CellStyle).AlignLeft().Text(cashier.Name);
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.CashAmount.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.CreditAmount.ToString("0.##"));
-                    table.Cell().Element(CellStyle).AlignCenter().Text(cashier.TotalAmount.ToString("0.##")).SemiBold();
-                }
-            }
-        });
-    }
-
-    private IContainer CellStyle(IContainer container)
-    {
-        return container
-            .Border(_format == ReportPageFormat.Cashier ? 0.3f : 0.5f)
-            .BorderColor(Colors.Grey.Darken1)
-            .PaddingVertical(1)
-            .PaddingHorizontal(2);
-    }
-
-    private void BuildFooter(IContainer container)
-    {
-        container.AlignCenter().Text(x =>
-        {
-            x.Span("Printed at: ").FontSize(8);
-            x.Span($"{DateTime.Now:g}").FontSize(8);
-            if (_format == ReportPageFormat.A4)
-            {
-                x.EmptyLine();
-                x.CurrentPageNumber().FontSize(8);
-                x.Span(" / ").FontSize(8);
-                x.TotalPages().FontSize(8);
-            }
-        });
+        t.Cell().Border(1).Padding(2).AlignCenter().Text(lbl).FontSize(fontSize).Bold();
+        t.Cell().Border(1).Padding(2).AlignCenter().Text(val).FontSize(fontSize);
     }
 }

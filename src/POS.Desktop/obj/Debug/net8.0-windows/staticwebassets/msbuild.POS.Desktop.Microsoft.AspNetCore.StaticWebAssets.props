@@ -92,12 +92,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>94ratsmiux</Fingerprint>
-      <Integrity>N0uZ/VrOh4yLpRUkYQVAIj3t84L1irfpGckUbyj11Ko=</Integrity>
+      <Fingerprint>9umhqk1984</Fingerprint>
+      <Integrity>H/hcKrB7dRPv9g+AcY3oFup2abF7uc+MIF8o4W9zvag=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>10064</FileLength>
-      <LastWriteTime>Sat, 07 Mar 2026 01:14:11 GMT</LastWriteTime>
+      <FileLength>12273</FileLength>
+      <LastWriteTime>Sun, 29 Mar 2026 03:52:27 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\delivery.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\favicon.png'))">
@@ -632,12 +632,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ApplicationBundle</AssetTraitValue>
-      <Fingerprint>pdej0crz8n</Fingerprint>
-      <Integrity>je/KYn6vqP1OzqbUcI2m8GRX7ECuF7wdUd7ch5zk4M0=</Integrity>
+      <Fingerprint>y48uo7q5zz</Fingerprint>
+      <Integrity>svg0LxnYjOZinV+ISBrqVRpgGPyUvKTSzxpjrRXn/sY=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>46799</FileLength>
-      <LastWriteTime>Sun, 15 Mar 2026 15:53:21 GMT</LastWriteTime>
+      <FileLength>46829</FileLength>
+      <LastWriteTime>Mon, 30 Mar 2026 14:52:28 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">
@@ -692,12 +692,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>14bxsyczg8</Fingerprint>
-      <Integrity>gZpWTlargtdKvmMrJ4xyKLASHLh/Gm70iSuKzNbLsXA=</Integrity>
+      <Fingerprint>3cv9qeivja</Fingerprint>
+      <Integrity>HccFktaAUpqIYiQIKmlsUiMxELDxFR82NdWV2C2Ic/8=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>4648</FileLength>
-      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
+      <FileLength>5949</FileLength>
+      <LastWriteTime>Thu, 26 Mar 2026 14:29:00 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\site.js'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>

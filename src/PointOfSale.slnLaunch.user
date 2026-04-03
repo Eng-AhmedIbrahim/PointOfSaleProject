@@ -3,15 +3,15 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Path": "POS.API\\POS.API.csproj",
-        "Action": "Start"
-      },
-      {
         "Path": "POS.Desktop\\POS.Desktop.csproj",
         "Action": "Start"
       },
       {
         "Path": "BackOffice.Desktop\\BackOffice.Desktop.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "POS.API\\POS.API.csproj",
         "Action": "Start"
       }
     ]

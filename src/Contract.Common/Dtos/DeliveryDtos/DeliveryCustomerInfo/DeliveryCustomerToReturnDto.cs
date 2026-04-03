@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
+namespace POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo;
 
 public class DeliveryCustomerToReturnDto
 {
@@ -19,7 +19,6 @@ public class DeliveryCustomerToReturnDto
     public decimal AverageOrderValue { get; set; }
 
     // History & Active Order
-    // History & Active Order
     public List<POS.Contract.Dtos.OrderDtos.OrderDto>? Last10Orders { get; set; }
-    public POS.Contract.Dtos.OrderDtos.OrderDto? ActiveOrder { get; set; }
+    public List<POS.Contract.Dtos.OrderDtos.OrderDto>? ActiveOrders { get; set; }
 }

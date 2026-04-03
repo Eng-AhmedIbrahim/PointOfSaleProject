@@ -28,17 +28,11 @@ public class PosFeatureSettingsService : IPosFeatureSettingsService
 
     public async Task<bool> InitializeSettingsForComputerAsync(string computerName)
     {
-        // 1. Check if settings for this specific device already exist
+        // 1. Get existing settings for this specific device
         var computerSpec = new POS.Core.Specifications.BaseSpecifications<PosFeatureSetting>(s => s.ComputerName == computerName);
-        var existingSettings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(computerSpec);
+        var existingSettings = await _unitOfWork.Repository<PosFeatureSetting>().GetAllWithSpecificationAsync(computerSpec) ?? new List<PosFeatureSetting>();
         
-        if (existingSettings != null && existingSettings.Any())
-        {
-            return true; // Already initialized for this computer
-        }
-
         // 2. Load default settings from JSON file
-        // This ensures every new device starts with the latest defaults from the configuration file
         var settingsFromJson = await PosDbContextDataSeed.GetDataFromJsonFile<PosFeatureSetting>("posSettings.json");
         
         if (settingsFromJson == null || !settingsFromJson.Any())
@@ -46,24 +40,34 @@ public class PosFeatureSettingsService : IPosFeatureSettingsService
             return false;
         }
 
-        // 3. Create settings for this specific computer
+        // 3. Create missing settings for this specific computer
+        bool settingsAdded = false;
         foreach (var setting in settingsFromJson)
         {
-            var newSetting = new PosFeatureSetting
+            if (!existingSettings.Any(s => s.FeatureName == setting.FeatureName))
             {
-                FeatureName = setting.FeatureName,
-                NameEn = setting.NameEn,
-                NameAr = setting.NameAr,
-                ModuleName = setting.ModuleName,
-                ScreenName = setting.ScreenName,
-                Value = setting.Value,
-                ComputerName = computerName // Assign the current computer name
-            };
-            await _unitOfWork.Repository<PosFeatureSetting>().AddAsync(newSetting);
+                var newSetting = new PosFeatureSetting
+                {
+                    FeatureName = setting.FeatureName,
+                    NameEn = setting.NameEn,
+                    NameAr = setting.NameAr,
+                    ModuleName = setting.ModuleName,
+                    ScreenName = setting.ScreenName,
+                    Value = setting.Value,
+                    ComputerName = computerName
+                };
+                await _unitOfWork.Repository<PosFeatureSetting>().AddAsync(newSetting);
+                settingsAdded = true;
+            }
         }
 
-        // Save all settings at once
-        return await _unitOfWork.CompleteAsync() > 0;
+        // Save if any new settings were added
+        if (settingsAdded)
+        {
+            return await _unitOfWork.CompleteAsync() > 0;
+        }
+        
+        return true;
     }
 
     public async Task<bool> UpdateSettingsAsync(string computerName, List<PosFeatureSettingToReturnDto> settings)

@@ -79,7 +79,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("KitchenTypeId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Branch", b =>
@@ -105,6 +105,9 @@ namespace Pos.Repository.Migrations
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
@@ -155,7 +158,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Company.Company", b =>
@@ -210,7 +213,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.ComplaintEntity.Complaint", b =>
@@ -263,7 +266,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Complaints", (string)null);
+                    b.ToTable("Complaints");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Customer.TakeawayCustomer", b =>
@@ -370,7 +373,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("DeliveryZoneId");
 
-                    b.ToTable("CustomerAddress", (string)null);
+                    b.ToTable("CustomerAddress");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCompanyInfo", b =>
@@ -401,7 +404,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCompanyInfo", (string)null);
+                    b.ToTable("DeliveryCompanyInfo");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerInfo", b =>
@@ -430,7 +433,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCustomerInfo", (string)null);
+                    b.ToTable("DeliveryCustomerInfo");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryCustomerTitle", b =>
@@ -448,7 +451,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryCustomerTitle", (string)null);
+                    b.ToTable("DeliveryCustomerTitle");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Delivery.DeliveryZone", b =>
@@ -601,7 +604,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TableId", "OrderState");
 
-                    b.ToTable("DineInOrders", (string)null);
+                    b.ToTable("DineInOrders");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.DineIn.Table", b =>
@@ -723,7 +726,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("AttributeId");
 
-                    b.ToTable("AttributeGroups", (string)null);
+                    b.ToTable("AttributeGroups");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.AttributeItem", b =>
@@ -754,7 +757,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("RelatedMenuItemId");
 
-                    b.ToTable("AttributeItems", (string)null);
+                    b.ToTable("AttributeItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Attributes", b =>
@@ -774,7 +777,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.InventoryItem", b =>
@@ -842,7 +845,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("InventoryItems", (string)null);
+                    b.ToTable("InventoryItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.InventoryTransaction", b =>
@@ -884,7 +887,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("InventoryItemId");
 
-                    b.ToTable("InventoryTransactions", (string)null);
+                    b.ToTable("InventoryTransactions");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.InventoryTransactionImage", b =>
@@ -906,7 +909,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("InventoryTransactionId");
 
-                    b.ToTable("InventoryTransactionImages", (string)null);
+                    b.ToTable("InventoryTransactionImages");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.ItemType", b =>
@@ -928,7 +931,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemTypes", (string)null);
+                    b.ToTable("ItemTypes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.ItemsClassifications", b =>
@@ -947,7 +950,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemsClassifications", (string)null);
+                    b.ToTable("ItemsClassifications");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
@@ -1069,7 +1072,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("MainCategoryId");
 
-                    b.ToTable("MenuSalesItems", (string)null);
+                    b.ToTable("MenuSalesItems");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.OrderItemAttributes", b =>
@@ -1094,7 +1097,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("AttributeItemId");
 
-                    b.ToTable("OrderItemAttributes", (string)null);
+                    b.ToTable("OrderItemAttributes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Recipe", b =>
@@ -1124,7 +1127,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("MenuSalesItemId");
 
-                    b.ToTable("Recipes", (string)null);
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.RecipeIngredient", b =>
@@ -1158,7 +1161,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("RecipeIngredients", (string)null);
+                    b.ToTable("RecipeIngredients");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Item.Unit", b =>
@@ -1190,7 +1193,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units", (string)null);
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Kitchen.KitchenPrinters", b =>
@@ -1354,7 +1357,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderItemDetailId");
 
-                    b.ToTable("OrderItemComments", (string)null);
+                    b.ToTable("OrderItemComments");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderItemsDetails", b =>
@@ -1382,6 +1385,15 @@ namespace Pos.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool?>("Discount")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("HospitalityResponsibleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsHospitality")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsStaffMeal")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsVoided")
@@ -1419,6 +1431,9 @@ namespace Pos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(1m);
+
+                    b.Property<string>("StaffMealEmployeeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("TotalAfterDiscount")
                         .HasColumnType("decimal(18,2)");
@@ -1464,7 +1479,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrdersDetails", (string)null);
+                    b.ToTable("OrdersDetails");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderSetting", b =>
@@ -1538,7 +1553,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderSettings", (string)null);
+                    b.ToTable("OrderSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderTrack", b =>
@@ -1593,7 +1608,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderTracks", (string)null);
+                    b.ToTable("OrderTracks");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.OrderVoid", b =>
@@ -1862,6 +1877,21 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
+                    b.Property<string>("HospitalityReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HospitalityResponsibleId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HospitalityResponsibleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsHospitality")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsStaffMeal")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("KitchenOutTime")
                         .HasColumnType("datetime2");
 
@@ -1946,6 +1976,12 @@ namespace Pos.Repository.Migrations
 
                     b.Property<int?>("ShiftID")
                         .HasColumnType("int");
+
+                    b.Property<string>("StaffMealEmployeeId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StaffMealEmployeeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetName")
                         .HasMaxLength(100)
@@ -2060,7 +2096,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TakeawayCustomerPhone");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.OrderEntity.PosFeatureSetting", b =>
@@ -2097,7 +2133,54 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PosFeatureSettings", (string)null);
+                    b.ToTable("PosFeatureSettings");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.Payment.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedByName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPayoutFromDrawer")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MachineName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SpentBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Expenses");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Payment.PaymentMethodEntity", b =>
@@ -2123,7 +2206,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentMethods", (string)null);
+                    b.ToTable("PaymentMethods");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.ReservationEntity.Reservation", b =>
@@ -2184,7 +2267,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasIndex("TableId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Settings.DispatcherSetting", b =>
@@ -2221,7 +2304,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DispatcherSettings", (string)null);
+                    b.ToTable("DispatcherSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Settings.HqSetting", b =>
@@ -2268,7 +2351,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HqSettings", (string)null);
+                    b.ToTable("HqSettings");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Shift.ShiftHandover", b =>
@@ -2316,6 +2399,148 @@ namespace Pos.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ShiftHandovers", (string)null);
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DailyAmountLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("DailyLimit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAllItemsAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ItemName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MealLimit")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SpecialPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("StaffMealConfigs");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DailyAmountLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("DailyLimit")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAllItemsAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MealLimit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffMealGroups");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealGroupItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("StaffMealGroupItems");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffMealUsages");
                 });
 
             modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
@@ -2698,6 +2923,34 @@ namespace Pos.Repository.Migrations
                     b.Navigation("Table");
                 });
 
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealConfig", b =>
+                {
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealGroupItem", b =>
+                {
+                    b.HasOne("POS.Core.Entities.StaffMealEntity.StaffMealGroup", "Group")
+                        .WithMany("GroupItems")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("POS.Core.Entities.Item.MenuSalesItems", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("POS.Core.Entities.Categorie.Category", b =>
                 {
                     b.Navigation("MenuSalesItems");
@@ -2813,6 +3066,11 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Shift.ShiftHandover", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("POS.Core.Entities.StaffMealEntity.StaffMealGroup", b =>
+                {
+                    b.Navigation("GroupItems");
                 });
 #pragma warning restore 612, 618
         }

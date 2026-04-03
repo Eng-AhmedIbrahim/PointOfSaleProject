@@ -316,7 +316,7 @@
         _trendDataPoints = new List<SalesDataPoint>();
 
         var hourlyData = (_todayOrders ?? new())
-            .Where(o => o.OrderDate.HasValue && (o.GrandTotal ?? 0) > 0)
+            .Where(o => o.OrderDate.HasValue && o.OrderState == "Completed" && (o.GrandTotal ?? 0) > 0)
             .GroupBy(o => o.OrderDate!.Value.Hour)
             .Select(g => new { Hour = g.Key, Total = (double)g.Sum(o => o.GrandTotal ?? 0) })
             .ToDictionary(x => x.Hour, x => x.Total);
@@ -325,18 +325,22 @@
 
         // Fallback: distribute TotalSales across typical peak hours if no order data
         double totalSales = (double)SummaryInfo.Overall.TotalSales;
-        double[] fallbackWeights = { 0.03, 0.04, 0.08, 0.10, 0.06, 0.05,
-                                     0.07, 0.10, 0.12, 0.10, 0.09, 0.07,
-                                     0.04, 0.03, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0 };
+        // Weights for 24 hours starting from 08:00
+        double[] fallbackWeights = { 
+            0.03, 0.04, 0.08, 0.10, 0.06, 0.05, // 08-13
+            0.07, 0.10, 0.12, 0.10, 0.09, 0.07, // 14-19
+            0.04, 0.03, 0.01, 0.01, 0.0, 0.0,   // 20-01
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0         // 02-07
+        };
 
-        // Operational hours: from 08:00 to 04:00 next day (21 points)
-        for (int i = 0; i <= 20; i++)
+        // Operational hours: Full 24-hour cycle starting from 08:00
+        for (int i = 0; i < 24; i++)
         {
             int h = (8 + i) % 24;
             string timeLabel = $"{h:D2}:00";
             double val = hasRealData
                 ? (hourlyData.ContainsKey(h) ? hourlyData[h] : 0)
-                : (totalSales > 0 ? totalSales * fallbackWeights[i] : 0);
+                : (totalSales > 0 && i < fallbackWeights.Length ? totalSales * fallbackWeights[i] : 0);
             _trendDataPoints.Add(new SalesDataPoint { Time = timeLabel, Value = Math.Round(val, 0) });
         }
 

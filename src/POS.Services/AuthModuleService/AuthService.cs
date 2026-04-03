@@ -138,10 +138,10 @@ public class AuthService : IAuthService
     }
 
     public async Task<List<ApplicationRole>> GetAllRolesAsync()
-    => _roleManager.Roles.ToList();
+    => await _roleManager.Roles.ToListAsync();
 
     public async Task<List<AppUser>> GetAllUsersAsync()
-    => _userManager.Users.ToList();
+    => await _userManager.Users.ToListAsync();
 
     public async Task<ApplicationRole> GetRoleAsync(string roleName)
     => await _roleManager.FindByNameAsync(roleName) ?? new();

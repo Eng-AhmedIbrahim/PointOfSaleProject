@@ -115,7 +115,8 @@ public class DistributionServices : IDistributionServices
                 DriverName = g.Key.DriverName ?? "Unknown",
                 OrderCount = g.Count(),
                 TotalAmount = g.Sum(o => o.GrandTotal ?? 0),
-                TotalBonus = g.Sum(o => o.ZoneBonus ?? 0)
+                TotalBonus = g.Sum(o => o.ZoneBonus ?? 0),
+                Orders = _mapper.Map<List<OrderDto>>(g.ToList())
             })
             .ToList();
     }

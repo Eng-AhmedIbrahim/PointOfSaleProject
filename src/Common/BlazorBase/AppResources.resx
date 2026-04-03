@@ -213,14 +213,47 @@
   <data name="Print" xml:space="preserve">
     <value>Print</value>
   </data>
+  <data name="PrintSummary" xml:space="preserve">
+    <value>Print Summary</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
   <data name="Tax" xml:space="preserve">
     <value>Tax</value>
   </data>
+  <data name="UniqueItems" xml:space="preserve">
+    <value>Unique Item</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Qty" xml:space="preserve">
+    <value>Qty</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SalesItemsSummary" xml:space="preserve">
+    <value>Item Sales</value>
+  </data>
   <data name="Service" xml:space="preserve">
     <value>Service</value>
+  </data>
+  <data name="Pickup" xml:space="preserve">
+    <value>Pickup</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
   </data>
   <data name="Account" xml:space="preserve">
     <value>Account</value>
@@ -1541,5 +1574,131 @@
   </data>
   <data name="EnableInventoryTracking" xml:space="preserve">
     <value>Enable Inventory Tracking</value>
+  </data>
+  <data name="Hospitality" xml:space="preserve">
+    <value>Hospitality</value>
+  </data>
+  <data name="ConfirmHospitality" xml:space="preserve">
+    <value>Do you want to confirm the hospitality order?</value>
+  </data>
+  <data name="HospitalityOrderConfirmed" xml:space="preserve">
+    <value>Hospitality order executed successfully</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="NoItemsToProcess" xml:space="preserve">
+    <value>No items in cart</value>
+  </data>
+  <data name="PrintingFailed" xml:space="preserve">
+    <value>Printing Failed</value>
+  </data>
+  <data name="WorkersMealAdded" xml:space="preserve">
+    <value>Workers meal added successfully</value>
+  </data>
+  <data name="WorkersMeals" xml:space="preserve">
+    <value>Workers Meals</value>
+  </data>
+  <data name="WorkersMealsManagement" xml:space="preserve">
+    <value>Workers Meals Management</value>
+  </data>
+  <data name="WorkersMealsManagementDesc" xml:space="preserve">
+    <value>Manage daily meal assignments and usage limits for workers</value>
+  </data>
+  <data name="AddNewConfig" xml:space="preserve">
+    <value>Add New Configuration</value>
+  </data>
+  <data name="EditConfig" xml:space="preserve">
+    <value>Edit Configuration</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Select Worker</value>
+  </data>
+  <data name="SelectMealItem" xml:space="preserve">
+    <value>Select Meal Item</value>
+  </data>
+  <data name="DailyLimit" xml:space="preserve">
+    <value>Daily Limit</value>
+  </data>
+  <data name="AssignedPrice" xml:space="preserve">
+    <value>Assigned Price</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Is Active</value>
+  </data>
+  <data name="NoStaffMealsFound" xml:space="preserve">
+    <value>No workers meal configurations found</value>
+  </data>
+  <data name="SpecificItem" xml:space="preserve">
+    <value>Specific Item</value>
+  </data>
+  <data name="ByCategory" xml:space="preserve">
+    <value>By Category</value>
+  </data>
+  <data name="ByStaffGroup" xml:space="preserve">
+    <value>By Staff Group</value>
+  </data>
+  <data name="SelectMealCategory" xml:space="preserve">
+    <value>Select Meal Category</value>
+  </data>
+  <data name="SelectStaffGroup" xml:space="preserve">
+    <value>Select Staff Group</value>
+  </data>
+  <data name="StaffMealGroups" xml:space="preserve">
+    <value>Staff Meal Groups</value>
+  </data>
+  <data name="StaffMealGroupManagement" xml:space="preserve">
+    <value>Staff Meal Groups Management</value>
+  </data>
+  <data name="StaffMealGroupManagementDesc" xml:space="preserve">
+    <value>Manage customized groups for workers meals</value>
+  </data>
+  <data name="StaffMeals" xml:space="preserve">
+    <value>Staff Meals</value>
+  </data>
+  <data name="SearchForStaffMember" xml:space="preserve">
+    <value>Search for Staff Member</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Welcome Back</value>
+  </data>
+  <data name="SelectYourMealItemsFromPOS" xml:space="preserve">
+    <value>Select your meal items from POS</value>
+  </data>
+  <data name="YourMealContent" xml:space="preserve">
+    <value>Your Meal Content</value>
+  </data>
+  <data name="AllowedToday" xml:space="preserve">
+    <value>Allowed Today</value>
+  </data>
+  <data name="DailyLimitReached" xml:space="preserve">
+    <value>Daily Limit Reached</value>
+  </data>
+  <data name="ComeBackTomorrowForMore" xml:space="preserve">
+    <value>Come back tomorrow for more</value>
+  </data>
+  <data name="NoConfigFound" xml:space="preserve">
+    <value>No configuration found</value>
+  </data>
+  <data name="ContactAdminToSetupMeal" xml:space="preserve">
+    <value>Contact admin to setup meal</value>
+  </data>
+  <data name="PleaseSelectEmployeeToViewMeal" xml:space="preserve">
+    <value>Please select employee to view meal</value>
+  </data>
+  <data name="ScanBadgeOrSearchByName" xml:space="preserve">
+    <value>Scan badge or search by name</value>
+  </data>
+  <data name="StartMyOrder" xml:space="preserve">
+    <value>Start My Order</value>
+  </data>
+  <data name="LoadingUserStatus" xml:space="preserve">
+    <value>Loading user status</value>
+  </data>
+  <data name="StaffMealModeActivated" xml:space="preserve">
+    <value>Staff meal mode activated</value>
+  </data>
+  <data name="MealLimit" xml:space="preserve">
+    <value>Meals Limit</value>
   </data>
 </root>

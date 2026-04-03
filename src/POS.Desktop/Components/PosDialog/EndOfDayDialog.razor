@@ -134,7 +134,7 @@
                 var summary = await ReportingService.GetSalesSummary(_currentPosDate);
                 var items = await ReportingService.GetSalesItemsSummary(_currentPosDate);
                 
-                await PrintOrderService.PrintSalesSummaryAsync(summary, items, null, false, true);
+                await PrintOrderService.PrintEndDayReportAsync(summary, items, null, false, true);
                 Snackbar.Add("End of day report sent to printer", Severity.Info);
             }
 

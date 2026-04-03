@@ -78,16 +78,24 @@
             </div>
             
             <div class="footer-actions">
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Info" 
-                           StartIcon="@Icons.Material.Filled.Print" 
-                           Class="footer-btn"
-                           OnClick="PrintAccountsReport">@(Localizer.GetCurrentLanguage() == "ar" ? "طباعة الكل" : "Print All")</MudButton>
+                <div class="footer-actions-top">
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Info" 
+                               StartIcon="@Icons.Material.Filled.Print" 
+                               Class="footer-btn"
+                               OnClick="PrintAccountsReport">@(Localizer.GetCurrentLanguage() == "ar" ? "طباعة الكل" : "Print All")</MudButton>
+
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Secondary" 
+                               StartIcon="@Icons.Material.Filled.Assignment" 
+                               Class="footer-btn"
+                               OnClick="@(() => PrintDetailedAccountsReport())">@(Localizer.GetCurrentLanguage() == "ar" ? "تقرير مفصل" : "Detailed Report")</MudButton>
+                </div>
 
                 <MudButton Variant="Variant.Filled" 
                            Color="Color.Error" 
                            StartIcon="@Icons.Material.Filled.Close" 
-                           Class="footer-btn"
+                           Class="footer-btn-close"
                            OnClick="GoBack">@Localizer["Close"]</MudButton>
             </div>
         </div>
@@ -123,18 +131,36 @@
     }
 
     .footer-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
         width: 100%;
     }
 
+    .footer-actions-top {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
     .footer-btn {
-        height: 60px;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 1.1rem;
+        height: 56px !important;
+        border-radius: 12px !important;
+        font-weight: 800 !important;
+        font-size: 1rem !important;
+        text-transform: none !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        width: 100% !important;
+    }
+
+    .footer-btn-close {
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        text-transform: none !important;
+        width: 100% !important;
+        opacity: 0.85;
     }
 
     .total-revenue .value {
@@ -145,7 +171,7 @@
     .custom-table { width: 100% !important; }
     
     @@media (max-width: 960px) {
-        .footer-actions { grid-template-columns: 1fr; }
+        .footer-actions-top { grid-template-columns: 1fr; }
         .accounts-header { flex-direction: column; height: auto; gap: 10px; }
         .filter-section { width: 100%; justify-content: center; }
     }

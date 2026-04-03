@@ -4,7 +4,7 @@ namespace POS.Contract.Models.ReceiptModels.Delivery;
 
 public class DeliveryReceipt
 {
-    public string LogoPath { get; set; } = "F:\\Point Of Sale\\PointOfSale\\src\\ERPFront\\wwwroot\\images\\Logo.png";
+    public string LogoPath { get; set; } = string.Empty;
     public string StoreName { get; set; } = string.Empty;
     public int Id { get; set; }
     public string CashierName { get; set; } = string.Empty;
@@ -33,12 +33,20 @@ public class DeliveryReceipt
     public string? ZoneName { get; set; }
     public string? AddressNote { get; set; }
     public string? DeliveryName { get; set; }
+    public string? DeliveryDisplayName { get; set; }
 
     //Amount
     public decimal? TotalAmount { get; set; } = 100;
     public decimal? DeliveryFees { get; set; } = 100;
     public decimal? TotalOrder { get; set; } = 100;
     public string? CustomerAddress { get; set; } = "Tanta";
+
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
 
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);

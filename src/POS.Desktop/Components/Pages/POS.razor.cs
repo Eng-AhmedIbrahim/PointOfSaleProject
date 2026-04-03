@@ -114,6 +114,61 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
+        // 1. Staff Meal Limit Check
+        if (_commonProperties.CurrentStaffMeal != null)
+        {
+            bool isAmountMode = _commonProperties.CurrentStaffMeal.DailyAmountLimit > 0;
+
+            if (!isAmountMode)
+            {
+                // COUNT MODE: enforce per-order item count limit (MealLimit)
+                var mealLimit = _commonProperties.CurrentStaffMeal.MealLimit;
+                var currentOrderQtyInCart = _commonProperties.TableItems?
+                    .Where(i => !i.IsVoided)
+                    .Sum(i => i.Quantity) ?? 0;
+
+                if (currentOrderQtyInCart + 1 > mealLimit)
+                {
+                    var mealLimitMsg = Localizer.GetCurrentLanguage() == "ar"
+                        ? $"عذراً، أقصى عدد مسموح به في الوجبة الواحدة هو {mealLimit} أصناف"
+                        : $"Sorry, the maximum allowed per single meal is {mealLimit} items";
+                    _snackbar.Add(mealLimitMsg, Severity.Error);
+                    return;
+                }
+            }
+            else
+            {
+                // AMOUNT MODE: enforce monetary budget only
+                decimal itemPrice = selectedMenuItem.Price ?? 0;
+                decimal dailyLimit = _commonProperties.CurrentStaffMeal.DailyAmountLimit;
+
+                // Single item must not exceed total daily limit
+                if (itemPrice > dailyLimit)
+                {
+                    var priceLimitMsg = Localizer.GetCurrentLanguage() == "ar"
+                        ? $"سعر الصنف ({itemPrice:0.##}) يتخطى الحد اليومي الكلي ({dailyLimit:0.##})"
+                        : $"Item price ({itemPrice:0.##}) exceeds total daily limit ({dailyLimit:0.##})";
+                    _snackbar.Add(priceLimitMsg, Severity.Error);
+                    return;
+                }
+
+                // Remaining balance check
+                decimal currentOrderTotalSpent = _commonProperties.TableItems?
+                    .Where(i => !i.IsVoided)
+                    .Sum(i => (i.OriginalPrice ?? 0) * i.Quantity) ?? 0;
+
+                if (currentOrderTotalSpent + itemPrice > _commonProperties.RemainingStaffMealAmount)
+                {
+                    var balanceMsg = Localizer.GetCurrentLanguage() == "ar"
+                        ? $"عذراً، الرصيد المتبقي ({_commonProperties.RemainingStaffMealAmount:0.##}) غير كافٍ لإضافة هذا الصنف"
+                        : $"Sorry, remaining balance ({_commonProperties.RemainingStaffMealAmount:0.##}) is insufficient for this item";
+                    _snackbar.Add(balanceMsg, Severity.Error);
+                    return;
+                }
+            }
+        }
+
+
         // Check if Stop Sale on Min Quantity is enabled for this machine
         string computerName = Environment.MachineName;
         bool isStopEnabled = await _featureSettingsService.IsFeatureEnabledAsync("EnableMinQuantityStop", computerName);
@@ -244,6 +299,32 @@ public partial class POS
     /// </summary>
     private void IncrementExistingNewItem(TableItem existingNewItem)
     {
+        if (_commonProperties.CurrentStaffMeal != null)
+        {
+            bool isAmountMode = _commonProperties.CurrentStaffMeal.DailyAmountLimit > 0;
+
+            if (!isAmountMode)
+            {
+                var mealLimit = _commonProperties.CurrentStaffMeal.MealLimit;
+                var currentQty = _commonProperties.TableItems?.Where(i => !i.IsVoided).Sum(i => i.Quantity) ?? 0;
+                if (currentQty + 1 > mealLimit)
+                {
+                    _snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "تخطيت الحد الأقصى للوجبة" : "Meal limit reached", Severity.Error);
+                    return;
+                }
+            }
+            else
+            {
+                var itemPrice = existingNewItem.OriginalPrice ?? 0;
+                var currentSpent = _commonProperties.TableItems?.Where(i => !i.IsVoided).Sum(i => (i.OriginalPrice ?? 0) * i.Quantity) ?? 0;
+                if (currentSpent + itemPrice > _commonProperties.RemainingStaffMealAmount)
+                {
+                    _snackbar.Add(Localizer.GetCurrentLanguage() == "ar" ? "الرصيد المتبقي غير كافي" : "Insufficient balance", Severity.Error);
+                    return;
+                }
+            }
+        }
+
         existingNewItem.Quantity++;
         existingNewItem.Total += existingNewItem.Price;
         existingNewItem.TotalAmount += existingNewItem.Price;
@@ -462,6 +543,7 @@ public partial class POS
             Price = menuItem.Price ?? 0,
             Quantity = weightQty ?? 1,
             Total = menuItem.Price ?? 0,
+            OriginalPrice = menuItem.Price ?? 0,
             Attributes = selectedAttributes,
             CategoryKitchenTypeId = menuItem.CategoryKitchenTypeId,
             ItemKitchenTypeId = menuItem.KitchenTypeId,
@@ -471,9 +553,19 @@ public partial class POS
             ExtraPrice = menuItem.ExtraPrice,
             ByWeight = menuItem.ByWeight,
             WeightQty = weightQty,
-            ItemTax = menuItem.Tax,
             HasTax = (menuItem.Tax ?? 0) > 0
         };
+
+        if (_commonProperties.CurrentStaffMeal != null)
+        {
+            newTableItem.IsStaffMeal = true;
+            newTableItem.StaffName = _commonProperties.CurrentStaffMeal.UserName;
+            newTableItem.Price = 0;
+            newTableItem.Total = 0;
+            newTableItem.TotalAmount = 0;
+            newTableItem.HasTax = false;
+            newTableItem.ItemTax = 0;
+        }
 
         // Recalculate to apply item-level tax and discounts immediately
         _cartService.RecalculateItemTotals(newTableItem);
@@ -515,6 +607,7 @@ public partial class POS
     public void ClearTableItems()
     {
         _commonProperties?.TableItems?.Clear();
+        _commonProperties?.ClearStaffMeal();
         _cartService.CalculateSection4Table();
         StateHasChanged();
     }
@@ -689,26 +782,35 @@ public partial class POS
         await Task.CompletedTask;
     }
 
+    private bool _isProcessingTakeaway = false;
     private async Task CreateTakeawayOrder()
     {
-        if (_commonProperties.TableItems!.Count == 0)
+        if (_commonProperties.TableItems!.Count == 0 || _isProcessingTakeaway)
             return;
 
-        var result = await _printOrderService.PrintTakeAwayOrder();
-        if (result is true)
+        _isProcessingTakeaway = true;
+        try
         {
-            _cartService.ClearTakeAwayOrderAttributes();
-            _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            
-            // Atomically update order count and get next number
-            var appDateResult = await _appDate.UpdateOrderCount();
-            if (appDateResult != null)
+            var result = await _printOrderService.PrintTakeAwayOrder();
+            if (result is true)
             {
-                _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
-                _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
-            }
+                _cartService.ClearTakeAwayOrderAttributes();
+                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                
+                // Atomically update order count and get next number
+                var appDateResult = await _appDate.UpdateOrderCount();
+                if (appDateResult != null)
+                {
+                    _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
+                    _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
+                }
 
-            _section4ButtonsServices.NotifyStateChanged();
+                _section4ButtonsServices.NotifyStateChanged();
+            }
+        }
+        finally
+        {
+            _isProcessingTakeaway = false;
         }
     }
 
@@ -733,4 +835,35 @@ public partial class POS
             StateHasChanged();
         }
     }
-}
+
+    #region Staff Meal Filtering 
+    private IEnumerable<CategoryToReturnDto> GetFilteredCategories()
+    {
+        if (_commonProperties.CurrentStaffMeal == null) return _categories ?? [];
+        if (_commonProperties.CurrentStaffMeal.IsAllItemsAllowed) return _categories ?? [];
+        if (_commonProperties.AllowedStaffCategoryIds.Count == 0) return _categories ?? [];
+        return (_categories ?? []).Where(c => _commonProperties.AllowedStaffCategoryIds.Contains(c.Id));
+    }
+
+    private IEnumerable<MenuSalesItemsToReturnDto> GetFilteredItems()
+    {
+        if (_commonProperties.CurrentStaffMeal == null) return _itemByCatId ?? [];
+        
+        // If all items are allowed, show items from the current category, but still apply price filtering if applicable
+        if (_commonProperties.CurrentStaffMeal.IsAllItemsAllowed)
+        {
+            var items = _itemByCatId ?? new List<MenuSalesItemsToReturnDto>();
+            if (_commonProperties.CurrentStaffMeal.DailyAmountLimit > 0)
+            {
+                items = items.Where(i => 
+                    i.Price <= _commonProperties.CurrentStaffMeal.DailyAmountLimit && 
+                    i.Price <= _commonProperties.RemainingStaffMealAmount
+                ).ToList();
+            }
+            return items;
+        }
+
+        return _commonProperties.AllowedStaffMenuItems;
+    }
+    #endregion
+}

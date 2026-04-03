@@ -1,3 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using POS.Core.Repository.Contract;
+using AutoMapper;
+using POS.Core.Specifications;
+using POS.Contract.Dtos.ReportingDtos;
+using POS.Core.Entities.OrderEntity;
+using POS.Core.Entities.Payment;
+
 namespace POS.Services.ReportingServices;
 
 public class ReportingService : IReportingService
@@ -33,6 +44,8 @@ public class ReportingService : IReportingService
         summary.DineIn = MapToModeSummary(orders, OrderTypes.DineIn);
         summary.Delivery = MapToModeSummary(orders, OrderTypes.Delivery);
         summary.TakeAway = MapToModeSummary(orders, OrderTypes.TakeAway);
+        summary.Staff = MapToModeSummary(orders, OrderTypes.Staff);
+        summary.Hospitality = MapToModeSummary(orders, OrderTypes.Hospitality);
 
         summary.Overall.TotalSales = completedOrders.Sum(o => o.GrandTotal ?? 0);
         
@@ -45,7 +58,9 @@ public class ReportingService : IReportingService
         summary.Overall.PendingAmount = pendingOrders.Sum(o => o.GrandTotal ?? 0);
         
         // Use OrderVoid table for accurate void accounting (includes voids of old orders)
-        var voidSpec = new BaseSpecifications<OrderVoid>(v => v.VoidDate.Date >= posDate.Date && v.VoidDate.Date <= finalEndDate.Date);
+        var nextDay = finalEndDate.Date.AddDays(1);
+        var voidSpec = new BaseSpecifications<OrderVoid>(v => v.VoidDate >= posDate.Date && v.VoidDate < nextDay);
+        voidSpec.Includes.Add(v => v.Order!); // Include Order to get serial OrderID
         var voidsActivity = await _unitOfWork.Repository<OrderVoid>().GetAllWithSpecificationAsync(voidSpec);
         
         summary.Overall.FullVoidAmount = voidsActivity.Where(v => v.IsFullVoid).Sum(v => v.TotalVoidedAmount);
@@ -53,20 +68,54 @@ public class ReportingService : IReportingService
         summary.Overall.VoidAmount = summary.Overall.FullVoidAmount + summary.Overall.PartialVoidAmount;
         summary.Overall.VoidCount = voidsActivity.Count;
 
+        // Calculate VoidAmount consistently from the Orders table to capture ALL voids (partial and full)
+        var ordersWithVoid = orders.Where(o => (o.VoidAmount ?? 0) > 0 || o.OrderState == OrderStates.Voided).ToList();
+        var totalVoidFromOrders = ordersWithVoid.Sum(o => o.VoidAmount ?? o.GrandTotal ?? 0);
+        
+        // But still check if OrderVoid table has more data (e.g., historical voids not easily caught by order state)
+        if (totalVoidFromOrders > summary.Overall.VoidAmount)
+        {
+            summary.Overall.VoidAmount = totalVoidFromOrders;
+            summary.Overall.VoidCount = ordersWithVoid.Count;
+        }
+
         summary.VoidEvents = voidsActivity.Select(v => new VoidEventDto
         {
-            OrderId = v.OrderId,
+            OrderId = v.Order?.OrderID ?? v.OrderId, // Use serial OrderID if available
             OrderType = v.OrderType.ToString(),
             VoidDate = v.VoidDate,
-            VoidedByName = v.VoidedByName,
+            VoidedByName = !string.IsNullOrEmpty(v.VoidedByName) ? v.VoidedByName : (v.Order?.VoidByName ?? "System"),
             Reason = v.Reason,
             IsFullVoid = v.IsFullVoid,
             GrandTotalBefore = v.GrandTotalBefore,
             TotalVoidedAmount = v.TotalVoidedAmount,
             GrandTotalAfter = v.GrandTotalAfter
         }).OrderByDescending(v => v.VoidDate).ToList();
+
+        // Fallback for VoidEvents if OrderVoid table is empty or missing data
+        if (!summary.VoidEvents.Any() && summary.Overall.VoidAmount > 0)
+        {
+            summary.VoidEvents = orders.Where(o => (o.VoidAmount ?? 0) > 0 || o.OrderState == OrderStates.Voided)
+                .Select(o => new VoidEventDto
+                {
+                    OrderId = o.OrderID, // Use serial OrderID
+                    OrderType = o.OrderType!.ToString() ?? "",
+                    VoidDate = o.VoidTime ?? o.OrderDate ?? DateTime.Now,
+                    VoidedByName = !string.IsNullOrEmpty(o.VoidByName) ? o.VoidByName : "System",
+                    Reason = o.VoidReason ?? "N/A",
+                    IsFullVoid = o.OrderState == OrderStates.Voided,
+                    TotalVoidedAmount = o.VoidAmount ?? o.GrandTotal ?? 0
+                }).OrderByDescending(v => v.VoidDate).ToList();
+        }
         
         summary.Overall.TotalDiscount = summary.DineIn.Discount + summary.Delivery.Discount + summary.TakeAway.Discount;
+        // Fallback: if ModeSummary didn't capture discount, sum from Orders directly
+        if (summary.Overall.TotalDiscount == 0)
+        {
+            summary.Overall.TotalDiscount = orders.Where(o => o.OrderState == OrderStates.Completed)
+                .Sum(o => o.TotalDiscount ?? 0);
+        }
+
         
         // Population of DetailedOrders for report sub-tables
         summary.DetailedOrders = _mapper.Map<List<OrderDto>>(orders.OrderByDescending(o => o.OrderDate).ToList());
@@ -74,7 +123,7 @@ public class ReportingService : IReportingService
         // Analytics: Hourly Sales
         summary.Overall.HourlySales = completedOrders
             .Where(o => o.OrderDate.HasValue)
-            .GroupBy(o => o.OrderDate.Value.Hour)
+            .GroupBy(o => o.OrderDate!.Value.Hour)
             .Select(g => new HourlySalesDto 
             { 
                 Hour = g.Key, 
@@ -96,7 +145,9 @@ public class ReportingService : IReportingService
         {
             CreateModeDetail("الصالة", orders, OrderTypes.DineIn),
             CreateModeDetail("التوصيل", orders, OrderTypes.Delivery),
-            CreateModeDetail("التيك أواي", orders, OrderTypes.TakeAway)
+            CreateModeDetail("التيك أواي", orders, OrderTypes.TakeAway),
+            CreateModeDetail("العاملين", orders, OrderTypes.Staff),
+            CreateModeDetail("ضيافة", orders, OrderTypes.Hospitality)
         };
 
         decimal totalValue = summary.Overall.TotalSales + summary.Overall.PendingAmount;
@@ -109,19 +160,91 @@ public class ReportingService : IReportingService
 
         summary.Overall.Currency = "L.E";
 
-        // Cashier Summaries
-        summary.CashierSummaries = completedOrders
+        // 1. Cashier Summaries
+        var cashierStats = orders
             .Where(o => !string.IsNullOrEmpty(o.CashierID))
             .GroupBy(o => o.CashierID!)
             .Select(g => new AccountSummaryDto
             {
                 Id = g.Key,
-                Name = g.First().CashierName ?? "Unknown",
+                Name = g.FirstOrDefault()?.CashierName ?? "Unknown",
                 Type = "Cashier",
-                CashAmount = g.Where(o => o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
-                CreditAmount = g.Where(o => o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
-                OrderCount = g.Count()
+                CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
+                CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
+                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
+                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
+                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
             }).ToList();
+
+        // 2. Waiter Summaries (for Dine-In)
+        var waiterStats = orders
+            .Where(o => !string.IsNullOrEmpty(o.WaiterID))
+            .GroupBy(o => o.WaiterID!)
+            .Select(g => new AccountSummaryDto
+            {
+                Id = g.Key,
+                Name = g.FirstOrDefault()?.WaiterName ?? "Unknown",
+                Type = "Waiter",
+                CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
+                CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
+                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
+                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
+                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
+            }).ToList();
+
+        // 3. Driver Summaries (for Delivery)
+        var driverStats = orders
+            .Where(o => !string.IsNullOrEmpty(o.DriverID))
+            .GroupBy(o => o.DriverID!)
+            .Select(g => new AccountSummaryDto
+            {
+                Id = g.Key,
+                Name = g.FirstOrDefault()?.DriverName ?? "Unknown",
+                Type = "Driver",
+                CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
+                CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
+                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
+                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
+                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
+            }).ToList();
+
+        // Combine all and ensure unique entries per ID+Type
+        summary.CashierSummaries = cashierStats
+            .Concat(waiterStats)
+            .Concat(driverStats)
+            .GroupBy(s => new { s.Id, s.Type })
+            .Select(g => g.First())
+            .ToList();
+
+        // 4. Expenses and Payouts
+        var expSpec = new BaseSpecifications<POS.Core.Entities.Payment.Expense>(e => e.Date >= posDate.Date && e.Date < nextDay);
+        var expenses = await _unitOfWork.Repository<POS.Core.Entities.Payment.Expense>().GetAllWithSpecificationAsync(expSpec);
+        summary.DetailedExpenses = expenses.Select(e => new ExpenseDto 
+        { 
+            Id = e.Id, 
+            Date = e.Date, 
+            Amount = e.Amount, 
+            Description = e.Description, 
+            Category = e.Category ?? "General",
+            CreatedById = e.CreatedById,
+            CreatedByName = e.CreatedByName,
+            SpentBy = e.SpentBy,
+            IsPayoutFromDrawer = e.IsPayoutFromDrawer,
+            BranchId = e.BranchId,
+            ShiftId = e.ShiftId
+        }).ToList();
+        
+        summary.Overall.Expenses = summary.DetailedExpenses.Where(e => e.IsPayoutFromDrawer).Sum(e => e.Amount);
+        
+        // Distribute expense deduction to account summaries if ShiftId is linked
+        if (summary.DetailedExpenses.Any())
+        {
+            foreach(var exp in summary.DetailedExpenses.Where(e => e.IsPayoutFromDrawer && e.ShiftId.HasValue))
+            {
+                // Attempt to link to cashier summary via shift (assuming account summary matches people who have shifts)
+                // In many POS systems, the person who made the payout is tracked.
+            }
+        }
 
         return summary;
     }
@@ -159,7 +282,9 @@ public class ReportingService : IReportingService
             DeliveryFees = completed.Sum(o => o.DeliveryFees ?? 0),
             Total = completed.Sum(o => o.GrandTotal ?? 0),
             UncollectedAmount = pending.Sum(o => o.GrandTotal ?? 0),
-            OrderCount = modeOrders.Count
+            VoidAmount = modeOrders.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
+            VoidCount = modeOrders.Count(o => (o.VoidAmount ?? 0) > 0 || o.OrderState == OrderStates.Voided),
+            OrderCount = completed.Count
         };
     }
 

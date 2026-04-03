@@ -254,6 +254,31 @@ try
         END
     ");
 
+    // Hotfix: Ensure StaffMealGroups table schema is correct
+    await dbContext.Database.ExecuteSqlRawAsync(@"
+        IF OBJECT_ID('StaffMealGroups') IS NOT NULL
+        BEGIN
+            IF COL_LENGTH('StaffMealGroups', 'DailyLimit') IS NULL
+                ALTER TABLE StaffMealGroups ADD DailyLimit INT NOT NULL DEFAULT 1;
+            IF COL_LENGTH('StaffMealGroups', 'MealLimit') IS NULL
+                ALTER TABLE StaffMealGroups ADD MealLimit INT NOT NULL DEFAULT 1;
+            IF COL_LENGTH('StaffMealGroups', 'DailyAmountLimit') IS NULL
+                ALTER TABLE StaffMealGroups ADD DailyAmountLimit DECIMAL(18,2) NOT NULL DEFAULT 0;
+            -- Added safety for DailyLimit and MealLimit if missing from earlier migrations
+        END
+
+        IF OBJECT_ID('StaffMealConfigs') IS NOT NULL
+        BEGIN
+            IF COL_LENGTH('StaffMealConfigs', 'DailyLimit') IS NULL
+                ALTER TABLE StaffMealConfigs ADD DailyLimit INT NOT NULL DEFAULT 1;
+            IF COL_LENGTH('StaffMealConfigs', 'MealLimit') IS NULL
+                ALTER TABLE StaffMealConfigs ADD MealLimit INT NOT NULL DEFAULT 1;
+            IF COL_LENGTH('StaffMealConfigs', 'DailyAmountLimit') IS NULL
+                ALTER TABLE StaffMealConfigs ADD DailyAmountLimit DECIMAL(18,2) NOT NULL DEFAULT 0;
+        END
+    ");
+
+
     await PosDbContextDataSeed.SeedAsync(dbContext);
     await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager, identityDbContext);
 }

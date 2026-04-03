@@ -7,12 +7,16 @@ public class SalesSummaryDto
 {
     public DateTime PosDate { get; set; }
     public string? StaffName { get; set; }
+    public string? StaffId { get; set; }
     public List<POS.Contract.Dtos.OrderDtos.OrderDto>? DetailedOrders { get; set; }
     public List<VoidEventDto> VoidEvents { get; set; } = new();
     public List<AccountSummaryDto> CashierSummaries { get; set; } = new();
+    public List<ExpenseDto> DetailedExpenses { get; set; } = new();
     public ModeSummaryDto DineIn { get; set; } = new();
     public ModeSummaryDto Delivery { get; set; } = new();
     public ModeSummaryDto TakeAway { get; set; } = new();
+    public ModeSummaryDto Staff { get; set; } = new();
+    public ModeSummaryDto Hospitality { get; set; } = new();
     public OverallSummaryDto Overall { get; set; } = new();
 }
 
@@ -40,6 +44,8 @@ public class ModeSummaryDto
     public decimal UncollectedAmount { get; set; } // Pending/In-progress orders
     public int OrderCount { get; set; }
     public decimal AverageOrder => OrderCount > 0 ? (Total + UncollectedAmount) / OrderCount : 0;
+    public decimal VoidAmount { get; set; }
+    public decimal VoidCount { get; set; }
     public decimal PercentageOfSales { get; set; }
 }
 
@@ -52,15 +58,17 @@ public class OverallSummaryDto
     public decimal PendingAmount { get; set; } // Non-completed orders
     public decimal RefundAmount { get; set; }
     public decimal RefundCount { get; set; }
+    public decimal TotalDiscount { get; set; }
     public decimal Expenses { get; set; }
+    public decimal TotalSalesTax { get; set; }
+    public decimal ServiceTotal { get; set; }
+    public decimal NetCash => CashAmount - Expenses - RefundAmount;
+    public decimal TotalRevenue => TotalSales - TotalDiscount;
+    public string Currency { get; set; } = "EGP";
     public decimal VoidAmount { get; set; }
     public decimal FullVoidAmount { get; set; }
     public decimal PartialVoidAmount { get; set; }
     public decimal VoidCount { get; set; }
-    public decimal TotalDiscount { get; set; }
-    public decimal TotalRevenue => TotalSales + PendingAmount;
-    public decimal NetCash => CashAmount - RefundAmount - Expenses;
-    public string Currency { get; set; } = string.Empty;
     
     // Analytics
     public List<HourlySalesDto> HourlySales { get; set; } = new();
@@ -103,6 +111,8 @@ public class AccountSummaryDto
     public decimal OnAccountAmount { get; set; }
     public decimal RefundAmount { get; set; }
     public decimal Expenses { get; set; }
+    public decimal VoidAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
     public int OrderCount { get; set; }
     public decimal TotalAmount => CashAmount + CreditAmount + OnAccountAmount;
 }
@@ -140,4 +150,18 @@ public class ReportResponseDto
     public byte[] Content { get; set; } = Array.Empty<byte>();
     public string FileName { get; set; } = string.Empty;
     public string ContentType { get; set; } = string.Empty;
+}
+
+public class InventorySummaryDto
+{
+    public int Id { get; set; }
+    public string ItemNameAr { get; set; } = string.Empty;
+    public string ItemNameEn { get; set; } = string.Empty;
+    public string CategoryNameAr { get; set; } = string.Empty;
+    public string CategoryNameEn { get; set; } = string.Empty;
+    public string UnitNameAr { get; set; } = string.Empty;
+    public string UnitNameEn { get; set; } = string.Empty;
+    public bool TrackInventory { get; set; }
+    public decimal CurrentQuantity { get; set; }
+    public decimal MinimumQuantity { get; set; }
 }

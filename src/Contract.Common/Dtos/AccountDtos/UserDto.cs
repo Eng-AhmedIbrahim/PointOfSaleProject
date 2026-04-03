@@ -1,8 +1,10 @@
-﻿namespace POS.Contract.Dtos.AccountDtos;
+namespace POS.Contract.Dtos.AccountDtos;
 
-public class UserDto
-{
-    public string? UserId { get; set; }
+    public class UserDto
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("id")]
+        public string? Id { get => UserId; set => UserId = value; }
+        public string? UserId { get; set; }
     public string? UserName { get; set; }
     public bool UpdatedUserPosSetting { get; set; } = false;
     public string? DefaultLanguage { get; set; } 

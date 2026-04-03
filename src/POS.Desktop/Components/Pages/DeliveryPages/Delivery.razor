@@ -9,6 +9,7 @@
 @inject IDialogService _dialogService
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
 @inject LocalizationService Localizer
+@inject BlazorBase.ERPFrontServices.ComplaintServices.IComplaintServices _complaintServices
 
 <link href="delivery.css" rel="stylesheet" />
 
@@ -25,11 +26,15 @@
                                    Variant="Variant.Outlined"
                                    Adornment="Adornment.Start"
                                    AdornmentIcon="@Icons.Material.Filled.Phone"
-                                   Class="premium-input"
+                                   AdornmentEnd="true"
+                                   OnAdornmentClick="OpenCustomerSearch"
+                                   AdornmentIconEnd="@Icons.Material.Filled.PersonSearch"
+                                   Class="premium-input phone-search-input"
                                    Immediate="true"
                                    FullWidth="true"
                                    @onkeydown="HandleKeyDown" />
                 </MudItem>
+                
                 <MudItem xs="6">
                     <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.SecondPhoneNumber"
                                    Label="@Localizer["SecondaryPhone"]"
@@ -160,9 +165,43 @@
                                    AdornmentIcon="@Icons.Material.Filled.NoteAdd"
                                    Class="premium-input"
                                    FullWidth="true"
-                                   Lines="1">
-                    </MudTextField>
+                                   Lines="1" />
                 </MudItem>
+
+                @* ── Complaints Panel ── *@
+                @if (_customerComplaints.Count > 0)
+                {
+                    <MudItem xs="12">
+                        <div class="complaints-panel @(_showComplaints ? "expanded" : "")">
+                            <div class="complaints-header" @onclick="() => _showComplaints = !_showComplaints">
+                                <div class="complaints-header-left">
+                                    <MudIcon Icon="@Icons.Material.Filled.ReportProblem" Size="Size.Small" />
+                                    <span>@(_isArabic ? "شكاوي العميل" : "Customer Complaints")</span>
+                                    <span class="complaints-badge">@_customerComplaints.Count</span>
+                                </div>
+                                <MudIcon Icon="@(_showComplaints ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Size="Size.Small" />
+                            </div>
+                            @if (_showComplaints)
+                            {
+                                <div class="complaints-body">
+                                    @foreach (var complaint in _customerComplaints.Take(5))
+                                    {
+                                        <div class="complaint-item">
+                                            <div class="complaint-top">
+                                                <span class="complaint-date">@complaint.ComplaintDate.ToString("dd/MM/yyyy")</span>
+                                                <span class="complaint-status @GetComplaintStatusCss(complaint.Status)">@complaint.Status</span>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(complaint.ComplaintText))
+                                            {
+                                                <div class="complaint-desc">@complaint.ComplaintText</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </MudItem>
+                }
             </MudGrid>
         </MudPaper>
 
@@ -294,6 +333,57 @@
 @code {
     private List<string> ClientTitles = new List<string> { "Mr.", "Mrs.", "Ms.", "Dr." };
 
+    // ── Complaints state ──────────────────────────────────────────────────
+    private List<ComplaintDto> _customerComplaints = new();
+    private bool _showComplaints = true;
+    private bool _isArabic => Localizer.GetCurrentLanguage() == "ar";
+
+    private async Task OpenCustomerSearch()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await _dialogService.ShowAsync<CustomerSearchDialog>(_isArabic ? "بحث عن عميل" : "Customer Search", options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled && result.Data is DeliveryCustomerToReturnDto selectedCustomer)
+        {
+            if (!string.IsNullOrEmpty(selectedCustomer.FirstPhoneNumber))
+            {
+                if (_commonProperties.CustomerDetails == null) _commonProperties.CustomerDetails = new();
+                _commonProperties.CustomerDetails.FirstPhoneNumber = selectedCustomer.FirstPhoneNumber;
+                
+                // Emulate pressing Enter to load exactly the same way
+                await HandleKeyDown(new KeyboardEventArgs { Key = "Enter" });
+            }
+        }
+    }
+
+    private async Task LoadComplaintsByPhone(string? phone)
+    {
+        _customerComplaints = new();
+        _showComplaints = true;
+        if (string.IsNullOrWhiteSpace(phone)) return;
+        try
+        {
+            var result = await _complaintServices.GetComplaintsByPhoneAsync(phone);
+            _customerComplaints = result?.ToList() ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading complaints: {ex.Message}");
+        }
+    }
+
+    private string GetComplaintStatusCss(string? status) => status switch
+    {
+        "Open" => "status-open",
+        "Pending" => "status-pending",
+        "Resolved" => "status-resolved",
+        "Closed" => "status-closed",
+        _ => "status-pending"
+    };
+
+    // ─────────────────────────────────────────────────────────────────────
+
     // Customer Order Model
     public class CustomerOrder
     {
@@ -410,44 +500,43 @@
                 else
                     _orders = new();
 
+                // Load complaints for this phone number
+                await LoadComplaintsByPhone(_commonProperties.CustomerDetails.FirstPhoneNumber);
+
                 await InvokeAsync(StateHasChanged);
 
                 // Check for Active Order FIRST (if exists, show dialog before address selection)
-                if (client.ActiveOrder != null)
+                if (client.ActiveOrders != null && client.ActiveOrders.Any())
                 {
                     var parameters = new DialogParameters
                     {
-                        { "ActiveOrder", client.ActiveOrder }
+                        { "ActiveOrders", client.ActiveOrders }
                     };
 
-                    var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
+                    var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Medium, FullWidth = true };
                     var dialog = await _dialogService.ShowAsync<ActiveOrderDialog>(Localizer["ActiveOrderFound"], parameters, options);
                     var result = await dialog.Result;
 
-                    if (!result!.Canceled && result.Data is bool shouldEdit && shouldEdit)
+                    if (!result!.Canceled && result.Data is OrderDto selectedOrderToEdit)
                     {
                         _snackbar.Add(Localizer["LoadingActiveOrder"], Severity.Info);
                         
                         // Load items into cart
-                        if (client.ActiveOrder?.OrderDetails != null)
+                        if (selectedOrderToEdit.OrderDetails != null)
                         {
-                            _commonProperties.TableItems = client.ActiveOrder.OrderDetails.Select(item => 
+                            _commonProperties.TableItems = selectedOrderToEdit.OrderDetails.Select(item => 
                             {
                                 var cloned = item.Clone();
                                 cloned.IsReadOnly = true;
                                 return cloned;
                             }).ToList();
-
-                            // Also sync AppendedItems to be empty initially
-                            _commonProperties.AppendedTableItems?.Clear();
-                            _commonProperties.VoidedTableItems?.Clear();
                         }
                         
                         // Set customer info
                         BackupCustomerDetails(client);
                         
                         // Set update mode
-                        _commonProperties.OrderDto = client.ActiveOrder;
+                        _commonProperties.OrderDto = selectedOrderToEdit;
                         _commonProperties.UpdateDeliveryOrder = true;
                         _commonProperties.UpdateDineInOrder = false;
                         _commonProperties.CurrentPosMode = "Delivery";

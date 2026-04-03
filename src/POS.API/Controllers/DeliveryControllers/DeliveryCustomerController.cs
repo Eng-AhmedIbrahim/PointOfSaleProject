@@ -83,20 +83,24 @@ public class DeliveryCustomerController : BaseApiController
             
             customerDto.Last10Orders = last10;
 
-            // Check for active order (also already in DESC order)
-            var activeOrderSummary = orders.FirstOrDefault(o =>
+            // Check for multiple active orders
+            var activeOrderSummaries = orders.Where(o =>
                 o.OrderState != OrderStates.Completed &&
                 o.OrderState != OrderStates.Voided &&
                 o.OrderState != OrderStates.FailedToDeliverToBranch &&
-                o.OrderState != OrderStates.Canceled);
+                o.OrderState != OrderStates.Canceled).ToList();
 
-            if (activeOrderSummary != null)
+            if (activeOrderSummaries.Any())
             {
-                // Fetch full order details separately since summary doesn't have details
-                var fullActiveOrder = await _orderService.GetOrderByIdAsync(activeOrderSummary.Id);
-                if (fullActiveOrder != null)
+                customerDto.ActiveOrders = new List<POS.Contract.Dtos.OrderDtos.OrderDto>();
+                foreach (var activeSummary in activeOrderSummaries)
                 {
-                    customerDto.ActiveOrder = _mapper.Map<OrderDto>(fullActiveOrder);
+                    // Fetch full order details separately since summary doesn't have details
+                    var fullActiveOrder = await _orderService.GetOrderByIdAsync(activeSummary.Id);
+                    if (fullActiveOrder != null)
+                    {
+                        customerDto.ActiveOrders.Add(_mapper.Map<POS.Contract.Dtos.OrderDtos.OrderDto>(fullActiveOrder));
+                    }
                 }
             }
         }

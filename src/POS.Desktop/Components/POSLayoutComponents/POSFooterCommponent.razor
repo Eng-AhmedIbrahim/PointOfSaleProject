@@ -8,6 +8,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject CartService _cartService
 @inject LocalizationService Localizer
+@inject Section4ButtonsServices _section4ButtonsServices
+@inject IAppDateService _appDate
 
 <MudStack Spacing="0" StretchItems="StretchItems.All" Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center" Class="footer-container">
 
@@ -60,8 +62,20 @@
         <MudButton Variant="Variant.Text"
                    Size="Size.Large"
                    StartIcon="@Icons.Material.Filled.SetMeal"
-                   Class="button-color-footer">
+                   Class="button-color-footer"
+                   OnClick="OpenMealsDialog">
             @Localizer["Meals"]
+        </MudButton>
+    }
+
+    @if (_canFooterHospitality && _commonProperties.IsFeatureEnabled("Footer_Button_Hospitality"))
+    {
+        <MudButton Variant="Variant.Text"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.VolunteerActivism"
+                   Class="button-color-footer"
+                   OnClick="OpenHospitalityDialog">
+            @Localizer["Hospitality"]
         </MudButton>
     }
 

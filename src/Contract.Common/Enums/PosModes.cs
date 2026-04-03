@@ -1,8 +1,10 @@
-﻿namespace POS.Contract.Enums;
+namespace POS.Contract.Enums;
 
 public enum PosModes
 {
-    TakeAway = 1 ,
+    TakeAway = 1,
     Delivery,
-    DineIn
+    DineIn,
+    Staff,
+    Hospitality
 }

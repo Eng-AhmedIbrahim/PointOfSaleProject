@@ -25,6 +25,13 @@ public class DineInReceipt
     public int PrintCount { get; set; }
     public bool IsVoid { get; set; }
 
+    // Hospitality & Staff Meals
+    public bool IsHospitality { get; set; }
+    public string? HospitalityResponsibleName { get; set; }
+    public string? HospitalityReason { get; set; }
+    public bool IsStaffMeal { get; set; }
+    public string? StaffMealEmployeeName { get; set; }
+
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);
 }

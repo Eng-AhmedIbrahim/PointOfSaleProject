@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract.DineInOrderServices;
+using POS.Core.Services.Contract.DineInOrderServices;
 using POS.Core.Services.Contract.OrderTrackServices;
 using POS.Services.DineInOrderServices;
 using POS.Services.OrderTrackServices;
@@ -58,8 +58,10 @@ public static class ApplicationServicesExtensions
         services.AddScoped<IReportingService, ReportingService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<POS.Core.Services.Contract.DataSyncServices.IDataSyncService, POS.Services.DataSyncServices.DataSyncService>();
+        services.AddScoped<POS.Core.Services.Contract.IStaffMealService, POS.Services.StaffMealServices.StaffMealService>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IUnitService, UnitService>();
         services.AddSingleton<IEncryptionService, EncryptionService>();
         services.AddReportingInfrastructure();

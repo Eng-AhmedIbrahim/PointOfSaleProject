@@ -38,4 +38,4 @@ F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.dll
 F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\refint\BlazorBase.dll
 F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.pdb
 F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ref\BlazorBase.dll
-F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+F:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ar\BlazorBase.resources.cs

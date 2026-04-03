@@ -85,18 +85,13 @@ public class DeliveryReceiptDocument : IDocument
                     text.EmptyLine();
                 }
 
-                text.Span(_receipt.ReceiptType ?? "توصيل طلبات")
-                    .Bold()
-                    .FontSize(12);
-
-                if (_receipt.IsCopy)
+                if (!_receipt.IsHospitality && !_receipt.IsStaffMeal)
                 {
-                    text.EmptyLine();
-                    text.Span("*********COPY**********")
+                    text.Span(_receipt.ReceiptType ?? "توصيل طلبات")
                         .Bold()
-                        .FontSize(11)
-                        .FontColor(Colors.Red.Medium);
+                        .FontSize(12);
                 }
+
             });
 
         column.Item()
@@ -114,6 +109,63 @@ public class DeliveryReceiptDocument : IDocument
                         .FontColor(Colors.Grey.Medium);
                 }
             });
+
+        if (_receipt.IsHospitality)
+        {
+            column.Item().PaddingTop(2).Text(text => {
+                text.Span("ضـيـافـة")
+                    .Bold()
+                    .FontSize(18)
+                    .FontColor(Colors.Red.Medium);
+                text.AlignCenter();
+            });
+
+            if (!string.IsNullOrEmpty(_receipt.HospitalityResponsibleName))
+            {
+                column.Item().PaddingRight(5).Text(text => {
+                    text.Span(_receipt.HospitalityResponsibleName)
+                        .FontSize(11);
+                    text.Span(" :المسؤول")
+                        .Bold()
+                        .FontSize(11);
+                    text.AlignRight();
+                });
+            }
+
+            if (!string.IsNullOrEmpty(_receipt.HospitalityReason))
+            {
+                column.Item().PaddingRight(5).Text(text => {
+                    text.Span(_receipt.HospitalityReason)
+                        .FontSize(10);
+                    text.Span(" :السبب")
+                        .Bold()
+                        .FontSize(10);
+                    text.AlignRight();
+                });
+            }
+        }
+
+        if (_receipt.IsStaffMeal)
+        {
+            column.Item().PaddingTop(2).Text(text => {
+                text.Span("وجبة موظف")
+                    .Bold()
+                    .FontSize(20);
+                text.AlignCenter();
+            });
+
+            if (!string.IsNullOrEmpty(_receipt.StaffMealEmployeeName))
+            {
+                column.Item().Text(text => {
+                    text.Span("الموظف: ")
+                        .Bold()
+                        .FontSize(14);
+                    text.Span(_receipt.StaffMealEmployeeName)
+                        .FontSize(14);
+                    text.AlignCenter();
+                });
+            }
+        }
 
         if (_receipt.ParentOrderId.HasValue)
         {
@@ -194,7 +246,7 @@ public class DeliveryReceiptDocument : IDocument
             table.Cell().Element(CellStyle).Text(_receipt.AddressNote ?? "-").AlignRight();
             table.Cell().Element(CellStyle).Text("ملاحظات").Bold().AlignRight();
 
-            table.Cell().Element(CellStyle).Text(_receipt.DeliveryName).AlignRight();
+            table.Cell().Element(CellStyle).Text(_receipt.DeliveryDisplayName ?? _receipt.DeliveryName).AlignRight();
             table.Cell().Element(CellStyle).Text("الطيار").Bold().AlignRight();
         });
     }

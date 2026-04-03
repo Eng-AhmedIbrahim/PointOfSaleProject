@@ -432,3 +432,117 @@
 .premium-popover .mud-list::-webkit-scrollbar-track {
     background-color: transparent;
 }
+
+/* Complaints Panel */
+.complaints-panel {
+    background: #fff;
+    border: 1.5px solid #fecdd3;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 8px;
+    box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.complaints-panel.expanded {
+    border-color: #e11d48;
+    box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.2);
+}
+
+.complaints-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+    cursor: pointer;
+    user-select: none;
+}
+
+.complaints-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #be123c;
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+.complaints-badge {
+    background: #e11d48;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.complaints-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid #fecdd3;
+    background: #fff;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.complaint-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.complaint-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.complaint-date {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.complaint-status {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 8px;
+    text-transform: uppercase;
+}
+
+.status-open {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.status-resolved {
+    background: #dcfce3;
+    color: #15803d;
+}
+
+.status-closed {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.complaint-desc {
+    font-size: 0.9rem;
+    color: #334155;
+    font-weight: 600;
+    line-height: 1.4;
+    border-right: 3px solid #e2e8f0;
+    padding-right: 8px;
+}

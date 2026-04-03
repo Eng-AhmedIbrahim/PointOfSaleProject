@@ -1,6 +1,19 @@
-﻿using POS.Desktop.Components.PosDialog;
+using POS.Core.Services.Contract;
+using POS.Contract.Dtos.AccountDtos;
+using POS.Desktop.Components.PosDialog;
+using POS.Contract.Models;
+using Serilog;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using BlazorBase.Services;
-using Microsoft.Extensions.Localization;
+using BlazorBase.ERPFrontServices.CartServices;
+using BlazorBase.ERPFrontServices.Section4ButtonsService;
+using BlazorBase.ERPFrontServices.AppDateServices;
+using BlazorBase.ERPFrontServices.CategoryServices;
+using BlazorBase.Helpers;
 
 namespace POS.Desktop.Components.POSLayoutComponents;
 
@@ -14,8 +27,12 @@ public partial class POSFooterCommponent : IDisposable
     private bool _canFooterWaiting;
     private bool _canFooterSettings;
     private bool _canPosSettingsFeature;
+    private bool _canFooterHospitality;
 
     [Inject] public required LocalizationService LocalizationService { get; set; }
+    [Inject] public IStaffMealService? _staffMealService { get; set; }
+    [Inject] public required IPrintOrderService _printOrderService { get; set; }
+    [Inject] public required ICategoryServices _categoryServices { get; set; }
     private bool _drawerOpen;
     private Action? _stateChangedHandler;
 
@@ -45,6 +62,7 @@ public partial class POSFooterCommponent : IDisposable
         _canFooterWaiting        = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterWaitingBtn")).Succeeded;
         _canFooterSettings       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterSettingsBtn")).Succeeded;
         _canPosSettingsFeature   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
+        _canFooterHospitality    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterHospitalityBtn")).Succeeded;
     }
 
     private async Task OpenOrderDiscountDialog()
@@ -139,6 +157,112 @@ public partial class POSFooterCommponent : IDisposable
 
     private void ToggleDrawer()
         => _drawerOpen = !_drawerOpen;
+
+    private async Task OpenMealsDialog()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            Snackbar.Add(LocalizationService["UserNotAuthenticated"], Severity.Error);
+            return;
+        }
+
+        if (_staffMealService == null) return;
+
+        var status = await _staffMealService.GetStatusByUserIdAsync(userId);
+        
+        var parameters = new DialogParameters { ["Status"] = status };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        
+        var dialog = await DialogService.ShowAsync<StaffMealsDialog>(LocalizationService["StaffMeals"], parameters, options);
+        var result = await dialog.Result;
+        
+        if (!result!.Canceled && result.Data != null)
+        {
+            try 
+            {
+                var data = (dynamic)result.Data;
+                
+                // 1. Clear current table items (it's a new staff order)
+                _commonProperties.TableItems?.Clear();
+                _commonProperties.OrderDiscount = new();
+                _commonProperties.TotalDiscount = 0;
+                _commonProperties.OrderNote = "";
+                
+                // 2. Activate Staff Mode
+                _commonProperties.CurrentStaffMeal = data.Item1;
+                _commonProperties.AllowedStaffItemIds = data.Item2;
+                _commonProperties.AllowedStaffCategoryIds = data.Item3;
+                _commonProperties.RemainingStaffMeals = data.Item4;
+                _commonProperties.RemainingStaffMealAmount = data.Item5;
+                _commonProperties.AllowedStaffMenuItems = data.Item6;
+                
+                Snackbar.Add(LocalizationService["StaffMealModeActivated"], Severity.Success);
+                _commonProperties.NotifyStateChanged();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error activating staff meal mode");
+            }
+        }
+    }
+
+    private async Task OpenHospitalityDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<HospitalityDialog>(LocalizationService["Hospitality"], options);
+        var result = await dialog.Result;
+
+        if (!result!.Canceled && result.Data != null)
+        {
+            try
+            {
+                if (result.Data != null)
+                {
+                    dynamic dialogData = result.Data;
+                    UserDto? selectedUser = dialogData.Item1 as UserDto;
+                    string? reason = dialogData.Item2 as string;
+
+                // 1. Clear current table and state
+                _commonProperties.TableItems?.Clear();
+                _commonProperties.ClearStaffMeal();
+                _commonProperties.OrderDiscount = new();
+                _commonProperties.TotalDiscount = 0;
+                _commonProperties.OrderNote = "";
+
+                // 2. Activate Hospitality Mode
+                _commonProperties.IsHospitalityMode = true;
+                _commonProperties.HospitalityResponsiblePerson = selectedUser.ArabicName ?? selectedUser.UserName;
+                _commonProperties.HospitalityReason = reason;
+
+                // 3. Apply 100% Discount logic
+                _commonProperties.OrderDiscount = new OrderDiscount
+                {
+                    DiscountType = "Percentage",
+                    Percentage = 100,
+                    Value = 0,
+                    DiscountReason = $"{LocalizationService["Hospitality"]} - {reason}"
+                };
+
+                // 4. Reset mode to TakeAway for general flow
+                _commonProperties.CurrentPosMode = "TakeAway";
+                _cartService.UpdateFinanceSettingsByMode("TakeAway");
+                _cartService.CalculateSection4Table();
+
+                Snackbar.Add(LocalizationService["HospitalityModeActivated"], Severity.Success);
+                _commonProperties.NotifyStateChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error activating hospitality mode");
+                Snackbar.Add(LocalizationService["ErrorActivatingHospitality"], Severity.Error);
+            }
+        }
+    }
 
     public void Dispose()
     {

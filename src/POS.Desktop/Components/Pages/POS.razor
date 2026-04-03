@@ -21,24 +21,27 @@
 <link href="section4-footer.css" rel="stylesheet" />
 
 <MudGrid Spacing="0" Justify="Justify.Center" Class="overflow-hidden" Style="height: 100%;" tabindex="0">
-    <MudItem xs="2" Class="section-container border-r border-solid custom-border-color">
-        <MudText Typo="Typo.h6" Class="section-label">@Localizer["Categories"]</MudText>
-        <div class="full-height overflow-y-auto pa-0 ma-0">
-            @foreach (var category in _categories ?? [])
-            {
-                <button class="category-btn" @onclick="async () => await InvokeItems(category.Id)">
-                    @(Localizer.GetCurrentLanguage() == "ar" ? 
-                    category.ArabicName : (category.EnglishName ?? category.ArabicName))
-                </button>
-            }
-        </div>
-    </MudItem>
+    @if (_commonProperties.CurrentStaffMeal == null || _commonProperties.CurrentStaffMeal.IsAllItemsAllowed)
+    {
+        <MudItem xs="2" Class="section-container border-r border-solid custom-border-color">
+            <MudText Typo="Typo.h6" Class="section-label">@Localizer["Categories"]</MudText>
+            <div class="full-height overflow-y-auto pa-0 ma-0">
+                @foreach (var category in GetFilteredCategories())
+                {
+                    <button class="category-btn" @onclick="async () => await InvokeItems(category.Id)">
+                        @(Localizer.GetCurrentLanguage() == "ar" ? 
+                        category.ArabicName : (category.EnglishName ?? category.ArabicName))
+                    </button>
+                }
+            </div>
+        </MudItem>
+    }
     <!-- Section 2 -->
 
-    <MudItem xs="4" Class="section-container border-r border-solid custom-border-color">
+    <MudItem xs="@(_commonProperties.CurrentStaffMeal == null || _commonProperties.CurrentStaffMeal.IsAllItemsAllowed ? 4 : 6)" Class="section-container border-r border-solid custom-border-color">
         <MudText Typo="Typo.h6" Class="section-label">@Localizer["SalesItems"]</MudText>
         <div class="full-height overflow-y-auto pa-0 ma-0 sales-grid-container">
-            @foreach (var item in _itemByCatId)
+            @foreach (var item in GetFilteredItems())
             {
                 <MudTooltip Placement="Placement.Right" Arrow="true" Color="MudBlazor.Color.Dark"
                             Delay="400"
@@ -85,6 +88,25 @@
     <MudItem xs="5" Class="section-container border-l border-solid custom-border-color">
         <div class="d-flex align-center gap-1">
             <MudText Typo="Typo.h6" Class="section4-label flex-grow-1">
+                @if (_commonProperties.CurrentStaffMeal != null)
+                {
+                    <MudChip T="string" Color="@(_commonProperties.CurrentStaffMeal.DailyAmountLimit > 0 ? Color.Secondary : Color.Info)" Size="Size.Small" Icon="@Icons.Material.Filled.Badge" Class="mr-2">
+                        @Localizer["StaffMeal"]: @_commonProperties.CurrentStaffMeal.UserName
+                        @if (_commonProperties.CurrentStaffMeal.DailyAmountLimit > 0)
+                        {
+                            @* AMOUNT MODE: show remaining balance *@
+                            var spentNow = _commonProperties.TableItems?.Where(i => !i.IsVoided).Sum(i => (i.OriginalPrice ?? 0) * i.Quantity) ?? 0;
+                            var displayBalance = _commonProperties.RemainingStaffMealAmount - spentNow;
+                            <span> | الرصيد: @displayBalance.ToString("0.##") EGP</span>
+                        }
+                        else
+                        {
+                            @* COUNT MODE: show remaining meal count *@
+                            var spentQty = _commonProperties.TableItems?.Where(i => !i.IsVoided).Sum(i => i.Quantity) ?? 0;
+                            <span> | المتبقي: @(_commonProperties.RemainingStaffMeals - (int)spentQty)</span>
+                        }
+                    </MudChip>
+                }
                 @(_commonProperties.CurrentPosMode == "Delivery" ? Localizer["DeliveryService"] : _commonProperties.CurrentPosMode + " " + Localizer["Order"])
             </MudText>
             

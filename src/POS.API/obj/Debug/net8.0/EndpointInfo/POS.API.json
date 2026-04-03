@@ -441,7 +441,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AppUser"
+                    "$ref": "#/components/schemas/UserDto"
                   }
                 }
               },
@@ -449,7 +449,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AppUser"
+                    "$ref": "#/components/schemas/UserDto"
                   }
                 }
               },
@@ -457,7 +457,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AppUser"
+                    "$ref": "#/components/schemas/UserDto"
                   }
                 }
               }
@@ -526,17 +526,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppUser"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppUser"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AppUser"
+                  "$ref": "#/components/schemas/UserDto"
                 }
               }
             }
@@ -4999,6 +4999,131 @@
         }
       }
     },
+    "/api/Expenses": {
+      "get": {
+        "tags": [
+          "Expenses"
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExpenseDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExpenseDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExpenseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Expenses"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Expenses/{id}": {
+      "delete": {
+        "tags": [
+          "Expenses"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Inventory/GetAll": {
       "get": {
         "tags": [
@@ -8066,6 +8191,439 @@
         }
       }
     },
+    "/api/StaffMeal/config/{userId}": {
+      "get": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/status/{userId}": {
+      "get": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealStatusDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealStatusDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/usage": {
+      "post": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealUsageDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealUsageDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealUsageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/configs": {
+      "get": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealConfigDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealConfigDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealConfigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/upsert": {
+      "post": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealConfigDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealConfigDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/batch-upsert": {
+      "post": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StaffMealConfigDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/groups": {
+      "get": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealGroupDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealGroupDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffMealGroupDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/group/{id}": {
+      "get": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealGroupDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealGroupDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMealGroupDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StaffMeal/group": {
+      "post": {
+        "tags": [
+          "StaffMeal"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealGroupDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealGroupDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffMealGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Unit": {
       "get": {
         "tags": [
@@ -8482,6 +9040,14 @@
             "type": "number",
             "format": "double"
           },
+          "voidAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "discountAmount": {
+            "type": "number",
+            "format": "double"
+          },
           "orderCount": {
             "type": "integer",
             "format": "int32"
@@ -8522,100 +9088,6 @@
           "currentOrderNumber": {
             "type": "integer",
             "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "AppUser": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "normalizedUserName": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "normalizedEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "emailConfirmed": {
-            "type": "boolean"
-          },
-          "passwordHash": {
-            "type": "string",
-            "nullable": true
-          },
-          "securityStamp": {
-            "type": "string",
-            "nullable": true
-          },
-          "concurrencyStamp": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumberConfirmed": {
-            "type": "boolean"
-          },
-          "twoFactorEnabled": {
-            "type": "boolean"
-          },
-          "lockoutEnd": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "lockoutEnabled": {
-            "type": "boolean"
-          },
-          "accessFailedCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "registrationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedUserPosSetting": {
-            "type": "boolean"
-          },
-          "defaultLanguage": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "dateOfBirth": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "displayName": {
-            "type": "string",
-            "nullable": true
-          },
-          "arabicName": {
-            "type": "string",
-            "nullable": true
-          },
-          "isActive": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -8878,6 +9350,10 @@
             "format": "date-time",
             "nullable": true
           },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          },
           "apiUrl": {
             "type": "string",
             "nullable": true
@@ -8960,6 +9436,10 @@
           "creationDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -9019,6 +9499,10 @@
             "type": "boolean"
           },
           "apiUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "currency": {
             "type": "string",
             "nullable": true
           }
@@ -9772,6 +10256,32 @@
             "type": "string",
             "nullable": true
           },
+          "isHospitality": {
+            "type": "boolean"
+          },
+          "hospitalityResponsibleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "hospitalityResponsibleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "hospitalityReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStaffMeal": {
+            "type": "boolean"
+          },
+          "staffMealEmployeeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "staffMealEmployeeName": {
+            "type": "string",
+            "nullable": true
+          },
           "orderDetails": {
             "type": "array",
             "items": {
@@ -9832,6 +10342,10 @@
             "type": "string",
             "nullable": true
           },
+          "driverDisplayName": {
+            "type": "string",
+            "nullable": true
+          },
           "orderCount": {
             "type": "integer",
             "format": "int32"
@@ -9849,6 +10363,57 @@
             "items": {
               "$ref": "#/components/schemas/OrderDto"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdById": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "spentBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPayoutFromDrawer": {
+            "type": "boolean"
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "shiftId": {
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },
@@ -10698,6 +11263,14 @@
             "format": "double",
             "readOnly": true
           },
+          "voidAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "voidCount": {
+            "type": "number",
+            "format": "double"
+          },
           "percentageOfSales": {
             "type": "number",
             "format": "double"
@@ -10742,6 +11315,16 @@
           "cashierId": {
             "type": "string",
             "nullable": true
+          },
+          "staffName": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "staffId": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
           },
           "footerMessage": {
             "type": "string",
@@ -11091,6 +11674,34 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          },
+          "isHospitality": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "hospitalityResponsibleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "hospitalityResponsibleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "hospitalityReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStaffMeal": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "staffMealEmployeeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "staffMealEmployeeName": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -11301,6 +11912,20 @@
             "nullable": true
           },
           "voidReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isHospitality": {
+            "type": "boolean"
+          },
+          "hospitalityResponsibleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStaffMeal": {
+            "type": "boolean"
+          },
+          "staffMealEmployeeName": {
             "type": "string",
             "nullable": true
           }
@@ -11556,7 +12181,9 @@
         "enum": [
           1,
           2,
-          3
+          3,
+          4,
+          5
         ],
         "type": "integer",
         "format": "int32"
@@ -11592,9 +12219,35 @@
             "type": "number",
             "format": "double"
           },
+          "totalDiscount": {
+            "type": "number",
+            "format": "double"
+          },
           "expenses": {
             "type": "number",
             "format": "double"
+          },
+          "totalSalesTax": {
+            "type": "number",
+            "format": "double"
+          },
+          "serviceTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "netCash": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "totalRevenue": {
+            "type": "number",
+            "format": "double",
+            "readOnly": true
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
           },
           "voidAmount": {
             "type": "number",
@@ -11611,24 +12264,6 @@
           "voidCount": {
             "type": "number",
             "format": "double"
-          },
-          "totalDiscount": {
-            "type": "number",
-            "format": "double"
-          },
-          "totalRevenue": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "netCash": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
-          },
-          "currency": {
-            "type": "string",
-            "nullable": true
           },
           "hourlySales": {
             "type": "array",
@@ -12056,6 +12691,10 @@
             "type": "string",
             "nullable": true
           },
+          "staffId": {
+            "type": "string",
+            "nullable": true
+          },
           "detailedOrders": {
             "type": "array",
             "items": {
@@ -12077,6 +12716,13 @@
             },
             "nullable": true
           },
+          "detailedExpenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseDto"
+            },
+            "nullable": true
+          },
           "dineIn": {
             "$ref": "#/components/schemas/ModeSummaryDto"
           },
@@ -12084,6 +12730,12 @@
             "$ref": "#/components/schemas/ModeSummaryDto"
           },
           "takeAway": {
+            "$ref": "#/components/schemas/ModeSummaryDto"
+          },
+          "staff": {
+            "$ref": "#/components/schemas/ModeSummaryDto"
+          },
+          "hospitality": {
             "$ref": "#/components/schemas/ModeSummaryDto"
           },
           "overall": {
@@ -12139,6 +12791,184 @@
             "items": {
               "$ref": "#/components/schemas/OrderItemSplitDto"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StaffMealConfigDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemId": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "categoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "groupName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dailyLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dailyAmountLimit": {
+            "type": "number",
+            "format": "double"
+          },
+          "isAllItemsAllowed": {
+            "type": "boolean"
+          },
+          "mealLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "specialPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StaffMealGroupDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "arabicName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dailyAmountLimit": {
+            "type": "number",
+            "format": "double"
+          },
+          "isAllItemsAllowed": {
+            "type": "boolean"
+          },
+          "dailyLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mealLimit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffMealGroupItemDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StaffMealGroupItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "groupId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "itemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "itemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StaffMealStatusDto": {
+        "type": "object",
+        "properties": {
+          "isEligible": {
+            "type": "boolean"
+          },
+          "remainingToday": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "remainingAmountToday": {
+            "type": "number",
+            "format": "double"
+          },
+          "config": {
+            "$ref": "#/components/schemas/StaffMealConfigDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StaffMealUsageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemId": {
+            "type": "string",
+            "nullable": true
+          },
+          "usageDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "orderId": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -12356,6 +13186,11 @@
             "format": "double",
             "nullable": true
           },
+          "originalPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
           "extraPrice": {
             "type": "number",
             "format": "double",
@@ -12485,6 +13320,20 @@
             "nullable": true
           },
           "voidReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isStaffMeal": {
+            "type": "boolean"
+          },
+          "staffName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isHospitality": {
+            "type": "boolean"
+          },
+          "hospitalityResponsibleName": {
             "type": "string",
             "nullable": true
           }
@@ -12703,6 +13552,10 @@
           "updateDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -12937,6 +13790,10 @@
       "UserDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
           "userId": {
             "type": "string",
             "nullable": true

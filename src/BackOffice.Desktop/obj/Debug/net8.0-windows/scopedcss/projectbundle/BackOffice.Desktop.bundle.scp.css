@@ -236,10 +236,8 @@ main[b-aex4hi5myy] {
     top: 0;
     z-index: 1000;
     font-family: 'Tajawal', 'Roboto', sans-serif;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    flex-wrap: wrap;
+    overflow: visible;
 }
 
 .top-nav-professional[b-4duljesisb]::-webkit-scrollbar {
@@ -322,8 +320,7 @@ main[b-aex4hi5myy] {
     gap: 4px;
     height: 100%;
     flex: 1;
-    overflow-x: auto;
-    scrollbar-width: none;
+    flex-wrap: wrap;
     min-width: 0;
 }
 

@@ -1,0 +1,349 @@
+is_global = true
+build_property.MudDebugAnalyzer = 
+build_property.MudAllowedAttributePattern = 
+build_property.MudAllowedAttributeList = 
+build_property.TargetFramework = net8.0-windows
+build_property.TargetPlatformMinVersion = 7.0
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = BackOffice.Desktop
+build_property.RootNamespace = BackOffice.Desktop
+build_property.ProjectDir = f:\PointOfSaleProject\src\BackOffice.Desktop\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = f:\PointOfSaleProject\src\BackOffice.Desktop
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Auth/TokenInitializer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBdXRoXFRva2VuSW5pdGlhbGl6ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Layout/CulturePicker.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQ3VsdHVyZVBpY2tlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/CategoryDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xDYXRlZ29yeURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/CategoryManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xDYXRlZ29yeU1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/CategoryPrinterAssignment.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xDYXRlZ29yeVByaW50ZXJBc3NpZ25tZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/ClassificationDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xDbGFzc2lmaWNhdGlvbkRpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/ClassificationManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xDbGFzc2lmaWNhdGlvbk1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Categories/ItemPrinterAssignment.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ2F0ZWdvcmllc1xJdGVtUHJpbnRlckFzc2lnbm1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Complaints/ComplaintDetailsDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ29tcGxhaW50c1xDb21wbGFpbnREZXRhaWxzRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Complaints/ComplaintManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcQ29tcGxhaW50c1xDb21wbGFpbnRNYW5hZ2VtZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/ImagePreviewDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XEltYWdlUHJldmlld0RpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/InventoryDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XEludmVudG9yeURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/InventoryManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XEludmVudG9yeU1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/RecipeDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XFJlY2lwZURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/TransactionImagesDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XFRyYW5zYWN0aW9uSW1hZ2VzRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/UnitEditDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XFVuaXRFZGl0RGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Inventory/UnitsList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSW52ZW50b3J5XFVuaXRzTGlzdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/AttributeAssignment.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcQXR0cmlidXRlQXNzaWdubWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/AttributeDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcQXR0cmlidXRlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/AttributeManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcQXR0cmlidXRlTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/InventoryManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcSW52ZW50b3J5TWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/ItemDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcSXRlbURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/ItemManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcSXRlbU1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/ItemSelectionDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcSXRlbVNlbGVjdGlvbkRpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/RecipeDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcUmVjaXBlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/StockAdjustDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcU3RvY2tBZGp1c3REaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Items/StockHistoryDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcSXRlbXNcU3RvY2tIaXN0b3J5RGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/PaymentMethods/PaymentMethodDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcUGF5bWVudE1ldGhvZHNcUGF5bWVudE1ldGhvZERpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/PaymentMethods/PaymentMethodManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcUGF5bWVudE1ldGhvZHNcUGF5bWVudE1ldGhvZE1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/TableGroups/TableGroupDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcVGFibGVHcm91cHNcVGFibGVHcm91cERpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/TableGroups/TableGroupManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcVGFibGVHcm91cHNcVGFibGVHcm91cE1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Tables/TableDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcVGFibGVzXFRhYmxlRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Tables/TableManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcVGFibGVzXFRhYmxlTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Zones/ZoneDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcWm9uZXNcWm9uZURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/BasicData/Zones/ZoneManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXNpY0RhdGFcWm9uZXNcWm9uZU1hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Inventory/RawMaterials.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbnZlbnRvcnlcUmF3TWF0ZXJpYWxzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Inventory/RecipeManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbnZlbnRvcnlcUmVjaXBlTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Inventory/SemiFinished.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbnZlbnRvcnlcU2VtaUZpbmlzaGVkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWRpcmVjdFRvTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/HourRangeSelectionDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcSG91clJhbmdlU2VsZWN0aW9uRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/OrderTypeSelectionDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcT3JkZXJUeXBlU2VsZWN0aW9uRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/PrinterSelectionDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcUHJpbnRlclNlbGVjdGlvbkRpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/ReportsOverview.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcUmVwb3J0c092ZXJ2aWV3LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/ReportViewerDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcUmVwb3J0Vmlld2VyRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Reporting/StaffReportSelectionDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcU3RhZmZSZXBvcnRTZWxlY3Rpb25EaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Roles/DeleteRoleConfirmDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSb2xlc1xEZWxldGVSb2xlQ29uZmlybURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/BranchDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xCcmFuY2hEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/BranchManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xCcmFuY2hNYW5hZ2VtZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/CompanyManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xDb21wYW55TWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/DataSync.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xEYXRhU3luYy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/OrderSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xPcmRlclNldHRpbmdzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/PosFeatureSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xQb3NGZWF0dXJlU2V0dGluZ3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/PrinterSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xQcmludGVyU2V0dGluZ3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/SqlConnectionStringDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xTcWxDb25uZWN0aW9uU3RyaW5nRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/SystemSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xTeXN0ZW1TZXR0aW5ncy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/AccountingPages/StaffTransactionsDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcQWNjb3VudGluZ1BhZ2VzXFN0YWZmVHJhbnNhY3Rpb25zRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/AccountsPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcQWNjb3VudHNQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/AllOrdersPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcQWxsT3JkZXJzUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/DeliveryOrderViewDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcRGVsaXZlcnlPcmRlclZpZXdEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/SummaryPages/ReportPreviewDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcU3VtbWFyeVBhZ2VzXFJlcG9ydFByZXZpZXdEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/SummaryPages/SalesItemsDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcU3VtbWFyeVBhZ2VzXFNhbGVzSXRlbXNEaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Users/DeleteConfirmDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVc2Vyc1xEZWxldGVDb25maXJtRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Users/EditUserDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVc2Vyc1xFZGl0VXNlckRpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Shared/DeleteConfirmDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGVsZXRlQ29uZmlybURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Shared/PremiumConfirmDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUHJlbWl1bUNvbmZpcm1EaWFsb2cucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Transactions/SalesEndOfDayDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xUcmFuc2FjdGlvbnNcU2FsZXNFbmRPZkRheURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Layout/AuthLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQXV0aExheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-ijwstmt1tm
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-aex4hi5myy
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-4duljesisb
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-t9xgu1pnne
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-8tvjf61jqh
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/NotFound404.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZDQwNC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-8tf0nybo82
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Roles/PermissionsManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSb2xlc1xQZXJtaXNzaW9uc01hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-gn8r7q8q86
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Roles/RoleManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSb2xlc1xSb2xlTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-mi5a44xrsp
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/SummaryPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcU3VtbWFyeVBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-x570pcyvyo
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Transactions/SummaryPages/SummaryCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFuc2FjdGlvbnNcU3VtbWFyeVBhZ2VzXFN1bW1hcnlDYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-tb2lg29bro
+
+[f:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Users/UserManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVc2Vyc1xVc2VyTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-nljffjroqr
