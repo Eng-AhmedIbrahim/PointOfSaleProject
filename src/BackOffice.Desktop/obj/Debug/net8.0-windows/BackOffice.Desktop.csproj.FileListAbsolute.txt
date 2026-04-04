@@ -363,10 +363,10 @@ F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticweba
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildMultiTargeting.BackOffice.Desktop.props
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildTransitive.BackOffice.Desktop.props
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.pack.json
+F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffi.95758648.Up2Date
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\refint\BackOffice.Desktop.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.pdb
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.genruntimeconfig.cache
 F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\ref\BackOffice.Desktop.dll
-F:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt

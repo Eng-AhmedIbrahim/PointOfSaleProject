@@ -34,17 +34,6 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        const string mutexName = "Global\\BackOffice_Desktop_SingleInstance";
-        _instanceMutex = new Mutex(true, mutexName, out bool createdNew);
-
-        if (!createdNew)
-        {
-            MessageBox.Show("نسخة من تطبيق BackOffice Desktop مفتوحة بالفعل على هذا الجهاز. الرجاء إغلاق النسخة القديمة قبل المحاولة مرة أخرى.", 
-                            "تكرار التشغيل", MessageBoxButton.OK, MessageBoxImage.Warning);
-            Application.Current.Shutdown();
-            return;
-        }
-
         try
         {
             // Register global exception handlers

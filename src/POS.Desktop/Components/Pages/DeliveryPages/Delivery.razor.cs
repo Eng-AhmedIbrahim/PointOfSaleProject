@@ -92,7 +92,13 @@ public partial class Delivery : IDisposable
     }
 
     private async Task GetAllBranches()
-         => Branches = await _branchService.GetBranches();
+    {
+        Branches = await _branchService.GetBranches();
+        if (_commonProperties.BranchDetails == null && Branches != null && Branches.Any())
+        {
+            _commonProperties.BranchDetails = Branches.FirstOrDefault();
+        }
+    }
 
     private async Task GetAllTitles()
        => CustomerTitles = await _deliveryServices.GetAllDeliveryCustomerTitlesAsync();
@@ -108,6 +114,14 @@ public partial class Delivery : IDisposable
             _commonProperties.CustomerDetails.ZoneID = zone.Id;
             _commonProperties.CustomerDetails.ZoneFees = zone.DeliveryFee ?? 0;
             _commonProperties.CustomerDetails.ZoneBonus = zone.ZoneBonus ?? 0;
+            
+            // Link the branch associated with this zone
+            _commonProperties.CustomerDetails.BranchId = zone.BranchId;
+            var branch = Branches?.FirstOrDefault(b => b.Id == zone.BranchId);
+            if (branch != null)
+            {
+                _commonProperties.CustomerDetails.BranchName = branch.Name;
+            }
         }
         else
         {
@@ -115,6 +129,8 @@ public partial class Delivery : IDisposable
             _commonProperties.CustomerDetails.ZoneID = 0;
             _commonProperties.CustomerDetails.ZoneFees = 0;
             _commonProperties.CustomerDetails.ZoneBonus = 0;
+            _commonProperties.CustomerDetails.BranchId = 0;
+            _commonProperties.CustomerDetails.BranchName = string.Empty;
         }
         StateHasChanged();
     }

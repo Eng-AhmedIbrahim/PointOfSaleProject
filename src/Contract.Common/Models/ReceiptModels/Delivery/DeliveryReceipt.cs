@@ -36,10 +36,10 @@ public class DeliveryReceipt
     public string? DeliveryDisplayName { get; set; }
 
     //Amount
-    public decimal? TotalAmount { get; set; } = 100;
-    public decimal? DeliveryFees { get; set; } = 100;
-    public decimal? TotalOrder { get; set; } = 100;
-    public string? CustomerAddress { get; set; } = "Tanta";
+    public decimal? TotalAmount { get; set; }
+    public decimal? DeliveryFees { get; set; }
+    public decimal? TotalOrder { get; set; }
+    public string? CustomerAddress { get; set; }
 
     // Hospitality & Staff Meals
     public bool IsHospitality { get; set; }

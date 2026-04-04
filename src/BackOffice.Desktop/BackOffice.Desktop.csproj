@@ -6,12 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>poslogo.ico</ApplicationIcon>
+    <ApplicationIcon>NewTechBackOffice.ico</ApplicationIcon>
 
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="poslogo.ico" />
+    <Content Include="NewTechBackOffice.ico" />
   </ItemGroup>
 
   <ItemGroup>

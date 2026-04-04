@@ -343,10 +343,10 @@ F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.build.json
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.build.json.cache
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.development.json
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.csproj.Up2Date
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.dll
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\refint\POS.API.dll
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.pdb
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.genruntimeconfig.cache
 F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\ref\POS.API.dll
-F:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

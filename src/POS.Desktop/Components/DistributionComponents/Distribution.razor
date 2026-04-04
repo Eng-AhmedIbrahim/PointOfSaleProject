@@ -1,4 +1,4 @@
-﻿@page "/distribution"
+@page "/distribution"
 @layout MainLayout
 @using ERPFront.Models
 @using POS.Contract.Dtos.OrderDtos
@@ -73,7 +73,7 @@
                         @if (showAssigned)
                         {
                             <MudTd Style="text-align: center;">
-                                <MudCheckBox T="bool" Value="@SelectedOrderIds.Contains(context.OrderId)" ValueChanged="@(v => ToggleOrderSelection(context, v))" Color="Color.Primary" Dense="true" Size="Size.Small" />
+                                <MudCheckBox T="bool" Value="@SelectedOrderIds.Contains(context.Id)" ValueChanged="@(v => ToggleOrderSelection(context, v))" Color="Color.Primary" Dense="true" Size="Size.Small" />
                             </MudTd>
                         }
                         <MudTd Class="action-cell">

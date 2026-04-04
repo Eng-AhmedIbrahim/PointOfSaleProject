@@ -3,6 +3,7 @@
 @inject IPrintOrderService PrintOrderService
 @inject ISnackbar Snackbar
 @inject BlazorBase.Services.LocalizationService Localizer
+@inject CommonProperties _commonProperties
 
 <MudDialog>
     <TitleContent>
@@ -141,6 +142,7 @@
             var success = await AppDateService.CloseDay();
             if (success)
             {
+                _commonProperties.CurrentOrderId = 0;
                 Snackbar.Add("Day closed successfully", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
             }

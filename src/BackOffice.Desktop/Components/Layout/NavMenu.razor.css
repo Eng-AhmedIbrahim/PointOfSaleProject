@@ -59,35 +59,15 @@
     min-width: fit-content;
 }
 
-.logo-circle {
-    width: 44px;
-    height: 44px;
-    background: #f0f9ff;
-    border-radius: 12px;
+.logo-container {
+    padding: 2px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #1e90ff;
-    border: 1px solid #bae6fd;
+    transition: transform 0.3s ease;
 }
 
-.brand-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.brand-name {
-    font-size: 1.15rem;
-    font-weight: 900;
-    color: #0f172a;
-    line-height: 1.2;
-}
-
-.brand-tag {
-    font-size: 0.75rem;
-    color: #64748b;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+.logo-container:hover {
+    transform: scale(1.05);
 }
 
 /* Navigation Tabs */

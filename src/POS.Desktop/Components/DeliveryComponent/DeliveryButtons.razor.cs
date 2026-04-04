@@ -10,6 +10,8 @@ public partial class DeliveryButtons
     [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     [Inject] private IComplaintServices _complaintServices { get; set; } = default!;
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
+    [Inject] private CartService _cartService { get; set; } = default!;
 
     private bool _canOrder;
     private bool _canAddNew;
@@ -187,10 +189,12 @@ public partial class DeliveryButtons
 
     private async Task BackToPos()
     {
-        await SafeNavigateAsync("/pos");
         _commonProperties.AppendedTableItems!.Clear();
         _commonProperties.CustomerDetails = new();
-        _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+        _commonProperties.CurrentPosMode = "TakeAway";
+        _cartService.UpdateFinanceSettingsByMode("TakeAway");
+        
+        await SafeNavigateAsync("/pos");
     }
 
 

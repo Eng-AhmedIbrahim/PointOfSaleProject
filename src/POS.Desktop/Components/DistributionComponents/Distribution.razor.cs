@@ -1,4 +1,4 @@
-﻿using BlazorBase.Components.Shared;
+using BlazorBase.Components.Shared;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
 
@@ -9,6 +9,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     [Inject] public IDistributionErpService _distributionService { get; set; } = default!;
     [Inject] public CallCenterHubSettings _hubSettings { get; set; } = default!;
     [Inject] public ISystemSettingsServices _systemSettingsServices { get; set; } = default!;
+    [Inject] public IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
     private DispatcherSettingsDto _dynamicDispatcherSettings = new();
     [Inject] public CommonProperties _commonProperties { get; set; } = default!;
     [Inject] public NavigationManager navigationManager { get; set; } = default!;
@@ -79,10 +80,11 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private string? selectedDriver;
 
 
-    private void NavigateBack()
+    private Task NavigateBack()
     {
         _commonProperties.CurrentPosMode = "TakeAway";
         navigationManager.NavigateTo("/pos");
+        return Task.CompletedTask;
     }
 
     protected override async Task OnInitializedAsync()
@@ -279,10 +281,12 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private void ToggleSelectAll(bool value)
     {
         SelectAllOrders = value;
+        var currentOrders = FilteredOrders.ToList();
         if (value)
-            SelectedOrderIds = new HashSet<int>(FilteredOrders.Select(o => o.Id));
+            SelectedOrderIds = new HashSet<int>(currentOrders.Select(o => o.Id));
         else
             SelectedOrderIds.Clear();
+        StateHasChanged();
     }
 
     private void ToggleOrderSelection(OrderDto order, bool value)
@@ -292,7 +296,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         else
             SelectedOrderIds.Remove(order.Id);
 
-        SelectAllOrders = SelectedOrderIds.Count == FilteredOrders.Count() && FilteredOrders.Any();
+        var currentOrders = FilteredOrders.ToList();
+        SelectAllOrders = currentOrders.Any() && SelectedOrderIds.Count == currentOrders.Count;
+        StateHasChanged();
     }
 
     private void PrepareCollection(OrderDto order)

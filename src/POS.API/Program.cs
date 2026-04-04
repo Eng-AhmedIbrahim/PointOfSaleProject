@@ -6,18 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddSerilogService();
 
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// Decryption temporarily disabled - connection string is plain text
-// var encryptedConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-// var databaseConnectionString = POS.API.Helpers.EncryptionHelper.DecryptString(encryptedConnectionString!);
-
-
+var encryptedConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseConnectionString = EncryptionHelper.DecryptString(encryptedConnectionString!);
+//var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddSignalR();
 
-var callCenterSettings = builder.Configuration.GetSection("CallCenterSettings").Get<CallCenterSettings>() ?? new CallCenterSettings();
+var callCenterSettings = builder.Configuration.GetSection("CallCenterSettings")
+    .Get<CallCenterSettings>() ?? new CallCenterSettings();
 builder.Services.AddSingleton(callCenterSettings);
 
 if (callCenterSettings.IsCentralCallCenter)

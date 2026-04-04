@@ -1,4 +1,4 @@
-﻿@page "/dineIn"
+@page "/dineIn"
 @layout MainLayout
 @inject CommonProperties _commonProperties
 @inject IHttpClientFactory _httpClientFactory
@@ -45,7 +45,7 @@
                                     </div>
                                     <span class="table-name">@table.TableName</span>
                                     
-                                    @if (_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id!.Value))
+                                    @if (_commonProperties?.DineInOrdersDetails != null && _commonProperties.DineInOrdersDetails.ContainsKey(table.Id!.Value))
                                     {
                                         <span class="table-status">@Localizer["Order"]</span>
                                     }
@@ -58,7 +58,7 @@
                                 <div class="table-action-icons">
                                     @if (_commonProperties.IsFeatureEnabled("EnableReservation"))
                                     {
-                                        @if (!_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id!.Value) && table.TableState != "Reserved")
+                                        @if ((_commonProperties?.DineInOrdersDetails == null || !_commonProperties.DineInOrdersDetails.ContainsKey(table.Id!.Value)) && table.TableState != "Reserved")
                                         {
                                             <MudTooltip Text="@Localizer["ReserveTable"]">
                                                 <MudIconButton Icon="@Icons.Material.Filled.EventNote" 
@@ -143,25 +143,25 @@
                     <div class="card-glass-effect"></div>
                     <div class="card-content">
                         <div class="summary-header">
-                            <span class="order-number-badge">@Localizer["Order"] #@_commonProperties!.DineInOrderValues!.OrderID</span>
+                            <span class="order-number-badge">@Localizer["Order"] #@_commonProperties?.DineInOrderValues?.OrderID</span>
                             <div class="time-box">
                                 <MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="Size.Small" />
-                                <span>@_commonProperties!.DineInOrderValues!.TableOpenTime</span>
+                                <span>@_commonProperties?.DineInOrderValues?.TableOpenTime</span>
                             </div>
                         </div>
 
                         <div class="summary-grid">
                             <div class="summary-item">
                                 <span class="summary-label">@Localizer["Tables"]</span>
-                                <span class="summary-value highlight">@_commonProperties!.DineInOrderValues!.TableName</span>
+                                <span class="summary-value highlight">@_commonProperties?.DineInOrderValues?.TableName</span>
                             </div>
                             <div class="summary-item">
                                 <span class="summary-label">@Localizer["CaptainName"]</span>
-                                <span class="summary-value">@_commonProperties!.DineInOrderValues!.CaptainName</span>
+                                <span class="summary-value">@_commonProperties?.DineInOrderValues?.CaptainName</span>
                             </div>
                         </div>
 
-                        @if (_commonProperties.DineInOrderValues.Discount > 0)
+                        @if (_commonProperties?.DineInOrderValues?.Discount > 0)
                         {
                             <div class="grand-total-section mt-2" style="background: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.3);">
                                 <span class="total-label" style="font-size: 0.9rem; color: #fca5a5;">@Localizer["Discount"]</span>

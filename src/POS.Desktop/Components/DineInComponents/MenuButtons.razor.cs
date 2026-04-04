@@ -6,6 +6,7 @@ public partial class MenuButtons : IDisposable
 {
     [Inject] private IAuthorizationService AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    [Inject] private CartService _cartService { get; set; } = default!;
 
     private bool _canDineInOrder;
     private bool _canDineInReceipt;
@@ -57,7 +58,7 @@ public partial class MenuButtons : IDisposable
             _commonProperties.AppendedTableItems?.Clear();
             BackUpDineInOrder();
 
-            if (_commonProperties!.CurrentDineInOrder!.CaptainName is null || _commonProperties.CurrentDineInOrder.RelatedTableName is null)
+            if (_commonProperties?.CurrentDineInOrder == null || _commonProperties.CurrentDineInOrder.CaptainName is null || _commonProperties.CurrentDineInOrder.RelatedTableName is null)
             {
                 _snackbar.Add("Please Select Table and Captain", Severity.Error);
                 return;
@@ -68,17 +69,18 @@ public partial class MenuButtons : IDisposable
     }
     private void BackUpDineInOrder()
     {
+        var current = _commonProperties?.CurrentDineInOrder;
         _commonProperties!.CurrentDineInOrder = new DineInOrderDetails
         {
-            CaptainName = _commonProperties!.CurrentDineInOrder!.CaptainName,
-            CaptainId = _commonProperties.CurrentDineInOrder.CaptainId,
-            RelatedTableId = _commonProperties.CurrentDineInOrder.RelatedTableId,
-            RelatedTableName = _commonProperties.CurrentDineInOrder.RelatedTableName,
+            CaptainName = current?.CaptainName,
+            CaptainId = current?.CaptainId,
+            RelatedTableId = current?.RelatedTableId,
+            RelatedTableName = current?.RelatedTableName,
             BasicOrderDetails = new BlazorBase.Models.OrderDetails
             {
                 CashierName = _commonProperties.CurrentUser,
-                Tax = _commonProperties!.DineInSettings!.Tax,
-                Service = _commonProperties.DineInSettings.Service,
+                Tax = _commonProperties?.DineInSettings?.Tax ?? 0,
+                Service = _commonProperties?.DineInSettings?.Service ?? 0,
                 Items = new List<TableItem>(),
                 OrderDiscount = new()
             }
@@ -86,19 +88,23 @@ public partial class MenuButtons : IDisposable
     }
     private async Task BackToPos()
     {
-        await SafeNavigateAsync("/pos");
         _commonProperties.AppendedTableItems!.Clear();
         _commonProperties.TableItems!.Clear();
         _commonProperties.CurrentDineInOrder = null;
         _commonProperties.DineInOrderValues = new();
         _commonProperties.UpdateDineInOrder = false;
         _commonProperties.OrderDiscount = new();
-        _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+        _commonProperties.CurrentPosMode = "TakeAway";
         _cartService.UpdateFinanceSettingsByMode("TakeAway");
+        
+        await SafeNavigateAsync("/pos");
     }
     private void UpdateCurrentDineInOrder(DineInOrderDetails dineInOrderDetails)
     {
         _commonProperties.UpdateDineInOrder = true;
+
+        // Ensure finance settings are initialized before accessing indices
+        _cartService.UpdateFinanceSettingsByMode("DineIn");
 
         _commonProperties.TableItems = new List<TableItem>(
             dineInOrderDetails!.BasicOrderDetails!.Items.Select(item =>
@@ -108,13 +114,18 @@ public partial class MenuButtons : IDisposable
                 return newItem;
             })
         );
-        _commonProperties.OrderDiscount = dineInOrderDetails.BasicOrderDetails.OrderDiscount;
-        if (dineInOrderDetails.BasicOrderDetails.OrderDiscount.DiscountType == "percentage")
-            _commonProperties!._financeSettingsList![1].Value = dineInOrderDetails.BasicOrderDetails.OrderDiscount.Percentage;
-        else
-            _commonProperties!._financeSettingsList![1].Value = dineInOrderDetails.BasicOrderDetails.OrderDiscount.Value;
+        
+        if (dineInOrderDetails.BasicOrderDetails.OrderDiscount != null)
+        {
+            _commonProperties.OrderDiscount = dineInOrderDetails.BasicOrderDetails.OrderDiscount;
+            if (dineInOrderDetails.BasicOrderDetails.OrderDiscount.DiscountType == "percentage")
+                _commonProperties!._financeSettingsList![1].Value = dineInOrderDetails.BasicOrderDetails.OrderDiscount.Percentage;
+            else
+                _commonProperties!._financeSettingsList![1].Value = dineInOrderDetails.BasicOrderDetails.OrderDiscount.Value;
+        }
 
-        _commonProperties._financeSettingsList[4].Value = dineInOrderDetails.BasicOrderDetails.Total;
+        if (_commonProperties._financeSettingsList?.Count > 4)
+            _commonProperties._financeSettingsList[4].Value = dineInOrderDetails.BasicOrderDetails.Total;
     }
  
     private async Task OpenMergeTablesDialog()
@@ -125,6 +136,7 @@ public partial class MenuButtons : IDisposable
 
     [Inject] private Section4ButtonsServices _section4ButtonsServices { get; set; } = default!;
     [Inject] private IPrintOrderService _printOrderService { get; set; } = default!;
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
 
     private async Task PrintReceipt()
     {
@@ -272,7 +284,36 @@ public partial class MenuButtons : IDisposable
 
                 _snackbar.Add(Localizer["TableClosed"], Severity.Success);
                 StateHasChanged();
-                await SafeNavigateAsync("/dineIn");
+                
+                // Get default startup URL
+                if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
+                    _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
+
+                string startupUrl = "/pos";
+                string startupMode = "TakeAway";
+                if (_commonProperties.FeatureSettings != null)
+                {
+                    if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Delivery")?.Value == true)
+                    {
+                        startupUrl = "/delivery";
+                        startupMode = "Delivery";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_DineIn")?.Value == true)
+                    {
+                        startupUrl = "/dinein";
+                        startupMode = "DineIn";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Distribution")?.Value == true)
+                    {
+                        startupUrl = "/distribution";
+                        startupMode = "Distribution";
+                    }
+                }
+
+                _commonProperties.CurrentPosMode = startupMode;
+                _cartService.UpdateFinanceSettingsByMode(startupMode);
+                
+                await SafeNavigateAsync(startupUrl);
             }
             else
             {

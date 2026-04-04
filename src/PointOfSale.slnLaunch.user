@@ -7,11 +7,11 @@
         "Action": "Start"
       },
       {
-        "Path": "BackOffice.Desktop\\BackOffice.Desktop.csproj",
+        "Path": "POS.API\\POS.API.csproj",
         "Action": "Start"
       },
       {
-        "Path": "POS.API\\POS.API.csproj",
+        "Path": "BackOffice.Desktop\\BackOffice.Desktop.csproj",
         "Action": "Start"
       }
     ]

@@ -359,10 +359,10 @@ F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\m
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildMultiTargeting.POS.Desktop.props
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildTransitive.POS.Desktop.props
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.pack.json
+F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desk.5A2F66C5.Up2Date
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.dll
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\refint\POS.Desktop.dll
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.pdb
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.genruntimeconfig.cache
 F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\ref\POS.Desktop.dll
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt

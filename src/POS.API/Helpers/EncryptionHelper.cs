@@ -49,6 +49,40 @@ public static class EncryptionHelper
         }
     }
 
+    public static string EncryptString(string plainText)
+    {
+        if (string.IsNullOrEmpty(plainText)) return plainText;
+
+        try
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(Key);
+                aes.IV = new byte[16]; // نفس الـ IV الأصفار المستخدم في فك التشفير
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter sw = new StreamWriter(cs))
+                        {
+                            sw.Write(plainText);
+                        }
+                    }
+                    // تحويل النتيجة النهائية لـ Base64 عشان تعرف تخزنها كـ String
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+            }
+        }
+        catch
+        {
+            // في حالة الخطأ رجع النص الأصلي أو ارمي Exception حسب حاجتك
+            return plainText;
+        }
+    }
+
     private static bool IsBase64String(string s)
     {
         Span<byte> buffer = new Span<byte>(new byte[s.Length]);

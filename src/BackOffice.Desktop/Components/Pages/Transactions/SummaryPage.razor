@@ -367,15 +367,37 @@
         flex-shrink: 0;
     }
     .section-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .actions-grid { 
+        display: flex; 
+        flex-direction: row; 
+        gap: 8px; 
+        overflow: hidden;
+        justify-content: space-between;
+    }
     
-    .action-btn { height: 40px; border-radius: 10px; font-weight: 800; font-size: 0.9rem; color: white !important; }
-    .action-btn.purple { background: #6366f1 !important; }
-    .action-btn.pink { background: #ec4899 !important; }
-    .action-btn.blue { background: #0ea5e9 !important; }
-    .action-btn.green { background: #10b981 !important; }
-    .action-btn.orange { background: #f59e0b !important; }
-    .action-btn.red { background: #ef4444 !important; }
+    .action-btn { 
+        flex: 1 1 0;
+        min-width: 0;
+        height: 48px; 
+        border-radius: 12px; 
+        font-weight: 800; 
+        font-size: clamp(9px, 1vw, 14px); 
+        color: white !important; 
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        white-space: nowrap;
+    }
+    .action-btn .mud-button-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .action-btn.purple { background: #6366f1 !important; transition: all 0.3s ease; }
+    .action-btn.pink { background: #ec4899 !important; transition: all 0.3s ease; }
+    .action-btn.blue { background: #0ea5e9 !important; transition: all 0.3s ease; }
+    .action-btn.green { background: #10b981 !important; transition: all 0.3s ease; }
+    .action-btn.orange { background: #f59e0b !important; transition: all 0.3s ease; }
+    .action-btn.red { background: #ef4444 !important; transition: all 0.3s ease; }
 
     .fade-in { animation: fadeIn 0.4s ease-out forwards; }
     @@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

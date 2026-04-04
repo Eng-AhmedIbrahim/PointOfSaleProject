@@ -122,9 +122,9 @@ public class CommonProperties
 
     public ICollection<OrderSettingToReturnDto> OrderSettings { get; set; } = new List<OrderSettingToReturnDto>();
     public List<PosFeatureSettingToReturnDto> FeatureSettings { get; set; } = new();
-    public TakeAwaySettings? TakeAwaySettings { get; set; }
-    public DineInSettings? DineInSettings { get; set; }
-    public DeliverySettings? DeliverySettings { get; set; }
+    public TakeAwaySettings TakeAwaySettings { get; set; } = new();
+    public DineInSettings DineInSettings { get; set; } = new();
+    public DeliverySettings DeliverySettings { get; set; } = new();
 
     public IDialogReference? DialogReference { get; set; }
     public IDialogReference? ItemCommentDialogReference { get; set; }

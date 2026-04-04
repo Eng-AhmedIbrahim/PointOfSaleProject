@@ -252,7 +252,7 @@ public partial class DineIn : IDisposable
 
         var classes = new List<string> { "table-modern-card" };
 
-        if (_commonProperties!.DineInOrdersDetails!.ContainsKey(table.Id.Value))
+        if (_commonProperties?.DineInOrdersDetails != null && _commonProperties.DineInOrdersDetails.ContainsKey(table.Id.Value))
             classes.Add("table-card-has-order");
         else if (table.TableState == "Reserved")
             classes.Add("table-card-reserved");
@@ -292,7 +292,7 @@ public partial class DineIn : IDisposable
                 }
             }
         }
-        else if (!_commonProperties.DineInOrdersDetails!.ContainsKey(table.Id.Value))
+        else if (_commonProperties.DineInOrdersDetails == null || !_commonProperties.DineInOrdersDetails.ContainsKey(table.Id.Value))
         {
             if (!_commonProperties.IsFeatureEnabled("EnableReservation"))
             {
@@ -339,7 +339,7 @@ public partial class DineIn : IDisposable
         };
         
         _commonProperties.TableItems = new List<TableItem>(
-            orderDetails!.BasicOrderDetails!.Items!.Select(item =>
+            (orderDetails?.BasicOrderDetails?.Items ?? new List<TableItem>()).Select(item =>
             {
                 var newItem = item.Clone();
                 newItem.IsReadOnly = true;

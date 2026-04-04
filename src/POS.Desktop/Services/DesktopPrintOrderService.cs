@@ -929,10 +929,13 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             ZoneName = orderDto.ZoneName,
             AddressNote = orderDto.AddressNotice,
+            Building = orderDto.HomeNum,
             HomeNumber = orderDto.HomeNum,
             FloorNumber = orderDto.FloorNum,
             FlatNumber = orderDto.ApartmentNum,
             TotalOrder = orderDto.GrandTotal,
+            TotalAmount = orderDto.SubTotal 
+                          ?? orderDto.OrderDetails?.Sum(i => i.TotalAmount ?? (i.Price * i.Quantity) ?? 0),
             IsVoid = orderDto.OrderState == "Voided",
             IsHospitality = orderDto.IsHospitality ?? false,
             HospitalityResponsibleName = orderDto.HospitalityResponsibleName,
@@ -976,7 +979,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                         var targetPrinter = printerName ?? (typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string);
                         if (string.IsNullOrEmpty(targetPrinter)) continue;
 
-                        bool isActuallyCopy = isCopy || (currentPrintCount > 1) || (i > 1);
+                        bool isActuallyCopy = !isFollowUp && (isCopy || (currentPrintCount > 1) || (i > 1));
 
                         string pathToPrint;
                         if (isActuallyCopy)
@@ -1089,6 +1092,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             ZoneName = orderDto.ZoneName,
             AddressNote = orderDto.AddressNotice,
+            Building = orderDto.HomeNum,
             HomeNumber = orderDto.HomeNum,
             FloorNumber = orderDto.FloorNum,
             FlatNumber = orderDto.ApartmentNum,
@@ -1364,11 +1368,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             var branches = await _branchService.GetBranches();
             var currentBranch = branches.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
+            var branchName = currentBranch?.Name ?? branches.FirstOrDefault()?.Name ?? "Store";
 
             var document = new DriverSettlementDocument(
                 settlement, 
                 posDate, 
-                currentBranch?.Name ?? "Store", 
+                branchName, 
                 LogoPath, 
                 ReportPageFormat.Cashier, 
                 true);

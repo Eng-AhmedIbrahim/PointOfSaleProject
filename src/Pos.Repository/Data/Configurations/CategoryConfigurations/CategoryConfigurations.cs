@@ -1,4 +1,4 @@
-﻿namespace POS.Repository.Data.Configurations.CategoryConfigurations;
+namespace POS.Repository.Data.Configurations.CategoryConfigurations;
 
 public class CategoryConfigurations : IEntityTypeConfiguration<Category>
 {
@@ -57,7 +57,7 @@ public class CategoryConfigurations : IEntityTypeConfiguration<Category>
         builder.HasMany(c => c.MenuSalesItems)
             .WithOne(c => c.Category)
             .HasForeignKey(c => c.CategoryId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(c => c.KitchenType)
             .WithMany(c => c.Categories)

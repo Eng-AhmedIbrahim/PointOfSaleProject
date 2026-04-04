@@ -406,5 +406,13 @@
     "ModuleName": "Startup",
     "ScreenName": "General",
     "Value": false
+  },
+  {
+    "FeatureName": "Startup_Distribution",
+    "NameEn": "Default Screen: Distribution",
+    "NameAr": "الشاشة الافتراضية: التوزيع",
+    "ModuleName": "Startup",
+    "ScreenName": "General",
+    "Value": false
   }
 ]

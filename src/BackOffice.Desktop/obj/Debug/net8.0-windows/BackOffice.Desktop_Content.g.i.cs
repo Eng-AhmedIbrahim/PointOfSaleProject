@@ -142,6 +142,6 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/shared/premiumconfirmdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/transactions/salesendofdaydialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/_imports.razor")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("poslogo.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("newtechbackoffice.ico")]
 
 

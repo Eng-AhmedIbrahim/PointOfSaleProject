@@ -1,4 +1,4 @@
-﻿namespace POS.Repository.Data.Configurations.ItemConfigurations;
+namespace POS.Repository.Data.Configurations.ItemConfigurations;
 
 public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
 {
@@ -92,8 +92,8 @@ public class ItemConfigurations : IEntityTypeConfiguration<MenuSalesItems>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.Attribute)
-            .WithOne()
-            .HasForeignKey<MenuSalesItems>(e => e.AttributeId)
+            .WithMany()
+            .HasForeignKey(e => e.AttributeId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(e => e.MainCategory)

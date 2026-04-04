@@ -57,7 +57,7 @@ public static class AppIdentityDbContextSeed
                 IsActive = true
             };
 
-            var result = await userManager.CreateAsync(user, "12312300Aa#@");
+            var result = await userManager.CreateAsync(user, "951753");
 
             if (result.Succeeded)
             {

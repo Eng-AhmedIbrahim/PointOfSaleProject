@@ -4999,6 +4999,82 @@
         }
       }
     },
+    "/api/Encryption/encrypt": {
+      "get": {
+        "tags": [
+          "Encryption"
+        ],
+        "parameters": [
+          {
+            "name": "plainText",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Encryption/decrypt": {
+      "get": {
+        "tags": [
+          "Encryption"
+        ],
+        "parameters": [
+          {
+            "name": "cipherText",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Expenses": {
       "get": {
         "tags": [

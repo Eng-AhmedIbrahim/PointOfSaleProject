@@ -14,6 +14,8 @@ public partial class Login
 
     [Inject] private AuthenticationStateProvider _authenticationStateProvider { get; set; } = default!;
     [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
+    [Inject] private IOrderSettingsService _orderSettingsService { get; set; } = default!;
+    [Inject] private IAppDateService _appDateService { get; set; } = default!;
     private void AddDigit(string digit)
         => _pin += digit;
 
@@ -98,6 +100,56 @@ public partial class Login
                 if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
                     _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
 
+                // Fetch Order Settings and App Date ASAP for startup screens
+                var settingsTask = _orderSettingsService.GetOrderSettingsAsync(Environment.MachineName);
+                var appDateTask = _appDateService.GetAppDate();
+                
+                await Task.WhenAll(settingsTask, appDateTask);
+
+                var orderSettings = await settingsTask;
+                if (orderSettings != null)
+                {
+                    _commonProperties.OrderSettings = orderSettings;
+                    foreach (var item in orderSettings)
+                    {
+                        if (item.OrderType == "DineIn")
+                        {
+                            _commonProperties.DineInSettings = new()
+                            {
+                                OrderStatment = item.OrderStatment, JobID = item.JobID, Service = item.Service, Tax = item.Tax,
+                                Tips = item.Tips, SeparateReceiptCount = item.SeparateReceiptCount, AddServiceToItemPrice = item.AddServiceToItemPrice,
+                                ClosingReceiptCount = item.ClosingReceiptCount, CustomerReceiptCount = item.CustomerReceiptCount, FullKitchenReceiptCount = item.FullKitchenReceiptCount,
+                                CanCloseWithoutPrint = item.CanCloseWithoutPrint, DeductCaptainTips = item.DeductCaptainTips, CaptainTipsAmount = item.CaptainTipsAmount
+                            };
+                        }
+                        else if (item.OrderType == "TakeAway")
+                        {
+                            _commonProperties.TakeAwaySettings = new()
+                            {
+                                OrderStatment = item.OrderStatment, JobID = item.JobID, Service = item.Service, Tax = item.Tax,
+                                Tips = item.Tips, SeparateReceiptCount = item.SeparateReceiptCount, AddServiceToItemPrice = item.AddServiceToItemPrice,
+                                ClosingReceiptCount = item.ClosingReceiptCount, CustomerReceiptCount = item.CustomerReceiptCount, FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                            };
+                        }
+                        else if (item.OrderType == "Delivery")
+                        {
+                            _commonProperties.DeliverySettings = new()
+                            {
+                                OrderStatment = item.OrderStatment, JobID = item.JobID, Service = item.Service, Tax = item.Tax,
+                                Tips = item.Tips, SeparateReceiptCount = item.SeparateReceiptCount, AddServiceToItemPrice = item.AddServiceToItemPrice,
+                                ClosingReceiptCount = item.ClosingReceiptCount, CustomerReceiptCount = item.CustomerReceiptCount, FullKitchenReceiptCount = item.FullKitchenReceiptCount
+                            };
+                        }
+                    }
+                }
+
+                var appDate = await appDateTask;
+                if (appDate != null)
+                {
+                    _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
+                    _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber;
+                }
+
                 string startupUrl = "/pos"; // Default fallback
                 _commonProperties.CurrentPosMode = "TakeAway";
 
@@ -112,6 +164,11 @@ public partial class Login
                     {
                         startupUrl = "/dinein";
                         _commonProperties.CurrentPosMode = "DineIn";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Distribution")?.Value == true)
+                    {
+                        startupUrl = "/distribution";
+                        _commonProperties.CurrentPosMode = "Distribution";
                     }
                     else // TakeAway or default
                     {

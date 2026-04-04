@@ -49,7 +49,7 @@ public static class PosDbContextDataSeed
                 BranchId = branch.Id,
                 PosDate = DateTime.Now.Date,
                 StoreDate = DateTime.Now.Date,
-               CurrentOrderNumber = 1
+               CurrentOrderNumber = 0
             };
             await _dbContext.AppDate.AddAsync(appDate);
             await _dbContext.SaveChangesAsync();

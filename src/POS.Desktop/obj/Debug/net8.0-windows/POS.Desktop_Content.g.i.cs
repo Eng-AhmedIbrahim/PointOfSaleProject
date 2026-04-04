@@ -132,6 +132,6 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/possettingscomponents/section3settingscomponent.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/routes.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/_imports.razor")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("poslogo.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("newtechpos.ico")]
 
 

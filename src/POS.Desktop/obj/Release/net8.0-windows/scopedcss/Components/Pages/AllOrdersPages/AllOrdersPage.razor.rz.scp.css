@@ -1,0 +1,109 @@
+.orders-container[b-002l3pdljy] {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.orders-header[b-002l3pdljy] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
+}
+
+.filter-section[b-002l3pdljy] {
+    display: flex;
+    align-items: center;
+}
+
+.custom-tabs[b-002l3pdljy] {
+    min-width: 400px;
+}
+
+.orders-content[b-002l3pdljy] {
+    flex: 1;
+    overflow: hidden;
+}
+
+.customer-info[b-002l3pdljy] {
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-info .name[b-002l3pdljy] {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.customer-info .phone[b-002l3pdljy] {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.total-text[b-002l3pdljy] {
+    font-size: 1.1rem;
+    color: #020617;
+}
+
+.text-red[b-002l3pdljy] {
+    color: #ef4444;
+}
+
+.glass[b-002l3pdljy] {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid white;
+    border-radius: 15px;
+}
+
+.fade-in[b-002l3pdljy] {
+    animation: fadeIn-b-002l3pdljy 0.4s ease-in-out;
+}
+
+.hover-back[b-002l3pdljy] {
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-back:hover[b-002l3pdljy] {
+    transform: translateX(-5px);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[dir="rtl"] .hover-back:hover[b-002l3pdljy] {
+    transform: translateX(5px);
+}
+
+@keyframes fadeIn-b-002l3pdljy {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[b-002l3pdljy] .action-menu-item {
+    padding: 12px 24px !important;
+    min-width: 220px;
+}
+
+[b-002l3pdljy] .action-menu-item .mud-list-item-icon {
+    margin-inline-end: 16px;
+    margin-top: 2px;
+}
+
+[b-002l3pdljy] .action-menu-item .mud-typography {
+    font-weight: 600;
+    font-size: 1.1rem;
+}

@@ -5,7 +5,6 @@
 @inject LocalizationService Localizer
 @inject IDineInOrderFrontService _dineInOrderService
 @inject IOrderTrackFrontService _orderTrackService
-@inject CartService _cartService
 
 <MudGrid Spacing="1" Justify="Justify.Center">
     @if (_canDineInOrder && _commonProperties.IsFeatureEnabled("DineIn_Button_Order"))

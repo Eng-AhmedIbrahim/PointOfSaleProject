@@ -13,6 +13,7 @@ public partial class Section4Buttons
     private bool _canWaitingOrder;
     private bool _canPrintOrder;
 
+    [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
     private bool _isProcessing = false;
 
     private Action? _stateChangedHandler;
@@ -43,7 +44,7 @@ public partial class Section4Buttons
         }
     }
 
-    private void CancelOrder()
+    private async Task CancelOrder()
     {
         if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
             _cartService.ClearDineInOrderAttributes();
@@ -52,7 +53,15 @@ public partial class Section4Buttons
 
         _commonProperties.ClearStaffMeal();
         _cartService.CalculateSection4Table();
+        
+        _commonProperties.CurrentPosMode = "TakeAway";
+        _cartService.UpdateFinanceSettingsByMode("TakeAway");
         _services.NotifyStateChanged();
+
+        if (!_navigationManager.Uri.EndsWith("/pos"))
+        {
+            _navigationManager.NavigateTo("/pos");
+        }
     }
 
     public void Dispose()
@@ -153,8 +162,33 @@ public partial class Section4Buttons
                     await PrintDeliveryOrder();
                 }
 
-                _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+                // Determine default mode/url
+                if (_commonProperties.FeatureSettings == null || !_commonProperties.FeatureSettings.Any())
+                    _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
 
+                string startupUrl = "/pos";
+                string startupMode = "TakeAway";
+
+                if (_commonProperties.FeatureSettings != null)
+                {
+                    if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Delivery")?.Value == true)
+                    {
+                        startupUrl = "/delivery";
+                        startupMode = "Delivery";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_DineIn")?.Value == true)
+                    {
+                        startupUrl = "/dinein";
+                        startupMode = "DineIn";
+                    }
+                    else if (_commonProperties.FeatureSettings.FirstOrDefault(s => s.FeatureName == "Startup_Distribution")?.Value == true)
+                    {
+                        startupUrl = "/distribution";
+                        startupMode = "Distribution";
+                    }
+                }
+
+                _commonProperties.CurrentPosMode = startupMode;
                 _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
 
                 // Refresh app date to stay in sync
@@ -166,6 +200,12 @@ public partial class Section4Buttons
                 }
 
                 _services.NotifyStateChanged();
+                
+                // If the current screen is NOT the startup screen, navigate back to the startup screen
+                if (_navigationManager.Uri.EndsWith("/pos") && startupUrl != "/pos")
+                {
+                    _navigationManager.NavigateTo(startupUrl);
+                }
             }
             else
                 _snackbar.Add("No Order to print", Severity.Info);

@@ -225,20 +225,28 @@ public class DeliveryReceiptDocument : IDocument
             table.Cell().Element(CellStyle).Text(_receipt.CustomerName).AlignRight();
             table.Cell().Element(CellStyle).Text("العميل").Bold().AlignRight();
 
-
             table.Cell().Element(CellStyle).Text(_receipt.CustomerAddress).AlignRight();
-            table.Cell().Element(CellStyle).Text("الشارع").Bold().AlignRight();
-
-            table.Cell().Element(CellStyle).AlignRight().Text(text =>
-            {
-                text.Span("مبنى: ").Bold();
-                text.Span($"{_receipt.Building} $ ");
-                text.Span("الدور: ").Bold();
-                text.Span($"{_receipt.FloorNumber} $ ");
-                text.Span("الشقة: ").Bold();
-                text.Span(_receipt.FlatNumber);
-            });
             table.Cell().Element(CellStyle).Text("العنوان").Bold().AlignRight();
+
+            table.Cell().Element(CellStyle).Text(_receipt.Building).AlignRight();
+            table.Cell().Element(CellStyle).Text("رقم المبنى").Bold().AlignRight();
+
+            // Nested table for Floor and Flat within a single row span
+            table.Cell().ColumnSpan(2).Padding(0).Table(innerTable =>
+            {
+                innerTable.ColumnsDefinition(innerCols =>
+                {
+                    innerCols.RelativeColumn(2f); // Floor Value
+                    innerCols.RelativeColumn(2f); // Floor Label
+                    innerCols.RelativeColumn(2f); // Flat Value
+                    innerCols.RelativeColumn(2f); // Flat Label
+                });
+
+                innerTable.Cell().Element(CellStyle).Text(_receipt.FloorNumber).AlignCenter();
+                innerTable.Cell().Element(CellStyle).Text("رقم الدور").Bold().AlignCenter();
+                innerTable.Cell().Element(CellStyle).Text(_receipt.FlatNumber).AlignCenter();
+                innerTable.Cell().Element(CellStyle).Text("شقة رقم").Bold().AlignCenter();
+            });
 
             table.Cell().Element(CellStyle).Text(_receipt.ZoneName).AlignRight();
             table.Cell().Element(CellStyle).Text("المنطقة").Bold().AlignRight();

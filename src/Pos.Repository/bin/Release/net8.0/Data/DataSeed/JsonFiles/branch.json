@@ -14,6 +14,7 @@
     "Suspend": false,
     "CreationDate": "2025-03-01",
     "UpdateDate": null,
-    "CompanyId": 0
+    "CompanyId": 0,
+    "Currency": "EGP"
   }
 ]

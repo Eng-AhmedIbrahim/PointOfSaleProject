@@ -1127,7 +1127,9 @@ public class OrderController : BaseApiController
             FooterMessage = deliveryOrder!.FooterMessage!,
             LogoPath = branchDetails[0],
             LogoWidth = int.Parse(branchDetails[1]),
-            TotalAmount = createdOrder.Subtotal ?? deliveryOrder.SubTotal,
+            TotalAmount = createdOrder.Subtotal 
+                          ?? deliveryOrder.SubTotal 
+                          ?? deliveryOrder.OrderDetails?.Sum(i => i.TotalAmount ?? (i.Price * i.Quantity) ?? 0),
             DeliveryFees = (createdOrder.DeliveryFees ?? deliveryOrder.DeliveryFees ?? 0) != 0 
                             ? (createdOrder.DeliveryFees ?? deliveryOrder.DeliveryFees ?? 0) 
                             : (parentDeliveryFees ?? 0),

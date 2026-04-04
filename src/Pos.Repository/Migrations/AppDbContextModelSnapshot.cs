@@ -1058,9 +1058,7 @@ namespace Pos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttributeId")
-                        .IsUnique()
-                        .HasFilter("[AttributeId] IS NOT NULL");
+                    b.HasIndex("AttributeId");
 
                     b.HasIndex("BranchId");
 
@@ -2703,8 +2701,8 @@ namespace Pos.Repository.Migrations
             modelBuilder.Entity("POS.Core.Entities.Item.MenuSalesItems", b =>
                 {
                     b.HasOne("POS.Core.Entities.Item.Attributes", "Attribute")
-                        .WithOne()
-                        .HasForeignKey("POS.Core.Entities.Item.MenuSalesItems", "AttributeId")
+                        .WithMany()
+                        .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("POS.Core.Entities.Company.Branch", "Branch")

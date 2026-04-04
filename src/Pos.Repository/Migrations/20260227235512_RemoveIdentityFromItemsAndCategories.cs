@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -113,15 +113,40 @@ namespace Pos.Repository.Migrations
                         );
                     END
 
-                    -- Restore FKs
+                    -- Restore FKs with NO ACTION to avoid cycles during migration
                     IF OBJECT_ID('Categories') IS NOT NULL AND OBJECT_ID('MenuSalesItems') IS NOT NULL
-                        ALTER TABLE MenuSalesItems ADD CONSTRAINT FK_MenuSalesItems_Categories_CategoryId FOREIGN KEY ([CategoryId]) REFERENCES Categories([Id]) ON DELETE SET NULL;
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MenuSalesItems_Categories_CategoryId')
+                            ALTER TABLE MenuSalesItems ADD CONSTRAINT FK_MenuSalesItems_Categories_CategoryId FOREIGN KEY ([CategoryId]) REFERENCES Categories([Id]) ON DELETE NO ACTION;
+
                     IF OBJECT_ID('Attributes') IS NOT NULL AND OBJECT_ID('AttributeItems') IS NOT NULL
-                        ALTER TABLE AttributeItems ADD CONSTRAINT FK_AttributeItems_Attributes_AttributeId FOREIGN KEY ([AttributeId]) REFERENCES Attributes([Id]) ON DELETE CASCADE;
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AttributeItems_Attributes_AttributeId')
+                            ALTER TABLE AttributeItems ADD CONSTRAINT FK_AttributeItems_Attributes_AttributeId FOREIGN KEY ([AttributeId]) REFERENCES Attributes([Id]) ON DELETE NO ACTION;
+
                     IF OBJECT_ID('MenuSalesItems') IS NOT NULL AND OBJECT_ID('AttributeItems') IS NOT NULL
-                        ALTER TABLE AttributeItems ADD CONSTRAINT FK_AttributeItems_MenuSalesItems_RelatedMenuItemId FOREIGN KEY ([RelatedMenuItemId]) REFERENCES MenuSalesItems([Id]) ON DELETE CASCADE;
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AttributeItems_MenuSalesItems_RelatedMenuItemId')
+                            ALTER TABLE AttributeItems ADD CONSTRAINT FK_AttributeItems_MenuSalesItems_RelatedMenuItemId FOREIGN KEY ([RelatedMenuItemId]) REFERENCES MenuSalesItems([Id]) ON DELETE NO ACTION;
+
                     IF OBJECT_ID('OrderItemAttributes') IS NOT NULL AND OBJECT_ID('AttributeItems') IS NOT NULL
-                        ALTER TABLE OrderItemAttributes ADD CONSTRAINT FK_OrderItemAttributes_AttributeItems_AttributeItemId FOREIGN KEY ([AttributeItemId]) REFERENCES AttributeItems([Id]) ON DELETE SET NULL;
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_OrderItemAttributes_AttributeItems_AttributeItemId')
+                            ALTER TABLE OrderItemAttributes ADD CONSTRAINT FK_OrderItemAttributes_AttributeItems_AttributeItemId FOREIGN KEY ([AttributeItemId]) REFERENCES AttributeItems([Id]) ON DELETE NO ACTION;
+
+                    IF OBJECT_ID('MenuSalesItems') IS NOT NULL AND OBJECT_ID('Attributes') IS NOT NULL
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MenuSalesItems_Attributes_AttributeId')
+                            ALTER TABLE MenuSalesItems ADD CONSTRAINT FK_MenuSalesItems_Attributes_AttributeId FOREIGN KEY ([AttributeId]) REFERENCES Attributes([Id]) ON DELETE NO ACTION;
+
+                    IF OBJECT_ID('OrdersDetails') IS NOT NULL AND OBJECT_ID('MenuSalesItems') IS NOT NULL
+                    BEGIN
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_OrdersDetails_MenuSalesItems_MenuSalesItemId')
+                            ALTER TABLE OrdersDetails ADD CONSTRAINT FK_OrdersDetails_MenuSalesItems_MenuSalesItemId FOREIGN KEY ([MenuSalesItemId]) REFERENCES MenuSalesItems([Id]) ON DELETE NO ACTION;
+                    END
+
+                    IF OBJECT_ID('Branches') IS NOT NULL
+                    BEGIN
+                        IF OBJECT_ID('Categories') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Categories_Branches_BranchId')
+                            ALTER TABLE Categories ADD CONSTRAINT FK_Categories_Branches_BranchId FOREIGN KEY ([BranchId]) REFERENCES Branches([Id]) ON DELETE NO ACTION;
+                        IF OBJECT_ID('MenuSalesItems') IS NOT NULL AND NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_MenuSalesItems_Branches_BranchId')
+                            ALTER TABLE MenuSalesItems ADD CONSTRAINT FK_MenuSalesItems_Branches_BranchId FOREIGN KEY ([BranchId]) REFERENCES Branches([Id]) ON DELETE NO ACTION;
+                    END
                 END
             ");
         }

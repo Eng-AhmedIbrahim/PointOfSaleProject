@@ -120,7 +120,7 @@ public partial class SummaryPage
 
     private void GoBack()
     {
-        _navigationManager.NavigateTo("/");
+        System.Environment.Exit(0);
     }
 
     private async Task ShowSalesItems()

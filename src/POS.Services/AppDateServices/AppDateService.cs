@@ -1,8 +1,4 @@
-﻿using System.Linq.Expressions;
-using POS.Core.Entities.OrderEntity;
-using Serilog;
-
-namespace POS.Services.AppDateServices;
+﻿namespace POS.Services.AppDateServices;
 
 public class AppDateService : IAppDateService
 {
@@ -88,7 +84,7 @@ public class AppDateService : IAppDateService
             appDate.StoreDate = appDate.StoreDate.AddDays(1);
             
             // Reset order number
-            appDate.CurrentOrderNumber = 1;
+            appDate.CurrentOrderNumber = 0;
 
             _unitOfWork.Repository<AppDate>().Update(appDate);
             var result = await _unitOfWork.CompleteAsync();

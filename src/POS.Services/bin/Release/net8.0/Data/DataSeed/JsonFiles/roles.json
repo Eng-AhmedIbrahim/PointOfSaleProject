@@ -110,5 +110,12 @@
     "NormalizedName": "المدير المالى",
     "ConcurrencyStamp": "b2a1d3c4-5e6f-7d8c-9a0b-f3d4c5a6b7e8",
     "Discriminator": "IdentityRole"
+  },
+  {
+    "Id": "17",
+    "Name": "طيار",
+    "NormalizedName": "طيار",
+    "ConcurrencyStamp": "b2a1d3c4-5e6f-7d8c-9a0b-f3d4c5a6b7e8",
+    "Discriminator": "IdentityRole"
   }
 ]
