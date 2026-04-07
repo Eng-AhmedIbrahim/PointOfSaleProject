@@ -1471,6 +1471,59 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
+    public async Task PrintAllDriversSettlementAsync(List<DriverSettlementDto> settlements, DateTime posDate, string? printerName = null)
+    {
+        try
+        {
+            var branches = await _branchService.GetBranches();
+            var currentBranch = branches.FirstOrDefault(b => b.Id == _commonProperties.BranchDetails?.Id);
+            var branchName = currentBranch?.Name ?? branches.FirstOrDefault()?.Name ?? "Store";
+
+            var document = new DriverAllSettlementDocument(
+                settlements,
+                posDate,
+                branchName,
+                LogoPath,
+                ReportPageFormat.Cashier,
+                isArabic: true,
+                fromDate: posDate,
+                toDate: posDate);
+
+            var reportsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+            Directory.CreateDirectory(reportsFolder);
+            var outputPath = Path.Combine(reportsFolder, $"AllDriversSettlement_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+
+            document.GeneratePdf(outputPath);
+
+            // Printer selection
+            if (string.IsNullOrWhiteSpace(printerName))
+            {
+                printerName = await _localStorage.GetItemAsStringAsync("cashier_printer_name");
+
+                if (string.IsNullOrWhiteSpace(printerName))
+                {
+                    printerName = new System.Drawing.Printing.PrinterSettings().PrinterName;
+                    Log.Information("No printer provided. Using system default: {Printer}", printerName);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(printerName))
+            {
+                Log.Information("Printing All Drivers Settlement ({Count} drivers) to {Printer}", settlements.Count, printerName);
+                await _printerServices.PrintPdfAsync(outputPath, printerName);
+            }
+            else
+            {
+                Log.Warning("Critical: No printer found to print All Drivers Settlement.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to print all drivers settlement");
+        }
+    }
+
+
     public async Task PrintStaffPerformanceAsync(SalesSummaryDto summary, string? printerName = null, bool useA4 = false, bool isArabic = true, bool showOrders = false, string? specificStaffId = null)
     {
         try

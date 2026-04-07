@@ -160,6 +160,7 @@ E:\Point Of Sale Deployment\POS\System.Private.Windows.Core.dll
 E:\Point Of Sale Deployment\POS\System.Private.Windows.GdiPlus.dll
 E:\Point Of Sale Deployment\POS\System.IdentityModel.Tokens.Jwt.dll
 E:\Point Of Sale Deployment\POS\System.IO.Packaging.dll
+E:\Point Of Sale Deployment\POS\System.Management.dll
 E:\Point Of Sale Deployment\POS\System.Memory.Data.dll
 E:\Point Of Sale Deployment\POS\System.Runtime.Caching.dll
 E:\Point Of Sale Deployment\POS\cs\Microsoft.CodeAnalysis.resources.dll
@@ -259,6 +260,7 @@ E:\Point Of Sale Deployment\POS\runtimes\win-x64\native\libSkiaSharp.dll
 E:\Point Of Sale Deployment\POS\runtimes\win-x64\native\libSkiaSharp.pdb
 E:\Point Of Sale Deployment\POS\runtimes\win-x86\native\libSkiaSharp.dll
 E:\Point Of Sale Deployment\POS\runtimes\win-x86\native\libSkiaSharp.pdb
+E:\Point Of Sale Deployment\POS\runtimes\win\lib\net8.0\System.Management.dll
 E:\Point Of Sale Deployment\POS\runtimes\win\lib\net8.0\System.Runtime.Caching.dll
 E:\Point Of Sale Deployment\POS\BlazorBase.dll
 E:\Point Of Sale Deployment\POS\POS.Authorization.dll

@@ -1,1 +1,0 @@
-   1:7>f:\PointOfSaleProject\src\Common\BlazorBase\ERPFrontServices\ItemServices\ItemService.cs(3,18): error CS0234: The type or namespace name 'Settings' does not exist in the namespace 'BlazorBase' (are you missing an assembly reference?) [f:\PointOfSaleProject\src\Common\BlazorBase\BlazorBase.csproj]

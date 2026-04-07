@@ -57,7 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>58419</FileLength>
-      <LastWriteTime>Tue, 07 Apr 2026 02:53:30 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 07 Apr 2026 23:20:36 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))">

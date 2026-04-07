@@ -3566,6 +3566,105 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "CheckDevice",
+    "RelativePath": "api/License/CheckDevice",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hardwareId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "GenerateKey",
+    "RelativePath": "api/License/GenerateKey",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "branchId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "licenseType",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "maxDevices",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "expiryMonths",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "GetAll",
+    "RelativePath": "api/License/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "GetBranches",
+    "RelativePath": "api/License/GetBranches",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "RegisterDevice",
+    "RelativePath": "api/License/RegisterDevice",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "POS.API.Controllers.RegisterDeviceRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "POS.API.Controllers.LicenseController",
+    "Method": "UnlinkDevice",
+    "RelativePath": "api/License/UnlinkDevice",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "POS.API.Controllers.UnlinkDeviceRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "POS.API.Controllers.LogTestsController",
     "Method": "Get",
     "RelativePath": "api/LogTests",

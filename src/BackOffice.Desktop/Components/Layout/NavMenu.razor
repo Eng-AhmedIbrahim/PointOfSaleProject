@@ -7,6 +7,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthStateProvider
 @using BackOffice.Desktop.Components.Transactions
+@using BackOffice.Desktop.Components.Shared
 
 <div class="top-nav-professional" dir="@(LocalizerService.GetCurrentLanguage() == "ar" ? "rtl" : "ltr")">
     <!-- Brand Section -->
@@ -292,11 +293,12 @@
 
         @if (_canViewRegistration)
         {
-            <div class="tab-item">
+            <div class="tab-item" @onclick="OpenRegistrationDialog" style="cursor: pointer;">
                 <MudIcon Icon="@Icons.Material.Rounded.AppRegistration" Size="Size.Small" Class="tab-icon" />
                 <span class="tab-text">@LocalizerService["Registration"]</span>
             </div>
         }
+
 
         @if (_canViewClosing)
         {
@@ -322,7 +324,11 @@
 </div>
 
 @code {
+    [Parameter]
+    public bool IsLicensedForBackOffice { get; set; } = true;
+
     private string _userName = "";
+
     private string _userInitials = "AD";
     private string ActiveTab = "dashboard";
     private bool IsInventoryEnabled = false;
@@ -409,7 +415,41 @@
 
             _canManageSettings = _canManageCompany || _canManageOrders || _canManagePrinters || _canManageSystem || _canSyncData || _canManageGeneralSettings || _canManagePosSettings || _canManageLanguageSettings;
             _canManageBasicData = _canManageUsers || _canManageRoles || _canManagePermissions || _canManageItems || _canManageDelivery || _canManageTables || _canManagePaymentMethods;
+            
+            if (!IsLicensedForBackOffice)
+            {
+                _canViewDashboard = false;
+                _canManageSettings = false;
+                _canManageCompany = false;
+                _canManageOrders = false;
+                _canManagePrinters = false;
+                _canManageSystem = false;
+                _canSyncData = false;
+                _canManageGeneralSettings = false;
+                _canManagePosSettings = false;
+                _canManageLanguageSettings = false;
+                _canManageBasicData = false;
+                _canManageUsers = false;
+                _canManageRoles = false;
+                _canManagePermissions = false;
+                _canManageItems = false;
+                _canManageDelivery = false;
+                _canManageTables = false;
+                _canManagePaymentMethods = false;
+                _canManageInventory = false;
+                _canManageRawMaterials = false;
+                _canManageSemiFinished = false;
+                _canManageRecipes = false;
+                _canManageUnits = false;
+                _canViewTransactions = false;
+                _canViewReports = false;
+                _canViewQueries = false;
+
+                // Ensure Registration is visible if they are logged in and they are admin and we restrict everything else.
+                _canViewRegistration = true; 
+            }
         }
+
 
         IsInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
         UpdateActiveTab();
@@ -419,8 +459,43 @@
         };
     }
 
+    protected override void OnParametersSet()
+    {
+        if (!IsLicensedForBackOffice)
+        {
+            _canViewDashboard = false;
+            _canManageSettings = false;
+            _canManageCompany = false;
+            _canManageOrders = false;
+            _canManagePrinters = false;
+            _canManageSystem = false;
+            _canSyncData = false;
+            _canManageGeneralSettings = false;
+            _canManagePosSettings = false;
+            _canManageLanguageSettings = false;
+            _canManageBasicData = false;
+            _canManageUsers = false;
+            _canManageRoles = false;
+            _canManagePermissions = false;
+            _canManageItems = false;
+            _canManageDelivery = false;
+            _canManageTables = false;
+            _canManagePaymentMethods = false;
+            _canManageInventory = false;
+            _canManageRawMaterials = false;
+            _canManageSemiFinished = false;
+            _canManageRecipes = false;
+            _canManageUnits = false;
+            _canViewTransactions = false;
+            _canViewReports = false;
+            _canViewQueries = false;
+            _canViewRegistration = true; 
+        }
+    }
+
     private void UpdateActiveTab()
     {
+
         var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         if (string.IsNullOrEmpty(uri) || uri == "/") ActiveTab = "dashboard";
         else if (uri.Contains("settings")) ActiveTab = "settings";
@@ -449,6 +524,15 @@
             NavigationManager.NavigateTo("/", true); // Force reload to refresh data/date
         }
     }
+
+    private async Task OpenRegistrationDialog()
+    {
+        var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, NoHeader = false };
+        await DialogService.ShowAsync<LicenseActivationDialog>(
+            LocalizerService.GetCurrentLanguage() == "ar" ? "تنشيط الجهاز" : "Activate Device", 
+            options);
+    }
+
 
     private async Task Logout()
     {

@@ -207,6 +207,7 @@ F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.Pri
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.Private.Windows.GdiPlus.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.IdentityModel.Tokens.Jwt.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.IO.Packaging.dll
+F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.Management.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.Memory.Data.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\System.Runtime.Caching.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\cs\Microsoft.CodeAnalysis.resources.dll
@@ -306,6 +307,7 @@ F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\w
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\win-x64\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\win-x86\native\libSkiaSharp.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\win-x86\native\libSkiaSharp.pdb
+F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Management.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Runtime.Caching.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\BlazorBase.dll
 F:\PointOfSaleProject\src\BackOffice.Desktop\bin\Debug\net8.0-windows\POS.Authorization.dll

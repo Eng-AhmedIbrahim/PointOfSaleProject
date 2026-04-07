@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qD/vNyVqqGQ=",
+  "dgSpecHash": "dwvFWXQCJEw=",
   "success": true,
   "projectFilePath": "F:\\PointOfSaleProject\\src\\ERPFront\\ERPFront.csproj",
   "expectedPackageFiles": [
@@ -89,6 +89,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\skiasharp.nativeassets.macos\\3.119.2\\skiasharp.nativeassets.macos.3.119.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\skiasharp.nativeassets.win32\\3.119.2\\skiasharp.nativeassets.win32.3.119.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.clientmodel\\1.0.0\\system.clientmodel.1.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\system.codedom\\8.0.0\\system.codedom.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.collections.immutable\\5.0.0\\system.collections.immutable.5.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.configuration.configurationmanager\\8.0.0\\system.configuration.configurationmanager.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.diagnostics.diagnosticsource\\8.0.0\\system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
@@ -97,6 +98,7 @@
     "C:\\Users\\roma2\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
+    "C:\\Users\\roma2\\.nuget\\packages\\system.management\\8.0.0\\system.management.8.0.0.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
     "C:\\Users\\roma2\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",

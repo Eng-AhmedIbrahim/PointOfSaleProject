@@ -232,6 +232,13 @@ public class PrintOrderService : IPrintOrderService
         return Task.CompletedTask;
     }
 
+    public Task PrintAllDriversSettlementAsync(List<DriverSettlementDto> settlements, DateTime posDate, string? printerName = null)
+    {
+        // Default no-op implementation for non-desktop scenarios
+        return Task.CompletedTask;
+    }
+
+
     public Task PrintStaffPerformanceAsync(SalesSummaryDto summary, string? printerName = null, bool useA4 = false, bool isArabic = true, bool showOrders = false, string? specificStaffId = null)
     {
         return Task.CompletedTask;

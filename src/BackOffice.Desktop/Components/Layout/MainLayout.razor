@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @using MudBlazor.Utilities
 
 <MudThemeProvider Theme="@_customTheme" />
@@ -10,19 +10,33 @@
 @inject ISnackbar _snackbar
 @inject BlazorBase.Services.LocalizationService Localizer
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject BlazorBase.ERPFrontServices.LicensingServices.ILicenseService LicenseService
 
 @implements IDisposable
+
 
 <AuthorizeView>
     <Authorized>
         <div dir="@(IsArabic ? "rtl" : "ltr")">
             <MudLayout Style="height: 100vh;">
                 <MudMainContent Class="main-content-wrapper py-0">
-                    <NavMenu />
+                    <NavMenu IsLicensedForBackOffice="_isLicensed" />
                     <div class="page-container">
-                        @Body
+                        @if (_isLicensed)
+                        {
+                            @Body
+                        }
+                        else
+                        {
+                            <div class="d-flex align-center justify-center flex-grow-1 mt-10" style="flex-direction:column; text-align:center;">
+                                <MudIcon Icon="@Icons.Material.Filled.Lock" Style="font-size: 6rem;" Color="Color.Error" Class="mb-4" />
+                                <MudText Typo="Typo.h4" Color="Color.Error" Class="mb-2">هذا الجهاز غير مرخص للـ BackOffice</MudText>
+                                <MudText Typo="Typo.body1">برجاء الضغط على زر "التسجيل" في الأعلى لإدخال بيانات التفعيل، أو الرجوع للإدارة.</MudText>
+                            </div>
+                        }
                     </div>
                 </MudMainContent>
+
             </MudLayout>
         </div>
         <RadzenDialog />
@@ -40,8 +54,10 @@
 @code {
     bool _drawerOpen = true;
     bool _isMini = false;
+    bool _isLicensed = true;
 
     private bool IsArabic => Localizer.GetCurrentLanguage() == "ar";
+
 
     private void ToggleMini()
     {
@@ -76,8 +92,10 @@
 
     private Action? _stateChangedHandler;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        _isLicensed = await LicenseService.IsBackOfficeAuthorizedAsync();
+
         _stateChangedHandler = async () => 
         {
             try { await InvokeAsync(StateHasChanged); } catch { }
@@ -85,6 +103,7 @@
 
         _commonProperties.OnChange += _stateChangedHandler;
     }
+
 
     public void Dispose()
     {

@@ -430,10 +430,11 @@
     private async Task PrintAll()
     {
         var isAr = Localizer.GetCurrentLanguage() == "ar";
-        foreach (var s in Settlements)
-            await _printOrderService.PrintDriverSettlementAsync(s, PosDate);
-        Snackbar.Add(isAr ? "تم إرسال جميع التسويات للطباعة" : "All settlements sent to printer", Severity.Success);
+        Snackbar.Add(isAr ? "جاري طباعة تقرير الطيارين..." : "Printing driver report...", Severity.Info);
+        await _printOrderService.PrintAllDriversSettlementAsync(Settlements, PosDate);
+        Snackbar.Add(isAr ? "تم إرسال تقرير الطيارين للطباعة" : "Driver report sent to printer", Severity.Success);
     }
+
 
     private void Cancel() => MudDialog.Cancel();
 }

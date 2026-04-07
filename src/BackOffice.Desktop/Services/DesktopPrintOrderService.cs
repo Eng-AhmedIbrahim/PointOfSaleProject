@@ -1240,6 +1240,13 @@ public class DesktopPrintOrderService : IPrintOrderService
         return Task.CompletedTask;
     }
 
+    public Task PrintAllDriversSettlementAsync(List<DriverSettlementDto> settlements, DateTime posDate, string? printerName = null)
+    {
+        Log.Warning("PrintAllDriversSettlementAsync called but not yet implemented for BackOffice desktop.");
+        return Task.CompletedTask;
+    }
+
+
     public Task<bool> PrintStaffMealOrder(string employeeName, List<TableItem> items)
     {
         Log.Warning("PrintStaffMealOrder is not implemented for BackOffice desktop.");

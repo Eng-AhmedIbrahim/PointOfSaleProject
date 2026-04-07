@@ -118,6 +118,7 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/hospitalitydialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/itemcommentdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/itemdiscountdialog.razor")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/licenseactivation.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/logviewerdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/orderdiscountdialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/posdialog/paymentmodedialog.razor")]

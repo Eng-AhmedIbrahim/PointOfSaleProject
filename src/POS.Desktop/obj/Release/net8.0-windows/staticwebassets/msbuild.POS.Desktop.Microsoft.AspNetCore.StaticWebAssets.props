@@ -637,7 +637,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>46829</FileLength>
-      <LastWriteTime>Fri, 03 Apr 2026 15:38:29 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 07 Apr 2026 20:22:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\POS.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">

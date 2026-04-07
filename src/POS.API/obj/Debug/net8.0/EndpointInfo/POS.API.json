@@ -6309,6 +6309,163 @@
         }
       }
     },
+    "/api/License/RegisterDevice": {
+      "post": {
+        "tags": [
+          "License"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/License/GenerateKey": {
+      "get": {
+        "tags": [
+          "License"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "licenseType",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "maxDevices",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 3
+            }
+          },
+          {
+            "name": "expiryMonths",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/License/GetBranches": {
+      "get": {
+        "tags": [
+          "License"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/License/GetAll": {
+      "get": {
+        "tags": [
+          "License"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/License/CheckDevice": {
+      "get": {
+        "tags": [
+          "License"
+        ],
+        "parameters": [
+          {
+            "name": "hardwareId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/License/UnlinkDevice": {
+      "post": {
+        "tags": [
+          "License"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlinkDeviceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlinkDeviceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlinkDeviceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/LogTests": {
       "get": {
         "tags": [
@@ -12532,6 +12689,20 @@
         },
         "additionalProperties": false
       },
+      "RegisterDeviceRequest": {
+        "type": "object",
+        "properties": {
+          "hardwareId": {
+            "type": "string",
+            "nullable": true
+          },
+          "licenseKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "RegisterDto": {
         "required": [
           "password",
@@ -13468,6 +13639,20 @@
           "code": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UnlinkDeviceRequest": {
+        "type": "object",
+        "properties": {
+          "licenseKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

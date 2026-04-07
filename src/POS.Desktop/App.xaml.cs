@@ -45,6 +45,8 @@ using POS.Core.Services.Contract;
 using POS.Core.Entities.Identity;
 using POS.Services.StaffMealServices;
 using BlazorBase.ERPFrontServices.StaffMealServices;
+using BlazorBase.ERPFrontServices.LicensingServices;
+
 
 namespace POS.Desktop;
 
@@ -98,7 +100,32 @@ public partial class App : Application
             ConfigureServices(services);
             _serviceProvider = services.BuildServiceProvider();
 
+            Log.Information("Checking license...");
+            var licenseService = _serviceProvider.GetRequiredService<ILicenseService>();
+            
+            bool isLicensed = false;
+            try
+            {
+                isLicensed = Task.Run(async () => await licenseService.IsLicensedAsync()).GetAwaiter().GetResult();
+            }
+            catch (Exception licEx)
+            {
+                Log.Error(licEx, "License check threw an exception");
+                var logPath2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "POS-Logs");
+                Directory.CreateDirectory(logPath2);
+                File.WriteAllText(Path.Combine(logPath2, $"license-error-{DateTime.Now:yyyyMMdd-HHmmss}.txt"), licEx.ToString());
+            }
+
+            if (!isLicensed)
+            {
+                MessageBox.Show("هذا الجهاز غير مرخص. يرجى تسجيل الجهاز وتفعيله من خلال برنامج الإدارة (BackOffice) قبل استخدام نقاط البيع.", 
+                                "ترخيص مفقود أو غير صالح", MessageBoxButton.OK, MessageBoxImage.Error);
+                Shutdown(1);
+                return;
+            }
+
             Log.Information("Creating main window...");
+
 
             // Create and show main window
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
@@ -291,6 +318,8 @@ public partial class App : Application
         services.AddScoped<IInventoryFrontService, InventoryFrontService>();
         services.AddScoped<IRecipeFrontService, RecipeFrontService>();
         services.AddScoped<IUnitFrontService, UnitFrontService>();
+        services.AddScoped<ILicenseService, LicenseService>();
+
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));

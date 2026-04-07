@@ -23,6 +23,9 @@ public class AppDbContext : DbContext
                 property.SetColumnType("decimal(18,2)");
             }
         }
+
+        modelBuilder.Entity<License>()
+            .HasKey(l => new { l.CustomerID, l.BranchID, l.LicenseKey });
     }
 
     public DbSet<AttributeItem> AttributeItems { get; set; }
@@ -61,7 +64,10 @@ public class AppDbContext : DbContext
     public DbSet<POS.Core.Entities.Payment.Expense> Expenses { get; set; }
     public DbSet<POS.Core.Entities.Settings.DispatcherSetting> DispatcherSettings { get; set; }
     public DbSet<HqSetting> HqSettings { get; set; }
+    public DbSet<LicensedDevice> LicensedDevices { get; set; }
+    public DbSet<License> Licenses { get; set; }
     public DbSet<InventoryItem> InventoryItems { get; set; }
+
     public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
     public DbSet<InventoryTransactionImage> InventoryTransactionImages { get; set; }
     public DbSet<Recipe> Recipes { get; set; }

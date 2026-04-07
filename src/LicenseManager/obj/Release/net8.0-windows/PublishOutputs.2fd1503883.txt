@@ -1,0 +1,5 @@
+f:\PointOfSaleProject\src\LicenseManager\publish\LicenseManager.exe
+f:\PointOfSaleProject\src\LicenseManager\publish\LicenseManager.dll
+f:\PointOfSaleProject\src\LicenseManager\publish\LicenseManager.deps.json
+f:\PointOfSaleProject\src\LicenseManager\publish\LicenseManager.runtimeconfig.json
+f:\PointOfSaleProject\src\LicenseManager\publish\LicenseManager.pdb

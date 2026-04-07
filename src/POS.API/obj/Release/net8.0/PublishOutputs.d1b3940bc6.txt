@@ -157,11 +157,13 @@ F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspN
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.ClientModel.dll
+F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.CodeDom.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Configuration.ConfigurationManager.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Drawing.Common.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Private.Windows.Core.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.IdentityModel.Tokens.Jwt.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.IO.Packaging.dll
+F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Management.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Memory.Data.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Runtime.Caching.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\System.Security.Cryptography.ProtectedData.dll
@@ -261,6 +263,7 @@ F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win-x64
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win-x64\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win-x86\native\libSkiaSharp.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win-x86\native\libSkiaSharp.pdb
+F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net8.0\System.Management.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net8.0\System.Runtime.Caching.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 F:\PointOfSaleProject\src\POS.API\obj\Release\net8.0\PubTmp\Out\BlazorBase.dll

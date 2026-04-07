@@ -13,6 +13,10 @@
       {
         "Path": "BackOffice.Desktop\\BackOffice.Desktop.csproj",
         "Action": "Start"
+      },
+      {
+        "Path": "LicenseManager\\LicenseManager.csproj",
+        "Action": "Start"
       }
     ]
   },

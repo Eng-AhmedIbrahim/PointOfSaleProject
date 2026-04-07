@@ -33,6 +33,7 @@ public interface IPrintOrderService
     public Task PrintSalesSummaryAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true);
     public Task PrintEndDayReportAsync(SalesSummaryDto summary, List<SalesItemSummaryDto> items, string? printerName = null, bool useA4 = false, bool isArabic = true);
     public Task PrintDriverSettlementAsync(DriverSettlementDto settlement, DateTime posDate, string? printerName = null);
+    public Task PrintAllDriversSettlementAsync(List<DriverSettlementDto> settlements, DateTime posDate, string? printerName = null);
     public Task PrintStaffPerformanceAsync(SalesSummaryDto summary, string? printerName = null, bool useA4 = false, bool isArabic = true, bool showOrders = false, string? specificStaffId = null);
     
     public Task<bool> PrintStaffMealOrder(string employeeName, List<TableItem> items);

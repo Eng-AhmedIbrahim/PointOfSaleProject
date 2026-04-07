@@ -236,6 +236,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xEYXRhU3luYy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[F:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/LicenseManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xMaWNlbnNlTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [F:/PointOfSaleProject/src/BackOffice.Desktop/Components/Pages/Settings/OrderSettings.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXR0aW5nc1xPcmRlclNldHRpbmdzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -322,6 +326,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [F:/PointOfSaleProject/src/BackOffice.Desktop/Components/Shared/DeleteConfirmDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGVsZXRlQ29uZmlybURpYWxvZy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[F:/PointOfSaleProject/src/BackOffice.Desktop/Components/Shared/LicenseActivationDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTGljZW5zZUFjdGl2YXRpb25EaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [F:/PointOfSaleProject/src/BackOffice.Desktop/Components/Shared/PremiumConfirmDialog.razor]

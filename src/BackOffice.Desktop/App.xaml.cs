@@ -13,6 +13,7 @@ using POS.Core.Entities.Identity;
 using Radzen;
 using POS.Core.Services.Contract;
 using BlazorBase.ERPFrontServices.StaffMealServices;
+using BlazorBase.ERPFrontServices.LicensingServices;
 
 namespace BackOffice.Desktop;
 
@@ -256,6 +257,8 @@ public partial class App : Application
         services.AddScoped<IInventoryFrontService, InventoryFrontService>();
         services.AddScoped<IRecipeFrontService, RecipeFrontService>();
         services.AddScoped<IUnitFrontService, UnitFrontService>();
+        services.AddScoped<ILicenseService, LicenseService>();
+
 
         // Call Center Hub Settings
         services.Configure<CallCenterHubSettings>(configuration.GetSection("CallCenterHubs"));
