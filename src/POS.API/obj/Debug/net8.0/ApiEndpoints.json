@@ -2812,32 +2812,6 @@
   },
   {
     "ContainingType": "POS.API.Controllers.EncryptionController",
-    "Method": "Decrypt",
-    "RelativePath": "api/Encryption/decrypt",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "cipherText",
-        "Type": "System.String",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "System.String",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "POS.API.Controllers.EncryptionController",
     "Method": "Encrypt",
     "RelativePath": "api/Encryption/encrypt",
     "HttpMethod": "GET",
@@ -3694,6 +3668,22 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "POS.API.Controllers.OrderController",
+    "Method": "ResendOrderToBranchAsync",
+    "RelativePath": "api/Order/resendOrderToBranch/{orderId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "POS.API.Controllers.OrderSettingController",

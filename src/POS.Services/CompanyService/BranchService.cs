@@ -1,4 +1,4 @@
-﻿namespace POS.Services.CompanyService;
+namespace POS.Services.CompanyService;
 
 public class BranchService : IBranchService
 {
@@ -17,6 +17,13 @@ public class BranchService : IBranchService
 
             if (branch.ImagePath == null)
                 branch.ImagePath = string.Empty;
+
+            // Branches table has no identity column — assign the next Id manually
+            var allBranches = await _unitOfWork.Repository<Branch>().GetAllAsync();
+            int nextId = (allBranches != null && allBranches.Any())
+                ? allBranches.Max(b => b.Id) + 1
+                : 1;
+            branch.Id = nextId;
 
             await _unitOfWork.Repository<Branch>().AddAsync(branch);
 

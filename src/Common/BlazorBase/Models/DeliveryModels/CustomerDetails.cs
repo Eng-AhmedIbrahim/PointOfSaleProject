@@ -1,4 +1,4 @@
-﻿namespace BlazorBase.Models.DeliveryModels;
+namespace BlazorBase.Models.DeliveryModels;
 
 public class CustomerDetails
 {
@@ -26,6 +26,8 @@ public class CustomerDetails
 
 
     public decimal ZoneBonus { get; set; }
+    public string? BranchApiUrl { get; set; }
+
     
     public OrderDto? ActiveOrder { get; set; }
     public List<OrderDto>? Last10Orders { get; set; }
@@ -54,7 +56,9 @@ public class CustomerDetails
             BranchId = source.BranchId,
             ZoneFees = source.ZoneFees,
             ZoneBonus = source.ZoneBonus,
+            BranchApiUrl = source.BranchApiUrl,
             ActiveOrder = source.ActiveOrder,
+
             Last10Orders = source.Last10Orders != null ? new List<OrderDto>(source.Last10Orders) : null
         };
     }

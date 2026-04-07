@@ -7,6 +7,10 @@ using POS.Contract.Dtos.SettingsDtos;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using POS.Core.Services.Contract;
+using ERPFront.Models;
+
 
 namespace BlazorBase.ERPFrontServices.SettingsServices;
 
@@ -15,19 +19,40 @@ public class SystemSettingsServices : ISystemSettingsServices
     private readonly HttpClient _httpClient;
     private readonly ApiSettings _apiSettings;
     private readonly ILogger<SystemSettingsServices> _logger;
+    private readonly DispatcherSettings? _localDispatcherSettings;
+
 
     public SystemSettingsServices(
         IHttpClientFactory httpClientFactory,
         ApiSettings apiSettings,
-        ILogger<SystemSettingsServices> logger)
+        ILogger<SystemSettingsServices> logger,
+        IOptions<DispatcherSettings>? localDispatcherSettings = null)
     {
         _apiSettings = apiSettings;
         _logger = logger;
+        _localDispatcherSettings = localDispatcherSettings?.Value;
         _httpClient = httpClientFactory.CreateClient(_apiSettings!.ApiName!);
     }
 
+
     public async Task<DispatcherSettingsDto> GetDispatcherSettingsAsync()
     {
+        // Try local settings first (from appsettings.json in Desktop)
+        if (_localDispatcherSettings != null)
+        {
+            return new DispatcherSettingsDto
+            {
+                ComputerName = Environment.MachineName,
+                RefreshTimeForDeliveryOrderColorsPerSecond = _localDispatcherSettings.RefreshTimeForDeliveryOrderColorsPerSecond,
+                CriticalTimeForDeliveryOrderPerMinute = _localDispatcherSettings.CriticalTimeForDeliveryOrderPerMinute,
+                WarningTimeForDeliveryOrderPerMinute = _localDispatcherSettings.WarningTimeForDeliveryOrderPerMinute,
+                VoidLimitMinutesForDeliveryOrder = _localDispatcherSettings.VoidLimitMinutesForDeliveryOrder,
+                IsDispatcher = _localDispatcherSettings.IsDispatcher,
+                AllowVoidLimitMinutesForDeliveryOrder = _localDispatcherSettings.AllowVoidLimitMinutesForDeliveryOrder,
+                AllowDeliveryVoidFromBranch = _localDispatcherSettings.AllowDeliveryVoidFromBranch
+            };
+        }
+
         try
         {
             string computerName = Environment.MachineName;

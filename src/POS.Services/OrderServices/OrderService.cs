@@ -28,6 +28,17 @@ public class OrderService : IOrderService
         if (order is null)
             return null;
 
+        // Prevent duplicate creation for orders dispatched from the Call Center
+        if (order.CallCenterOrderId.HasValue && order.CallCenterOrderId.Value > 0)
+        {
+            var existingOrder = await GetOrderByCallCenterIdAsync(order.CallCenterOrderId.Value);
+            if (existingOrder != null)
+            {
+                Console.WriteLine($"[ORDER DEBUG] Order already exists for CallCenterOrderId: {order.CallCenterOrderId.Value}. Returning existing record.");
+                return existingOrder;
+            }
+        }
+
         using (var transaction = _unitOfWork.BeginTransaction())
         {
             try

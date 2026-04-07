@@ -11,17 +11,25 @@ public partial class SettingsDrawer
 
     private string _buttonText = "Start";
 
+    private async Task OnOpenChanged(bool value)
+    {
+        if (Open != value)
+        {
+            Open = value;
+            await OpenChanged.InvokeAsync(value);
+        }
+    }
+
     private async Task SetAnchor(Anchor anchor)
     {
         Anchor = anchor;
         _buttonText = anchor.ToString();
-        await OpenChanged.InvokeAsync(Open);
+        // Since anchor change doesn't necessarily close the drawer, no need to notify Open changed here
     }
 
     private async Task CloseDrawer()
     {
-        Open = false;
-        await OpenChanged.InvokeAsync(Open);
+        await OnOpenChanged(false);
     }
 
     private string _currentPageName = "";

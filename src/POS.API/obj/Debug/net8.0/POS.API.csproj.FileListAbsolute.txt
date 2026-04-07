@@ -1,3 +1,4 @@
+F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\tmp_build_output\POS.Contract.deps.json
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\tmp_build_output\POS.Reports.deps.json
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\BlazorBase.staticwebassets.runtime.json
@@ -302,7 +303,6 @@ F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\osx\native\libSkiaSh
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.dll
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.dll
-F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.dll
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.pdb
 F:\PointOfSaleProject\src\POS.API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Runtime.Caching.dll

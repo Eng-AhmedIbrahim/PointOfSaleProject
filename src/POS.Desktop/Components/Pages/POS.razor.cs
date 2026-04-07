@@ -725,22 +725,11 @@ public partial class POS
     }
 
     [JSInvokable]
-    public async Task ExecuteDoubleEnterFunction()
+    public Task ExecuteDoubleEnterFunction()
     {
-        switch (_commonProperties.CurrentPosMode)
-        {
-            case "DineIn":
-                await CreateDineInOrder();
-                break;
-            case "Delivery":
-                await CreateDeliveryOrder();
-                break;
-            case "TakeAway":
-                await CreateTakeawayOrder();
-                break;
-            default:
-                break;
-        }
+        // Fire the green PrintOrder button in Section4Buttons via the service event
+        _section4ButtonsServices.TriggerPrint();
+        return Task.CompletedTask;
     }
     private async Task CreateDeliveryOrder()
     {

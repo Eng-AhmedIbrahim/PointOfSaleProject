@@ -1,10 +1,11 @@
-﻿@using MudBlazor
+@using MudBlazor
 @using POS.Contract.Dtos.DeliveryDtos.DeliveryCustomerInfo
 @using POS.Core.Entities.Delivery
 @inject IDialogService DialogService
 @inject CommonProperties _commonProperties
 @inject DeliveryServices _deliveryServices
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
+@inject BranchService _branchService
 
 <MudDialog Class="address-dialog">
     <DialogContent>

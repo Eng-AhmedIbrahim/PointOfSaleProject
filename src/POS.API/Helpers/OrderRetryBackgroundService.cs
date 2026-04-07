@@ -83,7 +83,7 @@ public class OrderRetryBackgroundService : BackgroundService
                                     order.OrderState = OrderStates.SentToBranch;
                                     if (branchOrderDto != null)
                                     {
-                                        order.CallCenterOrderId = branchOrderDto.OrderId;
+                                        order.CallCenterOrderId = branchOrderDto.Id;
                                     }
                                     await orderService.UpdateOrderAsync(order);
                                     _logger.LogInformation("[Retry] Order {OrderID} sent successfully to branch {BranchName}.", order.OrderID, branch.Name);

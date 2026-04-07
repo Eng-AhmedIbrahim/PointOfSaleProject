@@ -18,6 +18,7 @@ public class DeliveryReceipt
     public float LogoWidth { get; set; } = 120f;
     public bool IsFollowUp { get; set; }
     public int? ParentOrderId { get; set; }
+    public int? RemoteOrderId { get; set; }
     public bool IsCopy { get; set; }
     public bool IsVoid { get; set; }
 

@@ -1,43 +1,51 @@
-﻿namespace ERPFront.Components.PosComponent;
+namespace ERPFront.Components.PosComponent;
 
 public partial class Section4Buttons
 {
+    private bool _isProcessing = false;
     private async Task PrintOrder()
     {
-        if (_commonProperties!.TableItems!.Any())
+        if (_isProcessing) return;
+        _isProcessing = true;
+        try 
         {
-            if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
+            if (_commonProperties!.TableItems!.Any())
             {
-               var result = await _printOrderService.PrintTakeAwayOrder();
-                if(result is true)
+                if (_commonProperties.CurrentPosMode == PosModes.TakeAway.ToString())
                 {
-                    _cartService.ClearTakeAwayOrderAttributes();
-                    _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-                    _services.NotifyStateChanged();
+                   var result = await _printOrderService.PrintTakeAwayOrder();
+                    if(result is true)
+                    {
+                        _cartService.ClearTakeAwayOrderAttributes();
+                        _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                        _services.NotifyStateChanged();
+                    }
                 }
+               
+                if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+                {
+                    var result = PrintDineInOrder();
+                    if (result is false)
+                        return;
+
+                    _cartService.ClearDineInOrderAttributes();
+                }
+
+                if (_commonProperties.CurrentPosMode == PosModes.Delivery.ToString())
+                    await PrintDeliveryOrder();
+
+                _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
+                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                await _appDateService.UpdateOrderCount();
+                await GetCurrentDayAndTime();
             }
-           
-            if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
-            {
-                var result = PrintDineInOrder();
-                if (result is false)
-                    return;
-
-                _cartService.ClearDineInOrderAttributes();
-            }
-
-            if (_commonProperties.CurrentPosMode == PosModes.Delivery.ToString())
-                PrintDeliveryOrder();
-
-            _commonProperties.CurrentPosMode = PosModes.TakeAway.ToString();
-
-            //_services.NotifyStateChanged();
-            _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            await _appDateService.UpdateOrderCount();
-            await GetCurrentDayAndTime();
+            else
+                _snackbar.Add("No Order to print", Severity.Info);
         }
-        else
-            _snackbar.Add("No Order to print", Severity.Info);
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
     private async Task GetCurrentDayAndTime()
@@ -46,9 +54,19 @@ public partial class Section4Buttons
         _commonProperties.PosDate = DateOnly.FromDateTime(appDate.PosDate);
         _commonProperties.CurrentOrderId = appDate.CurrentOrderNumber;
     }
-    private void PrintDeliveryOrder()
+
+    private async Task PrintDeliveryOrder()
     {
-        throw new NotImplementedException();
+        var result = await _printOrderService.PrintDeliveryOrder();
+        if (result)
+        {
+            var soundEnabled = _configuration.GetValue<bool?>("SoundEnableCallCenter") ?? false;
+            if (soundEnabled)
+            {
+                await _jsRuntime.InvokeVoidAsync("playNotificationSound");
+            }
+            _snackbar.Add("Order Sent to Branch", Severity.Success);
+        }
     }
 
     private Action? _stateChangedHandler;

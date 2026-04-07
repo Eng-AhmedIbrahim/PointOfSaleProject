@@ -38,6 +38,13 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
 
             connection.On<OrderDto>("ReceiveNewDeliveryOrder", (order) =>
             {
+                // Prevent duplicate notifications and self-printing at the sending Call Center.
+                if (order.MachineName == Environment.MachineName) 
+                    return;
+
+                if (_dispatcherSettings.SoundEnableCallCenter)
+                    System.Media.SystemSounds.Asterisk.Play();
+
                 _deliveryInvocation.TriggerShowNotification($"جديد: طلب توصيل برقم {order.OrderId} من {order.CustomerName}", Severity.Info);
                 
                 _deliveryInvocation.TriggerNewOrderReceived();
@@ -76,6 +83,24 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             {
                 _deliveryInvocation.TriggerShowNotification($"تم تسليم الطلب رقم {order.OrderId} بنجاح", Severity.Info);
                 _deliveryInvocation.TriggerNewOrderReceived(); // Refresh UI if needed
+            });
+
+            connection.On<OrderDto>("OrderDispatchedCentralNotification", (order) =>
+            {
+                if (_dispatcherSettings.SoundEnableCallCenter)
+                    System.Media.SystemSounds.Asterisk.Play();
+
+                _deliveryInvocation.TriggerShowNotification($"تم إرسال الطلب رقم {order.OrderId} للفرع بنجاح", Severity.Success);
+                _deliveryInvocation.TriggerNewOrderReceived();
+            });
+
+            connection.On<OrderDto, string>("OrderDispatchFailedCentralNotification", (order, error) =>
+            {
+                if (_dispatcherSettings.SoundEnableCallCenter)
+                    System.Media.SystemSounds.Exclamation.Play();
+
+                _deliveryInvocation.TriggerShowNotification($"فشل إرسال الطلب رقم {order.OrderId} للفرع: {error}", Severity.Error);
+                _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             try

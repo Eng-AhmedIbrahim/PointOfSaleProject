@@ -1,78 +1,97 @@
-﻿namespace POS.Desktop.Components.PosDialog;
+namespace POS.Desktop.Components.PosDialog;
 
 public partial class ItemCommentDialog
 {
     private string? UserComment { get; set; }
+    private AttributeDto? _selectedComment;
+    private List<AttributeDto> _existingComments = new();
 
-    private void SubmitComment()
+    protected override void OnInitialized()
     {
-
-        var result = _cartService.AddItemComment(UserComment!);
-
-        if (string.IsNullOrEmpty(result))
-        {
-            _snackbar.Add("Please Select Item First ", Severity.Warning);
-            return;
-        }
-
-        _cartService.NotifyStateChanged();
-
-        CloseDialog();
-
-        return;
+        LoadComments();
     }
 
-    private void EditComment()
+    private void LoadComments()
     {
-
-        var oldComment = _commonProperties.TableItems!
-       .FirstOrDefault(i => i.Id == _cartService.SelectedItem?.Id)?
-       .Attributes?
-       .LastOrDefault()?.Name;
-
-
-        if (string.IsNullOrWhiteSpace(oldComment))
-        {
-            _snackbar.Add("Please select the comment to edit", Severity.Warning);
-            return;
-        }
-
-        var result = _cartService.EditItemComment(oldComment!, UserComment!);
-
-        if (string.IsNullOrEmpty(result))
-        {
-            _snackbar.Add("Please Select Item First or Comment not found", Severity.Warning);
-            return;
-        }
-
-        _cartService.NotifyStateChanged();
-        CloseDialog();
+        _existingComments = _commonProperties.TableItems?
+            .FirstOrDefault(i => i.Id == _cartService.SelectedItem?.Id)?
+            .Attributes?
+            .Where(attr => attr.Id >= 5000) // Manual comments have IDs >= 5000
+            .ToList() ?? new List<AttributeDto>();
     }
 
-    private void DeleteComment()
+    private void SelectComment(AttributeDto attr)
     {
-
-        var oldComment = _commonProperties.TableItems!
-       .FirstOrDefault(i => i.Id == _cartService.SelectedItem?.Id)?
-       .Attributes?
-       .LastOrDefault()?.Name;
-
-        if (string.IsNullOrWhiteSpace(oldComment))
+        if (_selectedComment == attr)
         {
-            _snackbar.Add("Please enter the comment to delete", Severity.Warning);
+            // Clicking the same comment again deselects it
+            ClearSelection();
             return;
         }
+        _selectedComment = attr;
+        UserComment = attr.Name;
+    }
 
-        var result = _cartService.DeleteItemComment(oldComment!);
+    private void ClearSelection()
+    {
+        _selectedComment = null;
+        UserComment = string.Empty;
+    }
 
+    private void AddNewComment()
+    {
+        if (string.IsNullOrWhiteSpace(UserComment)) return;
+
+        var result = _cartService.AddItemComment(UserComment.Trim());
         if (string.IsNullOrEmpty(result))
         {
-            _snackbar.Add("Please Select Item First or Comment not found", Severity.Warning);
+            _snackbar.Add("يجب اختيار صنف أولاً", Severity.Warning);
             return;
         }
 
+        _snackbar.Add("تم إضافة التعليق", Severity.Success);
+        UserComment = string.Empty;
         _cartService.NotifyStateChanged();
-        CloseDialog();
+        LoadComments();
+        StateHasChanged();
+    }
+
+    private void SaveEdit()
+    {
+        if (_selectedComment == null || string.IsNullOrWhiteSpace(UserComment)) return;
+
+        var result = _cartService.EditItemComment(_selectedComment.Name!, UserComment.Trim());
+        if (result == null)
+        {
+            _snackbar.Add("حدث خطأ أثناء التعديل", Severity.Warning);
+            return;
+        }
+
+        _snackbar.Add("تم تعديل التعليق", Severity.Success);
+        ClearSelection();
+        _cartService.NotifyStateChanged();
+        LoadComments();
+        StateHasChanged();
+    }
+
+    private void DeleteComment(AttributeDto attr)
+    {
+        if (attr?.Name == null) return;
+
+        var result = _cartService.DeleteItemComment(attr.Name);
+        if (result == null)
+        {
+            _snackbar.Add("لم يتم العثور على التعليق", Severity.Warning);
+            return;
+        }
+
+        if (_selectedComment == attr)
+            ClearSelection();
+
+        _snackbar.Add("تم حذف التعليق", Severity.Info);
+        _cartService.NotifyStateChanged();
+        LoadComments();
+        StateHasChanged();
     }
 
     private void CloseDialog()

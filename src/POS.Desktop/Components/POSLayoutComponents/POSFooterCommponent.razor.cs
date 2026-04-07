@@ -67,12 +67,14 @@ public partial class POSFooterCommponent : IDisposable
 
     private async Task OpenOrderDiscountDialog()
     {
+        _drawerOpen = false; 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
         _commonProperties.OrderDiscountDialogReference = await DialogService.ShowAsync<OrderDiscountDialog>(LocalizationService["OrderDiscount"], options);
     }
 
     private async Task GotoWaitingPage()
     {
+        _drawerOpen = false;
         if (_commonProperties!.TableItems!.Any())
         {
             Snackbar.Add(LocalizationService["FinishOrderFirst"], Severity.Warning);
@@ -139,18 +141,21 @@ public partial class POSFooterCommponent : IDisposable
 
     private async Task OpenCustomerInfoDialog()
     {
+        _drawerOpen = false;
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         _commonProperties.CustomerInfoDialogReference = await DialogService.ShowAsync<CustomerInfoDialog>(LocalizationService["CustomerData"], options);
     }
 
     private async Task OpenPaymentMethodDialog()
     {
+        _drawerOpen = false;
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         _commonProperties.PaymentMethodDialogReference = await DialogService.ShowAsync<PaymentModeDialog>(LocalizationService["PaymentMethod"], options);
     }
 
     private async Task OpenQuickPaymentDialog()
     {
+        _drawerOpen = false;
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
         _commonProperties.QuickPaymentDialogReference = await DialogService.ShowAsync<QuickPaymentDialog>(LocalizationService["QuickPayment"], options);
     }
@@ -160,6 +165,7 @@ public partial class POSFooterCommponent : IDisposable
 
     private async Task OpenMealsDialog()
     {
+        _drawerOpen = false;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -212,7 +218,8 @@ public partial class POSFooterCommponent : IDisposable
 
     private async Task OpenHospitalityDialog()
     {
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        _drawerOpen = false;
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var dialog = await DialogService.ShowAsync<HospitalityDialog>(LocalizationService["Hospitality"], options);
         var result = await dialog.Result;
 

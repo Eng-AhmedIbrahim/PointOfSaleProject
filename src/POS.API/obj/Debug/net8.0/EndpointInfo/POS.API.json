@@ -5037,44 +5037,6 @@
         }
       }
     },
-    "/api/Encryption/decrypt": {
-      "get": {
-        "tags": [
-          "Encryption"
-        ],
-        "parameters": [
-          {
-            "name": "cipherText",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Expenses": {
       "get": {
         "tags": [
@@ -6392,6 +6354,29 @@
       "get": {
         "tags": [
           "LogTests"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Order/resendOrderToBranch/{orderId}": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -11738,6 +11723,11 @@
             "nullable": true
           },
           "callCenterOrderId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "remoteOrderId": {
             "type": "integer",
             "format": "int32",
             "nullable": true

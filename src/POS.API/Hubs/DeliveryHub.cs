@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-
-namespace POS.API.Hubs;
+﻿namespace POS.API.Hubs;
 
 public class DeliveryHub : Hub
 {

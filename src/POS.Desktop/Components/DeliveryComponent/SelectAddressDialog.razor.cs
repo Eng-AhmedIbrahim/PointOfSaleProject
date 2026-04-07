@@ -40,6 +40,32 @@ public partial class SelectAddressDialog
         => ClearDialogReference();
 
 
+    private async Task AddNew()
+    {
+        _commonProperties.DialogReference?.Close();
+        _commonProperties.DialogReference = null;
+
+        if (_commonProperties.CustomerDetails == null) _commonProperties.CustomerDetails = new();
+        
+        // Sync with existing phone number
+        _handelDeliveryInvocation.CustomerDetails = BlazorBase.Models.DeliveryModels.CustomerDetails.Clone(_commonProperties.CustomerDetails!);
+        
+        // Initializing fields for NEW address entering
+        _commonProperties.CustomerDetails!.ClientAddress = string.Empty;
+        _commonProperties.CustomerDetails.FloorNumber = string.Empty;
+        _commonProperties.CustomerDetails.FlatNumber = string.Empty;
+        _commonProperties.CustomerDetails.HomeNumber = string.Empty;
+        _commonProperties.CustomerDetails.AddressNote = string.Empty;
+        _commonProperties.CustomerDetails.BranchName = string.Empty;
+        _commonProperties.CustomerDetails.ZoneName = string.Empty;
+        _commonProperties.CustomerDetails.ZoneID = 0;
+        _commonProperties.CustomerDetails.BranchId = 0;
+        _commonProperties.CustomerDetails.ZoneFees = 0;
+        _commonProperties.CustomerDetails.ZoneBonus = 0;
+
+        _commonProperties.DialogReference = await DialogService.ShowAsync<AddNewAddressDialog>(Localizer["AddNewAddress"]);
+    }
+
     private void ClearDialogReference()
     {
         _commonProperties.DialogReference?.Close();

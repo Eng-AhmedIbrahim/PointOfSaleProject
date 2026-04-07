@@ -1951,6 +1951,9 @@ namespace Pos.Repository.Migrations
                     b.Property<decimal?>("Remain")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("RemoteOrderId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ReservationCustomerName")
                         .HasColumnType("nvarchar(max)");
 

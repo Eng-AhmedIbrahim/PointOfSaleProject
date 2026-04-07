@@ -1,4 +1,4 @@
-﻿@page "/delivery"
+@page "/delivery"
 @layout MainLayout
 @inject CommonProperties _commonProperties
 @inject IHttpClientFactory _httpClientFactory
@@ -9,7 +9,35 @@
 @inject IDialogService _dialogService
 @inject HandelDeliveryInvocation _handelDeliveryInvocation
 
-<MudGrid Spacing="0" Class="overflow-hidden">
+<div class="delivery-header-bar">
+    <div class="header-content-left">
+        <MudText Typo="Typo.h5" Class="header-title">خدمة الدليفري</MudText>
+    </div>
+
+    @if (_commonProperties.IsFeatureEnabled("IsCallCenter"))
+    {
+        <div class="branch-selector">
+            <MudText Typo="Typo.body1" Class="branch-label">الفرع</MudText>
+            <MudPaper Elevation="0" Class="branch-dropdown-wrapper">
+                <MudSelect T="string"
+                           Value="_commonProperties.CustomerDetails!.BranchName"
+                           ValueChanged="OnBranchChanged"
+                           AnchorOrigin="Origin.BottomCenter"
+                           DisableUnderLine="true"
+                           Dense="true"
+                           Placeholder="اختر الفرع"
+                           Class="branch-select-input">
+                    @foreach (var branch in Branches ?? [])
+                    {
+                        <MudSelectItem Value="@branch.Name">@branch.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudPaper>
+        </div>
+    }
+</div>
+
+<MudGrid Spacing="0" Class="overflow-hidden main-content-height">
     <MudItem xs="6" Class="d-flex flex-column h-100">
         <MudText Typo="Typo.h6" Class="section-label">Customer Details</MudText>
         <MudPaper Elevation="2" Class="rounded-md p-4 overflow-y-auto overflow-x-hidden flex-grow-1" Style="height: 100%;">
@@ -60,26 +88,6 @@
                                   FullWidth="true" />
                 </MudItem>
 
-                <!-- Row 3: Branch & Zone -->
-                @* <MudItem xs="6"> *@
-                @*     <MudSelect T="string" *@
-                @*     Label="Branch" *@
-                @*     Variant="Variant.Outlined" *@
-                @*     Adornment="Adornment.Start" *@
-                @*     AdornmentIcon="@Icons.Material.Filled.Store" *@
-                @*     Placeholder="Select Branch" *@
-                @*     FullWidth="true" *@
-                @*     Value="_commonProperties.CustomerDetails!.BranchName" *@
-                @*     ValueChanged="OnValueChanged" *@
-                @*     ValueExpression="@(() => _commonProperties.CustomerDetails.BranchName)"> *@
-                @*         @foreach (var branch in Branches ?? []) *@
-                @*         { *@
-                @*             <MudSelectItem Value="@branch.Name">@branch.Name</MudSelectItem> *@
-                @*         } *@
-                @*     </MudSelect> *@
-                @* </MudItem> *@
-
-
                 <MudItem xs="6">
                     <MudAutocomplete T="string"
                                      Label="Zone"
@@ -88,17 +96,18 @@
                                      AdornmentIcon="@Icons.Material.Filled.Map"
                                      Placeholder="Select Zone"
                                      FullWidth="true"
-                                     @bind-Value="_commonProperties.CustomerDetails!.ZoneName"
+                                     Value="_commonProperties.CustomerDetails!.ZoneName"
+                                     ValueChanged="OnZoneChanged"
                                      SearchFunc="SearchZones"
                                      Immediate="true"
                                      ResetValueOnEmptyText="true"
                                      Required="true"
                                      Strict="true" />
-                    @* Disabled="!IsBranchSelected" /> *@
                 </MudItem>
 
+
                 <!-- Row 4: Address -->
-                <MudItem xs="12">
+                <MudItem xs="6">
                     <MudTextField @bind-Value="_commonProperties!.CustomerDetails!.ClientAddress"
                                   Label="Address"
                                   Variant="Variant.Outlined"
@@ -224,9 +233,56 @@
 
 
 <style>
+    .delivery-header-bar {
+        background-color: #4a7eb0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 24px;
+        color: white;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .header-title {
+        font-weight: 700 !important;
+        letter-spacing: 1px;
+    }
+
+    .branch-selector {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .branch-label {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .branch-dropdown-wrapper {
+        background: white !important;
+        border-radius: 8px;
+        padding: 0 12px;
+        min-width: 200px;
+    }
+
+    .branch-select-input {
+        margin-top: 0 !important;
+    }
+
+    .main-content-height {
+        height: calc(100vh - 120px) !important;
+    }
+
     .full-height {
-        height: calc(100vh - 41.59px) !important;
-        max-height: calc(100vh - 41.59px) !important;
+        height: 100% !important;
+        max-height: 100% !important;
         box-sizing: border-box;
     }
 
@@ -241,15 +297,9 @@
         background: #E5E7EB;
     }
 
-    .full-height-Section2 {
-        height: 100%;
-        overflow: hidden;
-    }
-
-
     .mud-input-label {
-        font-size: 17px !important;
-        font-weight: bold !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
     }
 
 </style>
@@ -352,5 +402,12 @@
         _commonProperties.CustomerDetails.Id = clientAddress.DeliveryCustomerId;
         _commonProperties.CustomerDetails.BranchId = clientAddress.BranchId;
         _commonProperties.CustomerDetails.ZoneFees = clientAddress.DeliveryFee;
+
+        if (Branches != null)
+        {
+            var branch = Branches.FirstOrDefault(b => b.Id == clientAddress.BranchId);
+            _commonProperties.CustomerDetails.BranchApiUrl = branch?.ApiUrl;
+        }
     }
+
 }

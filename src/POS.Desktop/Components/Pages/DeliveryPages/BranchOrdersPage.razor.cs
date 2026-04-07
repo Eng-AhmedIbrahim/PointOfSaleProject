@@ -6,10 +6,11 @@ using POS.Desktop.Components.Pages.SummaryPages;
 
 namespace POS.Desktop.Components.Pages.DeliveryPages;
 
-public partial class BranchOrdersPage
+public partial class BranchOrdersPage : IDisposable
 {
     [Inject] private IAuthorizationService    AuthorizationService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthStateProvider  { get; set; } = default!;
+    [Inject] private HandelDeliveryInvocation    DeliveryInvocation { get; set; } = default!;
 
     // ── State ──────────────────────────────────────────────────────────
     private List<OrderDto>           _allOrders   = new();
@@ -100,6 +101,28 @@ public partial class BranchOrdersPage
         {
             Snackbar.Add((_isArabic ? "خطأ في تحميل الفروع: " : "Error loading branches: ") + ex.Message, Severity.Error);
         }
+
+        // Subscribe to new order notifications for real-time list updates
+        DeliveryInvocation.OnNewOrderReceived += OnNewOrderReceived;
+    }
+
+    private async void OnNewOrderReceived()
+    {
+        await InvokeAsync(async () => 
+        {
+            // Only refresh if we are currently looking at today's orders
+            if (SelectedDate == DateTime.Today)
+            {
+                await LoadOrders();
+                StateHasChanged();
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to avoid memory leaks
+        DeliveryInvocation.OnNewOrderReceived -= OnNewOrderReceived;
     }
 
     // ── Branch changed ─────────────────────────────────────────────────
@@ -141,20 +164,24 @@ public partial class BranchOrdersPage
 
     private Color GetStatusColor(string? status) => status switch
     {
-        "Completed"  => Color.Success,
-        "Voided"     => Color.Error,
-        "Pending"    => Color.Primary,
-        "Dispatched" => Color.Warning,
-        _            => Color.Default
+        "Completed"               => Color.Success,
+        "Voided"                  => Color.Error,
+        "Pending"                 => Color.Primary,
+        "Dispatched"              => Color.Warning,
+        "FailedToDeliverToBranch" => Color.Error,
+        "SentToBranch"            => Color.Info,
+        _                         => Color.Default
     };
 
     private string GetStatusAr(string? status) => status switch
     {
-        "Completed"  => "مكتمل",
-        "Voided"     => "ملغي",
-        "Pending"    => "قيد التنفيذ",
-        "Dispatched" => "مُرسل",
-        _            => status ?? ""
+        "Completed"               => "مكتمل",
+        "Voided"                  => "ملغي",
+        "Pending"                 => "قيد التنفيذ",
+        "Dispatched"              => "مُرسل",
+        "FailedToDeliverToBranch" => "فشل الإرسال للفرع",
+        "SentToBranch"            => "تم الإرسال للفرع",
+        _                         => status ?? ""
     };
 
     // ── Actions ────────────────────────────────────────────────────────
@@ -212,5 +239,34 @@ public partial class BranchOrdersPage
 
         if (result != null && !result.Canceled)
             await LoadOrders();
+    }
+
+    private async Task ResendOrder(OrderDto order)
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            var success = await ReportingService.ResendOrderToBranch(order.Id);
+            if (success)
+            {
+                Snackbar.Add(_isArabic ? "تم إعادة إرسال الأوردر بنجاح" : "Order resent successfully", Severity.Success);
+                await LoadOrders();
+            }
+            else
+            {
+                Snackbar.Add(_isArabic ? "فشل إعادة الإرسال" : "Failed to resend order", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add((_isArabic ? "خطأ: " : "Error: ") + ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
     }
 }

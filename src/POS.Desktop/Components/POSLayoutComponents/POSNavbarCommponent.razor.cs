@@ -1,4 +1,4 @@
-﻿using POS.Desktop.Components.PosDialog;
+using POS.Desktop.Components.PosDialog;
 using System.Windows;
 
 namespace POS.Desktop.Components.POSLayoutComponents;
@@ -93,6 +93,10 @@ public partial class POSNavbarCommponent : IDisposable
                     _commonProperties.DineInOrderValues = new();
                     _commonProperties.UpdateDineInOrder = false;
                     _commonProperties.OrderDiscount = new();
+                    _commonProperties.CustomerName = string.Empty;
+                    _commonProperties.CustomerPhone = string.Empty;
+                    _commonProperties.CustomerDetails = new();
+                    _commonProperties.TableItemDisabled = false;
                     break;
                 }
             case "Delivery":
@@ -141,8 +145,15 @@ public partial class POSNavbarCommponent : IDisposable
             _ => "/pos"
         };
 
-        // Navigate last - component will unmount after this
-        await SafeNavigateAsync(targetUrl);
+        try 
+        {
+            // Navigate last - component will unmount after this
+            await SafeNavigateAsync(targetUrl);
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Navigation Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task SafeNavigateAsync(string uri)

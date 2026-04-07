@@ -111,6 +111,7 @@ public class OrderDto
     public string? MachineName { get; set; }
     public decimal? CaptainTipsDeduction { get; set; }
     public int? CallCenterOrderId { get; set; }
+    public int? RemoteOrderId { get; set; }
     public string? CallCenterApiUrl { get; set; }
     public int? ParentOrderId { get; set; }
 

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ERPFront")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1106a41bc2513cc46aed0106225511c59939e3b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93c98a156585b1900fe64fe5623f369ecb2ac38d")]
 [assembly: System.Reflection.AssemblyProductAttribute("ERPFront")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ERPFront")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

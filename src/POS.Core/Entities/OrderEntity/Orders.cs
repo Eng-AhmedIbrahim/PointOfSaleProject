@@ -96,6 +96,7 @@ public class Orders : BaseEntity
     public string? ReservationCustomerName { get; set; }
     public string? ReservationCustomerPhone { get; set; }
     public int? CallCenterOrderId { get; set; }
+    public int? RemoteOrderId { get; set; }
     
     // For additional items added to an existing order
     public int? ParentOrderId { get; set; }

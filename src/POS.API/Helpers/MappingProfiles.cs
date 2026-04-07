@@ -217,6 +217,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.MachineName, opt => opt.MapFrom(src => src.MachineName))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
             .ForMember(dest => dest.CallCenterOrderId, opt => opt.MapFrom(src => src.CallCenterOrderId))
+            .ForMember(dest => dest.RemoteOrderId, opt => opt.MapFrom(src => src.RemoteOrderId))
             .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
             .ForMember(dest => dest.HospitalityResponsibleId, opt => opt.MapFrom(src => src.HospitalityResponsibleId))
             .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))

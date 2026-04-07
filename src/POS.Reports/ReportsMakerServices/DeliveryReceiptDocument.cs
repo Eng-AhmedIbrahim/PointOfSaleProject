@@ -101,6 +101,15 @@ public class DeliveryReceiptDocument : IDocument
             {
                 text.Span(_receipt.Id.ToString("0.##")).Bold().FontSize(18);
                 
+                if (_receipt.RemoteOrderId.HasValue && _receipt.RemoteOrderId != 0)
+                {
+                    // Show destination branch name and its local order number
+                    text.Span(" (" + _receipt.StoreName + " #" + _receipt.RemoteOrderId + " :فرع)")
+                        .Bold()
+                        .FontSize(13)
+                        .FontColor(Colors.Blue.Medium);
+                }
+
                 if (_receipt.IsFollowUp)
                 {
                     text.Span(" - تابع")

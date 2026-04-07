@@ -1,4 +1,4 @@
-﻿namespace POS.Core.Services.Contract.OrderServices;
+namespace POS.Core.Services.Contract.OrderServices;
 
 
 public interface IOrderService
@@ -18,5 +18,4 @@ public interface IOrderService
     public Task<Orders?> FullUpdateOrderAsync(Orders order);
     public Task<IReadOnlyList<Orders>> GetOrdersByCustomerPhoneAsync(string phoneNumber);
     public Task<int> IncrementPrintCountAsync(int id);
-
 }

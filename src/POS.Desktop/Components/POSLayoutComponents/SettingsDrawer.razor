@@ -2,7 +2,8 @@
 @inject ICustomizationSettingsService CustomizationSettingsService
 @inject LocalizationService Localizar
 
-<MudDrawer @bind-Open="@Open"
+<MudDrawer Open="@Open"
+           OpenChanged="@OnOpenChanged"
            Anchor="@Anchor"
            Variant="@DrawerVariant.Temporary"
            OverlayAutoClose="@OverlayAutoClose"

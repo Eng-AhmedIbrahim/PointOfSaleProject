@@ -386,6 +386,7 @@ public class CartService : ICartService
         _commonProperties!.OrderDiscount = new();
         _commonProperties.CustomerName = "";
         _commonProperties.CustomerPhone = "";
+        _commonProperties.CustomerDetails = new();
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
         _commonProperties.UpdateDeliveryOrder = false;
         _commonProperties.ClearStaffMeal();

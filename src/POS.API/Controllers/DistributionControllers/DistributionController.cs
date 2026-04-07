@@ -1,4 +1,4 @@
-﻿using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.DineIn;
 
 namespace POS.API.Controllers.DistributionControllers;
 
@@ -77,8 +77,16 @@ public class DistributionController : BaseApiController
             // Notify all clients via SignalR
             await _hubContext.Clients.All.SendAsync("ReceiveOrderDispatched", orderDto);
 
-            // Send update to Call Center if this is a branch
-            await SendUpdateToCallCenter(orderDto!);
+            // Fetch the updated order from DB to ensure DTO has all calculated fields (like DriverName if it was fetched from a driver table, etc.)
+            var updatedOrder = await _orderService.GetOrderByIdAsync(orderDto.Id);
+            if (updatedOrder != null)
+            {
+                var syncDto = _mapper.Map<OrderDto>(updatedOrder);
+                // Ensure sync fields are preserved
+                syncDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
+                syncDto.CallCenterOrderId = orderDto.CallCenterOrderId;
+                await SendUpdateToCallCenter(syncDto);
+            }
 
             return Ok(orderDto);
         }
@@ -134,8 +142,11 @@ public class DistributionController : BaseApiController
             // Notify all clients via SignalR
             await _hubContext.Clients.All.SendAsync("ReceiveOrderCollected", orderDto);
 
-            // Send update to Call Center if this is a branch
-            await SendUpdateToCallCenter(orderDto);
+            // Send update to Call Center if this is a branch (using refreshed data)
+            var syncDto = _mapper.Map<OrderDto>(order);
+            syncDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
+            syncDto.CallCenterOrderId = orderDto.CallCenterOrderId;
+            await SendUpdateToCallCenter(syncDto);
 
             return Ok(orderDto);
         }

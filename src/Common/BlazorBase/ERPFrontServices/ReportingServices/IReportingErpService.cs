@@ -11,5 +11,6 @@ public interface IReportingErpService
     Task<List<OrderDto>> GetStaffOrders(DateTime posDate, string staffId, string staffType);
     Task<List<SalesItemSummaryDto>> GetSalesItemsSummary(DateTime posDate, DateTime? endDate = null);
     Task<List<OrderDto>> GetPendingOrders(DateTime posDate);
+    Task<bool> ResendOrderToBranch(int orderId);
     Task<ReportResponseDto> GenerateReport(ReportRequestDto request);
 }

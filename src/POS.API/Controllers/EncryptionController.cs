@@ -28,13 +28,13 @@ public class EncryptionController : ControllerBase
     /// </summary>
     /// <param name="cipherText">The Base64 string to decrypt</param>
     /// <returns>Plain text string</returns>
-    [HttpGet("decrypt")]
-    public ActionResult<string> Decrypt([FromQuery] string cipherText)
-    {
-        if (string.IsNullOrEmpty(cipherText))
-            return BadRequest("Cipher text cannot be empty");
+    //[HttpGet("decrypt")]
+    //public ActionResult<string> Decrypt([FromQuery] string cipherText)
+    //{
+    //    if (string.IsNullOrEmpty(cipherText))
+    //        return BadRequest("Cipher text cannot be empty");
 
-        var decrypted = EncryptionHelper.DecryptString(cipherText);
-        return Ok(decrypted);
-    }
+    //    var decrypted = EncryptionHelper.DecryptString(cipherText);
+    //    return Ok(decrypted);
+    //}
 }

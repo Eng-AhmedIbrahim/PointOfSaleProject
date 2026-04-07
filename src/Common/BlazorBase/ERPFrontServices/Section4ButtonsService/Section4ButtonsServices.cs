@@ -1,8 +1,9 @@
-﻿namespace BlazorBase.ERPFrontServices.Section4ButtonsService;
+namespace BlazorBase.ERPFrontServices.Section4ButtonsService;
 
 public class Section4ButtonsServices : ISection4ButtonsServices
 {
     public event Action? OnChanged;
+    public event Func<Task>? OnPrintRequested;
     private readonly CartService? _cartService;
     private readonly CommonProperties _commonProperties;
     private int _nextOrderId = 1;
@@ -47,4 +48,15 @@ public class Section4ButtonsServices : ISection4ButtonsServices
     }
 
     public void NotifyStateChanged() => OnChanged?.Invoke();
+
+    public void TriggerPrint()
+    {
+        if (OnPrintRequested != null)
+        {
+            foreach (var handler in OnPrintRequested.GetInvocationList().Cast<Func<Task>>())
+            {
+                _ = handler.Invoke();
+            }
+        }
+    }
 }

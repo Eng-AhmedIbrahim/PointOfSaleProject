@@ -9,4 +9,5 @@ public class DispatcherSettings
     public bool IsDispatcher { get; set; } = false;
     public bool AllowVoidLimitMinutesForDeliveryOrder { get; set; } = true;
     public bool AllowDeliveryVoidFromBranch { get; set; } = true;
+    public bool SoundEnableCallCenter { get; set; } = true;
 }

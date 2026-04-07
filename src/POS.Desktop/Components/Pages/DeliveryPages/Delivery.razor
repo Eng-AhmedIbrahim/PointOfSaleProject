@@ -500,12 +500,14 @@
                 else
                     _orders = new();
 
-                // Load complaints for this phone number
+                // Populate complaints...
                 await LoadComplaintsByPhone(_commonProperties.CustomerDetails.FirstPhoneNumber);
 
                 await InvokeAsync(StateHasChanged);
 
-                // Check for Active Order FIRST (if exists, show dialog before address selection)
+                bool forceShowAddresses = false;
+
+                // Check for Active Order FIRST
                 if (client.ActiveOrders != null && client.ActiveOrders.Any())
                 {
                     var parameters = new DialogParameters
@@ -517,38 +519,48 @@
                     var dialog = await _dialogService.ShowAsync<ActiveOrderDialog>(Localizer["ActiveOrderFound"], parameters, options);
                     var result = await dialog.Result;
 
-                    if (!result!.Canceled && result.Data is OrderDto selectedOrderToEdit)
+                    if (result != null && !result.Canceled)
                     {
-                        _snackbar.Add(Localizer["LoadingActiveOrder"], Severity.Info);
-                        
-                        // Load items into cart
-                        if (selectedOrderToEdit.OrderDetails != null)
+                        if (result.Data is OrderDto selectedOrderToEdit)
                         {
-                            _commonProperties.TableItems = selectedOrderToEdit.OrderDetails.Select(item => 
+                            _snackbar.Add(Localizer["LoadingActiveOrder"], Severity.Info);
+                            
+                            if (selectedOrderToEdit.OrderDetails != null)
                             {
-                                var cloned = item.Clone();
-                                cloned.IsReadOnly = true;
-                                return cloned;
-                            }).ToList();
+                                _commonProperties.TableItems = selectedOrderToEdit.OrderDetails.Select(item => 
+                                {
+                                    var cloned = item.Clone();
+                                    cloned.IsReadOnly = true;
+                                    return cloned;
+                                }).ToList();
+                            }
+                            
+                            BackupCustomerDetails(client);
+                            _commonProperties.OrderDto = selectedOrderToEdit;
+                            _commonProperties.UpdateDeliveryOrder = true;
+                            _commonProperties.UpdateDineInOrder = false;
+                            _commonProperties.CurrentPosMode = "Delivery";
+                            
+                            _navigationManager.NavigateTo("/pos");
+                            return;
                         }
-                        
-                        // Set customer info
-                        BackupCustomerDetails(client);
-                        
-                        // Set update mode
-                        _commonProperties.OrderDto = selectedOrderToEdit;
-                        _commonProperties.UpdateDeliveryOrder = true;
-                        _commonProperties.UpdateDineInOrder = false;
-                        _commonProperties.CurrentPosMode = "Delivery";
-                        
-                        // Navigate to POS
-                        _navigationManager.NavigateTo("/pos");
+                        else 
+                        {
+                            // User clicked "Create New Order" (returns false from Result.Ok(false))
+                            forceShowAddresses = true; 
+                        }
+                    }
+                    else
+                    {
+                        // Canceled the warning dialog entirely, maybe just stop here?
                         return;
                     }
                 }
 
-                // Then handle address selection
-                if (client.CustomerAddresses?.Count > 1)
+                // Handle address selection logic
+                // Show if: 1. Multiple addresses exist 
+                // OR 2. Specifically chose "Create New Order" from the warning dialog
+                if (client.CustomerAddresses?.Count > 1 || (forceShowAddresses && client.CustomerAddresses?.Count > 0))
                 {
                     var parameters = new DialogParameters
                     {
@@ -558,11 +570,17 @@
                     };
 
                     var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-                    _commonProperties.DialogReference = await _dialogService.ShowAsync<SelectAddressDialog>("Select Address", parameters, options);
+                    _commonProperties.DialogReference = await _dialogService.ShowAsync<SelectAddressDialog>(Localizer["SelectAddress"], parameters, options);
+                }
+                else if (client.CustomerAddresses?.Count == 1)
+                {
+                    BackupCustomerDetails(client);
                 }
                 else
                 {
-                    BackupCustomerDetails(client);
+                    // No addresses at all (New Customer scenario)
+                    ClearCustomerDataExceptPhone();
+                    CustomerStats = client;
                 }
             }
             catch (Exception ex)

@@ -86,15 +86,15 @@
                         </MudMenu>
                     }
                     <MudDivider Class="my-2" />
-                    @if (_canManageGeneralSettings)
+                    @* @if (_canManageGeneralSettings)
                     {
                         <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.Tune" Size="Size.Small" /> @LocalizerService["GeneralSettings"]</div></MudMenuItem>
-                    }
-                    @if (_canManagePosSettings)
+                    } *@
+                    @* @if (_canManagePosSettings)
                     {
                         <MudMenuItem><div class="menu-item-content"><MudIcon Icon="@Icons.Material.Rounded.PointOfSale" Size="Size.Small" /> @LocalizerService["POSSettings"]</div></MudMenuItem>
                     }
-                    <MudDivider Class="my-2" />
+                    <MudDivider Class="my-2" /> *@
 
                     @if (_canSyncData)
                     {

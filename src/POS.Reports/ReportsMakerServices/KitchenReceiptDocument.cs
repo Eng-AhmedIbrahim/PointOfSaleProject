@@ -45,6 +45,16 @@ public class KitchenReceiptDocument : IDocument
 
     private void AddHeader(ref ColumnDescriptor column)
     {
+        if (receipt.IsCopy)
+        {
+            column.Item()
+                .AlignCenter()
+                .Text("COPY - نسخة")
+                .Bold()
+                .FontSize(20)
+                .FontColor(Colors.Red.Medium);
+        }
+
         column.Item()
            .Text(text =>
            {

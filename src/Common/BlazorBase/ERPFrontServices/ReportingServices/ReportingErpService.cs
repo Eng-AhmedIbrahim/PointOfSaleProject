@@ -57,6 +57,12 @@ public class ReportingErpService : IReportingErpService
         return response ?? new List<OrderDto>();
     }
 
+    public async Task<bool> ResendOrderToBranch(int orderId)
+    {
+        var response = await _httpClient.PostAsync($"api/order/resendOrderToBranch/{orderId}", null);
+        return response.IsSuccessStatusCode;
+    }
+
     public async Task<ReportResponseDto> GenerateReport(ReportRequestDto request)
     {
         var response = await _httpClient.PostAsJsonAsync("api/reports/generate", request);

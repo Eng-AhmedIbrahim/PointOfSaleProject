@@ -2,13 +2,14 @@ using POS.API.Hubs;
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5050", "http://localhost:5095");
+
 
 builder.AddSerilogService();
 
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 var encryptedConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var databaseConnectionString = EncryptionHelper.DecryptString(encryptedConnectionString!);
-//var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
 builder.Services.AddSwaggerServices();
 builder.Services.AddApplicationServices();
@@ -296,7 +297,8 @@ app.UseSwaggerServices();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
+
 app.UseCors("MyPolicy");
 app.UseStaticFiles();
 

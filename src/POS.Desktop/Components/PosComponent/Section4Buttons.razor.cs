@@ -32,6 +32,7 @@ public partial class Section4Buttons
 
         _services.OnChanged += () => _stateChangedHandler?.Invoke();
         _cartService.OnChange += () => _stateChangedHandler?.Invoke();
+        _services.OnPrintRequested += OnPrintRequestedHandler;
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -46,22 +47,46 @@ public partial class Section4Buttons
 
     private async Task CancelOrder()
     {
-        if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
-            _cartService.ClearDineInOrderAttributes();
-        else
-            _cartService.ClearTakeAwayOrderAttributes();
-
-        _commonProperties.ClearStaffMeal();
-        _cartService.CalculateSection4Table();
-        
-        _commonProperties.CurrentPosMode = "TakeAway";
-        _cartService.UpdateFinanceSettingsByMode("TakeAway");
-        _services.NotifyStateChanged();
-
-        if (!_navigationManager.Uri.EndsWith("/pos"))
+        try 
         {
-            _navigationManager.NavigateTo("/pos");
+            if (_commonProperties.CurrentPosMode == PosModes.DineIn.ToString())
+                _cartService.ClearDineInOrderAttributes();
+            else
+                _cartService.ClearTakeAwayOrderAttributes();
+
+            _commonProperties.ClearStaffMeal();
+            _commonProperties.CustomerDetails = new();
+            _commonProperties.CustomerName = string.Empty;
+            _commonProperties.CustomerPhone = string.Empty;
+            _commonProperties.OrderNote = string.Empty;
+            _commonProperties.TableItemDisabled = false;
+            
+            _cartService.CalculateSection4Table();
+            
+            _commonProperties.CurrentPosMode = "TakeAway";
+            _cartService.UpdateFinanceSettingsByMode("TakeAway");
+            _services.NotifyStateChanged();
+
+            if (!_navigationManager.Uri.EndsWith("/pos"))
+            {
+                _navigationManager.NavigateTo("/pos");
+            }
         }
+        catch (Exception ex)
+        {
+            _snackbar.Add(Localizer["ErrorCancelingOrder"], Severity.Error);
+            _logger.LogError(ex, "CancelOrder fail");
+        }
+    }
+
+    private Func<Task>? _printHandler;
+
+    private async Task OnPrintRequestedHandler()
+    {
+        await InvokeAsync(async () =>
+        {
+            try { await PrintOrder(); } catch { }
+        });
     }
 
     public void Dispose()
@@ -71,6 +96,7 @@ public partial class Section4Buttons
             _services.OnChanged -= () => _stateChangedHandler?.Invoke();
             _cartService.OnChange -= () => _stateChangedHandler?.Invoke();
         }
+        _services.OnPrintRequested -= OnPrintRequestedHandler;
     }
     private async Task PrintDeliveryOrder()
     {
@@ -209,6 +235,11 @@ public partial class Section4Buttons
             }
             else
                 _snackbar.Add("No Order to print", Severity.Info);
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"{Localizer["ErrorProcessingOrder"]}: {ex.Message}", Severity.Error);
+            _logger.LogError(ex, "PrintOrder fail");
         }
         finally
         {

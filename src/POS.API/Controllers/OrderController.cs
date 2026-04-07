@@ -159,6 +159,21 @@ public class OrderController : BaseApiController
                                 await _orderService.UpdateOrderAsync(createdOrder);
 
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+
+                                if (orderDto.SkipPrintingOnServer != true)
+                                {
+                                    var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                                    var deliverySettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
+                                    
+                                    if (deliverySettings != null && (deliverySettings.CustomerReceiptCount ?? 0) > 0)
+                                    {
+                                        List<string> branchDetails = await GetBranchDetails(orderDto);
+                                        var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
+                                        bool isCopy = currentPrintCount > 1;
+                                        await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
+                                    }
+                                }
+
                                 return Ok(_mapper.Map<OrderDto>(createdOrder));
                             }
                             else
@@ -231,6 +246,65 @@ public class OrderController : BaseApiController
         }
 
         return Ok();
+    }
+
+    [HttpPost("resendOrderToBranch/{orderId}")]
+    public async Task<IActionResult> ResendOrderToBranchAsync(int orderId)
+    {
+        var order = await _orderService.GetOrderByIdAsync(orderId);
+        if (order == null) return NotFound(new ApiResponse(404, "Order not found."));
+
+        if (order.OrderType != OrderTypes.Delivery)
+             return BadRequest(new ApiResponse(400, "Only delivery orders can be resent to branch."));
+
+        var orderDto = _mapper.Map<OrderDto>(order);
+        var branchUrlToDispatch = order.DeliveryBranchUrl;
+
+        if (string.IsNullOrEmpty(branchUrlToDispatch))
+        {
+             var branch = await _branchService.GetBranchByIdAsync(order.BranchID);
+             branchUrlToDispatch = branch?.ApiUrl;
+        }
+
+        if (string.IsNullOrEmpty(branchUrlToDispatch))
+             return BadRequest(new ApiResponse(400, "No branch API URL found for this order."));
+
+        var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
+        orderDto.CallCenterApiUrl = callCenterApiUrl;
+
+        using var httpClient = new HttpClient();
+        var json = JsonSerializer.Serialize(orderDto);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        try
+        {
+            var response = await httpClient.PostAsync($"{branchUrlToDispatch}/api/order/receiveDispatchedOrder", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var branchResponseJson = await response.Content.ReadAsStringAsync();
+                var branchOrderDto = JsonSerializer.Deserialize<OrderDto>(branchResponseJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                order.OrderState = OrderStates.SentToBranch;
+                if (branchOrderDto != null)
+                {
+                    order.CallCenterOrderId = branchOrderDto.Id;
+                }
+                await _orderService.UpdateOrderAsync(order);
+
+                await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                return Ok(new { Message = "Order resent successfully." });
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Branch API error: {errorContent}"));
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Exception: {ex.Message}"));
+        }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -312,6 +386,7 @@ public class OrderController : BaseApiController
         var order = BackupMainOrderDetails(orderDto);
         BackupDeliveryOrder(orderDto, order); // Ensure delivery details are backed up
         order.CallCenterOrderId = orderDto.Id; // Store Call Center PK ID in CallCenterOrderId field on Branch side
+        order.RemoteOrderId = orderDto.OrderId; // Store Central Order Number as RemoteOrderId on Branch side
 
         var createdOrder = await _orderService.CreateOrderAsync(order);
 
@@ -321,20 +396,26 @@ public class OrderController : BaseApiController
             return BadRequest(new ApiResponse(404, "Dispatched Order Not Created in branch DB."));
         }
 
-        orderDto.OrderId = createdOrder.OrderID;
-
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
 
         List<string> branchDetails = await GetBranchDetails(orderDto);
 
-        await printDeliveryReceipts(orderDto, createdOrder, branchDetails);
+        // Fetch LOCAL branch settings instead of relying on the settings sent by the Call Center
+        var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+        var orderSettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
+        
+        // Ensure accurate isCopy status based on local branch print history
+        var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
+        bool isCopy = currentPrintCount > 1;
 
-        var orderSettings = orderDto.OrderSettings!.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
+        if (orderSettings != null && (orderSettings.CustomerReceiptCount ?? 0) > 0)
+            await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
+
         if (orderSettings?.FullKitchenReceiptCount > 0)
-            await PrintBackupReceipts(orderDto, createdOrder);
+            await PrintBackupReceipts(orderDto, createdOrder, isCopy: isCopy);
 
         if (orderSettings?.SeparateReceiptCount > 0)
-            await PrintKitchenReceipts(orderDto, createdOrder);
+            await PrintKitchenReceipts(orderDto, createdOrder, isCopy: isCopy);
 
         return Ok(_mapper.Map<OrderDto>(createdOrder));
     }
@@ -375,6 +456,11 @@ public class OrderController : BaseApiController
         order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
         order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
         order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
+        
+        // Link the Branch's primary key and sequential order number to the Central record 
+        // Note: On central side, CallCenterOrderId stores the peer's (branch) PK ID.
+        order.CallCenterOrderId = orderDto.Id; 
+        order.RemoteOrderId = orderDto.OrderId; // Store Branch Order Number as RemoteOrderId on Central side
         
         // Sync Voiding details
         if (order.OrderState == OrderStates.Voided)
@@ -648,6 +734,7 @@ public class OrderController : BaseApiController
             TableName = OrderDto.TableName,
             OrderType = orderType,
             CallCenterOrderId = OrderDto.CallCenterOrderId,
+            RemoteOrderId = OrderDto.RemoteOrderId,
             IsHospitality = OrderDto.IsHospitality,
             HospitalityResponsibleId = OrderDto.HospitalityResponsibleId,
             HospitalityResponsibleName = OrderDto.HospitalityResponsibleName,
@@ -855,7 +942,7 @@ public class OrderController : BaseApiController
 
         return outputPath;
     }
-    private async Task PrintBackupReceipts( OrderDto Order, Orders createdOrder, bool isFollowUp = false, string KitchenType = "Packup")
+    private async Task PrintBackupReceipts( OrderDto Order, Orders createdOrder, bool isFollowUp = false, string KitchenType = "Packup", bool isCopy = false)
     {
 
         var filteredItems = Order.OrderDetails!
@@ -877,7 +964,8 @@ public class OrderController : BaseApiController
             KitchenType = KitchenType,
             TableId = Order.TableId,
             TableName = Order.TableName,
-            IsFollowUp = isFollowUp
+            IsFollowUp = isFollowUp,
+            IsCopy = isCopy
         };
 
         if (filteredItems.Count == 0)
@@ -918,7 +1006,7 @@ public class OrderController : BaseApiController
             await _printerServices.PrintPdfAsync(reportPath, printerName);
     }
 
-    private async Task PrintKitchenReceipts( OrderDto takeawayOrder, Orders createdOrder, bool isFollowUp = false)
+    private async Task PrintKitchenReceipts( OrderDto takeawayOrder, Orders createdOrder, bool isFollowUp = false, bool isCopy = false)
     {
         var receiptCount = takeawayOrder.OrderSettings!
             .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
@@ -971,7 +1059,8 @@ public class OrderController : BaseApiController
                 KitchenType = kitchenName,
                 TableId = takeawayOrder.TableId,
                 TableName = takeawayOrder.TableName,
-                IsFollowUp = isFollowUp
+                IsFollowUp = isFollowUp,
+                IsCopy = isCopy
             };
 
             var outputPath = await CreateKitchenReceiptLayOut(receipt, kitchenItems);
@@ -1109,7 +1198,7 @@ public class OrderController : BaseApiController
         }
     }
 
-    private async Task printDeliveryReceipts(OrderDto deliveryOrder, Orders createdOrder, List<string> branchDetails, bool isFollowUp = false, decimal? parentDeliveryFees = null)
+    private async Task printDeliveryReceipts(OrderDto deliveryOrder, Orders createdOrder, List<string> branchDetails, bool isFollowUp = false, decimal? parentDeliveryFees = null, bool isCopy = false)
     {
         var datePart = deliveryOrder.OrderDate!.Value.Date;
         var timeNow = DateTime.Now.TimeOfDay;
@@ -1118,6 +1207,7 @@ public class OrderController : BaseApiController
         var receipt = new DeliveryReceipt()
         {
             Id = createdOrder.OrderID,
+            RemoteOrderId = deliveryOrder.RemoteOrderId,
             ParentOrderId = deliveryOrder.ParentOrderId,
             StoreName = deliveryOrder.BranchName!,
             CashierName = deliveryOrder.CashierName!,
@@ -1144,7 +1234,8 @@ public class OrderController : BaseApiController
             AddressNote = deliveryOrder.AddressNotice,
             DeliveryName = deliveryOrder.DriverName,
             CustomerAddress = deliveryOrder.StreetName,
-            IsFollowUp = isFollowUp
+            IsFollowUp = isFollowUp,
+            IsCopy = isCopy
         };
 
         var deliveryItems = deliveryOrder.OrderDetails!;

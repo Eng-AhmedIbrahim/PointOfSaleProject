@@ -63,7 +63,10 @@
     </DialogContent>
 
     <DialogActions>
-        <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="Cancel" StartIcon="@Icons.Material.Filled.Close">@Localizer["Cancel"]</MudButton>
+        <div class="d-flex justify-space-between w-100 px-4">
+            <MudButton Color="Color.Primary" Variant="Variant.Outlined" OnClick="AddNew" StartIcon="@Icons.Material.Filled.Add">@Localizer["AddNewAddress"]</MudButton>
+            <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="Cancel" StartIcon="@Icons.Material.Filled.Close">@Localizer["Cancel"]</MudButton>
+        </div>
     </DialogActions>
 </MudDialog>
 
