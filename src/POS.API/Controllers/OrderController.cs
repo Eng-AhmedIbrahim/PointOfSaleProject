@@ -13,6 +13,7 @@ public class OrderController : BaseApiController
     private readonly CallCenterSettings _callCenterSettings;
     private readonly IHubContext<DeliveryHub> _deliveryHubContext;
     private readonly IDeliveryZoneServices _deliveryZoneServices;
+    private readonly IUnitOfWork _unitOfWork;
 
     public OrderController(IOrderService orderService,
         IWebHostEnvironment webHostEnvironment,
@@ -23,7 +24,8 @@ public class OrderController : BaseApiController
         IDineInOrderService dineInOrderService,
         CallCenterSettings callCenterSettings,
         IHubContext<DeliveryHub> deliveryHubContext,
-        IDeliveryZoneServices deliveryZoneServices)
+        IDeliveryZoneServices deliveryZoneServices,
+        IUnitOfWork unitOfWork)
     {
         _orderService = orderService;
         _webHostEnvironment = webHostEnvironment;
@@ -35,6 +37,7 @@ public class OrderController : BaseApiController
         _callCenterSettings = callCenterSettings;
         _deliveryHubContext = deliveryHubContext;
         _deliveryZoneServices = deliveryZoneServices;
+        _unitOfWork = unitOfWork;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
         Directory.CreateDirectory(_reportsFolder);
     }
@@ -131,32 +134,47 @@ public class OrderController : BaseApiController
                 if (_callCenterSettings.IsCentralCallCenter)
                 {
                     var branchUrlToDispatch = orderDto.DeliveryBranchUrl ?? string.Empty;
+                    Log.Information("[CC Dispatch] Starting dispatch process for Order {OrderId} for Branch {BranchName} to URL: {Url}", orderDto.OrderId, orderDto.BranchName, branchUrlToDispatch);
 
                     if (!string.IsNullOrEmpty(branchUrlToDispatch))
                     {
+                        // Clean URL to avoid double slashes
+                        if (branchUrlToDispatch.EndsWith("/")) branchUrlToDispatch = branchUrlToDispatch.TrimEnd('/');
+
                         // Add Call Center API URL so branch can send updates back
                         var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
                         orderDto.CallCenterApiUrl = callCenterApiUrl;
+                        Log.Information("[CC Dispatch] Setting CallCenterApiUrl to {CCUrl}", callCenterApiUrl);
 
                         using var httpClient = new HttpClient();
+                        httpClient.Timeout = TimeSpan.FromSeconds(30); // Increased timeout
+
                         var json = JsonSerializer.Serialize(orderDto);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                         try
                         {
-                            var response = await httpClient.PostAsync($"{branchUrlToDispatch}/api/order/receiveDispatchedOrder", content);
+                            var targetEndpoint = $"{branchUrlToDispatch}/api/order/receiveDispatchedOrder";
+                            Log.Information("[CC Dispatch] Sending POST to {Endpoint}", targetEndpoint);
+
+                            var response = await httpClient.PostAsync(targetEndpoint, content);
+                            Log.Information("[CC Dispatch] Branch responded with StatusCode: {StatusCode} for Order {OrderId}", response.StatusCode, orderDto.OrderId);
 
                             if (response.IsSuccessStatusCode)
                             {
                                 var branchResponseJson = await response.Content.ReadAsStringAsync();
+                                Log.Information("[CC Dispatch] Successfully received branch confirmation for Order {OrderId}", orderDto.OrderId);
+                                
                                 var branchOrderDto = JsonSerializer.Deserialize<OrderDto>(branchResponseJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                                 
                                 createdOrder.OrderState = OrderStates.SentToBranch;
                                 if (branchOrderDto != null)
                                 {
-                                    createdOrder.CallCenterOrderId = branchOrderDto.Id; // Store Branch PK ID in CallCenterOrderId field on Central side
+                                    createdOrder.CallCenterOrderId = branchOrderDto.Id; // Store Branch PK ID on Central side
+                                    Log.Information("[CC Dispatch] Linked Order {CC_ID} with Branch PK ID {Branch_PK}", createdOrder.Id, branchOrderDto.Id);
                                 }
                                 await _orderService.UpdateOrderAsync(createdOrder);
+                                Log.Information("[CC Dispatch] Order {CC_ID} updated to SentToBranch state.", createdOrder.Id);
 
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
 
@@ -251,6 +269,8 @@ public class OrderController : BaseApiController
     [HttpPost("resendOrderToBranch/{orderId}")]
     public async Task<IActionResult> ResendOrderToBranchAsync(int orderId)
     {
+        Log.Information("[CC Manual Resend] Starting manual resend for Order ID {OrderId}", orderId);
+        
         var order = await _orderService.GetOrderByIdAsync(orderId);
         if (order == null) return NotFound(new ApiResponse(404, "Order not found."));
 
@@ -262,23 +282,36 @@ public class OrderController : BaseApiController
 
         if (string.IsNullOrEmpty(branchUrlToDispatch))
         {
+             Log.Information("[CC Manual Resend] DeliveryBranchUrl is empty on order, fetching from Branch table for BranchID {BranchID}", order.BranchID);
              var branch = await _branchService.GetBranchByIdAsync(order.BranchID);
              branchUrlToDispatch = branch?.ApiUrl;
         }
 
         if (string.IsNullOrEmpty(branchUrlToDispatch))
+        {
+             Log.Warning("[CC Manual Resend] No API URL found for Order {OrderId}", orderId);
              return BadRequest(new ApiResponse(400, "No branch API URL found for this order."));
+        }
+
+        // Clean URL
+        if (branchUrlToDispatch.EndsWith("/")) branchUrlToDispatch = branchUrlToDispatch.TrimEnd('/');
 
         var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
         orderDto.CallCenterApiUrl = callCenterApiUrl;
 
         using var httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(30);
+
         var json = JsonSerializer.Serialize(orderDto);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         try
         {
-            var response = await httpClient.PostAsync($"{branchUrlToDispatch}/api/order/receiveDispatchedOrder", content);
+            var targetEndpoint = $"{branchUrlToDispatch}/api/order/receiveDispatchedOrder";
+            Log.Information("[CC Manual Resend] Sending POST to {Endpoint} for Order {OrderId}", targetEndpoint, orderId);
+
+            var response = await httpClient.PostAsync(targetEndpoint, content);
+            Log.Information("[CC Manual Resend] Branch responded with StatusCode: {StatusCode} for Order {OrderId}", response.StatusCode, orderId);
 
             if (response.IsSuccessStatusCode)
             {
@@ -293,16 +326,19 @@ public class OrderController : BaseApiController
                 await _orderService.UpdateOrderAsync(order);
 
                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                Log.Information("[CC Manual Resend] SUCCESS: Order {OrderId} resent and updated to SentToBranch.", orderId);
                 return Ok(new { Message = "Order resent successfully." });
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
+                Log.Warning("[CC Manual Resend] FAILED: Order {OrderId}. StatusCode: {StatusCode}. Error: {Error}", orderId, response.StatusCode, errorContent);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Branch API error: {errorContent}"));
             }
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "[CC Manual Resend] EXCEPTION resending order {OrderId}", orderId);
             return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Exception: {ex.Message}"));
         }
     }
@@ -380,105 +416,161 @@ public class OrderController : BaseApiController
     [HttpPost("receiveDispatchedOrder")]
     public async Task<IActionResult> ReceiveDispatchedOrderAsync([FromBody] OrderDto orderDto)
     {
+        Log.Information("[Branch Receive] Received new dispatched order {OrderId} from Call Center {CCUrl}", orderDto.OrderId, orderDto.CallCenterApiUrl);
+        
         if (orderDto == null || orderDto.OrderDetails == null || !orderDto.OrderDetails.Any())
-            return BadRequest("Invalid order data received.");
-
-        var order = BackupMainOrderDetails(orderDto);
-        BackupDeliveryOrder(orderDto, order); // Ensure delivery details are backed up
-        order.CallCenterOrderId = orderDto.Id; // Store Call Center PK ID in CallCenterOrderId field on Branch side
-        order.RemoteOrderId = orderDto.OrderId; // Store Central Order Number as RemoteOrderId on Branch side
-
-        var createdOrder = await _orderService.CreateOrderAsync(order);
-
-        if (createdOrder is null || createdOrder.Id == 0)
         {
-            Log.Error("Failed to create dispatched order in branch local database. Order ID: {OrderId}", orderDto.OrderId);
-            return BadRequest(new ApiResponse(404, "Dispatched Order Not Created in branch DB."));
+            Log.Warning("[Branch Receive] Invalid order data received for Order {OrderId}", orderDto?.OrderId);
+            return BadRequest("Invalid order data received.");
         }
 
-        await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
+        try 
+        {
+            // check if order already exists to prevent duplication on retries
+            var existingOrder = await _orderService.GetOrderByCallCenterIdAsync(orderDto.Id);
+            if (existingOrder != null)
+            {
+                Log.Information("[Branch Receive] Order {OrderId} (CC Id: {CCId}) already exists in branch, skipping creation.", orderDto.OrderId, orderDto.Id);
+                return Ok(_mapper.Map<OrderDto>(existingOrder));
+            }
 
-        List<string> branchDetails = await GetBranchDetails(orderDto);
+            var order = BackupMainOrderDetails(orderDto);
+            BackupDeliveryOrder(orderDto, order); 
+            order.CallCenterOrderId = orderDto.Id; 
+            order.RemoteOrderId = orderDto.OrderId; 
 
-        // Fetch LOCAL branch settings instead of relying on the settings sent by the Call Center
-        var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
-        var orderSettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
-        
-        // Ensure accurate isCopy status based on local branch print history
-        var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
-        bool isCopy = currentPrintCount > 1;
+            // Validate that all items exist in the branch database to avoid FK violation errors
+            if (order.OrderDetails != null)
+            {
+                foreach (var item in order.OrderDetails)
+                {
+                    if (!item.MenuSalesItemId.HasValue) continue;
 
-        if (orderSettings != null && (orderSettings.CustomerReceiptCount ?? 0) > 0)
-            await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
+                    var itemInDb = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.MenuSalesItemId.Value);
+                    if (itemInDb == null)
+                    {
+                        var itemName = orderDto.OrderDetails.FirstOrDefault(d => d.Id == item.MenuSalesItemId.Value)?.Name ?? "Unknown Item";
+                        Log.Error("[Branch Receive] Item {ItemName} (ID: {ItemId}) not found in branch DB. Aborting order creation.", itemName, item.MenuSalesItemId);
+                        return BadRequest(new ApiResponse(400, $"الصنف '{itemName}' غير موجود في قاعدة بيانات الفرع. يرجى مراجعة الأصناف ومزامنتها."));
+                    }
+                }
+            }
 
-        if (orderSettings?.FullKitchenReceiptCount > 0)
-            await PrintBackupReceipts(orderDto, createdOrder, isCopy: isCopy);
+            Log.Information("[Branch Receive] Attempting to save order {OrderId} to local database...", orderDto.OrderId);
+            var createdOrder = await _orderService.CreateOrderAsync(order);
 
-        if (orderSettings?.SeparateReceiptCount > 0)
-            await PrintKitchenReceipts(orderDto, createdOrder, isCopy: isCopy);
+            if (createdOrder is null || createdOrder.Id == 0)
+            {
+                Log.Error("[Branch Receive] FAILED to create dispatched order in branch local database. Order ID: {OrderId}", orderDto.OrderId);
+                return BadRequest(new ApiResponse(404, "Dispatched Order Not Created in branch DB."));
+            }
 
-        return Ok(_mapper.Map<OrderDto>(createdOrder));
+            Log.Information("[Branch Receive] Order {OrderId} saved successfully with local ID {LocalId}", orderDto.OrderId, createdOrder.Id);
+
+            await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
+
+            List<string> branchDetails = await GetBranchDetails(orderDto);
+
+            var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+            var orderSettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
+            
+            // IMPORTANT: Overwrite settings in DTO with local branch settings
+            orderDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(localSettings);
+
+            var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
+            bool isCopy = currentPrintCount > 1;
+
+            Log.Information("[Branch Receive] Triggering local printing for Order {OrderId}. PrintCount: {Count}, LocalReceiptCount: {RCount}", 
+                orderDto.OrderId, currentPrintCount, orderSettings?.CustomerReceiptCount);
+
+            if (orderSettings != null && (orderSettings.CustomerReceiptCount ?? 0) > 0)
+                await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
+
+            if (orderSettings?.FullKitchenReceiptCount > 0)
+                await PrintBackupReceipts(orderDto, createdOrder, isCopy: isCopy);
+
+            if (orderSettings?.SeparateReceiptCount > 0)
+                await PrintKitchenReceipts(orderDto, createdOrder, isCopy: isCopy);
+
+            Log.Information("[Branch Receive] Completed processing for Order {OrderId}", orderDto.OrderId);
+            return Ok(_mapper.Map<OrderDto>(createdOrder));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[Branch Receive] EXCEPTION processing order {OrderId}", orderDto.OrderId);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
     [HttpPut("receiveOrderUpdate")]
     public async Task<IActionResult> ReceiveOrderUpdateFromBranch([FromBody] OrderDto orderDto)
     {
+        Log.Information("[CC Sync] Received order update from Branch for Order {OrderId}, New State: {State}", orderDto.OrderId, orderDto.OrderState);
+        
         if (orderDto == null || orderDto.CallCenterOrderId == null)
             return BadRequest("Invalid order update data.");
 
-        // Find the order in call center database using the original ID (stored in CallCenterOrderId)
-        var order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
-
-        if (order == null)
+        try 
         {
-            // If it has a ParentOrderId, it might be a new addition from the branch
-            if (orderDto.ParentOrderId.HasValue)
+            // Find the order in call center database using the original ID (stored in CallCenterOrderId)
+            var order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
+
+            if (order == null)
             {
-                Log.Information("Received new addition order from branch for Parent Order {ParentId}", orderDto.ParentOrderId);
-                var additionOrder = _mapper.Map<OrderDto, Orders>(orderDto);
-                additionOrder.OrderType = OrderTypes.Delivery;
-                // Important: Here CallCenterOrderId on the central side will store the Branch's PK Id
-                additionOrder.CallCenterOrderId = orderDto.Id; 
-                
-                var createdAddition = await _orderService.CreateOrderAsync(additionOrder);
-                return Ok(_mapper.Map<OrderDto>(createdAddition));
+                // If it has a ParentOrderId, it might be a new addition from the branch
+                if (orderDto.ParentOrderId.HasValue)
+                {
+                    Log.Information("Received new addition order from branch for Parent Order {ParentId}", orderDto.ParentOrderId);
+                    var additionOrder = _mapper.Map<OrderDto, Orders>(orderDto);
+                    additionOrder.OrderType = OrderTypes.Delivery;
+                    // Important: Here CallCenterOrderId on the central side will store the Branch's PK Id
+                    additionOrder.CallCenterOrderId = orderDto.Id; 
+                    
+                    var createdAddition = await _orderService.CreateOrderAsync(additionOrder);
+                    return Ok(_mapper.Map<OrderDto>(createdAddition));
+                }
+
+                Log.Warning("Order not found in call center database. CallCenterOrderId: {OrderId}", orderDto.CallCenterOrderId);
+                return NotFound(new ApiResponse(404, "Order not found in call center database."));
             }
 
-            Log.Warning("Order not found in call center database. CallCenterOrderId: {OrderId}", orderDto.CallCenterOrderId);
-            return NotFound(new ApiResponse(404, "Order not found in call center database."));
-        }
+            // Update the order with new status
+            order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
+            order.DriverID = orderDto.DriverID ?? order.DriverID;
+            order.DriverName = orderDto.DriverName ?? order.DriverName;
+            order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
+            order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
+            order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
+            
+            // Link the Branch's primary key and sequential order number to the Central record 
+            // Note: On central side, CallCenterOrderId stores the peer's (branch) PK ID.
+            order.CallCenterOrderId = orderDto.Id; 
+            order.RemoteOrderId = orderDto.OrderId; // Store Branch Order Number as RemoteOrderId on Central side
+            
+            // Sync Voiding details
+            if (order.OrderState == OrderStates.Voided)
+            {
+                order.VoidBy = orderDto.VoidBy;
+                order.VoidByName = orderDto.VoidByName;
+                order.VoidReason = orderDto.VoidReason;
+                order.VoidTime = orderDto.VoidTime ?? DateTime.Now;
+            }
 
-        // Update the order with new status
-        order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
-        order.DriverID = orderDto.DriverID ?? order.DriverID;
-        order.DriverName = orderDto.DriverName ?? order.DriverName;
-        order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
-        order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
-        order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
-        
-        // Link the Branch's primary key and sequential order number to the Central record 
-        // Note: On central side, CallCenterOrderId stores the peer's (branch) PK ID.
-        order.CallCenterOrderId = orderDto.Id; 
-        order.RemoteOrderId = orderDto.OrderId; // Store Branch Order Number as RemoteOrderId on Central side
-        
-        // Sync Voiding details
-        if (order.OrderState == OrderStates.Voided)
+            await _orderService.UpdateOrderAsync(order);
+
+            Log.Information("Order {OrderId} updated in call center from branch. State: {State}", order.OrderID, order.OrderState);
+
+            // Notify CC UI
+            await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
+
+            return Ok(_mapper.Map<OrderDto>(order));
+        }
+        catch (Exception ex)
         {
-            order.VoidBy = orderDto.VoidBy;
-            order.VoidByName = orderDto.VoidByName;
-            order.VoidReason = orderDto.VoidReason;
-            order.VoidTime = orderDto.VoidTime ?? DateTime.Now;
+            Log.Error(ex, "[CC Sync] EXCEPTION in ReceiveOrderUpdateFromBranch");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
-
-        await _orderService.UpdateOrderAsync(order);
-
-        Log.Information("Order {OrderId} updated in call center from branch. State: {State}", order.OrderID, order.OrderState);
-
-        // Notify CC UI
-        await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
-
-        return Ok(_mapper.Map<OrderDto>(order));
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -847,17 +939,39 @@ public class OrderController : BaseApiController
     }
     private async Task<List<string>> GetLogoPath(int branchId)
     {
-        var branch = await _branchService.GetBranchByIdAsync(branchId)!;
-        var logoFileName = branch!.ImagePath ?? string.Empty;
-        var logoWidth = branch.LogoWidth;
-        var logoHeight = branch.LogoHeight;
-
-        string logoPath = Path.Combine(_webHostEnvironment.WebRootPath, "Files", "images", logoFileName);
-
         List<string> branchDetails = new List<string>();
-        branchDetails.Add(logoPath);
-        branchDetails.Add(logoWidth.ToString());
-        branchDetails.Add(logoHeight.ToString());
+        try 
+        {
+            var branch = await _branchService.GetBranchByIdAsync(branchId);
+            if (branch != null)
+            {
+                var logoFileName = branch.ImagePath ?? string.Empty;
+                var logoWidth = branch.LogoWidth != 0 ? branch.LogoWidth : 150;
+                var logoHeight = branch.LogoHeight != 0 ? branch.LogoHeight : 150;
+
+                string logoPath = !string.IsNullOrEmpty(logoFileName) 
+                    ? Path.Combine(_webHostEnvironment.WebRootPath, "Files", "images", logoFileName)
+                    : "";
+
+                branchDetails.Add(logoPath);
+                branchDetails.Add(logoWidth.ToString());
+                branchDetails.Add(logoHeight.ToString());
+            }
+            else 
+            {
+                // Fallback for missing branch record
+                branchDetails.Add("");
+                branchDetails.Add("150");
+                branchDetails.Add("150");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error in GetLogoPath for branch {BranchId}", branchId);
+            branchDetails.Add("");
+            branchDetails.Add("150");
+            branchDetails.Add("150");
+        }
 
         return branchDetails;
     }

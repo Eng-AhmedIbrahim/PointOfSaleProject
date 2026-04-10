@@ -14,7 +14,6 @@ public partial class POS
     private List<AttributeDto>? currentSelectedAttribute;
     private delegate void FinanceSettingsDelegate(OrderSettingToReturnDto? orderSettings);
     private DotNetObjectReference<POS>? _dotNetRef;
-    public string? NoteValue { get; set; }
     private double _spacing = 4.0;
     private Action? _stateChangedHandler;
     private ICollection<BranchToReturnDto>? _branches = new List<BranchToReturnDto>();
@@ -606,9 +605,16 @@ public partial class POS
 
     public void ClearTableItems()
     {
-        _commonProperties?.TableItems?.Clear();
-        _commonProperties?.ClearStaffMeal();
-        _cartService.CalculateSection4Table();
+        ClearOrder();
+    }
+
+    private void ClearOrder()
+    {
+        _cartService.ClearTakeAwayOrderAttributes(); 
+        _handelDeliveryInvocation.DeliveryDetails = string.Empty;
+        
+        _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+        _section4ButtonsServices.NotifyStateChanged();
         StateHasChanged();
     }
 
@@ -731,29 +737,43 @@ public partial class POS
         _section4ButtonsServices.TriggerPrint();
         return Task.CompletedTask;
     }
+    private bool _isProcessingDelivery = false;
     private async Task CreateDeliveryOrder()
     {
-        if (_commonProperties.TableItems!.Count == 0)
+        if (_commonProperties.TableItems!.Count == 0 || _isProcessingDelivery)
             return;
 
-        var result = await _printOrderService.PrintDeliveryOrder();
-        if (result is true)
+        _isProcessingDelivery = true;
+        try 
         {
-            _cartService.ClearTakeAwayOrderAttributes(); // Reuse clearing logic
-            _commonProperties.CustomerDetails = new();
-            _commonProperties.UpdateDeliveryOrder = false; // Reset update mode
-            _handelDeliveryInvocation.DeliveryDetails = string.Empty;
-            _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
-            
-            // Atomically update order count and get next number
-            var appDateResult = await _appDate.UpdateOrderCount();
-            if (appDateResult != null)
+            var result = await _printOrderService.PrintDeliveryOrder();
+            if (result is true)
             {
-                _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
-                _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber + 1;
+                var successMsg = Localizer.GetCurrentLanguage() == "ar" ? "وصل الطلب للفرع وتمت الطباعة بنجاح" : "Order received at branch and printed successfully";
+                _snackbar.Add(successMsg, Severity.Success);
+                
+                ClearOrder();
+                
+                var appDateResult = await _appDate.UpdateOrderCount();
+                if (appDateResult != null)
+                {
+                    _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
+                    _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
+                }
             }
-
-            _section4ButtonsServices.NotifyStateChanged();
+            else 
+            {
+                var errorMsg = Localizer.GetCurrentLanguage() == "ar" ? "فشل إرسال الطلب للفرع، يرجى المحاولة مرة أخرى" : "Failed to send order to branch, please try again";
+                _snackbar.Add(errorMsg, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally 
+        {
+            _isProcessingDelivery = false;
         }
     }
 
@@ -783,8 +803,7 @@ public partial class POS
             var result = await _printOrderService.PrintTakeAwayOrder();
             if (result is true)
             {
-                _cartService.ClearTakeAwayOrderAttributes();
-                _cartService.UpdateFinanceSettingsByMode(_commonProperties.CurrentPosMode);
+                ClearOrder();
                 
                 // Atomically update order count and get next number
                 var appDateResult = await _appDate.UpdateOrderCount();
@@ -793,8 +812,6 @@ public partial class POS
                     _commonProperties.PosDate = DateOnly.FromDateTime(appDateResult.PosDate);
                     _commonProperties.CurrentOrderId = appDateResult.CurrentOrderNumber;
                 }
-
-                _section4ButtonsServices.NotifyStateChanged();
             }
         }
         finally

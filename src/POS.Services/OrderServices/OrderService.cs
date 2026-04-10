@@ -287,8 +287,9 @@ public class OrderService : IOrderService
 
     public async Task<bool> UpdateOrderStatusAsync(int id, OrderStates state)
     {
-        var spec = new OrdersByIdSpecs(id);
-        var order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+        // Use GetByIdAsync directly instead of specification to avoid tracking related entities like MenuSalesItems
+        // which might already be tracked during the same request (e.g. in CreateOrderAsync)
+        var order = await _unitOfWork.Repository<Orders>().GetByIdAsync(id);
         if (order == null) return false;
 
         order.OrderState = state;

@@ -381,16 +381,20 @@ public class CartService : ICartService
         _commonProperties.TotalOrderPrice = 0M;
         _commonProperties.TableItems!.Clear();
         _commonProperties.VoidedTableItems!.Clear();
+        _commonProperties.AppendedTableItems?.Clear();
         _commonProperties!.OrderDto = new();
-        _commonProperties.OrderNote = string.Empty ;
-        _commonProperties!.OrderDiscount = new();
-        _commonProperties.CustomerName = "";
-        _commonProperties.CustomerPhone = "";
+        _commonProperties.OrderNote = string.Empty;
+        _commonProperties.CustomerName = string.Empty;
+        _commonProperties.CustomerPhone = string.Empty;
         _commonProperties.CustomerDetails = new();
         _commonProperties.SelectedPaymentMethod = PaymentMethod.Cash;
         _commonProperties.UpdateDeliveryOrder = false;
+        _commonProperties.UpdateDineInOrder = false;
+        _commonProperties.OrderDiscount = new();
         _commonProperties.ClearStaffMeal();
         _commonProperties.ClearHospitality();
+        
+        NotifyStateChanged();
     }
 
     public void RemoveItemDiscount()

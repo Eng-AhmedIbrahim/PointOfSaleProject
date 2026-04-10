@@ -182,8 +182,24 @@ public class OrderSettingsService : IOrderSettingsService
         {
             var errorContent = response != null ? await response.Content.ReadAsStringAsync() : "No Response";
             _logger.LogError("API call failed: {ErrorMessage}. Status: {Status}, Content: {Content}", message ?? "No message provided.", response?.StatusCode, errorContent);
-            Console.WriteLine($"[API 400 ERROR DUMP] -> Status: {response?.StatusCode}, Body: {errorContent}");
-            return default!;
+            
+            // Attempt to extract the "message" if it's an ApiResponse JSON
+            string userShownError = message ?? "Failed to communicate with API.";
+            try 
+            {
+                var errorObj = ApiRequestHelpers.DeserializeResponseContent<BlazorBase.API.ApiResponse>(errorContent);
+                if (!string.IsNullOrEmpty(errorObj?.Message)) 
+                {
+                    userShownError = errorObj.Message;
+                }
+            }
+            catch 
+            {
+                if (!string.IsNullOrWhiteSpace(errorContent) && errorContent.Length < 200)
+                    userShownError = errorContent;
+            }
+
+            throw new Exception(userShownError);
         }
 
         var content = await response.Content.ReadAsStringAsync();
