@@ -67,7 +67,7 @@ public static class ApplicationServicesExtensions
         services.AddReportingInfrastructure();
 
 
-        services.AddAutoMapper(typeof(MappingProfiles));
+        services.AddAutoMapper(_ => { }, typeof(MappingProfiles));
         services.AddHttpClient();
 
         services.Configure<ApiBehaviorOptions>(options =>

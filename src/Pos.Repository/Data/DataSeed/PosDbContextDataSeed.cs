@@ -1,4 +1,4 @@
-﻿namespace Pos.Repository.Data.DataSeed;
+namespace Pos.Repository.Data.DataSeed;
 
 public static class PosDbContextDataSeed
 {
@@ -65,6 +65,16 @@ public static class PosDbContextDataSeed
             }
             await _dbContext.KitchenTypes.AddRangeAsync(kitchenTypes);
             await _dbContext.SaveChangesAsync();
+        }
+
+        if (!_dbContext.KitchenPrinters.Any())
+        {
+            var kitchenPrinters = await GetDataFromJsonFile<KitchenPrinters>("kitchenPrinters.json");
+            if (kitchenPrinters != null && kitchenPrinters.Any())
+            {
+                await _dbContext.KitchenPrinters.AddRangeAsync(kitchenPrinters);
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
         if (!_dbContext.OrderSettings.Any())

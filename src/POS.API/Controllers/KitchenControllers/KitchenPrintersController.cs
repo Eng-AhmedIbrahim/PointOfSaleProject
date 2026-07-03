@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers.KitchenControllers;
+namespace POS.API.Controllers.KitchenControllers;
 
 public class KitchenPrintersController : BaseApiController
 {
@@ -17,7 +17,7 @@ public class KitchenPrintersController : BaseApiController
         var kitchenPrinters = await _kitchenPrintersService.GetAllPrintersAsync();
         if (kitchenPrinters == null || !kitchenPrinters.Any())
         {
-            return NotFound("No kitchen printers found.");
+            return Ok(new List<KitchenPrintersToReturnDto>());
         }
 
         var kitchenPrintersToReturn = _mapper.Map<ICollection<KitchenPrintersToReturnDto>>(kitchenPrinters);

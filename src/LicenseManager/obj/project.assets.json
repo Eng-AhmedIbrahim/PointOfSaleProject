@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
-    "net8.0-windows7.0": {
+    "net8.0-windows": {
       "Microsoft.Bcl.Cryptography/8.0.0": {
         "type": "package",
         "compile": {
@@ -1196,28 +1196,28 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net8.0-windows7.0": [
+    "net8.0-windows": [
       "Microsoft.Data.SqlClient >= 7.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\roma2\\.nuget\\packages\\": {},
+    "C:\\Users\\eng ahmed\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\PointOfSaleProject\\src\\LicenseManager\\LicenseManager.csproj",
+      "projectUniqueName": "D:\\PointOfSaleProject\\src\\LicenseManager\\LicenseManager.csproj",
       "projectName": "LicenseManager",
-      "projectPath": "F:\\PointOfSaleProject\\src\\LicenseManager\\LicenseManager.csproj",
-      "packagesPath": "C:\\Users\\roma2\\.nuget\\packages\\",
-      "outputPath": "F:\\PointOfSaleProject\\src\\LicenseManager\\obj\\",
+      "projectPath": "D:\\PointOfSaleProject\\src\\LicenseManager\\LicenseManager.csproj",
+      "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
+      "outputPath": "D:\\PointOfSaleProject\\src\\LicenseManager\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\roma2\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1230,7 +1230,8 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net8.0-windows7.0": {
+        "net8.0-windows": {
+          "framework": "net8.0-windows7.0",
           "targetAlias": "net8.0-windows",
           "projectReferences": {}
         }
@@ -1245,10 +1246,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.300"
     },
     "frameworks": {
-      "net8.0-windows7.0": {
+      "net8.0-windows": {
+        "framework": "net8.0-windows7.0",
         "targetAlias": "net8.0-windows",
         "dependencies": {
           "Microsoft.Data.SqlClient": {
@@ -1275,7 +1277,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -86,8 +86,6 @@
                 Password = _password,
                 Type = _licenseType,
                 LicenseKey = _licenseKey
-                // We might parse branch id / devices / expiry from the license key 
-                // but for now LicenseService handles defaults.
             };
             var result = await LicenseService.ActivateAsync(request);
 

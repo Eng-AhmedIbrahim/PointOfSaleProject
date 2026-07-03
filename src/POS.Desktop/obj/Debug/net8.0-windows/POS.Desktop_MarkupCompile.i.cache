@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-F:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\
+D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\
 POS.Desktop
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-F:\PointOfSaleProject\src\POS.Desktop\App.xaml
+D:\PointOfSaleProject\src\POS.Desktop\App.xaml
 11407045341
-142743078489
+142-1862972964
 52-746778333
-411721527221
+411-1491274084
 MainWindow.xaml;
 
-False
+True
 
