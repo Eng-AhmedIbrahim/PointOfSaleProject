@@ -24,3 +24,16 @@ D:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.dll
 D:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\refint\POS.Contract.dll
 D:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.pdb
 D:\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\ref\POS.Contract.dll
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.deps.json
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.dll
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\bin\Debug\net8.0\POS.Contract.pdb
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.csproj.AssemblyReference.cache
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.AssemblyInfoInputs.cache
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.AssemblyInfo.cs
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.csproj.CoreCompileInputs.cache
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.sourcelink.json
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.dll
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\refint\POS.Contract.dll
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\POS.Contract.pdb
+C:\Users\g\Desktop\PointOfSaleProject\src\Contract.Common\obj\Debug\net8.0\ref\POS.Contract.dll

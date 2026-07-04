@@ -63,7 +63,8 @@
       },
       "Microsoft.AspNetCore.Components/8.0.13": {
         "dependencies": {
-          "Microsoft.AspNetCore.Authorization": "8.0.13"
+          "Microsoft.AspNetCore.Authorization": "8.0.13",
+          "Microsoft.AspNetCore.Components.Analyzers": "8.0.13"
         },
         "runtime": {
           "lib/net8.0/Microsoft.AspNetCore.Components.dll": {
@@ -72,6 +73,7 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Components.Analyzers/8.0.13": {},
       "Microsoft.AspNetCore.Components.Forms/8.0.13": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.13"
@@ -188,7 +190,8 @@
       "Microsoft.Extensions.Diagnostics.Abstractions/8.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
-          "Microsoft.Extensions.Options": "8.0.2"
+          "Microsoft.Extensions.Options": "8.0.2",
+          "System.Diagnostics.DiagnosticSource": "8.0.0"
         },
         "runtime": {
           "lib/net8.0/Microsoft.Extensions.Diagnostics.Abstractions.dll": {
@@ -331,6 +334,7 @@
           }
         }
       },
+      "System.Diagnostics.DiagnosticSource/8.0.0": {},
       "System.IO.Pipelines/8.0.0": {
         "runtime": {
           "lib/net8.0/System.IO.Pipelines.dll": {
@@ -404,6 +408,13 @@
       "sha512": "sha512-SIYJDi7/VYd4YRF72GGH3owUDvlnD39AGREgEKlLux89z54FIGapTj3P4qwdI+VOf7ycTfmzPMfVWFkSUbRM0Q==",
       "path": "microsoft.aspnetcore.components/8.0.13",
       "hashPath": "microsoft.aspnetcore.components.8.0.13.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Components.Analyzers/8.0.13": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-30bbr+LZVvCNd4Yd1IgYLsrk9EnO7X4ZqXTgDJKKQMdItAso29zddZ5s952TRljTatLRisdKS2Rd6eBYOwbOgQ==",
+      "path": "microsoft.aspnetcore.components.analyzers/8.0.13",
+      "hashPath": "microsoft.aspnetcore.components.analyzers.8.0.13.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Components.Forms/8.0.13": {
       "type": "package",
@@ -565,6 +576,13 @@
       "sha512": "sha512-WTlRjL6KWIMr/pAaq3rYqh0TJlzpouaQ/W1eelssHgtlwHAH25jXTkUphTYx9HaIIf7XA6qs/0+YhtLEQRkJ+Q==",
       "path": "system.codedom/8.0.0",
       "hashPath": "system.codedom.8.0.0.nupkg.sha512"
+    },
+    "System.Diagnostics.DiagnosticSource/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-c9xLpVz6PL9lp/djOWtk5KPDZq3cSYpmXoJQY524EOtuFl5z9ZtsotpsyrDW40U1DRnQSYvcPKEUV0X//u6gkQ==",
+      "path": "system.diagnostics.diagnosticsource/8.0.0",
+      "hashPath": "system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512"
     },
     "System.IO.Pipelines/8.0.0": {
       "type": "package",

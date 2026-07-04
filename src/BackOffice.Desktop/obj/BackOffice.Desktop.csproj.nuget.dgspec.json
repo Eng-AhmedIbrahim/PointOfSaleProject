@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj": {}
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj": {}
   },
   "projects": {
-    "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
         "projectName": "BackOffice.Desktop",
-        "projectPath": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,31 +26,29 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0-windows": {
-            "framework": "net8.0-windows7.0",
+          "net8.0-windows7.0": {
             "targetAlias": "net8.0-windows",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj"
               }
             }
           }
@@ -65,11 +63,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
-        "net8.0-windows": {
-          "framework": "net8.0-windows7.0",
+        "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
             "AutoMapper": {
@@ -174,24 +171,24 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
         "projectName": "BlazorBase",
-        "projectPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Common\\BlazorBase\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -200,16 +197,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               }
             }
           }
@@ -224,11 +219,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Blazor.Bootstrap": {
@@ -276,24 +270,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
         "projectName": "POS.Contract",
-        "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -302,12 +296,10 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -322,11 +314,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.AspNetCore.Http.Features": {
@@ -350,24 +341,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
         "projectName": "POS.Authorization",
-        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -376,12 +367,10 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -396,11 +385,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "imports": [
             "net461",
@@ -418,24 +406,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
         "projectName": "POS.Core",
-        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Core\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -444,16 +432,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               }
             }
           }
@@ -468,11 +454,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
@@ -504,24 +489,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
         "projectName": "POS.Reports",
-        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -530,19 +515,17 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               }
             }
           }
@@ -557,11 +540,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "ClosedXML": {
@@ -604,24 +586,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj",
         "projectName": "Pos.Repository",
-        "projectPath": "D:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\Pos.Repository\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -630,16 +612,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               }
             }
           }
@@ -654,11 +634,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.EntityFrameworkCore.SqlServer": {
@@ -682,24 +661,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
+    "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj",
+        "projectUniqueName": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj",
         "projectName": "POS.Services",
-        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj",
-        "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Services\\obj\\",
+        "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj",
+        "packagesPath": "C:\\Users\\g\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Services\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\eng ahmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\g\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -708,25 +687,23 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
               },
-              "D:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj": {
-                "projectPath": "D:\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj"
+              "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj": {
+                "projectPath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Pos.Repository\\Pos.Repository.csproj"
               }
             }
           }
@@ -741,11 +718,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "AutoMapper": {
@@ -808,7 +784,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.315/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

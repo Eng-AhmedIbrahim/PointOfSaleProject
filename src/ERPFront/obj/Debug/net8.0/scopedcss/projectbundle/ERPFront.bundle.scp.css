@@ -1,4 +1,4 @@
-/* /Components/Layout/AuthLayout.razor.rz.scp.css */
+/* _content/ERPFront/Components/Layout/AuthLayout.razor.rz.scp.css */
 .page[b-m70uh3nqio] {
     position: relative;
     display: flex;
@@ -95,7 +95,7 @@ main[b-m70uh3nqio] {
         right: 0.75rem;
         top: 0.5rem;
     }
-/* /Components/Layout/MainLayout.razor.rz.scp.css */
+/* _content/ERPFront/Components/Layout/MainLayout.razor.rz.scp.css */
 .page[b-w1tiydsun5] {
     position: relative;
     display: flex;
@@ -220,7 +220,7 @@ main[b-w1tiydsun5] {
     background: #ffffff;
     border-radius: 8px;
 }
-/* /Components/Layout/NavBar.razor.rz.scp.css */
+/* _content/ERPFront/Components/Layout/NavBar.razor.rz.scp.css */
 :root[b-j71wdzu2l5] {
     --blueSky: #7fa7ec61
 }
@@ -312,7 +312,7 @@ main[b-w1tiydsun5] {
         left: 25%;
     }
 }
-/* /Components/Layout/NavMenu.razor.rz.scp.css */
+/* _content/ERPFront/Components/Layout/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-9il8czv7ii] {
     appearance: none;
     cursor: pointer;
@@ -464,7 +464,7 @@ main[b-w1tiydsun5] {
     .nav-link span[b-9il8czv7ii] {
         font-size: 1.2rem;
     }
-/* /Components/Layout/PosScreenLayout.razor.rz.scp.css */
+/* _content/ERPFront/Components/Layout/PosScreenLayout.razor.rz.scp.css */
 .page[b-w6kzcwh6wz] {
     display: flex;
     flex-direction: column;
@@ -590,7 +590,7 @@ main[b-w6kzcwh6wz] {
     background: #ffffff;
     border-radius: 8px;
 }
-/* /Components/Pages/DineInOrderPages/DineIn.razor.rz.scp.css */
+/* _content/ERPFront/Components/Pages/DineInOrderPages/DineIn.razor.rz.scp.css */
 .full-page[b-euxwbq0su6] {
     height: 100vh;
     display: flex;
@@ -658,7 +658,7 @@ main[b-w6kzcwh6wz] {
         max-width: 300px; 
     }
 }
-/* /Components/Pages/Login.razor.rz.scp.css */
+/* _content/ERPFront/Components/Pages/Login.razor.rz.scp.css */
 .container[b-ulb2e0suar] {
     display: grid;
     grid-template-columns: 1.3fr 1fr;
@@ -756,8 +756,8 @@ main[b-w6kzcwh6wz] {
     padding: 10px;
     height: 50px;
 }
-/* /Components/Pages/NotFound404.razor.rz.scp.css */
-/* /Components/Pages/PrintOrderPage.razor.rz.scp.css */
+/* _content/ERPFront/Components/Pages/NotFound404.razor.rz.scp.css */
+/* _content/ERPFront/Components/Pages/PrintOrderPage.razor.rz.scp.css */
 .container[b-o9yepzmtho] {
     display: grid;
     grid-template-columns: 1.3fr 1fr;
@@ -857,7 +857,7 @@ main[b-w6kzcwh6wz] {
 }
 
 
-/* /Components/PosComponent/FinanceComponent.razor.rz.scp.css */
+/* _content/ERPFront/Components/PosComponent/FinanceComponent.razor.rz.scp.css */
 /* Default label size */
 .setting-label[b-lgdmkl0rgc] {
     font-size: 1rem;

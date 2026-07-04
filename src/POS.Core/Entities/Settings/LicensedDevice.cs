@@ -23,5 +23,12 @@ namespace POS.Core.Entities.Settings
         [Required]
         [MaxLength(50)]
         public string LicenseType { get; set; } = string.Empty; // e.g. "POSOnly", "Full"
+
+        /// <summary>
+        /// The license key this device was registered with.
+        /// Used to scope maxDevices quota per key (not per branch-type).
+        /// </summary>
+        [MaxLength(500)]
+        public string? LicenseKey { get; set; }
     }
 }

@@ -3,378 +3,375 @@ build_property.MudDebugAnalyzer =
 build_property.MudAllowedAttributePattern = 
 build_property.MudAllowedAttributeList = 
 build_property.TargetFramework = net8.0-windows
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v8.0
 build_property.TargetPlatformMinVersion = 7.0
 build_property.UsingMicrosoftNETSdkWeb = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
-build_property.EntryPointFilePath = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = POS.Desktop
 build_property.RootNamespace = POS.Desktop
-build_property.ProjectDir = D:\PointOfSaleProject\src\POS.Desktop\
+build_property.ProjectDir = C:\Users\g\Desktop\PointOfSaleProject\src\POS.Desktop\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.CsWinRTUseWindowsUIXamlProjections = false
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\PointOfSaleProject\src\POS.Desktop
+build_property.MSBuildProjectDirectory = C:\Users\g\Desktop\PointOfSaleProject\src\POS.Desktop
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/App.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Auth/TokenInitializer.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Auth/TokenInitializer.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBdXRoXFRva2VuSW5pdGlhbGl6ZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/ActiveOrderDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/ActiveOrderDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWxpdmVyeUNvbXBvbmVudFxBY3RpdmVPcmRlckRpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/AddNewAddressDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/AddNewAddressDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWxpdmVyeUNvbXBvbmVudFxBZGROZXdBZGRyZXNzRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/DeliveryButtons.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/DeliveryButtons.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWxpdmVyeUNvbXBvbmVudFxEZWxpdmVyeUJ1dHRvbnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DeliveryComponent/SelectAddressDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEZWxpdmVyeUNvbXBvbmVudFxTZWxlY3RBZGRyZXNzRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MenuButtons.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MenuButtons.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXE1lbnVCdXR0b25zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MergeTables.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXE1lcmdlVGFibGVzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MultipleOrdersDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/MultipleOrdersDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXE11bHRpcGxlT3JkZXJzRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/ReservationDetailsDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/ReservationDetailsDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFJlc2VydmF0aW9uRGV0YWlsc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/SplitOrderDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/SplitOrderDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFNwbGl0T3JkZXJEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TableReservationDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFRhYmxlUmVzZXJ2YXRpb25EaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TransferTable.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/TransferTable.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXFRyYW5zZmVyVGFibGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/ChoiceDriverDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/ChoiceDriverDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXENob2ljZURyaXZlckRpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DeliveryOrderViewDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DeliveryOrderViewDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXERlbGl2ZXJ5T3JkZXJWaWV3RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/Distribution.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/Distribution.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXERpc3RyaWJ1dGlvbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DriversDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DriversDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXERyaXZlcnNEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DriversSettlementDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/DriversSettlementDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXERyaXZlcnNTZXR0bGVtZW50RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/VoidedOrdersDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DistributionComponents/VoidedOrdersDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaXN0cmlidXRpb25Db21wb25lbnRzXFZvaWRlZE9yZGVyc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/CommonLayout.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/CommonLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQ29tbW9uTGF5b3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/CulturePicker.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/CulturePicker.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQ3VsdHVyZVBpY2tlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/WaitingLayout.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/WaitingLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcV2FpdGluZ0xheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/AccountingPages/StaffTransactionsDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/AccountingPages/StaffTransactionsDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBY2NvdW50aW5nUGFnZXNcU3RhZmZUcmFuc2FjdGlvbnNEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Counter.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/BranchOrdersPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/BranchOrdersPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZWxpdmVyeVBhZ2VzXEJyYW5jaE9yZGVyc1BhZ2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/Delivery.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZWxpdmVyeVBhZ2VzXERlbGl2ZXJ5LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/DeliveryComplaints.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/DeliveryPages/DeliveryComplaints.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZWxpdmVyeVBhZ2VzXERlbGl2ZXJ5Q29tcGxhaW50cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Error.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/POS.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQT1MucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/RedirectToLogin.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/RedirectToLogin.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWRpcmVjdFRvTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Reporting/PrinterSelectionDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Reporting/PrinterSelectionDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcUHJpbnRlclNlbGVjdGlvbkRpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Reporting/ReportViewerDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Reporting/ReportViewerDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZXBvcnRpbmdcUmVwb3J0Vmlld2VyRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Sliders.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTbGlkZXJzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/DetailedSalesDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/DetailedSalesDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcRGV0YWlsZWRTYWxlc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/OrderReceiptPreviewDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/OrderReceiptPreviewDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcT3JkZXJSZWNlaXB0UHJldmlld0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/PdfPreviewDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/PdfPreviewDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcUGRmUHJldmlld0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/ReportPreviewDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/ReportPreviewDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcUmVwb3J0UHJldmlld0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/TestBoot.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/TestBoot.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUZXN0Qm9vdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/WaitingPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/WaitingPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXYWl0aW5nUGFnZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/KayBad.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/KayBad.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcS2F5QmFkLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/LocalizationSettingsComponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/LocalizationSettingsComponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcTG9jYWxpemF0aW9uU2V0dGluZ3NDb21wb25lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/PaymentDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/PaymentDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcUGF5bWVudERpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section1.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section1.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcU2VjdGlvbjEucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section3.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section3.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcU2VjdGlvbjMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Buttons.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcU2VjdGlvbjRCdXR0b25zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Table.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/Section4Table.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcU2VjdGlvbjRUYWJsZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/WeightSelectorDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/WeightSelectorDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcV2VpZ2h0U2VsZWN0b3JEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintActionDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintActionDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcQ29tcGxhaW50QWN0aW9uRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintDetailsDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintDetailsDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcQ29tcGxhaW50RGV0YWlsc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ComplaintDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcQ29tcGxhaW50RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerInfoDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerInfoDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcQ3VzdG9tZXJJbmZvRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerSearchDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/CustomerSearchDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcQ3VzdG9tZXJTZWFyY2hEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/EndOfDayDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/EndOfDayDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcRW5kT2ZEYXlEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/FullCustomerInfoDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/FullCustomerInfoDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcRnVsbEN1c3RvbWVySW5mb0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/HospitalityDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/HospitalityDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcSG9zcGl0YWxpdHlEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemCommentDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemCommentDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcSXRlbUNvbW1lbnREaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemDiscountDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ItemDiscountDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcSXRlbURpc2NvdW50RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/LicenseActivation.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/LicenseActivation.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcTGljZW5zZUFjdGl2YXRpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/LogViewerDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/LogViewerDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcTG9nVmlld2VyRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/OrderDiscountDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/OrderDiscountDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcT3JkZXJEaXNjb3VudERpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/PaymentModeDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/PaymentModeDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcUGF5bWVudE1vZGVEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/QuickPaymentDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/QuickPaymentDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcUXVpY2tQYXltZW50RGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ReprintOrderDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/ReprintOrderDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcUmVwcmludE9yZGVyRGlhbG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/StaffMealsDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosDialog/StaffMealsDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NEaWFsb2dcU3RhZmZNZWFsc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/Component.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/Component.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NMYXlvdXRDb21wb25lbnRzXENvbXBvbmVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSFooterCommponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSFooterCommponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NMYXlvdXRDb21wb25lbnRzXFBPU0Zvb3RlckNvbW1wb25lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/POSNavbarCommponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NMYXlvdXRDb21wb25lbnRzXFBPU05hdmJhckNvbW1wb25lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/SettingsDrawer.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSLayoutComponents/SettingsDrawer.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NMYXlvdXRDb21wb25lbnRzXFNldHRpbmdzRHJhd2VyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSSettingsComponents/FinanceSettingsComponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSSettingsComponents/FinanceSettingsComponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NTZXR0aW5nc0NvbXBvbmVudHNcRmluYW5jZVNldHRpbmdzQ29tcG9uZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/POSSettingsComponents/Section3SettingsComponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/POSSettingsComponents/Section3SettingsComponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQT1NTZXR0aW5nc0NvbXBvbmVudHNcU2VjdGlvbjNTZXR0aW5nc0NvbXBvbmVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Routes.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/_Imports.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/GuestCountDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/DineInComponents/GuestCountDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaW5lSW5Db21wb25lbnRzXEd1ZXN0Q291bnREaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-8ox6q5m9dl
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/AuthLayout.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/AuthLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQXV0aExheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-p9xuvythj1
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/MainLayout.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-7e6f2oovbi
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/NavBar.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/NavBar.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2QmFyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-4643hyvpw0
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/NavMenu.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-5zcceqqdls
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Layout/PosScreenLayout.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Layout/PosScreenLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcUG9zU2NyZWVuTGF5b3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-24bswxj4yp
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/AccountingPages/AccountsPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/AccountingPages/AccountsPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBY2NvdW50aW5nUGFnZXNcQWNjb3VudHNQYWdlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-bpp25tcqql
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/AllOrdersPages/AllOrdersPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/AllOrdersPages/AllOrdersPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBbGxPcmRlcnNQYWdlc1xBbGxPcmRlcnNQYWdlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-002l3pdljy
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/DineInOrderPages/DineIn.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEaW5lSW5PcmRlclBhZ2VzXERpbmVJbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-0lwo7gv6am
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-wz9qvvoprp
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/NotFound404.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/NotFound404.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZDQwNC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-oa0tunvr7p
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/PrintOrderPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/PrintOrderPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcmludE9yZGVyUGFnZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-hbr5sismnb
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SalesItemsDialog.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SalesItemsDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcU2FsZXNJdGVtc0RpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-a4e17b8fjf
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SummaryCard.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SummaryCard.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcU3VtbWFyeUNhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-gzannepaah
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SummaryPage.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/Pages/SummaryPages/SummaryPage.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdW1tYXJ5UGFnZXNcU3VtbWFyeVBhZ2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-idgfjrznav
 
-[D:/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/FinanceComponent.razor]
+[C:/Users/g/Desktop/PointOfSaleProject/src/POS.Desktop/Components/PosComponent/FinanceComponent.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQb3NDb21wb25lbnRcRmluYW5jZUNvbXBvbmVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-p37imeo6ww

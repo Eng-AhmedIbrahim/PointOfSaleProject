@@ -52,12 +52,13 @@ namespace POS.API.Controllers
                 return BadRequest("هذا الجهاز مسجل بالفعل في فرع آخر. يجب فك الارتباط أولاً قبل التسجيل في فرع جديد.");
             }
 
-            // 2b. Check existing devices for this branch AND specific license type
+            // 2b. Check existing devices for this specific license key
+            // Count is scoped per license key (not per branch+type) so each key has its own independent quota
             var activeDevicesCount = await _context.LicensedDevices
-                .CountAsync(d => d.BranchId == branchId && d.LicenseType == licenseTypeStr);
+                .CountAsync(d => d.BranchId == branchId && d.LicenseType == licenseTypeStr && d.LicenseKey == request.LicenseKey);
 
             var existingDevice = await _context.LicensedDevices
-                .FirstOrDefaultAsync(d => d.HardwareId == request.HardwareId && d.BranchId == branchId);
+                .FirstOrDefaultAsync(d => d.HardwareId == request.HardwareId && d.BranchId == branchId && d.LicenseKey == request.LicenseKey);
 
             if (existingDevice != null)
             {
@@ -92,7 +93,8 @@ namespace POS.API.Controllers
                 BranchId = branchId,
                 ActivationDate = DateTime.Now,
                 ExpiryDate = info.Value.ExpiryDate,
-                LicenseType = licenseTypeStr
+                LicenseType = licenseTypeStr,
+                LicenseKey = request.LicenseKey
             };
 
             _context.LicensedDevices.Add(newDevice);

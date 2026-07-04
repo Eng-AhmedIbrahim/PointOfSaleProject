@@ -2456,6 +2456,10 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("LicenseKey")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("LicenseType")
                         .IsRequired()
                         .HasMaxLength(50)
