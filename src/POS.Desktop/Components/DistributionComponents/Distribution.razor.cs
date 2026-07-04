@@ -197,6 +197,49 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 });
             });
 
+            connection.On<OrderDto>("ReceiveOrderUpdated", orderDto =>
+            {
+                Console.WriteLine($"Order updated: {orderDto.OrderId}, State: {orderDto.OrderState}");
+                InvokeAsync(() =>
+                {
+                    if (orderDto.OrderState == "Completed" || orderDto.OrderState == "Voided")
+                    {
+                        var toRemove = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
+                            || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
+                            || o.CallCenterOrderId == orderDto.Id);
+                        
+                        if (toRemove != null)
+                        {
+                            RemoveOrder(toRemove.Id);
+                            if (orderDto.OrderState == "Voided")
+                            {
+                                string reason = string.IsNullOrEmpty(orderDto.VoidReason) ? "" : $" السبب: {orderDto.VoidReason}";
+                                Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" 
+                                    ? $"الطلب رقم {orderDto.OrderId} تم إلغاؤه.{reason}" 
+                                    : $"Order #{orderDto.OrderId} was voided.{reason}", Severity.Warning);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var existingOrder = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
+                            || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
+                            || o.CallCenterOrderId == orderDto.Id);
+
+                        if (existingOrder != null)
+                        {
+                            existingOrder.DriverName = orderDto.DriverName;
+                            existingOrder.DriverID = orderDto.DriverID;
+                            existingOrder.OrderState = orderDto.OrderState;
+                            existingOrder.AssignTime = orderDto.AssignTime;
+                            existingOrder.DispatchID = orderDto.DispatchID;
+                            UpdateDriverStatus();
+                            StateHasChanged();
+                        }
+                    }
+                });
+            });
+
             try
             {
                 await connection.StartAsync();

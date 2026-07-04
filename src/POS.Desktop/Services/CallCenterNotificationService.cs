@@ -9,6 +9,7 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
     private readonly HandelDeliveryInvocation _deliveryInvocation;
     private readonly DispatcherSettings _dispatcherSettings;
     private readonly List<HubConnection> _connections = new();
+    private bool _isInitialized;
 
     public CallCenterNotificationService(
         CallCenterHubSettings hubSettings, 
@@ -24,6 +25,11 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
 
     public async Task InitializeAsync()
     {
+        if (_isInitialized)
+            return;
+
+        _isInitialized = true;
+
         if (_hubSettings.Urls == null || !_hubSettings.Urls.Any())
             return;
 
@@ -100,6 +106,36 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                     System.Media.SystemSounds.Exclamation.Play();
 
                 _deliveryInvocation.TriggerShowNotification($"فشل إرسال الطلب رقم {order.OrderId} للفرع: {error}", Severity.Error);
+                _deliveryInvocation.TriggerNewOrderReceived();
+            });
+
+            connection.On<OrderDto>("ReceiveOrderUpdated", (order) =>
+            {
+                string message = order.OrderState switch
+                {
+                    "Dispatched" => $"تم خروج الطلب رقم {order.OrderId} مع السائق {order.DriverName}",
+                    "Completed" => $"تم تسليم الطلب رقم {order.OrderId} بنجاح",
+                    "Voided" => $"تم إلغاء الطلب رقم {order.OrderId} من الفرع",
+                    "FailedToDeliverToBranch" => $"فشل إرسال الطلب رقم {order.OrderId} للفرع",
+                    "SentToBranch" => $"تم إرسال الطلب رقم {order.OrderId} للفرع بنجاح",
+                    _ => $"تم تحديث حالة الطلب رقم {order.OrderId} إلى {order.OrderState}"
+                };
+
+                var severity = order.OrderState switch
+                {
+                    "Completed" => Severity.Success,
+                    "Dispatched" => Severity.Info,
+                    "Voided" => Severity.Warning,
+                    "FailedToDeliverToBranch" => Severity.Error,
+                    _ => Severity.Normal
+                };
+
+                if (order.OrderState == "FailedToDeliverToBranch" && _dispatcherSettings.SoundEnableCallCenter)
+                    System.Media.SystemSounds.Exclamation.Play();
+                else if (_dispatcherSettings.SoundEnableCallCenter)
+                    System.Media.SystemSounds.Asterisk.Play();
+
+                _deliveryInvocation.TriggerShowNotification(message, severity);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 

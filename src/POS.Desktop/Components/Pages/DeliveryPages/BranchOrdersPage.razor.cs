@@ -269,4 +269,10 @@ public partial class BranchOrdersPage : IDisposable
             StateHasChanged();
         }
     }
+
+    private async Task OnDateChanged(DateTime? newDate)
+    {
+        _selectedDateNullable = newDate;
+        await LoadOrders();
+    }
 }

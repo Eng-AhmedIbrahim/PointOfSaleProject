@@ -54,7 +54,8 @@
             </MudSelect>
 
             @* ── Date Picker ── *@
-            <MudDatePicker @bind-Date="_selectedDateNullable"
+            <MudDatePicker Date="_selectedDateNullable"
+                           DateChanged="OnDateChanged"
                            Label="@(_isArabic ? "التاريخ" : "Date")"
                            Variant="Variant.Outlined"
                            Margin="Margin.Dense"
