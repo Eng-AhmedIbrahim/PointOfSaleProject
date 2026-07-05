@@ -211,8 +211,8 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.TotalOrderDiscount, opt => opt.MapFrom(src => src.TotalDiscount))
             .ForMember(dest => dest.Remaining, opt => opt.MapFrom(src => src.Remain))
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Service))
-            .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.ToString()))
-            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.ToString()))
+            .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.HasValue ? src.OrderType.Value.ToString() : null))
+            .ForMember(dest => dest.OrderState, opt => opt.MapFrom(src => src.OrderState.HasValue ? src.OrderState.Value.ToString() : null))
             .ForMember(dest => dest.OrderDetails, opt => opt.MapFrom(src => src.OrderDetails)) // هنعمل مابنج تاني للجوه
             .ForMember(dest => dest.MachineName, opt => opt.MapFrom(src => src.MachineName))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
@@ -346,5 +346,6 @@ public class MappingProfiles : Profile
                                                                   src.OrderState == "Reserved" ? OrderStates.Reserved : OrderStates.Completed));
 
         CreateMap<PosFeatureSetting, POS.Contract.Dtos.OrderDto.PosFeatureSettingToReturnDto>().ReverseMap();
+        CreateMap<OrderSetting, POS.Contract.Dtos.OrderDto.OrderSettingToReturnDto>().ReverseMap();
     }
 }

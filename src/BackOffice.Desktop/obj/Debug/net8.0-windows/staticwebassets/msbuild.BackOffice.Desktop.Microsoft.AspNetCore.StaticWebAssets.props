@@ -17,7 +17,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>3181</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 14 Feb 2026 16:12:55 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\actions-section.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))">
@@ -32,12 +32,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>8xxsebp3m5</Fingerprint>
-      <Integrity>RDuSvSFD7jStAVzJg3cnVOq/5HcidY24lbIjHWLU6WI=</Integrity>
+      <Fingerprint>ya20zhu6bv</Fingerprint>
+      <Integrity>Vq2JISPSWni7LEwYNwUjDGEN3TNN8/z4nK4nB5LbFAs=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>2729</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>2663</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 02:51:34 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))">
@@ -57,7 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>58419</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 04 Jul 2026 12:17:32 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BackOffice.Desktop.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))">
@@ -77,7 +77,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>2385</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sun, 08 Mar 2026 21:18:13 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\categorymanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\complaintmanagement.css'))">
@@ -97,7 +97,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>2517</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Wed, 04 Mar 2026 00:21:27 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\complaintmanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\itemmanagement.css'))">
@@ -117,7 +117,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>2357</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sun, 08 Mar 2026 21:17:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\itemmanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\zonemanagement.css'))">
@@ -137,7 +137,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>1615</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Wed, 04 Mar 2026 00:07:28 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\basicdata\zonemanagement.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\bootstrap\bootstrap.min.css'))">
@@ -152,12 +152,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>6gzpyzhau4</Fingerprint>
-      <Integrity>SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0=</Integrity>
+      <Fingerprint>bpk8xqwxhs</Fingerprint>
+      <Integrity>z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>162726</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>162720</FileLength>
+      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\bootstrap\bootstrap.min.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\bootstrap\bootstrap.min.css.map'))">
@@ -177,7 +177,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>449111</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\bootstrap\bootstrap.min.css.map'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\cairo_temp.css'))">
@@ -192,12 +192,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>5tnea7cni0</Fingerprint>
-      <Integrity>CbZDPPCOdG5+LKd7QpsYxiNglv1J6yNbQXYNYvDTH/w=</Integrity>
+      <Fingerprint>4wtoqzx618</Fingerprint>
+      <Integrity>VAOY3uoDMXcaaaAQ5q6K5Z5RgV8GbmrYHsqljXVO/2o=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>7060</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>6952</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 01:10:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\cairo_temp.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\delivery.css'))">
@@ -217,7 +217,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>10064</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:12:26 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\delivery.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\favicon.png'))">
@@ -237,7 +237,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>1148</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\favicon.png'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts.css'))">
@@ -257,7 +257,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>7088</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:12:08 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-ar.woff2'))">
@@ -277,7 +277,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>30896</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:11:35 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-ar.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-en.woff2'))">
@@ -297,7 +297,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>33820</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:11:38 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-en.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-latinext.woff2'))">
@@ -317,7 +317,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>16648</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:11:36 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\cairo-latinext.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-arabic.woff2'))">
@@ -337,7 +337,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>165960</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-arabic.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-latin.woff2'))">
@@ -357,7 +357,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>31416</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:49 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-latin.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-latinext.woff2'))">
@@ -377,7 +377,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>16816</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:48 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-latinext.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-math.woff2'))">
@@ -397,7 +397,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>22716</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:46 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-math.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-symbols.woff2'))">
@@ -417,7 +417,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>14584</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:47 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\notosansarabic-symbols.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\outfit-latin.woff2'))">
@@ -437,7 +437,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>32292</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\outfit-latin.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\outfit-latinext.woff2'))">
@@ -457,7 +457,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>14808</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:07:50 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\outfit-latinext.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\roboto-latin.woff2'))">
@@ -477,7 +477,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>43136</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:39 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\roboto-latin.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\roboto-latinext.woff2'))">
@@ -497,7 +497,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>29392</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:41 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\roboto-latinext.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-400.woff2'))">
@@ -517,7 +517,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>8932</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:42 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-400.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-500.woff2'))">
@@ -537,7 +537,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>8940</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:44 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-500.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-700.woff2'))">
@@ -557,7 +557,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>9024</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:46 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-700.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-800.woff2'))">
@@ -577,7 +577,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>9448</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:47 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-ar-800.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-400.woff2'))">
@@ -597,7 +597,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>10256</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:42 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-400.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-500.woff2'))">
@@ -617,7 +617,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>9900</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:45 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-500.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-700.woff2'))">
@@ -637,7 +637,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>9996</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:46 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-700.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-800.woff2'))">
@@ -657,7 +657,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>10584</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 07 Mar 2026 01:09:49 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts\tajawal-en-800.woff2'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts_temp.css'))">
@@ -672,12 +672,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>fz3itq2nfv</Fingerprint>
-      <Integrity>q6lprmwDTkUpelGYjiQAMnduvG+EIEXDI9M/rikNKAI=</Integrity>
+      <Fingerprint>rv7utt7k1t</Fingerprint>
+      <Integrity>mTtTZohKFVn3pSP9nAndEZeRU+yOzwDSsxyS5k/MTB4=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>24089</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>23799</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 01:06:26 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\fonts_temp.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Logo.png'))">
@@ -697,7 +697,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>130595</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Thu, 08 May 2025 22:14:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\Logo.png'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\ReceiptLogo\logo.png'))">
@@ -717,7 +717,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>130595</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 25 Apr 2023 01:05:52 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\ReceiptLogo\logo.png'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))">
@@ -737,7 +737,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>4401</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 10 Mar 2026 01:32:54 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\pos.css'))">
@@ -752,12 +752,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>l04lzo9qx5</Fingerprint>
-      <Integrity>lXrOPmviHnpTPgGtpeQcIaSOhetmumOgBngEabwOFYA=</Integrity>
+      <Fingerprint>qv97otg7c6</Fingerprint>
+      <Integrity>OmYWiZ1tsumzM0+nr1HkHMZATD8oZ5ePxCwm9U6s9fI=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>5280</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>5078</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 01:12:15 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\pos.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\roboto_temp.css'))">
@@ -772,12 +772,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>ix9bl5gdsk</Fingerprint>
-      <Integrity>+k9CQ9iaRmCP2Pi2uDPUHo8OBodtVURb2i7S2zHwVJA=</Integrity>
+      <Fingerprint>9lzsu24kpa</Fingerprint>
+      <Integrity>LQnVoCM1vqZxS4ohFW3pUG/dNNQ9WXrqBXkv8FCliKY=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>22700</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>22340</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 01:08:51 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\roboto_temp.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))">
@@ -797,7 +797,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>5294</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 14 Feb 2026 16:03:15 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\section4-footer.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\settings-styles.css'))">
@@ -817,7 +817,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>3418</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <LastWriteTime>Sat, 24 Jan 2026 02:35:33 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\settings-styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\site.js'))">
@@ -832,12 +832,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>8xcd9te5zy</Fingerprint>
-      <Integrity>VCBGp96F/iuPcVs3kxB34fzvB0Rx5F0eMzfodB7dA6o=</Integrity>
+      <Fingerprint>3cv9qeivja</Fingerprint>
+      <Integrity>HccFktaAUpqIYiQIKmlsUiMxELDxFR82NdWV2C2Ic/8=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>6096</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>5949</FileLength>
+      <LastWriteTime>Fri, 13 Mar 2026 03:17:20 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\site.js'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\tajawal_temp.css'))">
@@ -852,12 +852,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>7gzjh5zmdg</Fingerprint>
-      <Integrity>N88cUgqYk4Ys/V1u0h/d6muF7H4bslhujTeZiypzN8Q=</Integrity>
+      <Fingerprint>kd7zahw23n</Fingerprint>
+      <Integrity>6EGUOchpfGCjnNjMFVNL8vxoXf/Nto1njsbM2LzqPJs=</Integrity>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>5184</FileLength>
-      <LastWriteTime>Sat, 04 Jul 2026 11:23:04 GMT</LastWriteTime>
+      <FileLength>5112</FileLength>
+      <LastWriteTime>Sat, 07 Mar 2026 01:08:53 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\tajawal_temp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>

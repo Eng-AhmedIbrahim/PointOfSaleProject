@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "LyWUU7WxMlw=",
+  "dgSpecHash": "4hBAYqmVhE4=",
   "success": true,
-  "projectFilePath": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
+  "projectFilePath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\g\\.nuget\\packages\\microsoft.aspnetcore.http.features\\5.0.17\\microsoft.aspnetcore.http.features.5.0.17.nupkg.sha512",
-    "C:\\Users\\g\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.1\\microsoft.extensions.primitives.5.0.1.nupkg.sha512",
-    "C:\\Users\\g\\.nuget\\packages\\system.io.pipelines\\5.0.2\\system.io.pipelines.5.0.2.nupkg.sha512"
+    "C:\\Users\\eng ahmed\\.nuget\\packages\\microsoft.aspnetcore.http.features\\5.0.17\\microsoft.aspnetcore.http.features.5.0.17.nupkg.sha512",
+    "C:\\Users\\eng ahmed\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.1\\microsoft.extensions.primitives.5.0.1.nupkg.sha512",
+    "C:\\Users\\eng ahmed\\.nuget\\packages\\system.io.pipelines\\5.0.2\\system.io.pipelines.5.0.2.nupkg.sha512"
   ],
   "logs": []
 }

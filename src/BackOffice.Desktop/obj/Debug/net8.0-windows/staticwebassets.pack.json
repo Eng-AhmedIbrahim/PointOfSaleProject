@@ -1,175 +1,175 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\Debug\\net8.0-windows\\scopedcss\\bundle\\BackOffice.Desktop.styles.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\Debug\\net8.0-windows\\scopedcss\\bundle\\BackOffice.Desktop.styles.css",
       "PackagePath": "staticwebassets\\BackOffice.Desktop.styles.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\actions-section.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\actions-section.css",
       "PackagePath": "staticwebassets\\actions-section.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\app.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\app.css",
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\categorymanagement.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\categorymanagement.css",
       "PackagePath": "staticwebassets\\basicdata\\categorymanagement.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\complaintmanagement.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\complaintmanagement.css",
       "PackagePath": "staticwebassets\\basicdata\\complaintmanagement.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\itemmanagement.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\itemmanagement.css",
       "PackagePath": "staticwebassets\\basicdata\\itemmanagement.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\zonemanagement.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\basicdata\\zonemanagement.css",
       "PackagePath": "staticwebassets\\basicdata\\zonemanagement.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\cairo_temp.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\cairo_temp.css",
       "PackagePath": "staticwebassets\\cairo_temp.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\delivery.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\delivery.css",
       "PackagePath": "staticwebassets\\delivery.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\favicon.png",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts.css",
       "PackagePath": "staticwebassets\\fonts.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-ar.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-ar.woff2",
       "PackagePath": "staticwebassets\\fonts\\cairo-ar.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-en.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-en.woff2",
       "PackagePath": "staticwebassets\\fonts\\cairo-en.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-latinext.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\cairo-latinext.woff2",
       "PackagePath": "staticwebassets\\fonts\\cairo-latinext.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-arabic.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-arabic.woff2",
       "PackagePath": "staticwebassets\\fonts\\notosansarabic-arabic.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-latin.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-latin.woff2",
       "PackagePath": "staticwebassets\\fonts\\notosansarabic-latin.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-latinext.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-latinext.woff2",
       "PackagePath": "staticwebassets\\fonts\\notosansarabic-latinext.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-math.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-math.woff2",
       "PackagePath": "staticwebassets\\fonts\\notosansarabic-math.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-symbols.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\notosansarabic-symbols.woff2",
       "PackagePath": "staticwebassets\\fonts\\notosansarabic-symbols.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\outfit-latin.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\outfit-latin.woff2",
       "PackagePath": "staticwebassets\\fonts\\outfit-latin.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\outfit-latinext.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\outfit-latinext.woff2",
       "PackagePath": "staticwebassets\\fonts\\outfit-latinext.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\roboto-latin.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\roboto-latin.woff2",
       "PackagePath": "staticwebassets\\fonts\\roboto-latin.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\roboto-latinext.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\roboto-latinext.woff2",
       "PackagePath": "staticwebassets\\fonts\\roboto-latinext.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-400.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-400.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-ar-400.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-500.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-500.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-ar-500.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-700.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-700.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-ar-700.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-800.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-ar-800.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-ar-800.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-400.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-400.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-en-400.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-500.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-500.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-en-500.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-700.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-700.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-en-700.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-800.woff2",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts\\tajawal-en-800.woff2",
       "PackagePath": "staticwebassets\\fonts\\tajawal-en-800.woff2"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts_temp.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\fonts_temp.css",
       "PackagePath": "staticwebassets\\fonts_temp.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\Logo.png",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\Logo.png",
       "PackagePath": "staticwebassets\\images\\Logo.png"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\ReceiptLogo\\logo.png",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\images\\ReceiptLogo\\logo.png",
       "PackagePath": "staticwebassets\\images\\ReceiptLogo\\logo.png"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\index.html",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\index.html",
       "PackagePath": "staticwebassets\\index.html"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\pos.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\pos.css",
       "PackagePath": "staticwebassets\\pos.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\roboto_temp.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\roboto_temp.css",
       "PackagePath": "staticwebassets\\roboto_temp.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\section4-footer.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\section4-footer.css",
       "PackagePath": "staticwebassets\\section4-footer.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\settings-styles.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\settings-styles.css",
       "PackagePath": "staticwebassets\\settings-styles.css"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\site.js",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\site.js",
       "PackagePath": "staticwebassets\\site.js"
     },
     {
-      "Id": "C:\\Users\\g\\Desktop\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\tajawal_temp.css",
+      "Id": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\wwwroot\\tajawal_temp.css",
       "PackagePath": "staticwebassets\\tajawal_temp.css"
     },
     {

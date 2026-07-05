@@ -46,7 +46,7 @@ namespace POS.Desktop {
         /// </summary>
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "9.0.17.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "10.0.9.0")]
         public static void Main() {
             POS.Desktop.App app = new POS.Desktop.App();
             app.Run();
