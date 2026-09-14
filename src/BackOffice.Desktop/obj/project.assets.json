@@ -6737,11 +6737,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
+      "projectUniqueName": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
       "projectName": "BackOffice.Desktop",
-      "projectPath": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
+      "projectPath": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\BackOffice.Desktop.csproj",
       "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-      "outputPath": "d:\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\",
+      "outputPath": "D:\\PointOfSaleProject\\src\\BackOffice.Desktop\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -6764,23 +6764,23 @@
           "framework": "net8.0-windows7.0",
           "targetAlias": "net8.0-windows",
           "projectReferences": {
-            "d:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj"
+            "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj"
             },
-            "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+            "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
             },
-            "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj"
+            "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj"
             },
-            "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+            "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
             },
-            "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
+            "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj"
             },
-            "d:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj"
+            "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\POS.Services\\POS.Services.csproj"
             }
           }
         }

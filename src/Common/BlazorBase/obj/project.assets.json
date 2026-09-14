@@ -1447,11 +1447,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
+      "projectUniqueName": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
       "projectName": "BlazorBase",
-      "projectPath": "d:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
+      "projectPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\BlazorBase.csproj",
       "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-      "outputPath": "d:\\PointOfSaleProject\\src\\Common\\BlazorBase\\obj\\",
+      "outputPath": "D:\\PointOfSaleProject\\src\\Common\\BlazorBase\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1474,8 +1474,8 @@
           "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {
-            "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+            "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
             }
           }
         }

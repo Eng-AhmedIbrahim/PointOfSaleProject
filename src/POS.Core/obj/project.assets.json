@@ -2592,11 +2592,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+      "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
       "projectName": "POS.Core",
-      "projectPath": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+      "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
       "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-      "outputPath": "d:\\PointOfSaleProject\\src\\POS.Core\\obj\\",
+      "outputPath": "D:\\PointOfSaleProject\\src\\POS.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2619,8 +2619,8 @@
           "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {
-            "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-              "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+            "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+              "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
             }
           }
         }

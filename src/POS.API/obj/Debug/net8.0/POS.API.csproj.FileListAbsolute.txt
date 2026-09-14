@@ -1062,3 +1062,4 @@ D:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\refint\POS.API.dll
 D:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.pdb
 D:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\POS.API.genruntimeconfig.cache
 D:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\ref\POS.API.dll
+D:\PointOfSaleProject\src\POS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

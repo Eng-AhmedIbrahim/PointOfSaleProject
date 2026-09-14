@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {}
+    "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {}
   },
   "projects": {
-    "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+    "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
+        "projectUniqueName": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
         "projectName": "POS.Contract",
-        "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
+        "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj",
         "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\obj\\",
+        "outputPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -78,14 +78,14 @@
         }
       }
     },
-    "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+    "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
         "projectName": "POS.Core",
-        "projectPath": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
+        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj",
         "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "d:\\PointOfSaleProject\\src\\POS.Core\\obj\\",
+        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -108,8 +108,8 @@
             "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               }
             }
           }
@@ -164,14 +164,14 @@
         }
       }
     },
-    "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
+    "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
+        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
         "projectName": "POS.Reports",
-        "projectPath": "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
+        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
         "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "d:\\PointOfSaleProject\\src\\POS.Reports\\obj\\",
+        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Reports\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -194,11 +194,11 @@
             "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
-                "projectPath": "d:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
+              "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj": {
+                "projectPath": "D:\\PointOfSaleProject\\src\\Contract.Common\\POS.Contract.csproj"
               },
-              "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
-                "projectPath": "d:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
+              "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj": {
+                "projectPath": "D:\\PointOfSaleProject\\src\\POS.Core\\POS.Core.csproj"
               }
             }
           }

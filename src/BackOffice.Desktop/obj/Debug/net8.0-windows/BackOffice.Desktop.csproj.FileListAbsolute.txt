@@ -1122,3 +1122,4 @@ D:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\refint\Bac
 D:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.pdb
 D:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\BackOffice.Desktop.genruntimeconfig.cache
 D:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\ref\BackOffice.Desktop.dll
+D:\PointOfSaleProject\src\BackOffice.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {}
+    "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {}
   },
   "projects": {
-    "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
+    "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+        "projectUniqueName": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
         "projectName": "POS.Authorization",
-        "projectPath": "d:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
+        "projectPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\POS.Authorization.csproj",
         "packagesPath": "C:\\Users\\eng ahmed\\.nuget\\packages\\",
-        "outputPath": "d:\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
+        "outputPath": "D:\\PointOfSaleProject\\src\\POS.Authorization\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

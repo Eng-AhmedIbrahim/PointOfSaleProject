@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zDLhzx3V80A=",
+  "dgSpecHash": "bDOjhsrOT1Q=",
   "success": true,
-  "projectFilePath": "d:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
+  "projectFilePath": "D:\\PointOfSaleProject\\src\\POS.Reports\\POS.Reports.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\eng ahmed\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\eng ahmed\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

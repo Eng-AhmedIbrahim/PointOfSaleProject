@@ -825,3 +825,4 @@ D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\refint\ERPFront.dll
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\ERPFront.pdb
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\ERPFront.genruntimeconfig.cache
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\ref\ERPFront.dll
+D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
