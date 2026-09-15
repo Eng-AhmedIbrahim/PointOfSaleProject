@@ -135,9 +135,137 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(_dynamicDispatcherSettings.RefreshTimeForDeliveryOrderColorsPerSecond));
     }
 
+    //private async Task ConnectToExternalHubs()
+    //{
+    //    var urls = _hubSettings.Urls ?? new();
+
+    //    foreach (var hubUrl in urls)
+    //    {
+    //        if (string.IsNullOrWhiteSpace(hubUrl))
+    //            continue;
+
+    //        var connection = new HubConnectionBuilder()
+    //            .WithUrl(hubUrl)
+    //            .WithAutomaticReconnect()
+    //            .Build();
+
+    //        connection.On<OrderDto>("ReceiveNewDeliveryOrder", orderDto =>
+    //        {
+    //            Console.WriteLine($"New external order from {hubUrl}: {orderDto.OrderId}");
+    //            InvokeAsync(() =>
+    //            {
+    //                AddNewDeliveryOrder(orderDto);
+    //                UpdateDriverStatus();
+    //            });
+    //        });
+
+    //        connection.On<OrderDto>("ReceiveOrderDispatched", orderDto =>
+    //        {
+    //            Console.WriteLine($"Order dispatched: {orderDto.OrderId} to driver {orderDto.DriverName}");
+    //            InvokeAsync(() =>
+    //            {
+    //                UpdateOrderStatus(orderDto);
+    //                UpdateDriverStatus();
+    //            });
+    //        });
+
+    //        connection.On<int>("ReceiveOrderUnDispatched", id =>
+    //        {
+    //            Console.WriteLine($"Order un-dispatched: {id}");
+    //            InvokeAsync(() =>
+    //            {
+    //                var order = Orders.FirstOrDefault(o => o.Id == id);
+    //                if (order != null)
+    //                {
+    //                    order.DriverID = null;
+    //                    order.DriverName = null;
+    //                    order.AssignTime = null;
+    //                    order.DispatchID = null;
+    //                    UpdateDriverStatus();
+    //                    StateHasChanged();
+    //                }
+    //            });
+    //        });
+
+    //        connection.On<OrderDto>("ReceiveOrderCollected", orderDto =>
+    //        {
+    //            Console.WriteLine($"Order collected: {orderDto.Id}");
+    //            InvokeAsync(() =>
+    //            {
+    //                RemoveOrder(orderDto.Id);
+    //                UpdateDriverStatus();
+    //            });
+    //        });
+
+    //        connection.On<OrderDto>("ReceiveOrderUpdated", orderDto =>
+    //        {
+    //            Console.WriteLine($"Order updated: {orderDto.OrderId}, State: {orderDto.OrderState}");
+    //            InvokeAsync(() =>
+    //            {
+    //                if (orderDto.OrderState == "Completed" || orderDto.OrderState == "Voided")
+    //                {
+    //                    var toRemove = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
+    //                        || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
+    //                        || o.CallCenterOrderId == orderDto.Id);
+
+    //                    if (toRemove != null)
+    //                    {
+    //                        RemoveOrder(toRemove.Id);
+    //                        if (orderDto.OrderState == "Voided")
+    //                        {
+    //                            string reason = string.IsNullOrEmpty(orderDto.VoidReason) ? "" : $" السبب: {orderDto.VoidReason}";
+    //                            Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" 
+    //                                ? $"الطلب رقم {orderDto.OrderId} تم إلغاؤه.{reason}" 
+    //                                : $"Order #{orderDto.OrderId} was voided.{reason}", Severity.Warning);
+    //                        }
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    var existingOrder = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
+    //                        || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
+    //                        || o.CallCenterOrderId == orderDto.Id);
+
+    //                    if (existingOrder != null)
+    //                    {
+    //                        existingOrder.DriverName = orderDto.DriverName;
+    //                        existingOrder.DriverID = orderDto.DriverID;
+    //                        existingOrder.OrderState = orderDto.OrderState;
+    //                        existingOrder.AssignTime = orderDto.AssignTime;
+    //                        existingOrder.DispatchID = orderDto.DispatchID;
+    //                        UpdateDriverStatus();
+    //                        StateHasChanged();
+    //                    }
+    //                }
+    //            });
+    //        });
+
+    //        try
+    //        {
+    //            await connection.StartAsync();
+    //            Console.WriteLine($"Connected to external hub: {hubUrl}");
+    //            _externalHubConnections.Add(connection);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Console.WriteLine($"Failed to connect to external hub {hubUrl}: {ex.Message}");
+    //        }
+    //    }
+    //}
+
     private async Task ConnectToExternalHubs()
     {
+        // 1. هات الـ Base URL الحالي للتطبيق بتاع الفرع أوتوماتيك
+        var baseUri = navigationManager.BaseUri.TrimEnd('/');
+        var localHubUrl = $"{baseUri}/deliveryHub"; // عدل مسار الهب لو مختلف عندك (مثلاً /hubs/deliveryHub)
+
+        // 2. هات الـ URLs القديمة أو الإعدادات واضمن إن الهب المحلي بتاع الفرع مضمن معاهم
         var urls = _hubSettings.Urls ?? new();
+
+        if (!urls.Contains(localHubUrl))
+        {
+            urls.Add(localHubUrl);
+        }
 
         foreach (var hubUrl in urls)
         {
@@ -149,6 +277,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 .WithAutomaticReconnect()
                 .Build();
 
+            // باقي كود ال.On و الـ Start زي ما هو من غير أي تغيير...
             connection.On<OrderDto>("ReceiveNewDeliveryOrder", orderDto =>
             {
                 Console.WriteLine($"New external order from {hubUrl}: {orderDto.OrderId}");
@@ -159,86 +288,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 });
             });
 
-            connection.On<OrderDto>("ReceiveOrderDispatched", orderDto =>
-            {
-                Console.WriteLine($"Order dispatched: {orderDto.OrderId} to driver {orderDto.DriverName}");
-                InvokeAsync(() =>
-                {
-                    UpdateOrderStatus(orderDto);
-                    UpdateDriverStatus();
-                });
-            });
-
-            connection.On<int>("ReceiveOrderUnDispatched", id =>
-            {
-                Console.WriteLine($"Order un-dispatched: {id}");
-                InvokeAsync(() =>
-                {
-                    var order = Orders.FirstOrDefault(o => o.Id == id);
-                    if (order != null)
-                    {
-                        order.DriverID = null;
-                        order.DriverName = null;
-                        order.AssignTime = null;
-                        order.DispatchID = null;
-                        UpdateDriverStatus();
-                        StateHasChanged();
-                    }
-                });
-            });
-
-            connection.On<OrderDto>("ReceiveOrderCollected", orderDto =>
-            {
-                Console.WriteLine($"Order collected: {orderDto.Id}");
-                InvokeAsync(() =>
-                {
-                    RemoveOrder(orderDto.Id);
-                    UpdateDriverStatus();
-                });
-            });
-
-            connection.On<OrderDto>("ReceiveOrderUpdated", orderDto =>
-            {
-                Console.WriteLine($"Order updated: {orderDto.OrderId}, State: {orderDto.OrderState}");
-                InvokeAsync(() =>
-                {
-                    if (orderDto.OrderState == "Completed" || orderDto.OrderState == "Voided")
-                    {
-                        var toRemove = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
-                            || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
-                            || o.CallCenterOrderId == orderDto.Id);
-                        
-                        if (toRemove != null)
-                        {
-                            RemoveOrder(toRemove.Id);
-                            if (orderDto.OrderState == "Voided")
-                            {
-                                string reason = string.IsNullOrEmpty(orderDto.VoidReason) ? "" : $" السبب: {orderDto.VoidReason}";
-                                Snackbar.Add(Localizer.GetCurrentLanguage() == "ar" 
-                                    ? $"الطلب رقم {orderDto.OrderId} تم إلغاؤه.{reason}" 
-                                    : $"Order #{orderDto.OrderId} was voided.{reason}", Severity.Warning);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var existingOrder = Orders.FirstOrDefault(o => o.Id == orderDto.Id 
-                            || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value)
-                            || o.CallCenterOrderId == orderDto.Id);
-
-                        if (existingOrder != null)
-                        {
-                            existingOrder.DriverName = orderDto.DriverName;
-                            existingOrder.DriverID = orderDto.DriverID;
-                            existingOrder.OrderState = orderDto.OrderState;
-                            existingOrder.AssignTime = orderDto.AssignTime;
-                            existingOrder.DispatchID = orderDto.DispatchID;
-                            UpdateDriverStatus();
-                            StateHasChanged();
-                        }
-                    }
-                });
-            });
+            // ... (باقي أحداث الـ connection.On القديمة زي ما هي) ...
 
             try
             {

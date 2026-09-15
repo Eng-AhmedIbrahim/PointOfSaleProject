@@ -177,22 +177,6 @@ public class OrderController : BaseApiController
                                 Log.Information("[CC Dispatch] Order {CC_ID} updated to SentToBranch state.", createdOrder.Id);
 
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
-
-                                if (orderDto.SkipPrintingOnServer != true)
-                                {
-                                    var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
-                                    var deliverySettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
-                                    
-                                    if (deliverySettings != null && (deliverySettings.CustomerReceiptCount ?? 0) > 0)
-                                    {
-                                        List<string> branchDetails = await GetBranchDetails(orderDto);
-                                        var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
-                                        bool isCopy = currentPrintCount > 1;
-                                        await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
-                                    }
-                                }
-
-                                return Ok(_mapper.Map<OrderDto>(createdOrder));
                             }
                             else
                             {
@@ -201,7 +185,7 @@ public class OrderController : BaseApiController
                                 await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, errorContent);
-                                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Failed to dispatch order to branch: {errorContent}"));
+                                Log.Warning("[CC Dispatch] Immediate dispatch failed for Order {OrderId}: {Error}. Saved as FailedToDeliverToBranch for background retry.", orderDto.OrderId, errorContent);
                             }
                         }
                         catch (Exception ex)
@@ -211,15 +195,31 @@ public class OrderController : BaseApiController
                             await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
                             await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, ex.Message);
-                            return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(500, $"Exception dispatching order: {ex.Message}"));
                         }
                     }
                     else
                     {
+                        createdOrder.OrderState = OrderStates.FailedToDeliverToBranch;
                         await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
                         await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, "No branch URL provided.");
-                        return BadRequest(new ApiResponse(400, "No delivery branch URL provided."));
+                        Log.Warning("[CC Dispatch] No delivery branch URL provided for Order {OrderId}. Saved as FailedToDeliverToBranch.", orderDto.OrderId);
                     }
+
+                    if (orderDto.SkipPrintingOnServer != true)
+                    {
+                        var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                        var deliverySettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
+                        
+                        if (deliverySettings != null && (deliverySettings.CustomerReceiptCount ?? 0) > 0)
+                        {
+                            List<string> branchDetails = await GetBranchDetails(orderDto);
+                            var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
+                            bool isCopy = currentPrintCount > 1;
+                            await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
+                        }
+                    }
+
+                    return Ok(_mapper.Map<OrderDto>(createdOrder));
                 }
                 else
                 {
@@ -916,6 +916,7 @@ public class OrderController : BaseApiController
         order.BackTime = OrderDto.BackTime;
         order.WithoutDeliveryFees = OrderDto.WithoutDeliveryFees;
         order.ClosingTime = OrderDto.ClosingTime;
+        order.DeliveryBranchUrl = OrderDto.DeliveryBranchUrl;
         
         // Added missing delivery fields
         order.TakerID = OrderDto.TakerID;

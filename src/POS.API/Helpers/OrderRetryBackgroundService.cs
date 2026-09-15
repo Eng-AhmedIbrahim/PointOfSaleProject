@@ -1,10 +1,3 @@
-using POS.Core.Entities.OrderEntity;
-using POS.Core.Services.Contract.OrderServices;
-using POS.Core.Services.Contract.CompanyService;
-using POS.Contract.Dtos.OrderDtos;
-using System.Text.Json;
-using System.Text;
-
 namespace POS.API.Helpers;
 
 public class OrderRetryBackgroundService : BackgroundService
@@ -48,9 +41,10 @@ public class OrderRetryBackgroundService : BackgroundService
                     {
                         foreach (Orders order in failedOrders)
                         {
-                            var branch = await branchService.GetBranchByIdAsync(order.BranchID);
+                            var branch = await branchService.GetBranchByIdAsync(order.BranchID)!;
+                            var rawBranchUrl = !string.IsNullOrEmpty(order.DeliveryBranchUrl) ? order.DeliveryBranchUrl : branch?.ApiUrl;
 
-                            if (string.IsNullOrEmpty(branch?.ApiUrl))
+                            if (string.IsNullOrEmpty(rawBranchUrl))
                             {
                                 _logger.LogWarning("[Retry Service] Branch {BranchID} has no API URL. Skipping order {OrderID}.", order.BranchID, order.OrderID);
                                 continue;
@@ -81,10 +75,10 @@ public class OrderRetryBackgroundService : BackgroundService
                                 var json = JsonSerializer.Serialize(orderDto, options);
                                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                                var cleanBranchUrl = branch.ApiUrl.EndsWith("/") ? branch.ApiUrl.TrimEnd('/') : branch.ApiUrl;
+                                var cleanBranchUrl = rawBranchUrl.EndsWith("/") ? rawBranchUrl.TrimEnd('/') : rawBranchUrl;
                                 var targetEndpoint = $"{cleanBranchUrl}/api/order/receiveDispatchedOrder";
 
-                                _logger.LogInformation("[Retry Service] Retrying Order {OrderID} for Branch {BranchName} at {Endpoint}", order.OrderID, branch.Name, targetEndpoint);
+                                _logger.LogInformation("[Retry Service] Retrying Order {OrderID} for Branch {BranchID} at {Endpoint}", order.OrderID, order.BranchID, targetEndpoint);
 
                                 var response = await httpClient.PostAsync(targetEndpoint, content);
                                 _logger.LogInformation("[Retry Service] Branch responded with StatusCode: {StatusCode} for Order {OrderID}", response.StatusCode, order.OrderID);
@@ -100,7 +94,18 @@ public class OrderRetryBackgroundService : BackgroundService
                                         order.CallCenterOrderId = branchOrderDto.Id;
                                     }
                                     await orderService.UpdateOrderAsync(order);
-                                    _logger.LogInformation("[Retry Service] SUCCESS: Order {OrderID} sent to branch {BranchName}.", order.OrderID, branch.Name);
+                                    _logger.LogInformation("[Retry Service] SUCCESS: Order {OrderID} sent to branch {BranchID}.", order.OrderID, order.BranchID);
+
+                                    try
+                                    {
+                                        var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<DeliveryHub>>();
+                                        orderDto.OrderState = OrderStates.SentToBranch.ToString();
+                                        await hubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                                    }
+                                    catch (Exception hubEx)
+                                    {
+                                        _logger.LogError(hubEx, "[Retry Service] Error broadcasting SignalR notification for Order {OrderID}", order.OrderID);
+                                    }
                                 }
                                 else
                                 {
@@ -110,7 +115,7 @@ public class OrderRetryBackgroundService : BackgroundService
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, "[Retry Service] EXCEPTION: Order {OrderID} to URL: {Url}", order.OrderID, branch.ApiUrl);
+                                _logger.LogError(ex, "[Retry Service] EXCEPTION: Order {OrderID} to URL: {Url}", order.OrderID, rawBranchUrl);
                             }
                         }
                     }
