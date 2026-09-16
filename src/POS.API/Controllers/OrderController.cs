@@ -689,6 +689,7 @@ public class OrderController : BaseApiController
                 document.GeneratePdf(outputPath);
 
                 var printers = group.Printers;
+                if (printers == null) continue;
                 for (int i = 1; i <= 3; i++)
                 {
                     var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
@@ -779,6 +780,7 @@ public class OrderController : BaseApiController
             return;
 
         var printers = printer!.KitchenPrinters;
+        if (printers == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
@@ -1043,7 +1045,7 @@ public class OrderController : BaseApiController
             return;
 
         var printers = printer!.KitchenPrinters;
-
+        if (printers == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
@@ -1116,7 +1118,7 @@ public class OrderController : BaseApiController
             return;
 
         var printers = printer!.KitchenPrinters;
-
+        if (printers == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
@@ -1192,6 +1194,7 @@ public class OrderController : BaseApiController
             var outputPath = await CreateKitchenReceiptLayOut(receipt, kitchenItems);
 
             var printers = kitchenGroup.Printers;
+            if (printers == null) continue;
             var printerNamesToUse = new List<string>();
 
             for (int i = 1; i <= receiptCount; i++)
