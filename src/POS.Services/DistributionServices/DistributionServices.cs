@@ -17,8 +17,7 @@ public class DistributionServices : IDistributionServices
             o.OrderType == OrderTypes.Delivery &&
             o.OrderState != OrderStates.Completed &&
             o.OrderState != OrderStates.Voided &&
-            o.OrderState != OrderStates.Canceled &&
-            o.OrderState != OrderStates.FailedToDeliverToBranch
+            o.OrderState != OrderStates.Canceled
         );
         spec.Includes.Add(o => o.OrderDetails!);
         

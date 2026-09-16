@@ -138,8 +138,7 @@ public class OrderController : BaseApiController
 
                     if (!string.IsNullOrEmpty(branchUrlToDispatch))
                     {
-                        // Clean URL to avoid double slashes
-                        if (branchUrlToDispatch.EndsWith("/")) branchUrlToDispatch = branchUrlToDispatch.TrimEnd('/');
+                        var sanitizedUrl = branchUrlToDispatch.Trim().TrimEnd('/', '\\');
 
                         // Add Call Center API URL so branch can send updates back
                         var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
@@ -149,12 +148,16 @@ public class OrderController : BaseApiController
                         using var httpClient = new HttpClient();
                         httpClient.Timeout = TimeSpan.FromSeconds(30); // Increased timeout
 
+                        // Reset state to Assigned before sending to branch
+                        // so branch doesn't save it as FailedToDeliverToBranch
+                        orderDto.OrderState = OrderStates.Assigned.ToString();
+
                         var json = JsonSerializer.Serialize(orderDto);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                         try
                         {
-                            var targetEndpoint = $"{branchUrlToDispatch}/api/order/receiveDispatchedOrder";
+                            var targetEndpoint = $"{sanitizedUrl}/api/order/receiveDispatchedOrder";
                             Log.Information("[CC Dispatch] Sending POST to {Endpoint}", targetEndpoint);
 
                             var response = await httpClient.PostAsync(targetEndpoint, content);
@@ -176,6 +179,9 @@ public class OrderController : BaseApiController
                                 await _orderService.UpdateOrderAsync(createdOrder);
                                 Log.Information("[CC Dispatch] Order {CC_ID} updated to SentToBranch state.", createdOrder.Id);
 
+                                orderDto.OrderState = OrderStates.SentToBranch.ToString();
+                                if (branchOrderDto != null) orderDto.CallCenterOrderId = branchOrderDto.Id;
+
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
                             }
                             else
@@ -184,6 +190,7 @@ public class OrderController : BaseApiController
                                 createdOrder.OrderState = OrderStates.FailedToDeliverToBranch;
                                 await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
+                                orderDto.OrderState = OrderStates.FailedToDeliverToBranch.ToString();
                                 await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, errorContent);
                                 Log.Warning("[CC Dispatch] Immediate dispatch failed for Order {OrderId}: {Error}. Saved as FailedToDeliverToBranch for background retry.", orderDto.OrderId, errorContent);
                             }
@@ -194,6 +201,7 @@ public class OrderController : BaseApiController
                             createdOrder.OrderState = OrderStates.FailedToDeliverToBranch;
                             await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
+                            orderDto.OrderState = OrderStates.FailedToDeliverToBranch.ToString();
                             await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, ex.Message);
                         }
                     }
@@ -293,8 +301,7 @@ public class OrderController : BaseApiController
              return BadRequest(new ApiResponse(400, "No branch API URL found for this order."));
         }
 
-        // Clean URL
-        if (branchUrlToDispatch.EndsWith("/")) branchUrlToDispatch = branchUrlToDispatch.TrimEnd('/');
+        var sanitizedUrl = branchUrlToDispatch.Trim().TrimEnd('/', '\\');
 
         var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
         orderDto.CallCenterApiUrl = callCenterApiUrl;
@@ -307,7 +314,7 @@ public class OrderController : BaseApiController
 
         try
         {
-            var targetEndpoint = $"{branchUrlToDispatch}/api/order/receiveDispatchedOrder";
+            var targetEndpoint = $"{sanitizedUrl}/api/order/receiveDispatchedOrder";
             Log.Information("[CC Manual Resend] Sending POST to {Endpoint} for Order {OrderId}", targetEndpoint, orderId);
 
             var response = await httpClient.PostAsync(targetEndpoint, content);
@@ -435,6 +442,7 @@ public class OrderController : BaseApiController
             }
 
             var order = BackupMainOrderDetails(orderDto);
+            order.Id = 0; // Reset to 0 so EF Core creates a new local Primary Key in Branch DB
             BackupDeliveryOrder(orderDto, order); 
             order.CallCenterOrderId = orderDto.Id; 
             order.RemoteOrderId = orderDto.OrderId; 
@@ -475,7 +483,10 @@ public class OrderController : BaseApiController
             var orderSettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
             
             // IMPORTANT: Overwrite settings in DTO with local branch settings
-            orderDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(localSettings);
+            if (localSettings != null)
+            {
+                orderDto.OrderSettings = _mapper.Map<ICollection<OrderSettingToReturnDto>>(localSettings);
+            }
 
             var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
             bool isCopy = currentPrintCount > 1;
@@ -1299,13 +1310,15 @@ public class OrderController : BaseApiController
     {
         if (string.IsNullOrEmpty(branchUrl)) return;
 
+        var sanitizedUrl = branchUrl.Trim().TrimEnd('/', '\\');
+
         try
         {
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(10);
             var json = JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            await httpClient.PostAsync($"{branchUrl}/api/order/{endpoint}", content);
+            await httpClient.PostAsync($"{sanitizedUrl}/api/order/{endpoint}", content);
         }
         catch (Exception ex)
         {

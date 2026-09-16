@@ -71,12 +71,16 @@ public class OrderRetryBackgroundService : BackgroundService
                                 }
                                 orderDto.CallCenterApiUrl = urls.Split(';')[0]; // Take first URL if multiple
                                 
+                                // Reset state to Assigned before sending to branch
+                                // so the branch doesn't save it as FailedToDeliverToBranch
+                                orderDto.OrderState = OrderStates.Assigned.ToString();
+
                                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                                 var json = JsonSerializer.Serialize(orderDto, options);
                                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                                var cleanBranchUrl = rawBranchUrl.EndsWith("/") ? rawBranchUrl.TrimEnd('/') : rawBranchUrl;
-                                var targetEndpoint = $"{cleanBranchUrl}/api/order/receiveDispatchedOrder";
+                                var sanitizedUrl = rawBranchUrl?.Trim().TrimEnd('/', '\\') ?? string.Empty;
+                                var targetEndpoint = $"{sanitizedUrl}/api/order/receiveDispatchedOrder";
 
                                 _logger.LogInformation("[Retry Service] Retrying Order {OrderID} for Branch {BranchID} at {Endpoint}", order.OrderID, order.BranchID, targetEndpoint);
 

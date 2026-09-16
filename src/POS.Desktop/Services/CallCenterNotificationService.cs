@@ -23,6 +23,35 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
         _deliveryInvocation = deliveryInvocation;
     }
 
+    /// <summary>
+    /// Plays the embedded bell.wav sound for new order notifications.
+    /// Falls back to SystemSounds.Asterisk if the resource is unavailable.
+    /// </summary>
+    private static void PlayBell()
+    {
+        try
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceName = assembly.GetManifestResourceNames()
+                .FirstOrDefault(n => n.EndsWith("bell.wav"));
+
+            if (resourceName != null)
+            {
+                using var stream = assembly.GetManifestResourceStream(resourceName);
+                if (stream != null)
+                {
+                    using var player = new System.Media.SoundPlayer(stream);
+                    player.Play();
+                    return;
+                }
+            }
+        }
+        catch { /* fall through to backup */ }
+
+        // Fallback to Windows default sound
+        System.Media.SystemSounds.Asterisk.Play();
+    }
+
     public async Task InitializeAsync()
     {
         if (_isInitialized)
@@ -49,7 +78,7 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                     return;
 
                 if (_dispatcherSettings.SoundEnableCallCenter)
-                    System.Media.SystemSounds.Asterisk.Play();
+                    PlayBell();
 
                 _deliveryInvocation.TriggerShowNotification($"جديد: طلب توصيل برقم {order.OrderId} من {order.CustomerName}", Severity.Info);
                 
@@ -82,19 +111,19 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             connection.On<OrderDto>("ReceiveOrderDispatched", (order) =>
             {
                 _deliveryInvocation.TriggerShowNotification($"تم خروج الطلب رقم {order.OrderId} مع السائق {order.DriverName}", Severity.Success);
-                _deliveryInvocation.TriggerNewOrderReceived(); // Refresh UI if needed
+                _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto>("ReceiveOrderCollected", (order) =>
             {
                 _deliveryInvocation.TriggerShowNotification($"تم تسليم الطلب رقم {order.OrderId} بنجاح", Severity.Info);
-                _deliveryInvocation.TriggerNewOrderReceived(); // Refresh UI if needed
+                _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto>("OrderDispatchedCentralNotification", (order) =>
             {
                 if (_dispatcherSettings.SoundEnableCallCenter)
-                    System.Media.SystemSounds.Asterisk.Play();
+                    PlayBell();
 
                 _deliveryInvocation.TriggerShowNotification($"تم إرسال الطلب رقم {order.OrderId} للفرع بنجاح", Severity.Success);
                 _deliveryInvocation.TriggerNewOrderReceived();
@@ -103,7 +132,7 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             connection.On<OrderDto, string>("OrderDispatchFailedCentralNotification", (order, error) =>
             {
                 if (_dispatcherSettings.SoundEnableCallCenter)
-                    System.Media.SystemSounds.Exclamation.Play();
+                    System.Media.SystemSounds.Exclamation.Play(); // صوت تنبيه للأخطاء
 
                 _deliveryInvocation.TriggerShowNotification($"فشل إرسال الطلب رقم {order.OrderId} للفرع: {error}", Severity.Error);
                 _deliveryInvocation.TriggerNewOrderReceived();
@@ -131,9 +160,9 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                 };
 
                 if (order.OrderState == "FailedToDeliverToBranch" && _dispatcherSettings.SoundEnableCallCenter)
-                    System.Media.SystemSounds.Exclamation.Play();
+                    System.Media.SystemSounds.Exclamation.Play(); // صوت تنبيه للأخطاء
                 else if (_dispatcherSettings.SoundEnableCallCenter)
-                    System.Media.SystemSounds.Asterisk.Play();
+                    PlayBell();
 
                 _deliveryInvocation.TriggerShowNotification(message, severity);
                 _deliveryInvocation.TriggerNewOrderReceived();
@@ -146,7 +175,6 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                // Log and ignore
                 Console.WriteLine($"Failed to connect to {url}: {ex.Message}");
             }
         }
