@@ -299,11 +299,9 @@ public class OrderService : IOrderService
 
     public async Task<IReadOnlyList<Orders>?> GetFailedDeliveryOrdersAsync()
     {
-        // Only pick up Pending orders if they are older than 1 minute to avoid race condition with immediate dispatch
-        var oneMinuteAgo = DateTime.Now.AddMinutes(-1);
+        // Only retry orders that explicitly failed to deliver to branch
         var spec = new BaseSpecifications<Orders>(x => x.OrderType == OrderTypes.Delivery && 
-            (x.OrderState == OrderStates.FailedToDeliverToBranch || 
-            (x.OrderState == OrderStates.Pending && x.BranchID > 0 && x.OrderDate < oneMinuteAgo)));
+            x.OrderState == OrderStates.FailedToDeliverToBranch);
         return await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
     }
 

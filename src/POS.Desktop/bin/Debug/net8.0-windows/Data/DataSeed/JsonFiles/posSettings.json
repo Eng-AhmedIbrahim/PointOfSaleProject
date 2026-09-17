@@ -414,5 +414,13 @@
     "ModuleName": "Startup",
     "ScreenName": "General",
     "Value": false
+  },
+  {
+    "FeatureName": "IsCallCenter",
+    "NameEn": "Is Call Center Device",
+    "NameAr": "جهاز كول سنتر مركزي",
+    "ModuleName": "Delivery",
+    "ScreenName": "Call Center",
+    "Value": false
   }
 ]

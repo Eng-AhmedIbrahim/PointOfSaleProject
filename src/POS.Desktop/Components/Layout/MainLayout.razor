@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @* Required *@
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -9,7 +9,6 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-@using POS.Core.Services.Contract.PosFeatureServices
 @inject CommonProperties _commonProperties
 @inject ISnackbar _snackbar
 @inject BlazorBase.Services.LocalizationService Localizer
@@ -22,6 +21,8 @@
 @inject IPosFeatureSettingsService _featureSettingsService
 
 @inject BlazorBase.HandelDeliveryInvocation _deliveryInvocation
+@using Serilog
+@inject CallCenterNotificationService _callCenterService
 
 @code {
     private Action? _stateChangedHandler;
@@ -37,6 +38,25 @@
         _deliveryInvocation.OnShowNotification += ShowNotification;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var isCallCenter = await _featureSettingsService.IsFeatureEnabledAsync("IsCallCenter", Environment.MachineName);
+                if (isCallCenter)
+                {
+                    await _callCenterService.InitializeAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "[MainLayout] Error initializing CallCenterNotificationService");
+            }
+        }
+    }
+
     private async void ShowNotification(string message, Severity severity)
     {
         await InvokeAsync(() => _snackbar.Add(message, severity));
@@ -45,9 +65,7 @@
     private void HandleInternalNavigation(LocationChangingContext context)
     {
         if (context.TargetLocation.Contains("/pos", StringComparison.OrdinalIgnoreCase))
-        {
             return;
-        }
 
         if (_commonProperties.TableItems?.Any() == true)
         {
@@ -59,12 +77,11 @@
     public void Dispose()
     {
         if (_stateChangedHandler != null)
-        {
             _commonProperties.OnChange -= _stateChangedHandler;
-        }
         _deliveryInvocation.OnShowNotification -= ShowNotification;
     }
 }
+
 <div class="page">
     @* <main> *@
         @* <NavBar /> *@

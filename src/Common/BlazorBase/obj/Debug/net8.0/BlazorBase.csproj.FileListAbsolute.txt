@@ -121,4 +121,4 @@ D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.dll
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\refint\BlazorBase.dll
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.pdb
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ref\BlazorBase.dll
-d:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ar\BlazorBase.resources.cs
+D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ar\BlazorBase.resources.cs

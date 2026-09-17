@@ -847,6 +847,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
         _commonProperties.OrderDto!.OrderType = "Delivery";
         _commonProperties.OrderDto.CashierName = _commonProperties.CurrentUser;
+        _commonProperties.OrderDto.MachineName = Environment.MachineName;
 
         // Hospitality & Staff Meals
         _commonProperties.OrderDto.IsHospitality = _commonProperties.IsHospitalityMode;

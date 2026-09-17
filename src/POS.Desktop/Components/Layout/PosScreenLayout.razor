@@ -83,10 +83,15 @@
     }
 </style>
 
+@using POS.Desktop.Services
+
 @code {
     [Inject] private LocalizationService _localizationService { get; set; } = default!;
     [Inject] private DesktopFontSizeService _fontSizeService { get; set; } = default!;
     [Inject] private IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
+    [Inject] private BlazorBase.HandelDeliveryInvocation _deliveryInvocation { get; set; } = default!;
+    [Inject] private ISnackbar _snackbar { get; set; } = default!;
+    [Inject] private CallCenterNotificationService _callCenterService { get; set; } = default!;
 
     private Action? _stateChangedHandler;
 
@@ -98,6 +103,8 @@
         };
 
         _commonProperties.OnChange += _stateChangedHandler;
+        _deliveryInvocation.OnShowNotification += ShowNotification;
+
         await _localizationService.InitializeAsync();
         await _fontSizeService.LoadStoredFontSizes();
 
@@ -105,9 +112,34 @@
             _commonProperties.FeatureSettings = await _featureSettingsService.GetSettingsByComputerNameAsync(Environment.MachineName);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var isCallCenter = await _featureSettingsService.IsFeatureEnabledAsync("IsCallCenter", Environment.MachineName);
+                if (isCallCenter)
+                {
+                    await _callCenterService.InitializeAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "[PosScreenLayout] Error initializing CallCenterNotificationService");
+            }
+        }
+    }
+
+    private async void ShowNotification(string message, Severity severity)
+    {
+        await InvokeAsync(() => _snackbar.Add(message, severity));
+    }
+
     public void Dispose()
     {
         if (_stateChangedHandler != null)
             _commonProperties.OnChange -= _stateChangedHandler;
+        _deliveryInvocation.OnShowNotification -= ShowNotification;
     }
 }

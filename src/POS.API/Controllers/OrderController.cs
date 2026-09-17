@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Diagnostics;
+
 namespace POS.API.Controllers;
 
 public class OrderController : BaseApiController
@@ -146,11 +148,12 @@ public class OrderController : BaseApiController
                         Log.Information("[CC Dispatch] Setting CallCenterApiUrl to {CCUrl}", callCenterApiUrl);
 
                         using var httpClient = new HttpClient();
-                        httpClient.Timeout = TimeSpan.FromSeconds(30); // Increased timeout
+                        httpClient.Timeout = TimeSpan.FromSeconds(5); // Fast timeout for immediate response
 
                         // Reset state to Assigned before sending to branch
                         // so branch doesn't save it as FailedToDeliverToBranch
-                        orderDto.OrderState = OrderStates.Assigned.ToString();
+
+                        //orderDto.OrderState = OrderStates.Assigned.ToString();
 
                         var json = JsonSerializer.Serialize(orderDto);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -182,7 +185,7 @@ public class OrderController : BaseApiController
                                 orderDto.OrderState = OrderStates.SentToBranch.ToString();
                                 if (branchOrderDto != null) orderDto.CallCenterOrderId = branchOrderDto.Id;
 
-                                await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                                await NotifyAgentMachine("ReceiveDeliveryOrderSendSuccess", orderDto);
                             }
                             else
                             {
@@ -191,7 +194,7 @@ public class OrderController : BaseApiController
                                 await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
                                 orderDto.OrderState = OrderStates.FailedToDeliverToBranch.ToString();
-                                await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, errorContent);
+                                await NotifyAgentMachine("ReceiveDeliveryOrderUnsend", orderDto, errorContent);
                                 Log.Warning("[CC Dispatch] Immediate dispatch failed for Order {OrderId}: {Error}. Saved as FailedToDeliverToBranch for background retry.", orderDto.OrderId, errorContent);
                             }
                         }
@@ -202,19 +205,19 @@ public class OrderController : BaseApiController
                             await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
 
                             orderDto.OrderState = OrderStates.FailedToDeliverToBranch.ToString();
-                            await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, ex.Message);
+                            await NotifyAgentMachine("ReceiveDeliveryOrderUnsend", orderDto, ex.Message) ;
                         }
                     }
                     else
                     {
                         createdOrder.OrderState = OrderStates.FailedToDeliverToBranch;
                         await _orderService.UpdateOrderStatusAsync(createdOrder.Id, OrderStates.FailedToDeliverToBranch);
-                        await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchFailedCentralNotification", orderDto, "No branch URL provided.");
+                        await NotifyAgentMachine("ReceiveDeliveryOrderUnsend", orderDto, "No branch URL provided.");
                         Log.Warning("[CC Dispatch] No delivery branch URL provided for Order {OrderId}. Saved as FailedToDeliverToBranch.", orderDto.OrderId);
-                    }
+                    } 
 
-                    if (orderDto.SkipPrintingOnServer != true)
-                    {
+                    if(orderDto.SkipPrintingOnServer != true)
+                    { 
                         var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
                         var deliverySettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
                         
@@ -231,13 +234,12 @@ public class OrderController : BaseApiController
                 }
                 else
                 {
-                    await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
-
+                    await NotifyAgentMachine("ReceiveNewDeliveryOrder", orderDto);
                     if (orderDto.SkipPrintingOnServer != true)
                     {
                         List<string> branchDetails = await GetBranchDetails(orderDto);
                         await printDeliveryReceipts(orderDto, createdOrder, branchDetails);
-
+                         
                         if (orderSettings!.FullKitchenReceiptCount > 0)
                             await PrintBackupReceipts(orderDto, createdOrder);
 
@@ -291,7 +293,7 @@ public class OrderController : BaseApiController
         if (string.IsNullOrEmpty(branchUrlToDispatch))
         {
              Log.Information("[CC Manual Resend] DeliveryBranchUrl is empty on order, fetching from Branch table for BranchID {BranchID}", order.BranchID);
-             var branch = await _branchService.GetBranchByIdAsync(order.BranchID);
+             var branch = await _branchService.GetBranchByIdAsync(order.BranchID)!;
              branchUrlToDispatch = branch?.ApiUrl;
         }
 
@@ -332,7 +334,7 @@ public class OrderController : BaseApiController
                 }
                 await _orderService.UpdateOrderAsync(order);
 
-                await _deliveryHubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                await NotifyAgentMachine("OrderDispatchedCentralNotification", orderDto);
                 Log.Information("[CC Manual Resend] SUCCESS: Order {OrderId} resent and updated to SentToBranch.", orderId);
                 return Ok(new { Message = "Order resent successfully." });
             }
@@ -387,7 +389,7 @@ public class OrderController : BaseApiController
         }
         
         // Ensure the mapped order has the correct Id for lookup
-        order.Id = orderDto.Id; 
+        order.Id = orderDto.Id;
 
         var updatedOrder = await _orderService.FullUpdateOrderAsync(order);
 
@@ -477,33 +479,7 @@ public class OrderController : BaseApiController
 
             await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
 
-            List<string> branchDetails = await GetBranchDetails(orderDto);
-
-            var localSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
-            var orderSettings = localSettings?.FirstOrDefault(o => o.OrderType == OrderTypes.Delivery.ToString());
-            
-            // IMPORTANT: Overwrite settings in DTO with local branch settings
-            if (localSettings != null)
-            {
-                orderDto.OrderSettings = _mapper.Map<ICollection<OrderSettingToReturnDto>>(localSettings);
-            }
-
-            var currentPrintCount = await _orderService.IncrementPrintCountAsync(createdOrder.Id);
-            bool isCopy = currentPrintCount > 1;
-
-            Log.Information("[Branch Receive] Triggering local printing for Order {OrderId}. PrintCount: {Count}, LocalReceiptCount: {RCount}", 
-                orderDto.OrderId, currentPrintCount, orderSettings?.CustomerReceiptCount);
-
-            if (orderSettings != null && (orderSettings.CustomerReceiptCount ?? 0) > 0)
-                await printDeliveryReceipts(orderDto, createdOrder, branchDetails, isCopy: isCopy);
-
-            if (orderSettings?.FullKitchenReceiptCount > 0)
-                await PrintBackupReceipts(orderDto, createdOrder, isCopy: isCopy);
-
-            if (orderSettings?.SeparateReceiptCount > 0)
-                await PrintKitchenReceipts(orderDto, createdOrder, isCopy: isCopy);
-
-            Log.Information("[Branch Receive] Completed processing for Order {OrderId}", orderDto.OrderId);
+            Log.Information("[Branch Receive] Completed processing for Order {OrderId}. Order broadcasted to Dispatcher via SignalR.", orderDto.OrderId);
             return Ok(_mapper.Map<OrderDto>(createdOrder));
         }
         catch (Exception ex)
@@ -1385,5 +1361,30 @@ public class OrderController : BaseApiController
         document.GeneratePdf(outputPath);
 
         return outputPath;
+    }
+
+    private async Task NotifyAgentMachine(string method, OrderDto orderDto, string? errorMessage = null)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(orderDto.MachineName))
+            {
+                if (errorMessage != null)
+                    await _deliveryHubContext.Clients.Group(orderDto.MachineName).SendAsync(method, orderDto, errorMessage);
+                else
+                    await _deliveryHubContext.Clients.Group(orderDto.MachineName).SendAsync(method, orderDto);
+            }
+            else
+            {
+                if (errorMessage != null)
+                    await _deliveryHubContext.Clients.All.SendAsync(method, orderDto, errorMessage);
+                else
+                    await _deliveryHubContext.Clients.All.SendAsync(method, orderDto);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error sending Hub notification {Method} for order {OrderId}", method, orderDto.OrderId);
+        }
     }
 }

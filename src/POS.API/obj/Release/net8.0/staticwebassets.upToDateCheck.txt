@@ -1,1 +1,0 @@
-wwwroot\Files\images\logo.png

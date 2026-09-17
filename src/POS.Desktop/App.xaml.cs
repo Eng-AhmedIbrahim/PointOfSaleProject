@@ -100,6 +100,9 @@ public partial class App : Application
             ConfigureServices(services);
             _serviceProvider = services.BuildServiceProvider();
 
+            var callCenterService = _serviceProvider.GetRequiredService<CallCenterNotificationService>();
+            _ = Task.Run(async () => await callCenterService.InitializeAsync());
+
             Log.Information("Checking license...");
             var licenseService = _serviceProvider.GetRequiredService<ILicenseService>();
             

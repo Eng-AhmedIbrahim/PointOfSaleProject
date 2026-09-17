@@ -1,5 +1,6 @@
-﻿using BlazorBase.Models.DeliveryModels;
+using BlazorBase.Models.DeliveryModels;
 using MudBlazor;
+using Serilog;
 
 namespace BlazorBase;
 
@@ -15,6 +16,11 @@ public class HandelDeliveryInvocation
     {
         OnShowNotification?.Invoke(message, severity);
     }
+
+    /// <summary>Returns the number of active subscribers to OnShowNotification.</summary>
+    public int GetNotificationSubscriberCount()
+        => OnShowNotification?.GetInvocationList()?.Length ?? 0;
+
 
     public void TriggerAddressSelected()
     {

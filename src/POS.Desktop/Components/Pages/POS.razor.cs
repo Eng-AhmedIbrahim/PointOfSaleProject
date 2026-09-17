@@ -246,7 +246,7 @@ public partial class POS
         var dialog = await DialogService.ShowAsync<WeightSelectorDialog>("", parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Canceled && result.Data is (decimal weightMultiplier, string weightLabel))
+        if (!result!.Canceled && result.Data is (decimal weightMultiplier, string weightLabel))
         {
             // Clone the item and apply weight pricing
             var weightedItem = new MenuSalesItemsToReturnDto
@@ -555,7 +555,7 @@ public partial class POS
             HasTax = (menuItem.Tax ?? 0) > 0
         };
 
-        if (_commonProperties.CurrentStaffMeal != null)
+        if (_commonProperties!.CurrentStaffMeal != null)
         {
             newTableItem.IsStaffMeal = true;
             newTableItem.StaffName = _commonProperties.CurrentStaffMeal.UserName;
@@ -872,4 +872,4 @@ public partial class POS
         return _commonProperties.AllowedStaffMenuItems;
     }
     #endregion
-}
+}

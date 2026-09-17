@@ -104,7 +104,14 @@ public class OrderRetryBackgroundService : BackgroundService
                                     {
                                         var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<DeliveryHub>>();
                                         orderDto.OrderState = OrderStates.SentToBranch.ToString();
-                                        await hubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                                        if (!string.IsNullOrEmpty(orderDto.MachineName))
+                                        {
+                                            await hubContext.Clients.Group(orderDto.MachineName).SendAsync("OrderDispatchedCentralNotification", orderDto);
+                                        }
+                                        else
+                                        {
+                                            await hubContext.Clients.All.SendAsync("OrderDispatchedCentralNotification", orderDto);
+                                        }
                                     }
                                     catch (Exception hubEx)
                                     {

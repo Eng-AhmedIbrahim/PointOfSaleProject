@@ -59,6 +59,8 @@
                         <MudTh>@(showAssigned ? Localizer["Distribution_ChangeDriver"] : Localizer["Distribution_AssignDriver"])</MudTh>
                         <MudTh>@Localizer["CustomerName"]</MudTh>
                         <MudTh>@Localizer["PhoneNumber"]</MudTh>
+                        <MudTh>الفرع</MudTh>
+                        <MudTh>الحالة</MudTh>
                         <MudTh>@Localizer["Distribution_Address"]</MudTh>
                         <MudTh>@Localizer["Distribution_AddressNotes"]</MudTh>
                         <MudTh>@Localizer["Distribution_Time"]</MudTh>
@@ -94,6 +96,14 @@
                         </MudTd>
                         <MudTd>
                             <MudText Typo="Typo.h6" Class="font-mono font-weight-bold">@context.Phone1</MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudText Typo="Typo.subtitle1" Class="font-weight-bold">@(string.IsNullOrEmpty(context.BranchName) ? "-" : context.BranchName)</MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudChip T="string" Size="Size.Small" Color="@GetStateColor(context.OrderState)" Variant="Variant.Filled">
+                                @GetStateText(context.OrderState)
+                            </MudChip>
                         </MudTd>
                         <MudTd>
                             <div class="address-text font-weight-bold" style="font-size: 1.1rem;">@context.StreetName</div>

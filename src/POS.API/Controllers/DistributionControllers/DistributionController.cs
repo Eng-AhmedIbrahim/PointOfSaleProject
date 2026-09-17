@@ -78,7 +78,7 @@ public class DistributionController : BaseApiController
             await _hubContext.Clients.All.SendAsync("ReceiveOrderDispatched", orderDto);
 
             // Fetch the updated order from DB to ensure DTO has all calculated fields (like DriverName if it was fetched from a driver table, etc.)
-            var updatedOrder = await _orderService.GetOrderByIdAsync(orderDto.Id);
+            var updatedOrder = await _orderService.GetOrderByIdAsync(orderDto!.Id);
             if (updatedOrder != null)
             {
                 var syncDto = _mapper.Map<OrderDto>(updatedOrder);
