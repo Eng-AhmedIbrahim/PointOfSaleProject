@@ -116,9 +116,9 @@ D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets\msb
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.BlazorBase.props
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.BlazorBase.props
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets.pack.json
-D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.csproj.Up2Date
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.dll
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\refint\BlazorBase.dll
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\BlazorBase.pdb
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ref\BlazorBase.dll
+D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\ar\BlazorBase.resources.cs

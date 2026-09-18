@@ -148,17 +148,25 @@
 
     private async Task Assign()
     {
-        if (CurrentDeliveryOrder == null) return;
+        if (CurrentDeliveryOrder == null)
+        {
+            Serilog.Log.Warning("[Dispatcher] Assign() called but CurrentDeliveryOrder is null");
+            return;
+        }
         
         var orderId = CurrentDeliveryOrder.Id;
+        Serilog.Log.Information("[Dispatcher] Assign() called for OrderId={OrderId}, BranchId={BranchId}", orderId, CurrentDeliveryOrder.BranchId);
 
         var driver = _commonProperties.Drivers.Keys.FirstOrDefault(d => d.Id == SelectedDriverId);
         
         if (driver == null)
         {
+            Serilog.Log.Warning("[Dispatcher] No driver selected. SelectedDriverId={DriverId}, TotalDrivers={Count}", SelectedDriverId, _commonProperties.Drivers.Count);
             _snackbar.Add(Localizer["Distribution_SelectValidDriverError"], Severity.Warning);
             return;
         }
+
+        Serilog.Log.Information("[Dispatcher] Driver selected: DriverId={DriverId}, DriverName={Name}", driver.Id, driver.DisplayName);
 
         var appDateToReturnDto = await _appDateService.GetAppDate();
 
@@ -170,13 +178,25 @@
         CurrentDeliveryOrder.OrderSettings = _commonProperties.OrderSettings;
         CurrentDeliveryOrder.SkipPrintingOnServer = true;
 
-        var result = await _distributionErpService.DispatchOrder(CurrentDeliveryOrder);
+        Serilog.Log.Information("[Dispatcher] Calling DispatchOrder API for OrderId={OrderId}", orderId);
 
-        if (result is not null)
+        try
         {
-            await _printOrderService.PrintDispatchOrderAsync(CurrentDeliveryOrder);
-            CloseDialog();
-            return;
+            var result = await _distributionErpService.DispatchOrder(CurrentDeliveryOrder);
+
+            if (result is not null)
+            {
+                Serilog.Log.Information("[Dispatcher] DispatchOrder succeeded for OrderId={OrderId}. Printing...", orderId);
+                await _printOrderService.PrintDispatchOrderAsync(CurrentDeliveryOrder);
+                CloseDialog();
+                return;
+            }
+
+            Serilog.Log.Error("[Dispatcher] DispatchOrder returned null for OrderId={OrderId} — API call failed or returned error", orderId);
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "[Dispatcher] Exception during DispatchOrder for OrderId={OrderId}", orderId);
         }
 
         _snackbar.Add(Localizer["Distribution_AssignmentError"], Severity.Error);

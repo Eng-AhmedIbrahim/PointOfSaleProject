@@ -363,7 +363,6 @@ D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\m
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildMultiTargeting.POS.Desktop.props
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets\msbuild.buildTransitive.POS.Desktop.props
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.pack.json
-D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\staticwebassets.upToDateCheck.txt
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desk.5A2F66C5.Up2Date
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\POS.Desktop.dll
 D:\PointOfSaleProject\src\POS.Desktop\obj\Debug\net8.0-windows\refint\POS.Desktop.dll
