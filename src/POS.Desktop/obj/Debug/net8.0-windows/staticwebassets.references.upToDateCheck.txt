@@ -1,1 +1,2 @@
 D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets.build.json
+D:\PointOfSaleProject\src\Common\BlazorBase\obj\Debug\net8.0\staticwebassets.build.json

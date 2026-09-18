@@ -145,16 +145,5 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/transactions/salesendofdaydialog.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/_imports.razor")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("newtechbackoffice.ico")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/authlayout.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/mainlayout.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/layout/navmenu.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/dashboard.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/login.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/notfound404.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/roles/permissionsmanagement.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/roles/rolemanagement.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/transactions/summarypage.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/transactions/summarypages/summarycard.razor.css")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("components/pages/users/usermanagement.razor.css")]
 
 

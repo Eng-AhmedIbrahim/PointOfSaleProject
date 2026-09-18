@@ -819,6 +819,7 @@ D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\staticwebassets.build.json.c
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\staticwebassets.development.json
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\swae.build.ex.cache
+D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\ERPFront.csproj.Up2Date
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\ERPFront.dll
 D:\PointOfSaleProject\src\ERPFront\obj\Debug\net8.0\refint\ERPFront.dll

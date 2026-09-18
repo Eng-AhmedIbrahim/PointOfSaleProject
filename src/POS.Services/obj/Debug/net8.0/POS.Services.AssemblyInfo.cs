@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("POS.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3cbe3351e53d5a4eea3c4eb38ba6f0c5f0fcf49")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42b10ff81b16c8b3593b4d97d6f489bf169d1ac7")]
 [assembly: System.Reflection.AssemblyProductAttribute("POS.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("POS.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

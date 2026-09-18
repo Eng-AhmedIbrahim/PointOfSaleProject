@@ -56,7 +56,10 @@
                                 <MudCheckBox T="bool" Value="SelectAllOrders" ValueChanged="ToggleSelectAll" Color="Color.Primary" Dense="true" Size="Size.Small" />
                             </MudTh>
                         }
-                        <MudTh>@(showAssigned ? Localizer["Distribution_ChangeDriver"] : Localizer["Distribution_AssignDriver"])</MudTh>
+                        @if (_canAssignDriver)
+                        {
+                            <MudTh>@(showAssigned ? Localizer["Distribution_ChangeDriver"] : Localizer["Distribution_AssignDriver"])</MudTh>
+                        }
                         <MudTh>@Localizer["CustomerName"]</MudTh>
                         <MudTh>@Localizer["PhoneNumber"]</MudTh>
                         <MudTh>الفرع</MudTh>
@@ -78,9 +81,9 @@
                                 <MudCheckBox T="bool" Value="@SelectedOrderIds.Contains(context.Id)" ValueChanged="@(v => ToggleOrderSelection(context, v))" Color="Color.Primary" Dense="true" Size="Size.Small" />
                             </MudTd>
                         }
-                        <MudTd Class="action-cell">
-                            @if (_canAssignDriver)
-                            {
+                        @if (_canAssignDriver)
+                        {
+                            <MudTd Class="action-cell">
                                 <MudButton Variant="Variant.Filled"
                                          Color="Color.Primary"
                                          Size="Size.Small"
@@ -89,8 +92,8 @@
                                          DisableElevation="true">
                                     <MudIcon Icon="@(context.DriverID == null ? Icons.Material.Filled.LocalShipping : Icons.Material.Filled.Edit)" Size="Size.Small" />
                                 </MudButton>
-                            }
-                        </MudTd>
+                            </MudTd>
+                        }
                         <MudTd>
                             <MudText Typo="Typo.subtitle1" Class="font-weight-black">@context.CustomerName</MudText>
                         </MudTd>

@@ -140,6 +140,20 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             _canPosSettingsFeature    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
         }
 
+        // --- Call Center Override ---
+        // If this machine is the Call Center, it should NOT be able to assign drivers, collect, or manage branch-specific operations.
+        // It can only View/Edit and Void orders.
+        bool isCallCenter = await _featureSettingsService.IsFeatureEnabledAsync("IsCallCenter", Environment.MachineName);
+        if (isCallCenter)
+        {
+            _canAssignDriver = false;
+            _canUnDispatch = false;
+            _canCollect = false;
+            _canViewDriverSettlement = false;
+            _canViewDrivers = false;
+        }
+
+
         await ConnectToExternalHubs();
 
         var orders = await _distributionService.GetUnCompletedDeliveryOrders();
