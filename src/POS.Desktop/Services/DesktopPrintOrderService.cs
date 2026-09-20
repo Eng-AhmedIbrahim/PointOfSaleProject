@@ -214,6 +214,12 @@ public class DesktopPrintOrderService : IPrintOrderService
 
                             if (string.IsNullOrEmpty(currentPrinterName))
                             {
+                                // Skip fallback for secondary copies to prevent unwanted duplication
+                                if (i > 1 && string.IsNullOrEmpty(printerName))
+                                {
+                                    continue;
+                                }
+
                                 currentPrinterName = await _localStorage.GetItemAsStringAsync("cashier_printer_name");
                                 if (string.IsNullOrEmpty(currentPrinterName))
                                 {
@@ -553,6 +559,14 @@ public class DesktopPrintOrderService : IPrintOrderService
                 // FALLBACK: Use selected cashier printer from LocalStorage, otherwise system default
                 if (string.IsNullOrWhiteSpace(targetPrinterName))
                 {
+                    // Skip fallback for secondary copies to prevent unwanted duplication 
+                    // unless a printer is explicitly assigned for this copy
+                    if (i > 1 && string.IsNullOrWhiteSpace(printerName))
+                    {
+                        Log.Information("Copy {CopyIndex} has no explicit printer configured. Skipping fallback to avoid duplicate print.", i);
+                        continue;
+                    }
+
                     targetPrinterName = await _localStorage.GetItemAsStringAsync("cashier_printer_name");
                     
                     if (string.IsNullOrWhiteSpace(targetPrinterName))

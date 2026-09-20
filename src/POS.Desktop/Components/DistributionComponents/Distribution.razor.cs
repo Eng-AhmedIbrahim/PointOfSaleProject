@@ -32,6 +32,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private bool _canViewDriverSettlement;
     private bool _canViewDrivers;
     private bool _canPosSettingsFeature;
+    private bool _isCallCenter;
 
 
 
@@ -128,22 +129,37 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            _canAssignDriver          = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionAssignBtn")).Succeeded;
-            _canViewOrder             = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewBtn")).Succeeded;
-            _canVoidOrder             = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidBtn")).Succeeded;
-            _canPrintOrder            = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionPrintBtn")).Succeeded;
-            _canUnDispatch            = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionUnDispatchBtn")).Succeeded;
-            _canCollect               = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionCollectBtn")).Succeeded;
-            _canViewVoidHistory       = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidHistoryBtn")).Succeeded;
-            _canViewDriverSettlement  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionDriverSettlementBtn")).Succeeded;
-            _canViewDrivers           = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewDriversBtn")).Succeeded;
-            _canPosSettingsFeature    = (await AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature")).Succeeded;
+            // Run all permission checks in parallel instead of sequentially
+            var permTasks = new[]
+            {
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionAssignBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionPrintBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionUnDispatchBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionCollectBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionVoidHistoryBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionDriverSettlementBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessDistributionViewDriversBtn"),
+                AuthorizationService.AuthorizeAsync(user, "CanAccessPosSettingsFeature"),
+            };
+            var permResults = await Task.WhenAll(permTasks);
+
+            _canAssignDriver          = permResults[0].Succeeded;
+            _canViewOrder             = permResults[1].Succeeded;
+            _canVoidOrder             = permResults[2].Succeeded;
+            _canPrintOrder            = permResults[3].Succeeded;
+            _canUnDispatch            = permResults[4].Succeeded;
+            _canCollect               = permResults[5].Succeeded;
+            _canViewVoidHistory       = permResults[6].Succeeded;
+            _canViewDriverSettlement  = permResults[7].Succeeded;
+            _canViewDrivers           = permResults[8].Succeeded;
+            _canPosSettingsFeature    = permResults[9].Succeeded;
         }
 
         // --- Call Center Override ---
-        // If this machine is the Call Center, it should NOT be able to assign drivers, collect, or manage branch-specific operations.
-        // It can only View/Edit and Void orders.
         bool isCallCenter = await _featureSettingsService.IsFeatureEnabledAsync("IsCallCenter", Environment.MachineName);
+        _isCallCenter = isCallCenter;
         if (isCallCenter)
         {
             _canAssignDriver = false;
@@ -153,10 +169,19 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             _canViewDrivers = false;
         }
 
+        // Connect to hubs in background (non-blocking) so the UI can render immediately
+        _ = Task.Run(async () => await ConnectToExternalHubs());
 
-        await ConnectToExternalHubs();
+        // Fetch orders, drivers, and settings in parallel
+        var ordersTask   = _distributionService.GetUnCompletedDeliveryOrders();
+        var driversTask  = _commonProperties.Drivers.Any()
+                            ? Task.FromResult<ICollection<POS.Contract.Dtos.DineInDtos.UserToReturnDto>>(new List<POS.Contract.Dtos.DineInDtos.UserToReturnDto>())
+                            : _distributionService.GetDeliveryUsers();
+        var settingsTask = _systemSettingsServices.GetDispatcherSettingsAsync();
 
-        var orders = await _distributionService.GetUnCompletedDeliveryOrders();
+        await Task.WhenAll(ordersTask, driversTask, settingsTask);
+
+        var orders = ordersTask.Result;
         if (orders != null)
         {
             foreach (var order in orders)
@@ -165,14 +190,13 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
         if (!_commonProperties.Drivers.Any())
         {
-            var drivers = await _distributionService.GetDeliveryUsers();
-            foreach (var driver in drivers)
+            foreach (var driver in driversTask.Result)
                 _commonProperties.Drivers.Add(driver, "Available");
         }
 
         UpdateDriverStatus();
 
-        _dynamicDispatcherSettings = await _systemSettingsServices.GetDispatcherSettingsAsync();
+        _dynamicDispatcherSettings = settingsTask.Result;
 
         _timer = new Timer(_ =>
         {
@@ -181,9 +205,6 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 StateHasChanged();
             });
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(_dynamicDispatcherSettings.RefreshTimeForDeliveryOrderColorsPerSecond));
-
-        // Connect hubs in background non-blocking for instant page render
-        _ = Task.Run(async () => await ConnectToExternalHubs());
     }
 
     private async Task ConnectToExternalHubs()
@@ -316,10 +337,28 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 });
             });
 
-            connection.On<OrderDto>("ReceiveOrderUpdated", orderDto =>
+            connection.On<OrderDto>("ReceiveOrderUpdated", async orderDto =>
             {
                 Console.WriteLine($"Order updated: {orderDto.OrderId}, State: {orderDto.OrderState}");
-                InvokeAsync(() =>
+                
+                if (orderDto.OrderState == "Voided")
+                {
+                    try
+                    {
+                        var settings = await _systemSettingsServices.GetDispatcherSettingsAsync();
+                        if (settings != null && settings.IsDispatcher)
+                        {
+                            PlayBellForOneSecond();
+                            await _printOrderService.PrintVoidReceiptAsync(orderDto, orderDto.OrderDetails ?? new());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Serilog.Log.Error(ex, $"[Distribution] Error playing bell or printing void for Order #{orderDto.OrderId}");
+                    }
+                }
+
+                await InvokeAsync(() =>
                 {
                     if (orderDto.OrderState == "Completed" || orderDto.OrderState == "Voided")
                     {
@@ -345,6 +384,14 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                             existingOrder.OrderState = orderDto.OrderState;
                             existingOrder.AssignTime = orderDto.AssignTime;
                             existingOrder.DispatchID = orderDto.DispatchID;
+                            
+                            // Update order details if modified
+                            if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
+                            {
+                                existingOrder.OrderDetails = orderDto.OrderDetails;
+                                existingOrder.GrandTotal = orderDto.GrandTotal;
+                                existingOrder.SubTotal = orderDto.SubTotal;
+                            }
                         }
                         else
                         {
@@ -634,8 +681,22 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private bool IsVoidDisabled(OrderDto order)
     {
-        if (!_dynamicDispatcherSettings.AllowDeliveryVoidFromBranch)
-            return true;
+        // Check permission from OrderSettings (CanVoidFromBranch / CanVoidFromCallCenter)
+        var deliverySettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == "Delivery");
+        if (deliverySettings != null)
+        {
+            if (_isCallCenter && deliverySettings.CanVoidFromCallCenter == false)
+                return true;
+
+            if (!_isCallCenter && deliverySettings.CanVoidFromBranch == false)
+                return true;
+        }
+        else
+        {
+            // Fallback to old dispatcher-level setting if no OrderSettings found
+            if (!_dynamicDispatcherSettings.AllowDeliveryVoidFromBranch)
+                return true;
+        }
 
         if (order.OrderState == "Dispatched" || order.OrderState == "Delivering")
             return true;

@@ -277,6 +277,7 @@ public partial class MenuButtons : IDisposable
                 
                 _commonProperties.CurrentDineInOrder = null;
                 _commonProperties.DineInOrderValues = new();
+                _commonProperties.UpdateDineInOrder = false;
                 _commonProperties.TableItems = new List<TableItem>(); // Reset to avoid NaveLock warning
                 
                 _commonProperties.NotifyStateChanged(); // Explicitly notify MainLayout

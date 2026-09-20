@@ -28,6 +28,9 @@ public class DeliveryHub : Hub
     public async Task SendNewDeliveryOrder(OrderDto orderDto)
         => await Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
 
+    public async Task SendOrderVoided(OrderDto orderDto)
+        => await Clients.All.SendAsync("ReceiveOrderVoided", orderDto);
+
 
     public async Task SendOrderDispatched(OrderDto orderDto)
         => await Clients.All.SendAsync("ReceiveOrderDispatched", orderDto);

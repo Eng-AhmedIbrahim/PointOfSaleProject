@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers.KitchenControllers;
+namespace POS.API.Controllers.KitchenControllers;
 
 public class KitchenTypeController : BaseApiController
 {
@@ -60,6 +60,7 @@ public class KitchenTypeController : BaseApiController
             return NotFound($"Kitchen type with ID {id} not found.");
         }
         var mappedKitchenType = _mapper.Map<KitchenType>(kitchenType);
+        mappedKitchenType.Id = id; // Ensure the Id from the route is set
 
         var success = await _kitchenServices.UpdateKitchenTypeAsync(mappedKitchenType);
         if (!success)
@@ -67,7 +68,7 @@ public class KitchenTypeController : BaseApiController
             return BadRequest(new ApiResponse(400, "Failed to update kitchen type."));
         }
 
-        var kitchenTypeToReturn = _mapper.Map<KitchenTypeToReturnDto>(kitchenType);
+        var kitchenTypeToReturn = _mapper.Map<KitchenTypeToReturnDto>(mappedKitchenType);
 
         return Ok(kitchenTypeToReturn);
     }

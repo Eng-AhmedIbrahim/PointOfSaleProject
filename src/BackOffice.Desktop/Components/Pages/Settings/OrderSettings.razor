@@ -21,7 +21,7 @@
         </div>
 
         <div style="direction:ltr;">
-            <RadzenTabs @bind-SelectedIndex="_activeTab" Change="@(() => OnTabChanged())" RenderMode="TabRenderMode.Client" Class="header-tabs">
+            <RadzenTabs SelectedIndex="@_activeTab" Change="@OnTabChanged" RenderMode="TabRenderMode.Client" Class="header-tabs">
                 <Tabs>
                     <RadzenTabsItem Text="@Localizer["TakeAway"]" Icon="shopping_bag" />
                     <RadzenTabsItem Text="@Localizer["Delivery"]" Icon="local_shipping" />
@@ -351,11 +351,12 @@
     protected override async Task OnInitializedAsync()
     {
         _roles = await OrderSettingsService.GetRolesAsync() ?? new();
-        await OnTabChanged();
+        await OnTabChanged(0);
     }
 
-    private async Task OnTabChanged()
+    private async Task OnTabChanged(int index)
     {
+        _activeTab = index;
         _isLoading = true;
         await InvokeAsync(StateHasChanged);
         try

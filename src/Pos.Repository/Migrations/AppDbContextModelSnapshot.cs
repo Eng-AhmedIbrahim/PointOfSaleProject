@@ -2866,8 +2866,7 @@ namespace Pos.Repository.Migrations
                     b.HasOne("POS.Core.Entities.Item.AttributeItem", "AttributeItem")
                         .WithMany()
                         .HasForeignKey("AttributeItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("POS.Core.Entities.OrderEntity.OrderItemsDetails", "OrderItem")
                         .WithMany("OrderItemAttributes")

@@ -1,4 +1,4 @@
-﻿namespace POS.API.Controllers.VoidControllers;
+namespace POS.API.Controllers.VoidControllers;
 
 public class VoidController : BaseApiController
 {
@@ -8,6 +8,7 @@ public class VoidController : BaseApiController
     private readonly IKitchenServices _kitchenServices;
     private readonly IPrinterServices _printerServices;
     private readonly CallCenterSettings _callCenterSettings;
+    private readonly IHubContext<DeliveryHub> _deliveryHubContext;
     private readonly string _reportsFolder;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -17,6 +18,7 @@ public class VoidController : BaseApiController
         IKitchenServices kitchenServices,
         IPrinterServices printerServices,
         CallCenterSettings callCenterSettings,
+        IHubContext<DeliveryHub> deliveryHubContext,
         IWebHostEnvironment webHostEnvironment)
     {
         _voidService = voidService;
@@ -25,6 +27,7 @@ public class VoidController : BaseApiController
         _kitchenServices = kitchenServices;
         _printerServices = printerServices;
         _callCenterSettings = callCenterSettings;
+        _deliveryHubContext = deliveryHubContext;
         _webHostEnvironment = webHostEnvironment;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
     }

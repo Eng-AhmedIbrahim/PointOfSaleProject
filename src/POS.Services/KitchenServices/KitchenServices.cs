@@ -1,4 +1,4 @@
-﻿namespace POS.Services.KitchenServices;
+namespace POS.Services.KitchenServices;
 
 public class KitchenServices : IKitchenServices
 {
@@ -74,7 +74,7 @@ public class KitchenServices : IKitchenServices
                 exists.BranchId = newkitchenType.BranchId;
 
             if (!string.IsNullOrEmpty(newkitchenType.KitchenName))
-                exists.BranchId = newkitchenType.BranchId;
+                exists.KitchenName = newkitchenType.KitchenName;
 
             _unitOfWork.Repository<KitchenType>().Update(exists);
             var result = await _unitOfWork.CompleteAsync();
@@ -94,6 +94,18 @@ public class KitchenServices : IKitchenServices
             var kitchenType = await _unitOfWork.Repository<KitchenType>().GetByIdAsync(id);
             if (kitchenType == null)
                 return false;
+
+            // Delete related KitchenPrinters first to avoid FK constraint violation
+            var allPrinters = await _unitOfWork.Repository<KitchenPrinters>().GetAllAsync();
+            var relatedPrinters = allPrinters.Where(kp => kp.KitchenTypeId == id).ToList();
+
+            if (relatedPrinters.Any())
+            {
+                foreach (var printer in relatedPrinters)
+                    _unitOfWork.Repository<KitchenPrinters>().Delete(printer);
+
+                await _unitOfWork.CompleteAsync();
+            }
 
             _unitOfWork.Repository<KitchenType>().Delete(kitchenType);
             var result = await _unitOfWork.CompleteAsync();

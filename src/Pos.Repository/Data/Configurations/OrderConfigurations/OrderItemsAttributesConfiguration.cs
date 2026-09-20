@@ -1,4 +1,4 @@
-﻿namespace POS.Repository.Data.Configurations.OrderConfigurations;
+namespace POS.Repository.Data.Configurations.OrderConfigurations;
 
 public class OrderItemsAttributesConfiguration : IEntityTypeConfiguration<OrderItemAttributes>
 {
@@ -14,6 +14,7 @@ public class OrderItemsAttributesConfiguration : IEntityTypeConfiguration<OrderI
         builder.HasOne(oia => oia.AttributeItem)
                .WithMany()
                .HasForeignKey(oia => oia.AttributeItemId)
+               .IsRequired(false) // Make the relationship optional at EF level
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(oia => oia.AttributeName).HasColumnType("nvarchar(80)");
