@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a7ac0a917911ac3055f94ab52bdef00451ec453")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31385ab098f045e60cb67ccaacdeade79a695762")]
 [assembly: System.Reflection.AssemblyProductAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyTitleAttribute("POS.Authorization")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
