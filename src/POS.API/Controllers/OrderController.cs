@@ -457,6 +457,9 @@ public class OrderController : BaseApiController
             order.CallCenterOrderId = orderDto.Id; 
             order.RemoteOrderId = orderDto.OrderId; 
             order.CallCenterApiUrl = orderDto.CallCenterApiUrl;
+            // Branch always starts a received order as Pending — no driver assigned yet
+            order.OrderState = OrderStates.Pending;
+            Log.Information("[Branch Receive] Forcing OrderState to Pending for newly received Order {OrderId} (was: {PrevState})", orderDto.OrderId, orderDto.OrderState);
 
             // Validate that all items exist in the branch database to avoid FK violation errors
             if (order.OrderDetails != null)
