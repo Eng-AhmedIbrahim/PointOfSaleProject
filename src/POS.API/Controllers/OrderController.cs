@@ -132,11 +132,12 @@ public class OrderController : BaseApiController
                     return BadRequest(new ApiResponse(404, "Order Not Created"));
 
                 orderDto.OrderId = createdOrder.OrderID;
+                orderDto.Id = createdOrder.Id;
 
                 if (_callCenterSettings.IsCentralCallCenter)
                 {
                     var branchUrlToDispatch = orderDto.DeliveryBranchUrl ?? string.Empty;
-                    Log.Information("[CC Dispatch] Starting dispatch process for Order {OrderId} for Branch {BranchName} to URL: {Url}", orderDto.OrderId, orderDto.BranchName, branchUrlToDispatch);
+                    Log.Information("[CC Dispatch] Starting dispatch process for Order {OrderId} (CC PK: {CCId}) for Branch {BranchName} to URL: {Url}", orderDto.OrderId, createdOrder.Id, orderDto.BranchName, branchUrlToDispatch);
 
                     if (!string.IsNullOrEmpty(branchUrlToDispatch))
                     {
@@ -435,12 +436,19 @@ public class OrderController : BaseApiController
 
         try 
         {
-            // check if order already exists to prevent duplication on retries
-            var existingOrder = await _orderService.GetOrderByCallCenterIdAsync(orderDto.Id);
-            if (existingOrder != null)
+            // check if order already exists to prevent duplication on retries (only if valid CC Id > 0)
+            if (orderDto.Id > 0)
             {
-                Log.Information("[Branch Receive] Order {OrderId} (CC Id: {CCId}) already exists in branch, skipping creation.", orderDto.OrderId, orderDto.Id);
-                return Ok(_mapper.Map<OrderDto>(existingOrder));
+                var existingOrder = await _orderService.GetOrderByCallCenterIdAsync(orderDto.Id);
+                if (existingOrder != null)
+                {
+                    Log.Information("[Branch Receive] Order {OrderId} (CC Id: {CCId}) already exists in branch, skipping creation.", orderDto.OrderId, orderDto.Id);
+                    return Ok(_mapper.Map<OrderDto>(existingOrder));
+                }
+            }
+            else
+            {
+                Log.Warning("[Branch Receive] Warning: Order {OrderId} received with CC Id <= 0 ({CCId}). Skipping duplicate check.", orderDto.OrderId, orderDto.Id);
             }
 
             var order = BackupMainOrderDetails(orderDto);
@@ -448,6 +456,7 @@ public class OrderController : BaseApiController
             BackupDeliveryOrder(orderDto, order); 
             order.CallCenterOrderId = orderDto.Id; 
             order.RemoteOrderId = orderDto.OrderId; 
+            order.CallCenterApiUrl = orderDto.CallCenterApiUrl;
 
             // Validate that all items exist in the branch database to avoid FK violation errors
             if (order.OrderDetails != null)
@@ -477,10 +486,16 @@ public class OrderController : BaseApiController
 
             Log.Information("[Branch Receive] Order {OrderId} saved successfully with local ID {LocalId}", orderDto.OrderId, createdOrder.Id);
 
-            await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", orderDto);
+            var branchOrderDto = _mapper.Map<OrderDto>(createdOrder);
+            branchOrderDto.CallCenterOrderId = orderDto.Id;
+            branchOrderDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
+            branchOrderDto.DeliveryBranchUrl = orderDto.DeliveryBranchUrl;
+            branchOrderDto.OrderDetails = orderDto.OrderDetails;
+
+            await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", branchOrderDto);
 
             Log.Information("[Branch Receive] Completed processing for Order {OrderId}. Order broadcasted to Dispatcher via SignalR.", orderDto.OrderId);
-            return Ok(_mapper.Map<OrderDto>(createdOrder));
+            return Ok(branchOrderDto);
         }
         catch (Exception ex)
         {
@@ -493,14 +508,18 @@ public class OrderController : BaseApiController
     [HttpPut("receiveOrderUpdate")]
     public async Task<IActionResult> ReceiveOrderUpdateFromBranch([FromBody] OrderDto orderDto)
     {
-        Log.Information("[CC Sync] Received order update from Branch for Order {OrderId}, New State: {State}", orderDto.OrderId, orderDto.OrderState);
+        Log.Information("[CC Sync] Received order update from Branch for Order {OrderId} (BranchLocalId={BranchId}), CallCenterOrderId={CCId}, State: {State}",
+            orderDto?.OrderId, orderDto?.Id, orderDto?.CallCenterOrderId, orderDto?.OrderState);
         
-        if (orderDto == null || orderDto.CallCenterOrderId == null)
-            return BadRequest("Invalid order update data.");
+        if (orderDto == null || !orderDto.CallCenterOrderId.HasValue || orderDto.CallCenterOrderId <= 0)
+        {
+            Log.Warning("[CC Sync] Rejected update: missing or zero CallCenterOrderId. OrderId={OrderId}", orderDto?.OrderId);
+            return BadRequest("Invalid order update data: CallCenterOrderId is required and must be > 0.");
+        }
 
         try 
         {
-            // Find the order in call center database using the original ID (stored in CallCenterOrderId)
+            // Find the order in call center database using the CC PK (stored in branch as CallCenterOrderId)
             var order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
 
             if (order == null)

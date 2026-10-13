@@ -77,14 +77,23 @@ public class DistributionController : BaseApiController
             // Notify all clients via SignalR
             await _hubContext.Clients.All.SendAsync("ReceiveOrderDispatched", orderDto);
 
-            // Fetch the updated order from DB to ensure DTO has all calculated fields (like DriverName if it was fetched from a driver table, etc.)
+            // Fetch the updated order from DB to ensure DTO has all calculated fields
             var updatedOrder = await _orderService.GetOrderByIdAsync(orderDto!.Id);
             if (updatedOrder != null)
             {
                 var syncDto = _mapper.Map<OrderDto>(updatedOrder);
-                // Ensure sync fields are preserved
-                syncDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
-                syncDto.CallCenterOrderId = orderDto.CallCenterOrderId;
+                // Prefer CallCenterApiUrl/CallCenterOrderId from DB (set during ReceiveDispatchedOrderAsync)
+                // Fall back to values from incoming orderDto if DB has null/0
+                syncDto.CallCenterApiUrl = !string.IsNullOrEmpty(updatedOrder.CallCenterApiUrl)
+                    ? updatedOrder.CallCenterApiUrl
+                    : orderDto.CallCenterApiUrl;
+                syncDto.CallCenterOrderId = (updatedOrder.CallCenterOrderId.HasValue && updatedOrder.CallCenterOrderId > 0)
+                    ? updatedOrder.CallCenterOrderId
+                    : orderDto.CallCenterOrderId;
+
+                _logger.LogInformation("[Branch Dispatch] Syncing Order {OrderId} to CC. CallCenterApiUrl={Url}, CallCenterOrderId={CCId}, State={State}",
+                    syncDto.OrderId, syncDto.CallCenterApiUrl, syncDto.CallCenterOrderId, syncDto.OrderState);
+
                 await SendUpdateToCallCenter(syncDto);
             }
 
@@ -142,10 +151,16 @@ public class DistributionController : BaseApiController
             // Notify all clients via SignalR
             await _hubContext.Clients.All.SendAsync("ReceiveOrderCollected", orderDto);
 
-            // Send update to Call Center if this is a branch (using refreshed data)
+            // Send update to Call Center if this is a branch (prefer DB values set during ReceiveDispatchedOrderAsync)
             var syncDto = _mapper.Map<OrderDto>(order);
-            syncDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
-            syncDto.CallCenterOrderId = orderDto.CallCenterOrderId;
+            syncDto.CallCenterApiUrl = !string.IsNullOrEmpty(order.CallCenterApiUrl)
+                ? order.CallCenterApiUrl
+                : orderDto.CallCenterApiUrl;
+            syncDto.CallCenterOrderId = (order.CallCenterOrderId.HasValue && order.CallCenterOrderId > 0)
+                ? order.CallCenterOrderId
+                : orderDto.CallCenterOrderId;
+            _logger.LogInformation("[Branch Collect] Syncing Order {OrderId} to CC. CallCenterApiUrl={Url}, CallCenterOrderId={CCId}",
+                syncDto.OrderId, syncDto.CallCenterApiUrl, syncDto.CallCenterOrderId);
             await SendUpdateToCallCenter(syncDto);
 
             return Ok(orderDto);
@@ -169,11 +184,13 @@ public class DistributionController : BaseApiController
         // Notify via SignalR (we need minimal order info or just the ID)
         await _hubContext.Clients.All.SendAsync("ReceiveOrderUnDispatched", id);
 
-        // Fetch order to sync with Call Center
+        // Fetch order to sync with Call Center (CallCenterApiUrl and CallCenterOrderId stored in DB)
         var order = await _orderService.GetOrderByIdAsync(id);
         if (order != null)
         {
             var orderDto = _mapper.Map<OrderDto>(order);
+            _logger.LogInformation("[Branch UnDispatch] Syncing Order {OrderId} to CC. CallCenterApiUrl={Url}, CallCenterOrderId={CCId}",
+                orderDto.OrderId, orderDto.CallCenterApiUrl, orderDto.CallCenterOrderId);
             await SendUpdateToCallCenter(orderDto);
         }
 
