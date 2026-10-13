@@ -209,6 +209,12 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private async Task ConnectToExternalHubs()
     {
+        // Clean up any existing connections before establishing new ones to prevent duplicate event listeners
+        if (_externalHubConnections.Any())
+        {
+            await DisposeAsync();
+        }
+
         // الـ Hub المسجّل في POS.API هو /callcenterhub
         // نستخدم الـ URL من appsettings مباشرة (CallCenterHubs:Urls)
         var urls = (_hubSettings.Urls ?? new())
@@ -778,6 +784,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        _timer?.Dispose();
         foreach (var conn in _externalHubConnections)
         {
             try
@@ -792,8 +799,12 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 Console.WriteLine($"Error disposing external hub connection: {ex.Message}");
             }
         }
-
+        _externalHubConnections.Clear();
     }
+
     public void Dispose()
-        => _timer?.Dispose();
+    {
+        _timer?.Dispose();
+        _ = DisposeAsync();
+    }
 }

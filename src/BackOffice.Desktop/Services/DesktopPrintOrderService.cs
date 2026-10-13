@@ -612,6 +612,16 @@ public class DesktopPrintOrderService : IPrintOrderService
                 continue;
             }
 
+            // Skip Customer and Backup kitchens — they are handled by Customer & Backup print methods and must not be duplicated here
+            if (kitchen.KitchenName != null && 
+                (kitchen.KitchenName.Equals("Backup", StringComparison.OrdinalIgnoreCase) || 
+                 kitchen.KitchenName.Equals("Packup", StringComparison.OrdinalIgnoreCase) || 
+                 kitchen.KitchenName.Equals("Customer", StringComparison.OrdinalIgnoreCase)))
+            {
+                Log.Information("PrintKitchenReceiptsLocally: Skipping default kitchen '{KitchenName}' to prevent duplicate backup print.", kitchen.KitchenName);
+                continue;
+            }
+
             var printers = kitchen.KitchenPrinters?.FirstOrDefault();
             if (printers == null)
             {
