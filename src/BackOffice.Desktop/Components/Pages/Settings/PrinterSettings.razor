@@ -472,19 +472,24 @@
 
     private async Task DeleteKitchen(int id)
     {
+        var isArabic = Localizer.GetCurrentLanguage() == "ar";
         var sortedKitchens = _kitchens.OrderBy(k => k.Id).ToList();
         var protectedIds = sortedKitchens.Take(2).Select(k => k.Id).ToList();
         
         if (protectedIds.Contains(id))
         {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = Localizer["CannotDeleteDefaultKitchen"] });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = isArabic ? "لا يمكن حذف المطابخ الافتراضية الرئيسية" : Localizer["CannotDeleteDefaultKitchen"] });
             return;
         }
 
         if (await OrderSettingsService.DeleteKitchenTypeAsync(id))
         {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["Deleted"] });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = isArabic ? "تم الحذف بنجاح" : Localizer["Deleted"] });
             await LoadKitchensAndPrinters();
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = isArabic ? "فشل حذف المطبخ، يرجى المحاولة مرة أخرى" : "Failed to delete kitchen" });
         }
     }
 
@@ -565,9 +570,13 @@
 
     private async Task DeletePrinter(int id)
     {
+        var isArabic = Localizer.GetCurrentLanguage() == "ar";
         if (await OrderSettingsService.DeleteKitchenPrinterAsync(id)) {
-            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = Localizer["Deleted"] });
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = isArabic ? "تم الحذف بنجاح" : Localizer["Deleted"] });
             await LoadKitchensAndPrinters();
+        }
+        else {
+            NotificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = isArabic ? "فشل حذف إعداد الطابعة" : "Failed to delete printer" });
         }
     }
 

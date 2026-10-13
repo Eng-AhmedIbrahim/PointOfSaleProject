@@ -511,33 +511,44 @@ public class OrderController : BaseApiController
     [HttpPut("receiveOrderUpdate")]
     public async Task<IActionResult> ReceiveOrderUpdateFromBranch([FromBody] OrderDto orderDto)
     {
-        Log.Information("[CC Sync] Received order update from Branch for Order {OrderId} (BranchLocalId={BranchId}), CallCenterOrderId={CCId}, State: {State}",
-            orderDto?.OrderId, orderDto?.Id, orderDto?.CallCenterOrderId, orderDto?.OrderState);
+        Log.Information("[CC Sync] Received order update from Branch for Order {OrderId} (BranchLocalId={BranchId}), CallCenterOrderId={CCId}, ParentOrderId={ParentId}, State: {State}",
+            orderDto?.OrderId, orderDto?.Id, orderDto?.CallCenterOrderId, orderDto?.ParentOrderId, orderDto?.OrderState);
         
-        if (orderDto == null || !orderDto.CallCenterOrderId.HasValue || orderDto.CallCenterOrderId <= 0)
+        if (orderDto == null || ((!orderDto.CallCenterOrderId.HasValue || orderDto.CallCenterOrderId <= 0) && !orderDto.ParentOrderId.HasValue))
         {
-            Log.Warning("[CC Sync] Rejected update: missing or zero CallCenterOrderId. OrderId={OrderId}", orderDto?.OrderId);
-            return BadRequest("Invalid order update data: CallCenterOrderId is required and must be > 0.");
+            Log.Warning("[CC Sync] Rejected update: missing CallCenterOrderId and ParentOrderId. OrderId={OrderId}", orderDto?.OrderId);
+            return BadRequest("Invalid order update data: CallCenterOrderId or ParentOrderId is required.");
         }
 
         try 
         {
-            // Find the order in call center database using the CC PK (stored in branch as CallCenterOrderId)
-            var order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
+            Orders? order = null;
+            if (orderDto.CallCenterOrderId.HasValue && orderDto.CallCenterOrderId.Value > 0)
+            {
+                order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
+            }
 
             if (order == null)
             {
-                // If it has a ParentOrderId, it might be a new addition from the branch
+                // If it has a ParentOrderId, it is a new addition from the branch
                 if (orderDto.ParentOrderId.HasValue)
                 {
                     Log.Information("Received new addition order from branch for Parent Order {ParentId}", orderDto.ParentOrderId);
                     var additionOrder = _mapper.Map<OrderDto, Orders>(orderDto);
                     additionOrder.OrderType = OrderTypes.Delivery;
-                    // Important: Here CallCenterOrderId on the central side will store the Branch's PK Id
                     additionOrder.CallCenterOrderId = orderDto.Id; 
                     
+                    // Link to the CC's parent order if possible
+                    var parentOrderCC = await _orderService.GetOrderByCallCenterIdAsync(orderDto.ParentOrderId.Value);
+                    if (parentOrderCC != null)
+                    {
+                        additionOrder.ParentOrderId = parentOrderCC.Id;
+                    }
+                    
                     var createdAddition = await _orderService.CreateOrderAsync(additionOrder);
-                    return Ok(_mapper.Map<OrderDto>(createdAddition));
+                    var returnDto = _mapper.Map<OrderDto>(createdAddition);
+                    await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", returnDto);
+                    return Ok(returnDto);
                 }
 
                 Log.Warning("Order not found in call center database. CallCenterOrderId: {OrderId}", orderDto.CallCenterOrderId);
@@ -551,11 +562,15 @@ public class OrderController : BaseApiController
             order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
             order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
             order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
+            order.CollectorID = orderDto.CollectorID ?? order.CollectorID;
+            order.CollectorName = orderDto.CollectorName ?? order.CollectorName;
+            order.BackTime = orderDto.BackTime ?? order.BackTime;
+            if (orderDto.GrandTotal.HasValue && orderDto.GrandTotal > 0) order.GrandTotal = orderDto.GrandTotal.Value;
+            if (orderDto.SubTotal.HasValue && orderDto.SubTotal > 0) order.Subtotal = orderDto.SubTotal.Value;
             
             // Link the Branch's primary key and sequential order number to the Central record 
-            // Note: On central side, CallCenterOrderId stores the peer's (branch) PK ID.
             order.CallCenterOrderId = orderDto.Id; 
-            order.RemoteOrderId = orderDto.OrderId; // Store Branch Order Number as RemoteOrderId on Central side
+            order.RemoteOrderId = orderDto.OrderId; 
             
             // Sync Voiding details
             if (order.OrderState == OrderStates.Voided)
@@ -564,6 +579,9 @@ public class OrderController : BaseApiController
                 order.VoidByName = orderDto.VoidByName;
                 order.VoidReason = orderDto.VoidReason;
                 order.VoidTime = orderDto.VoidTime ?? DateTime.Now;
+                order.VoidAmount = orderDto.VoidAmount ?? order.VoidAmount;
+                order.TotalVoid = orderDto.TotalVoid ?? order.TotalVoid;
+                order.VoidCount = orderDto.VoidCount ?? order.VoidCount;
             }
 
             await _orderService.UpdateOrderAsync(order);

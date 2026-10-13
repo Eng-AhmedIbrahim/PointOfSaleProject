@@ -107,6 +107,31 @@ public class KitchenServices : IKitchenServices
                 await _unitOfWork.CompleteAsync();
             }
 
+            // Unlink related Categories and Items to prevent FK constraint violation
+            var allCategories = await _unitOfWork.Repository<Category>().GetAllAsync();
+            var relatedCategories = allCategories.Where(c => c.KitchenTypeId == id).ToList();
+            if (relatedCategories.Any())
+            {
+                foreach (var cat in relatedCategories)
+                {
+                    cat.KitchenTypeId = null;
+                    _unitOfWork.Repository<Category>().Update(cat);
+                }
+                await _unitOfWork.CompleteAsync();
+            }
+
+            var allItems = await _unitOfWork.Repository<MenuSalesItems>().GetAllAsync();
+            var relatedItems = allItems.Where(i => i.KitchenTypeId == id).ToList();
+            if (relatedItems.Any())
+            {
+                foreach (var item in relatedItems)
+                {
+                    item.KitchenTypeId = null;
+                    _unitOfWork.Repository<MenuSalesItems>().Update(item);
+                }
+                await _unitOfWork.CompleteAsync();
+            }
+
             _unitOfWork.Repository<KitchenType>().Delete(kitchenType);
             var result = await _unitOfWork.CompleteAsync();
             return result > 0;
