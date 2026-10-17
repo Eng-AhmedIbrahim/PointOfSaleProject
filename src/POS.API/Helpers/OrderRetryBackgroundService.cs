@@ -62,15 +62,11 @@ public class OrderRetryBackgroundService : BackgroundService
                                     continue;
                                 }
 
-                                // Get Call Center API URL from configuration (prefer non-localhost configured URL)
-                                var callCenterUrl = _centerSettings.CallCenterApiUrl ?? string.Empty;
-                                if (string.IsNullOrWhiteSpace(callCenterUrl))
+                                // Get Call Center API URL from configuration (prefer non-localhost ApiBaseUrl)
+                                var callCenterUrl = _configuration["ApiBaseUrl"] ?? string.Empty;
+                                if (callCenterUrl.Contains("localhost") || callCenterUrl.Contains("127.0.0.1"))
                                 {
-                                    var configuredBase = _configuration["ApiBaseUrl"];
-                                    if (!string.IsNullOrWhiteSpace(configuredBase) && !configuredBase.Contains("localhost") && !configuredBase.Contains("127.0.0.1"))
-                                    {
-                                        callCenterUrl = configuredBase;
-                                    }
+                                    callCenterUrl = string.Empty;
                                 }
                                 if (string.IsNullOrWhiteSpace(callCenterUrl))
                                 {

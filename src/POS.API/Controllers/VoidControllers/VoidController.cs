@@ -129,20 +129,7 @@ public class VoidController : BaseApiController
 
     private string ResolveCallCenterApiUrl(string? currentUrl)
     {
-        if (!string.IsNullOrWhiteSpace(currentUrl) &&
-            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
-            !currentUrl.Contains("127.0.0.1"))
-        {
-            return currentUrl.Trim().TrimEnd('/', '\\');
-        }
-
-        if (!string.IsNullOrWhiteSpace(_callCenterSettings?.CallCenterApiUrl) &&
-            !_callCenterSettings.CallCenterApiUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
-            !_callCenterSettings.CallCenterApiUrl.Contains("127.0.0.1"))
-        {
-            return _callCenterSettings.CallCenterApiUrl.Trim().TrimEnd('/', '\\');
-        }
-
+        // 1. Primary: Use configured ApiBaseUrl if valid and NOT localhost/127.0.0.1
         var apiBaseUrl = _configuration?["ApiBaseUrl"];
         if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
             !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
@@ -151,6 +138,15 @@ public class VoidController : BaseApiController
             return apiBaseUrl.Trim().TrimEnd('/', '\\');
         }
 
+        // 2. Secondary: If currentUrl is valid and NOT localhost/127.0.0.1, use it
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 3. Fallback: Check CallCenterHubs:Urls:0 (strip /callcenterhub)
         var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
         if (!string.IsNullOrWhiteSpace(hubUrl) &&
             !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
