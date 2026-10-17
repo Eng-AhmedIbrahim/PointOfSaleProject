@@ -296,17 +296,18 @@ public class DistributionController : BaseApiController
 
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
+        // Guard: Only sync orders that came from a Call Center.
+        // Local orders (Takeaway, DineIn, local Delivery) have no CallCenterApiUrl and no CallCenterOrderId.
+        if (string.IsNullOrEmpty(orderDto.CallCenterApiUrl) && !orderDto.CallCenterOrderId.HasValue)
+        {
+            _logger.LogDebug("Order {OrderId} has no CC relationship (no CallCenterApiUrl, no CallCenterOrderId). Skipping CC sync.", orderDto.OrderId);
+            return;
+        }
+
         var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
         if (string.IsNullOrEmpty(targetUrl))
         {
             _logger.LogDebug("Order {OrderId} does not have a valid CallCenterApiUrl. Skipping sync.", orderDto.OrderId);
-            return;
-        }
-
-        // Allow sync if we have CallCenterOrderId OR if we have BranchId+OrderId for fallback lookup on CC side
-        if (!orderDto.CallCenterOrderId.HasValue && orderDto.BranchId <= 0)
-        {
-            _logger.LogDebug("Order {OrderId} has no CallCenterOrderId and no BranchId. Cannot sync to CC.", orderDto.OrderId);
             return;
         }
         orderDto.CallCenterApiUrl = targetUrl;

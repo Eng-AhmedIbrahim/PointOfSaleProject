@@ -1359,6 +1359,14 @@ public class OrderController : BaseApiController
 
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
+        // Guard: Only sync orders that came from a Call Center.
+        // Local orders (Takeaway, DineIn, local Delivery) have no CallCenterApiUrl and no CallCenterOrderId.
+        if (string.IsNullOrEmpty(orderDto.CallCenterApiUrl) && !orderDto.CallCenterOrderId.HasValue && !orderDto.ParentOrderId.HasValue)
+        {
+            Log.Debug("Order {OrderId} has no CC relationship. Skipping CC sync.", orderDto.OrderId);
+            return;
+        }
+
         // Allow if it has CallCenterOrderId OR if it is a new addition (has ParentOrderId)
         var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
         if (string.IsNullOrEmpty(targetUrl)) return;
