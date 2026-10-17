@@ -62,14 +62,26 @@ public class OrderRetryBackgroundService : BackgroundService
                                     continue;
                                 }
 
-                                // Get Call Center API URL from configuration (Kestrel URLs)
-                                var urls = _configuration["Kestrel:Endpoints:Https:Url"] ?? _configuration["Kestrel:Endpoints:Http:Url"];
-                                if (string.IsNullOrEmpty(urls))
+                                // Get Call Center API URL from configuration (prefer non-localhost configured URL)
+                                var callCenterUrl = _centerSettings.CallCenterApiUrl ?? string.Empty;
+                                if (string.IsNullOrWhiteSpace(callCenterUrl))
                                 {
-                                    // Fallback: try to construct from server addresses
-                                    urls = _configuration.GetValue<string>("ASPNETCORE_URLS") ?? "https://localhost:7142";
+                                    var configuredBase = _configuration["ApiBaseUrl"];
+                                    if (!string.IsNullOrWhiteSpace(configuredBase) && !configuredBase.Contains("localhost") && !configuredBase.Contains("127.0.0.1"))
+                                    {
+                                        callCenterUrl = configuredBase;
+                                    }
                                 }
-                                orderDto.CallCenterApiUrl = urls.Split(';')[0]; // Take first URL if multiple
+                                if (string.IsNullOrWhiteSpace(callCenterUrl))
+                                {
+                                    var urls = _configuration["Kestrel:Endpoints:Https:Url"] ?? _configuration["Kestrel:Endpoints:Http:Url"];
+                                    if (string.IsNullOrEmpty(urls))
+                                    {
+                                        urls = _configuration.GetValue<string>("ASPNETCORE_URLS") ?? "https://localhost:7142";
+                                    }
+                                    callCenterUrl = urls.Split(';')[0];
+                                }
+                                orderDto.CallCenterApiUrl = callCenterUrl.TrimEnd('/', '\\');
                                 
                                 // Reset state to Assigned before sending to branch
                                 // so the branch doesn't save it as FailedToDeliverToBranch

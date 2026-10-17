@@ -11,6 +11,7 @@ public class VoidController : BaseApiController
     private readonly IHubContext<DeliveryHub> _deliveryHubContext;
     private readonly string _reportsFolder;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IConfiguration _configuration;
 
     public VoidController(IVoidService voidService,
         IOrderService orderService,
@@ -19,7 +20,8 @@ public class VoidController : BaseApiController
         IPrinterServices printerServices,
         CallCenterSettings callCenterSettings,
         IHubContext<DeliveryHub> deliveryHubContext,
-        IWebHostEnvironment webHostEnvironment)
+        IWebHostEnvironment webHostEnvironment,
+        IConfiguration configuration)
     {
         _voidService = voidService;
         _orderService = orderService;
@@ -29,6 +31,7 @@ public class VoidController : BaseApiController
         _callCenterSettings = callCenterSettings;
         _deliveryHubContext = deliveryHubContext;
         _webHostEnvironment = webHostEnvironment;
+        _configuration = configuration;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
     }
 
@@ -124,9 +127,48 @@ public class VoidController : BaseApiController
         }
     }
 
+    private string ResolveCallCenterApiUrl(string? currentUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        if (!string.IsNullOrWhiteSpace(_callCenterSettings?.CallCenterApiUrl) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("127.0.0.1"))
+        {
+            return _callCenterSettings.CallCenterApiUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        var apiBaseUrl = _configuration?["ApiBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
+            !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !apiBaseUrl.Contains("127.0.0.1"))
+        {
+            return apiBaseUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
+        if (!string.IsNullOrWhiteSpace(hubUrl) &&
+            !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !hubUrl.Contains("127.0.0.1"))
+        {
+            var cleaned = hubUrl.Trim().TrimEnd('/', '\\');
+            var idx = cleaned.IndexOf("/callcenterhub", StringComparison.OrdinalIgnoreCase);
+            if (idx > 0) cleaned = cleaned.Substring(0, idx);
+            return cleaned;
+        }
+
+        return currentUrl?.Trim().TrimEnd('/', '\\') ?? string.Empty;
+    }
+
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
-        if (string.IsNullOrEmpty(orderDto.CallCenterApiUrl)) return;
+        var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
+        if (string.IsNullOrEmpty(targetUrl)) return;
         if (!orderDto.CallCenterOrderId.HasValue && !orderDto.ParentOrderId.HasValue) return;
 
         try
@@ -135,11 +177,17 @@ public class VoidController : BaseApiController
             httpClient.Timeout = TimeSpan.FromSeconds(10);
             var json = JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            await httpClient.PutAsync($"{orderDto.CallCenterApiUrl}/api/order/receiveOrderUpdate", content);
+            var response = await httpClient.PutAsync($"{targetUrl}/api/order/receiveOrderUpdate", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Log.Warning("[VoidController] Failed to sync void update to CC at {Url}. Status: {StatusCode}, Error: {Error}",
+                    targetUrl, response.StatusCode, error);
+            }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error syncing void update to Call Center for order {OrderId}", orderDto.Id);
+            Log.Error(ex, "Error syncing void update to Call Center at {Url} for order {OrderId}", targetUrl, orderDto.Id);
         }
     }
 

@@ -1,4 +1,4 @@
-﻿global using AutoMapper;
+global using AutoMapper;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Identity;
@@ -64,6 +64,7 @@ global using POS.Core.Services.Contract.OrderServices;
 global using POS.Core.Services.Contract.PrinterServices;
 global using POS.Core.Services.Contract.UserSettingServices;
 global using POS.Core.Services.Contract.VoidServices;
+global using POS.Core.Specifications;
 global using POS.Core.Specifications.AttributeSpecs;
 global using POS.Reports.ReportsMakerServices;
 global using POS.Repository;

@@ -12,7 +12,8 @@ public class DistributionController : BaseApiController
     private readonly AppDbContext _dbContext;
     private readonly IOrderService _orderService;
     private readonly IHubContext<DeliveryHub> _hubContext;
-
+    private readonly CallCenterSettings _callCenterSettings;
+    private readonly IConfiguration _configuration;
 
     public DistributionController(IDistributionServices distributionService,
         IMapper mapper,
@@ -21,7 +22,9 @@ public class DistributionController : BaseApiController
         IOrderApiServices orderApiServices,
         IOrderService orderService,
         AppDbContext dbContext,
-        IHubContext<DeliveryHub> hubContext
+        IHubContext<DeliveryHub> hubContext,
+        CallCenterSettings callCenterSettings,
+        IConfiguration configuration
         )
     {
 
@@ -33,6 +36,8 @@ public class DistributionController : BaseApiController
         _orderService = orderService;
         _dbContext = dbContext;
         _hubContext = hubContext;
+        _callCenterSettings = callCenterSettings;
+        _configuration = configuration;
     }
 
     [HttpGet("GetUnCompletedDeliveryOrders")]
@@ -252,14 +257,53 @@ public class DistributionController : BaseApiController
         return Ok(true);
     }
 
+    private string ResolveCallCenterApiUrl(string? currentUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        if (!string.IsNullOrWhiteSpace(_callCenterSettings?.CallCenterApiUrl) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("127.0.0.1"))
+        {
+            return _callCenterSettings.CallCenterApiUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        var apiBaseUrl = _configuration?["ApiBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
+            !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !apiBaseUrl.Contains("127.0.0.1"))
+        {
+            return apiBaseUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
+        if (!string.IsNullOrWhiteSpace(hubUrl) &&
+            !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !hubUrl.Contains("127.0.0.1"))
+        {
+            var cleaned = hubUrl.Trim().TrimEnd('/', '\\');
+            var idx = cleaned.IndexOf("/callcenterhub", StringComparison.OrdinalIgnoreCase);
+            if (idx > 0) cleaned = cleaned.Substring(0, idx);
+            return cleaned;
+        }
+
+        return currentUrl?.Trim().TrimEnd('/', '\\') ?? string.Empty;
+    }
+
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
-        // Only send update if this order came from Call Center (has CallCenterApiUrl and CallCenterOrderId)
-        if (string.IsNullOrEmpty(orderDto.CallCenterApiUrl) || !orderDto.CallCenterOrderId.HasValue)
+        var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
+        if (string.IsNullOrEmpty(targetUrl) || !orderDto.CallCenterOrderId.HasValue)
         {
-            _logger.LogDebug("Order {OrderId} does not have CallCenterApiUrl or CallCenterOrderId. Skipping sync.", orderDto.OrderId);
+            _logger.LogDebug("Order {OrderId} does not have valid CallCenterApiUrl or CallCenterOrderId. Skipping sync.", orderDto.OrderId);
             return;
         }
+        orderDto.CallCenterApiUrl = targetUrl;
 
         try
         {
@@ -269,23 +313,23 @@ public class DistributionController : BaseApiController
             var json = System.Text.Json.JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PutAsync($"{orderDto.CallCenterApiUrl}/api/order/receiveOrderUpdate", content);
+            var response = await httpClient.PutAsync($"{targetUrl}/api/order/receiveOrderUpdate", content);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Order {OrderId} update sent to Call Center successfully. State: {State}", 
-                    orderDto.OrderId, orderDto.OrderState);
+                _logger.LogInformation("Order {OrderId} update sent to Call Center at {Url} successfully. State: {State}", 
+                    orderDto.OrderId, targetUrl, orderDto.OrderState);
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogWarning("Failed to send order update to Call Center. Status: {StatusCode}, Error: {Error}", 
-                    response.StatusCode, errorContent);
+                _logger.LogWarning("Failed to send order update to Call Center at {Url}. Status: {StatusCode}, Error: {Error}", 
+                    targetUrl, response.StatusCode, errorContent);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception while sending order update to Call Center for order {OrderId}", orderDto.OrderId);
+            _logger.LogError(ex, "Exception while sending order update to Call Center at {Url} for order {OrderId}", targetUrl, orderDto.OrderId);
         }
     }
 

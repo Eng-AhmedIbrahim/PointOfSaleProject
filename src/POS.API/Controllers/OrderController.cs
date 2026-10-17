@@ -16,6 +16,7 @@ public class OrderController : BaseApiController
     private readonly IHubContext<DeliveryHub> _deliveryHubContext;
     private readonly IDeliveryZoneServices _deliveryZoneServices;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IConfiguration _configuration;
 
     public OrderController(IOrderService orderService,
         IWebHostEnvironment webHostEnvironment,
@@ -27,7 +28,8 @@ public class OrderController : BaseApiController
         CallCenterSettings callCenterSettings,
         IHubContext<DeliveryHub> deliveryHubContext,
         IDeliveryZoneServices deliveryZoneServices,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IConfiguration configuration)
     {
         _orderService = orderService;
         _webHostEnvironment = webHostEnvironment;
@@ -40,6 +42,7 @@ public class OrderController : BaseApiController
         _deliveryHubContext = deliveryHubContext;
         _deliveryZoneServices = deliveryZoneServices;
         _unitOfWork = unitOfWork;
+        _configuration = configuration;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
         Directory.CreateDirectory(_reportsFolder);
     }
@@ -144,7 +147,7 @@ public class OrderController : BaseApiController
                         var sanitizedUrl = branchUrlToDispatch.Trim().TrimEnd('/', '\\');
 
                         // Add Call Center API URL so branch can send updates back
-                        var callCenterApiUrl = $"{Request.Scheme}://{Request.Host}";
+                        var callCenterApiUrl = ResolveCallCenterApiUrl($"{Request.Scheme}://{Request.Host}");
                         orderDto.CallCenterApiUrl = callCenterApiUrl;
                         Log.Information("[CC Dispatch] Setting CallCenterApiUrl to {CCUrl}", callCenterApiUrl);
 
@@ -526,6 +529,19 @@ public class OrderController : BaseApiController
             if (orderDto.CallCenterOrderId.HasValue && orderDto.CallCenterOrderId.Value > 0)
             {
                 order = await _orderService.GetOrderByIdAsync(orderDto.CallCenterOrderId.Value);
+            }
+
+            // Fallback: If not found by CallCenterOrderId PK, try matching by OrderID (Order Number) and BranchID
+            if (order == null && orderDto.OrderId > 0 && orderDto.BranchId > 0)
+            {
+                Log.Warning("[CC Sync] Order not found by PK {CCId}. Attempting fallback lookup by OrderID={OrderId} and BranchId={BranchId}", 
+                    orderDto.CallCenterOrderId, orderDto.OrderId, orderDto.BranchId);
+                var spec = new BaseSpecifications<Orders>(o => o.OrderID == orderDto.OrderId && o.BranchID == orderDto.BranchId);
+                order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationAsync(spec);
+                if (order != null)
+                {
+                    Log.Information("[CC Sync] Fallback matched Order with PK {PK} for OrderID={OrderId}", order.Id, order.OrderID);
+                }
             }
 
             if (order == null)
@@ -1305,10 +1321,53 @@ public class OrderController : BaseApiController
         return Ok(resultDto);
     }
 
+    private string ResolveCallCenterApiUrl(string? currentUrl)
+    {
+        // If currentUrl is valid and NOT localhost/127.0.0.1, use it
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 1. Check CallCenterSettings:CallCenterApiUrl
+        if (!string.IsNullOrWhiteSpace(_callCenterSettings?.CallCenterApiUrl) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !_callCenterSettings.CallCenterApiUrl.Contains("127.0.0.1"))
+        {
+            return _callCenterSettings.CallCenterApiUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 2. Check ApiBaseUrl
+        var apiBaseUrl = _configuration?["ApiBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
+            !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !apiBaseUrl.Contains("127.0.0.1"))
+        {
+            return apiBaseUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 3. Check CallCenterHubs:Urls:0 (strip /callcenterhub)
+        var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
+        if (!string.IsNullOrWhiteSpace(hubUrl) &&
+            !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !hubUrl.Contains("127.0.0.1"))
+        {
+            var cleaned = hubUrl.Trim().TrimEnd('/', '\\');
+            var idx = cleaned.IndexOf("/callcenterhub", StringComparison.OrdinalIgnoreCase);
+            if (idx > 0) cleaned = cleaned.Substring(0, idx);
+            return cleaned;
+        }
+
+        return currentUrl?.Trim().TrimEnd('/', '\\') ?? string.Empty;
+    }
+
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
         // Allow if it has CallCenterOrderId OR if it is a new addition (has ParentOrderId)
-        if (string.IsNullOrEmpty(orderDto.CallCenterApiUrl)) return;
+        var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
+        if (string.IsNullOrEmpty(targetUrl)) return;
         if (!orderDto.CallCenterOrderId.HasValue && !orderDto.ParentOrderId.HasValue) return;
 
         try
@@ -1317,11 +1376,17 @@ public class OrderController : BaseApiController
             httpClient.Timeout = TimeSpan.FromSeconds(10);
             var json = JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            await httpClient.PutAsync($"{orderDto.CallCenterApiUrl}/api/order/receiveOrderUpdate", content);
+            var response = await httpClient.PutAsync($"{targetUrl}/api/order/receiveOrderUpdate", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Log.Warning("[SendUpdateToCallCenter] Failed to sync order {OrderId} to CC at {Url}. Status: {StatusCode}, Error: {Error}",
+                    orderDto.OrderId, targetUrl, response.StatusCode, error);
+            }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error syncing update to Call Center for order {OrderId}", orderDto.Id);
+            Log.Error(ex, "Error syncing update to Call Center at {Url} for order {OrderId}", targetUrl, orderDto.Id);
         }
     }
 

@@ -5,4 +5,5 @@ public record CallCenterSettings
     public bool IsCentralCallCenter { get; set; }
     public int SendRetryIntervalMessagesAfterByMinutes { get; set; }
     public int MaxRetryAttempts { get; set; } = 100; // Maximum retry attempts before giving up
+    public string? CallCenterApiUrl { get; set; }
 }
