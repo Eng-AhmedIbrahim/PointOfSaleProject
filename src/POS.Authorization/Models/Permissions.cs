@@ -103,6 +103,8 @@ public static class Permissions
         { "CanManagePosSettingsAtBackOffice", "CanManagePosSettingsAtBackOffice" },
         { "CanManageLanguageSettingsAtBackOffice", "CanManageLanguageSettingsAtBackOffice" },
         { "CanManageUsersAtBackOffice", "CanManageUsersAtBackOffice" },
+        { "CanResetUserPasswordAtBackOffice", "CanResetUserPasswordAtBackOffice" },
+        { "CanChangeOwnPasswordAtBackOffice", "CanChangeOwnPasswordAtBackOffice" },
         { "CanManageRolesAtBackOffice", "CanManageRolesAtBackOffice" },
         { "CanManagePermissionsAtBackOffice", "CanManagePermissionsAtBackOffice" },
         { "CanManageItemsAtBackOffice", "CanManageItemsAtBackOffice" },

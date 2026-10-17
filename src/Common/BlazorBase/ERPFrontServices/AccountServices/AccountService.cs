@@ -259,4 +259,62 @@ public class AccountService : IAccountService
             return false;
         }
     }
+
+    public async Task<(bool Success, string? ErrorMessage)> AdminResetPassword(AdminResetPasswordDto dto)
+    {
+        try
+        {
+            var endpoint = _apiSettings.Endpoints?.AdminResetPassword ?? "/api/Account/AdminResetPassword";
+            var response = await _httpClient.PostAsJsonAsync(endpoint, dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var errorObj = ApiRequestHelpers.DeserializeResponseContent<BlazorBase.API.ApiResponse>(content);
+                if (!string.IsNullOrEmpty(errorObj?.Message))
+                    return (false, errorObj.Message);
+            }
+            catch { }
+
+            return (false, string.IsNullOrWhiteSpace(content) ? response.ReasonPhrase : content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resetting password for user {UserId}", dto.UserId);
+            return (false, ex.Message);
+        }
+    }
+
+    public async Task<(bool Success, string? ErrorMessage)> ChangeOwnPassword(ChangeOwnPasswordDto dto)
+    {
+        try
+        {
+            var endpoint = _apiSettings.Endpoints?.ChangeOwnPassword ?? "/api/Account/ChangeOwnPassword";
+            var response = await _httpClient.PostAsJsonAsync(endpoint, dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var errorObj = ApiRequestHelpers.DeserializeResponseContent<BlazorBase.API.ApiResponse>(content);
+                if (!string.IsNullOrEmpty(errorObj?.Message))
+                    return (false, errorObj.Message);
+            }
+            catch { }
+
+            return (false, string.IsNullOrWhiteSpace(content) ? response.ReasonPhrase : content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error changing own password");
+            return (false, ex.Message);
+        }
+    }
 }

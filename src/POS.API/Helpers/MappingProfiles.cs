@@ -244,9 +244,40 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
             .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
             .ForMember(dest => dest.StaffName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
+            .ForMember(dest => dest.LineComment, opt => opt.MapFrom(src => src.LineComment))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.OrderItemAttributes != null 
                 ? src.OrderItemAttributes.Select(a => new POS.Contract.Models.AttributeDto { Id = a.AttributeItemId, Name = a.AttributeName, ExtraPrice = a.ExtraPrice }).ToList() 
                 : new List<POS.Contract.Models.AttributeDto>()));
+
+        // Reverse mapping: TableItem → OrderItemsDetails (used when syncing order updates between CC and Branch)
+        CreateMap<TableItem, OrderItemsDetails>()
+            .ForMember(dest => dest.MenuSalesItemId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DatabaseId))
+            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.ItemNameAr, opt => opt.MapFrom(src => src.NameAr))
+            .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Total))
+            .ForMember(dest => dest.TotalDiscountPercentage, opt => opt.MapFrom(src => src.DiscountPercentage))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName))
+            .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
+            .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))
+            .ForMember(dest => dest.PrintInBackupReceiptFromItem, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromItem))
+            .ForMember(dest => dest.PrintInBackupReceiptFromCategory, opt => opt.MapFrom(src => src.PrintInBackupReceiptFromCategory))
+            .ForMember(dest => dest.ByWeight, opt => opt.MapFrom(src => src.ByWeight))
+            .ForMember(dest => dest.IsHospitality, opt => opt.MapFrom(src => src.IsHospitality))
+            .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
+            .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffName))
+            .ForMember(dest => dest.LineComment, opt => opt.MapFrom(src => src.LineComment))
+            .ForMember(dest => dest.OrderItemAttributes, opt => opt.MapFrom(src => src.Attributes != null
+                ? src.Attributes.Select(a => new POS.Core.Entities.Item.OrderItemAttributes
+                    { AttributeItemId = a.Id ?? 0, AttributeName = a.Name ?? "", ExtraPrice = a.ExtraPrice ?? 0 }).ToList()
+                : new List<POS.Core.Entities.Item.OrderItemAttributes>()))
+            .ForMember(dest => dest.OrderItemComments, opt => opt.Ignore())
+            .ForMember(dest => dest.MenuSalesItem, opt => opt.Ignore())
+            .ForMember(dest => dest.Order, opt => opt.Ignore())
+            .ForMember(dest => dest.DineInOrder, opt => opt.Ignore())
+            .ForMember(dest => dest.DineInOrderId, opt => opt.Ignore());
 
         // New mappings for DineInOrder and OrderTrack
         CreateMap<OrderItemsDetails, OrderItemsDetailsDto>()

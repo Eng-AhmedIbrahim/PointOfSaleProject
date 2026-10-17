@@ -528,6 +528,64 @@ public class AccountController : BaseApiController
         return Ok(mappedUsers);
     }
 
+    [HttpPost("AdminResetPassword")]
+    public async Task<IActionResult> AdminResetPassword([FromBody] AdminResetPasswordDto model)
+    {
+        if (model == null || string.IsNullOrWhiteSpace(model.UserId) || string.IsNullOrWhiteSpace(model.NewPassword))
+            return BadRequest(new ApiResponse(400, "User ID and New Password are required"));
+
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        if (user == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest(new ApiResponse(400, errors));
+        }
+
+        return Ok(true);
+    }
+
+    [HttpPost("ChangeOwnPassword")]
+    public async Task<IActionResult> ChangeOwnPassword([FromBody] ChangeOwnPasswordDto model)
+    {
+        if (model == null || string.IsNullOrWhiteSpace(model.CurrentPassword) || string.IsNullOrWhiteSpace(model.NewPassword))
+            return BadRequest(new ApiResponse(400, "Current Password and New Password are required"));
+
+        AppUser? user = null;
+        if (!string.IsNullOrWhiteSpace(model.UserName))
+        {
+            user = await _userManager.FindByNameAsync(model.UserName);
+        }
+        else if (!string.IsNullOrWhiteSpace(model.UserId))
+        {
+            user = await _userManager.FindByIdAsync(model.UserId);
+        }
+        else
+        {
+            var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name;
+            if (!string.IsNullOrEmpty(userName))
+            {
+                user = await _userManager.FindByNameAsync(userName);
+            }
+        }
+
+        if (user == null)
+            return NotFound(new ApiResponse(404, "User not found"));
+
+        var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest(new ApiResponse(400, errors));
+        }
+
+        return Ok(true);
+    }
+
 }
 
 public class UserRoleRequest

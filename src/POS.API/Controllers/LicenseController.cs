@@ -267,7 +267,7 @@ namespace POS.API.Controllers
             }
 
             // Reset License hardware fields
-            string oldMac = license.MacAddress;
+            string oldMac = license.MacAddress!;
             license.MacAddress = null;
             license.ComputerName = null;
             license.JoinDate = null;

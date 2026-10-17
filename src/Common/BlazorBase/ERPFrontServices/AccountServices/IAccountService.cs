@@ -16,4 +16,6 @@ public interface IAccountService
     Task<IEnumerable<PermissionDto>> GetAllPermissions();
     Task<IEnumerable<string>> GetRolePermissions(string roleName);
     Task<bool> UpdateRolePermissions(string roleName, List<RolePermissionItemDto> permissions);
+    Task<(bool Success, string? ErrorMessage)> AdminResetPassword(AdminResetPasswordDto dto);
+    Task<(bool Success, string? ErrorMessage)> ChangeOwnPassword(ChangeOwnPasswordDto dto);
 }

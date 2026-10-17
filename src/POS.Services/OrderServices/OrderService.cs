@@ -410,6 +410,7 @@ public class OrderService : IOrderService
                             i.MenuSalesItemId, 
                             i.IsVoided,
                             i.UnitPrice,
+                            i.LineComment,
                             AttributeKey = string.Join(",", i.OrderItemAttributes?.Select(a => a.AttributeItemId).OrderBy(id => id) ?? Enumerable.Empty<int?>())
                         })
                         .Select(g => 

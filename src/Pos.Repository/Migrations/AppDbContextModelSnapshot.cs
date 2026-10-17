@@ -1408,6 +1408,9 @@ namespace Pos.Repository.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("LineComment")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("MenuSalesItemId")
                         .HasColumnType("int");
 

@@ -52,7 +52,14 @@ public partial class VoidedOrdersDialog
         try
         {
             var appDate = await AppDateService.GetAppDate();
-            _selectedDateNullable = appDate.PosDate;
+            if (appDate != null && appDate.PosDate != default && appDate.PosDate.Year > 2000)
+            {
+                _selectedDateNullable = appDate.PosDate.Date;
+            }
+            else
+            {
+                _selectedDateNullable = DateTime.Today;
+            }
         }
         catch
         {

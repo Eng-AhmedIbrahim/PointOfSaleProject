@@ -327,7 +327,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                         order.DriverName = null;
                         order.AssignTime = null;
                         order.DispatchID = null;
-                        order.OrderState = "SentToBranch";
+                        order.OrderState = "Assigned";
                         UpdateDriverStatus();
                         StateHasChanged();
                     }
@@ -627,7 +627,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             order.DriverName = null;
             order.AssignTime = null;
             order.DispatchID = null;
-            order.OrderState = "SentToBranch";
+            order.OrderState = "Assigned";
             UpdateDriverStatus();
             Snackbar.Add(Localizer["Distribution_UnDispatchedSuccess"], Severity.Success);
             StateHasChanged();

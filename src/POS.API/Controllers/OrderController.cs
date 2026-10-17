@@ -365,6 +365,15 @@ public class OrderController : BaseApiController
         if (orderDto == null || orderDto.Id == 0)
             return BadRequest("Invalid order data or Id.");
 
+        var existingOrder = await _orderService.GetOrderByIdAsync(orderDto.Id);
+        if (existingOrder == null)
+            return NotFound(new ApiResponse(404, "Order not found."));
+
+        if (existingOrder.OrderState == OrderStates.Dispatched || existingOrder.OrderState == OrderStates.Delivered)
+        {
+            return BadRequest(new ApiResponse(400, "لا يمكن تعديل الطلب لأنه خرج للتوصيل بالفعل"));
+        }
+
         var order = BackupMainOrderDetails(orderDto);
         
         if (order.OrderType == OrderTypes.Delivery)
@@ -392,13 +401,45 @@ public class OrderController : BaseApiController
             }
         }
         
-        // Ensure the mapped order has the correct Id for lookup
+        // Ensure the mapped order has the correct Id and preserves existing state and CC links
         order.Id = orderDto.Id;
+        order.OrderState = existingOrder.OrderState;
+        order.CallCenterOrderId = existingOrder.CallCenterOrderId ?? orderDto.CallCenterOrderId;
+        order.CallCenterApiUrl = existingOrder.CallCenterApiUrl ?? orderDto.CallCenterApiUrl;
+        order.RemoteOrderId = existingOrder.RemoteOrderId ?? orderDto.RemoteOrderId;
+        order.DeliveryBranchUrl = existingOrder.DeliveryBranchUrl ?? orderDto.DeliveryBranchUrl;
+        order.DriverID = existingOrder.DriverID;
+        order.DriverName = existingOrder.DriverName;
+        order.DispatchID = existingOrder.DispatchID;
+        order.AssignTime = existingOrder.AssignTime;
+        order.ClosingTime = existingOrder.ClosingTime;
+        order.BackTime = existingOrder.BackTime;
+        order.CollectorID = existingOrder.CollectorID;
+        order.CollectorName = existingOrder.CollectorName;
 
         var updatedOrder = await _orderService.FullUpdateOrderAsync(order);
 
         if (updatedOrder == null)
             return NotFound(new ApiResponse(404, "Order not found."));
+
+        // Sync update to Call Center (if at branch) or to Branch (if at Call Center)
+        var updatedDto = _mapper.Map<OrderDto>(updatedOrder);
+        updatedDto.CallCenterOrderId = existingOrder.CallCenterOrderId;
+        updatedDto.CallCenterApiUrl = existingOrder.CallCenterApiUrl;
+        updatedDto.RemoteOrderId = existingOrder.RemoteOrderId;
+
+        if (_callCenterSettings.IsCentralCallCenter)
+        {
+            var branchUrl = updatedOrder.DeliveryBranchUrl ?? existingOrder.DeliveryBranchUrl;
+            if (!string.IsNullOrEmpty(branchUrl))
+            {
+                await SendUpdateToBranch(updatedDto, branchUrl, "receiveUpdateFromCallCenter");
+            }
+        }
+        else
+        {
+            await SendUpdateToCallCenter(updatedDto);
+        }
 
         // Print receipts after update with "تابع" flag
         if (orderDto.SkipPrintingOnServer != true)
@@ -420,7 +461,7 @@ public class OrderController : BaseApiController
             }
         }
 
-        return Ok(_mapper.Map<OrderDto>(updatedOrder));
+        return Ok(updatedDto);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -460,9 +501,9 @@ public class OrderController : BaseApiController
             order.CallCenterOrderId = orderDto.Id; 
             order.RemoteOrderId = orderDto.OrderId; 
             order.CallCenterApiUrl = orderDto.CallCenterApiUrl;
-            // Branch starts received CC order as SentToBranch ("وصل للفرع")
-            order.OrderState = OrderStates.SentToBranch;
-            Log.Information("[Branch Receive] Setting OrderState to SentToBranch for newly received Order {OrderId} (was: {PrevState})", orderDto.OrderId, orderDto.OrderState);
+            // In Branch: newly received delivery order is Assigned ("تم التعيين" للفرع، بانتظار تعيين طيار)
+            order.OrderState = OrderStates.Assigned;
+            Log.Information("[Branch Receive] Setting OrderState to Assigned for newly received Order {OrderId} in branch", orderDto.OrderId);
 
             // Validate that all items exist in the branch database to avoid FK violation errors
             if (order.OrderDetails != null)
@@ -571,12 +612,12 @@ public class OrderController : BaseApiController
                 return NotFound(new ApiResponse(404, "Order not found in call center database."));
             }
 
-            // Update the order with new status
-            order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
-            
-            // If the order was un-dispatched / set back to SentToBranch, clear driver info
-            if (order.OrderState == OrderStates.SentToBranch || string.IsNullOrEmpty(orderDto.DriverID))
+            // If the order from branch has no driver (and not completed/voided), CC shows SentToBranch ("تم الإرسال للفرع")
+            if (string.IsNullOrEmpty(orderDto.DriverID) 
+                && orderDto.OrderState != OrderStates.Completed.ToString() 
+                && orderDto.OrderState != OrderStates.Voided.ToString())
             {
+                order.OrderState = OrderStates.SentToBranch;
                 order.DriverID = null;
                 order.DriverName = null;
                 order.AssignTime = null;
@@ -584,10 +625,11 @@ public class OrderController : BaseApiController
             }
             else
             {
-                order.DriverID = orderDto.DriverID ?? order.DriverID;
-                order.DriverName = orderDto.DriverName ?? order.DriverName;
-                order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
-                order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
+                order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
+                order.DriverID = orderDto.DriverID;
+                order.DriverName = orderDto.DriverName;
+                order.AssignTime = orderDto.AssignTime;
+                order.DispatchID = orderDto.DispatchID;
             }
             order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
             order.CollectorID = orderDto.CollectorID ?? order.CollectorID;
@@ -612,7 +654,76 @@ public class OrderController : BaseApiController
                 order.VoidCount = orderDto.VoidCount ?? order.VoidCount;
             }
 
-            await _orderService.UpdateOrderAsync(order);
+            if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
+            {
+                var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails);
+                order.OrderDetails = orderItems;
+                order.Tax = orderDto.Tax ?? order.Tax;
+                order.TotalDiscount = orderDto.TotalOrderDiscount ?? order.TotalDiscount;
+                order.Discount = orderDto.DiscountPercentage ?? order.Discount;
+                await _orderService.FullUpdateOrderAsync(order);
+            }
+            else
+            {
+                await _orderService.UpdateOrderAsync(order);
+            }
+
+            // Record in OrderVoid table for Void Reports in Call Center if order was voided
+            if (order.OrderState == OrderStates.Voided)
+            {
+                try
+                {
+                    var existingVoidSpec = new BaseSpecifications<OrderVoid>(v => v.OrderId == order.Id);
+                    var existingVoids = await _unitOfWork.Repository<OrderVoid>().GetAllWithSpecificationAsync(existingVoidSpec);
+                    if (!existingVoids.Any())
+                    {
+                        var voidOp = new OrderVoid
+                        {
+                            OrderId = order.Id,
+                            OrderType = order.OrderType ?? OrderTypes.Delivery,
+                            OrderStateAtVoid = OrderStates.Assigned,
+                            VoidDate = order.VoidTime ?? DateTime.Now,
+                            VoidedBy = order.VoidBy ?? "System",
+                            VoidedByName = order.VoidByName ?? "الفرع",
+                            Reason = order.VoidReason ?? "إلغاء من الفرع",
+                            IsFullVoid = true,
+                            SubtotalBefore = order.Subtotal ?? 0,
+                            TaxBefore = order.Tax ?? 0,
+                            ServiceBefore = order.Service ?? 0,
+                            DeliveryFeesBefore = order.DeliveryFees ?? 0,
+                            DiscountBefore = order.Discount ?? 0,
+                            GrandTotalBefore = (order.TotalVoid.HasValue && order.TotalVoid > 0) ? order.TotalVoid.Value : (order.GrandTotal ?? 0),
+                            TotalVoidedAmount = (order.TotalVoid.HasValue && order.TotalVoid > 0) ? order.TotalVoid.Value : (order.GrandTotal ?? 0)
+                        };
+
+                        if (order.OrderDetails != null && order.OrderDetails.Any())
+                        {
+                            foreach (var d in order.OrderDetails)
+                            {
+                                voidOp.VoidItems.Add(new OrderVoidItem
+                                {
+                                    OrderDetailId = d.Id,
+                                    QuantityBefore = d.Quantity ?? 1,
+                                    QuantityVoided = d.Quantity ?? 1,
+                                    QuantityAfter = 0,
+                                    AmountBefore = d.TotalAmount ?? 0,
+                                    AmountVoided = d.TotalAmount ?? 0,
+                                    AmountAfter = 0,
+                                    Reason = order.VoidReason ?? "إلغاء من الفرع"
+                                });
+                            }
+                        }
+
+                        await _unitOfWork.Repository<OrderVoid>().AddAsync(voidOp);
+                        await _unitOfWork.CompleteAsync();
+                        Log.Information("[CC Sync] Created OrderVoid record for order {OrderId} in CC database", order.OrderID);
+                    }
+                }
+                catch (Exception voidEx)
+                {
+                    Log.Error(voidEx, "[CC Sync] Error creating OrderVoid history record for order {OrderId}", order.OrderID);
+                }
+            }
 
             Log.Information("Order {OrderId} updated in call center from branch. State: {State}", order.OrderID, order.OrderState);
 
@@ -676,7 +787,22 @@ public class OrderController : BaseApiController
             }
         }
 
-        await _orderService.UpdateOrderAsync(order);
+        if (orderDto.GrandTotal.HasValue && orderDto.GrandTotal > 0) order.GrandTotal = orderDto.GrandTotal.Value;
+        if (orderDto.SubTotal.HasValue && orderDto.SubTotal > 0) order.Subtotal = orderDto.SubTotal.Value;
+
+        if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
+        {
+            var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails);
+            order.OrderDetails = orderItems;
+            order.Tax = orderDto.Tax ?? order.Tax;
+            order.TotalDiscount = orderDto.TotalOrderDiscount ?? order.TotalDiscount;
+            order.Discount = orderDto.DiscountPercentage ?? order.Discount;
+            await _orderService.FullUpdateOrderAsync(order);
+        }
+        else
+        {
+            await _orderService.UpdateOrderAsync(order);
+        }
 
         // Notify UI (Dispatcher etc)
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
@@ -1266,6 +1392,9 @@ public class OrderController : BaseApiController
         // Get parent order
         var parentOrder = await _orderService.GetOrderByIdAsync(orderDto.ParentOrderId.Value);
         if (parentOrder == null) return NotFound(new ApiResponse(404, "Parent order not found."));
+
+        if (parentOrder.OrderState == OrderStates.Dispatched || parentOrder.OrderState == OrderStates.Delivered)
+            return BadRequest(new ApiResponse(400, "لا يمكن إضافة أصناف للطلب لأنه خرج للتوصيل بالفعل."));
 
         // Permission Check
         var settings = await _orderService.GetOrderSettingAsync(OrderTypes.Delivery, orderDto.MachineName);

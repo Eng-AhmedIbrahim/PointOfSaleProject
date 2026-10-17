@@ -523,6 +523,12 @@
                     {
                         if (result.Data is OrderDto selectedOrderToEdit)
                         {
+                            if (selectedOrderToEdit.OrderState == "Dispatched" || selectedOrderToEdit.OrderState == "Delivered")
+                            {
+                                _snackbar.Add("لا يمكن تعديل الطلب لأنه خرج للتوصيل بالفعل", Severity.Warning);
+                                return;
+                            }
+
                             _snackbar.Add(Localizer["LoadingActiveOrder"], Severity.Info);
                             
                             if (selectedOrderToEdit.OrderDetails != null)

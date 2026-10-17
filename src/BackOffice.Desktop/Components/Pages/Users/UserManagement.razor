@@ -8,6 +8,8 @@
 @inject IDialogService DialogService
 @inject ContextMenuService ContextMenuService
 @inject BlazorBase.Services.LocalizationService LocalizerService
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="user-management-container @(IsArabic ? "rtl-mode" : "") py-2" dir="@(IsArabic ? "rtl" : "ltr")">
     <RadzenTabs RenderMode="Radzen.TabRenderMode.Client">
@@ -73,7 +75,7 @@
                                             <RadzenBadge BadgeStyle="@(user.IsActive ? BadgeStyle.Success : BadgeStyle.Light)" Text="@(user.IsActive ? (IsArabic ? "نشط" : "Active") : (IsArabic ? "غير نشط" : "Inactive"))" IsPill="true" />
                                         </Template>
                                     </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn TItem="UserDto" Context="user" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="200px" Title="@(IsArabic ? "الإجراءات" : "Actions")">
+                                    <RadzenDataGridColumn TItem="UserDto" Context="user" Filterable="false" Sortable="false" TextAlign="Radzen.TextAlign.Center" Width="220px" Title="@(IsArabic ? "الإجراءات" : "Actions")">
                                         <Template Context="user">
                                             <RadzenSplitButton Click="@((args) => OnActionClick(args, user))"
                                                                Text="@(IsArabic ? "تعديل" : "Edit")"
@@ -81,9 +83,13 @@
                                                                ButtonStyle="ButtonStyle.Primary"
                                                                Variant="Radzen.Variant.Filled"
                                                                Size="ButtonSize.Medium"
-                                                               Style="font-weight: 900; font-size: 1.1rem; width: 140px;">
+                                                               Style="font-weight: 900; font-size: 1.1rem; width: 160px;">
                                                 <ChildContent>
                                                     <RadzenSplitButtonItem Text="@(IsArabic ? "تعديل" : "Edit")" Value="edit" Icon="edit" />
+                                                    @if (_canResetPassword)
+                                                    {
+                                                        <RadzenSplitButtonItem Text="@(IsArabic ? "تغيير كلمة المرور" : "Reset Password")" Value="resetpassword" Icon="lock_reset" />
+                                                    }
                                                     <RadzenSplitButtonItem Text="@(IsArabic ? "حذف" : "Delete")" Value="delete" Icon="delete" />
                                                 </ChildContent>
                                             </RadzenSplitButton>
@@ -191,6 +197,7 @@
     private bool IsLoading = true;
     private bool IsSaving = false;
     private RadzenDataGrid<UserDto>? usersGrid;
+    private bool _canResetPassword = false;
 
     private string _searchTerm = "";
     private string SearchTerm
@@ -205,6 +212,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _canResetPassword = (await AuthorizationService.AuthorizeAsync(user, "CanResetUserPasswordAtBackOffice")).Succeeded;
         await LoadData();
     }
 
@@ -265,8 +275,11 @@
     {
         if (args == null || args.Value == null || args.Value.ToString() == "edit")
         {
-            Console.WriteLine($"Opening edit dialog for user: {user.UserName}"); 
             await OpenEditDialog(user);
+        }
+        else if (args.Value.ToString() == "resetpassword")
+        {
+            await OpenResetPasswordDialog(user);
         }
         else if (args.Value.ToString() == "delete")
         {
@@ -303,6 +316,29 @@
         {
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
             Console.WriteLine(ex.ToString());
+        }
+    }
+
+    private async Task OpenResetPasswordDialog(UserDto user)
+    {
+        try
+        {
+            var parameters = new DialogParameters<AdminResetPasswordDialog>
+            {
+                { x => x.User, user },
+                { x => x.IsArabic, IsArabic }
+            };
+
+            var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            await DialogService.ShowAsync<AdminResetPasswordDialog>(
+                IsArabic ? "تغيير كلمة المرور" : "Reset Password",
+                parameters,
+                options
+            );
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
 

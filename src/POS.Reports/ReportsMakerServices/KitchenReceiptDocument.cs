@@ -246,6 +246,20 @@ public class KitchenReceiptDocument : IDocument
                                 .AlignEnd();
                         }
                     }
+
+                    // Print per-item comment (LineComment)
+                    if (!string.IsNullOrWhiteSpace(item.LineComment))
+                    {
+                        table.Cell().ColumnSpan(2)
+                            .Element(CellStyle)
+                            .PaddingRight(20)
+                            .Text($"⟵ {item.LineComment}")
+                            .FontSize(11)
+                            .Bold()
+                            .Italic()
+                            .FontColor(Colors.Orange.Darken2)
+                            .AlignEnd();
+                    }
                 }
             });
     }

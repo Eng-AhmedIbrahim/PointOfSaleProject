@@ -88,6 +88,8 @@ public class VoidService : IVoidService
                 TableName = order.TableName,
                 WaiterName = order.WaiterName,
                 DriverName = order.DriverName,
+                BranchName = order.BranchName,
+                BranchId = order.BranchID,
                 VoidBy = lastSession?.VoidedBy,
                 VoidByName = lastSession?.VoidedByName,
                 VoidTime = lastSession?.VoidDate,

@@ -114,8 +114,8 @@ public class DeliveryReceiptDocument : IDocument
                 {
                     text.Span(" - تابع")
                         .Bold()
-                        .FontSize(12)
-                        .FontColor(Colors.Grey.Medium);
+                        .FontSize(13)
+                        .FontColor(Colors.Red.Medium);
                 }
             });
 
@@ -288,6 +288,7 @@ public class DeliveryReceiptDocument : IDocument
                 i.IsVoided,
                 i.HasDiscount,
                 i.DiscountPercentage,
+                i.LineComment,
                 AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
             })
             .Select(g =>
@@ -304,7 +305,8 @@ public class DeliveryReceiptDocument : IDocument
                     IsVoided = first.IsVoided,
                     VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
                     HasDiscount = first.HasDiscount,
-                    DiscountPercentage = first.DiscountPercentage
+                    DiscountPercentage = first.DiscountPercentage,
+                    LineComment = first.LineComment
                 };
             }).ToList();
 
@@ -387,6 +389,20 @@ public class DeliveryReceiptDocument : IDocument
                                 .FontSize(10)
                                 .AlignEnd();
                         }
+                    }
+
+                    // Add line comment if available
+                    if (!string.IsNullOrWhiteSpace(item.LineComment))
+                    {
+                        table.Cell().ColumnSpan(4)
+                            .Element(CellStyle)
+                            .PaddingRight(25)
+                            .Text($"⟵ {item.LineComment}")
+                            .FontSize(10)
+                            .Italic()
+                            .Bold()
+                            .FontColor(Colors.Orange.Darken2)
+                            .AlignEnd();
                     }
 
                 }

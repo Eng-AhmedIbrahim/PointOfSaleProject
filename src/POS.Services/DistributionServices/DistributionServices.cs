@@ -75,8 +75,8 @@ public class DistributionServices : IDistributionServices
         order.AssignTime = null;
         order.DispatchID = null;
 
-        // Set back to SentToBranch ("وصل للفرع") so both CC and branch display it correctly
-        order.OrderState = OrderStates.SentToBranch;
+        // Set back to Assigned ("تم التعيين" في الفرع بانتظار تعيين طيار)
+        order.OrderState = OrderStates.Assigned;
 
         _unitOfWork.Repository<Orders>().Update(order);
         return await _unitOfWork.CompleteAsync() > 0;

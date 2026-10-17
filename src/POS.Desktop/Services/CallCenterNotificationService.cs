@@ -147,40 +147,45 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             connection.On<OrderDto>("ReceiveOrderDispatched", (order) =>
             {
                 Log.Information("[CCHub][MSG] ReceiveOrderDispatched → OrderId={Id}", order.OrderId);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"تم خروج الطلب رقم {order.OrderId} مع السائق {order.DriverName}", Severity.Success);
+                    $"تم خروج الطلب رقم {order.OrderId}{branchInfo} مع السائق {order.DriverName}", Severity.Success);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto>("ReceiveOrderCollected", (order) =>
             {
                 Log.Information("[CCHub][MSG] ReceiveOrderCollected → OrderId={Id}", order.OrderId);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"تم تسليم الطلب رقم {order.OrderId} بنجاح", Severity.Info);
+                    $"تم تسليم الطلب رقم {order.OrderId}{branchInfo} بنجاح", Severity.Info);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto>("OrderDispatchedCentralNotification", (order) =>
             {
                 Log.Information("[CCHub][MSG] ✅ OrderDispatchedCentralNotification → OrderId={Id}", order.OrderId);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"تم إرسال الطلب رقم {order.OrderId} للفرع بنجاح", Severity.Success);
+                    $"تم إرسال الطلب رقم {order.OrderId}{branchInfo} للفرع بنجاح", Severity.Success);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto>("ReceiveDeliveryOrderSendSuccess", (order) =>
             {
                 Log.Information("[CCHub][MSG] ReceiveDeliveryOrderSendSuccess → OrderId={Id}", order.OrderId);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"تم إرسال طلب التوصيل رقم {order.OrderId} للفرع بنجاح", Severity.Success);
+                    $"تم إرسال طلب التوصيل رقم {order.OrderId}{branchInfo} للفرع بنجاح", Severity.Success);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
             connection.On<OrderDto, string>("ReceiveDeliveryOrderUnsend", (order, error) =>
             {
                 Log.Information("[CCHub][MSG] ReceiveDeliveryOrderUnsend → OrderId={Id}, Error={Err}", order.OrderId, error);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"فشل إرسال طلب التوصيل رقم {order.OrderId}: {error}", Severity.Error);
+                    $"فشل إرسال طلب التوصيل رقم {order.OrderId}{branchInfo}: {error}", Severity.Error);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
@@ -188,8 +193,9 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
             {
                 Log.Information("[CCHub][MSG] ❌ OrderDispatchFailedCentralNotification → OrderId={Id}, Error={Err}",
                     order.OrderId, error);
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" ({order.BranchName})" : "";
                 _deliveryInvocation.TriggerShowNotification(
-                    $"فشل إرسال الطلب رقم {order.OrderId} للفرع: {error}", Severity.Error);
+                    $"فشل إرسال الطلب رقم {order.OrderId}{branchInfo} للفرع: {error}", Severity.Error);
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
@@ -198,14 +204,16 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                 Log.Information("[CCHub][MSG] ReceiveOrderUpdated → OrderId={Id}, State={State}",
                     order.OrderId, order.OrderState);
 
+                var branchInfo = !string.IsNullOrEmpty(order.BranchName) ? $" في {order.BranchName}" : "";
+
                 string message = order.OrderState switch
                 {
-                    "Dispatched"              => $"تم خروج الطلب رقم {order.OrderId} مع السائق {order.DriverName}",
-                    "Completed"               => $"تم تسليم الطلب رقم {order.OrderId} بنجاح",
-                    "Voided"                  => $"تم إلغاء الطلب رقم {order.OrderId} من الفرع",
+                    "Dispatched"              => $"تم خروج الطلب رقم {order.OrderId}{branchInfo} مع السائق {order.DriverName}",
+                    "Completed"               => $"تم تسليم الطلب رقم {order.OrderId}{branchInfo} بنجاح",
+                    "Voided"                  => $"تم إلغاء الطلب رقم {order.OrderId}{branchInfo}",
                     "FailedToDeliverToBranch" => $"فشل إرسال الطلب رقم {order.OrderId} للفرع",
                     "SentToBranch"            => $"تم إرسال الطلب رقم {order.OrderId} للفرع بنجاح",
-                    _                         => $"تم تحديث حالة الطلب رقم {order.OrderId} إلى {order.OrderState}"
+                    _                         => $"تم تحديث حالة الطلب رقم {order.OrderId}{branchInfo} إلى {order.OrderState}"
                 };
 
                 var severity = order.OrderState switch

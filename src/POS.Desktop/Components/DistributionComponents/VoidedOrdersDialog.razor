@@ -43,7 +43,7 @@
                                DateFormat="yyyy-MM-dd"
                                Variant="Variant.Outlined"
                                Margin="Margin.Dense"
-                               Style="width: 180px;"
+                               Style="width: 210px; font-weight: 700; font-size: 1.05rem;"
                                AdornmentColor="Color.Error"
                                Editable="true" />
                 <MudSelect T="string" @bind-Value="_filterOrderType" Dense="true" Variant="Variant.Outlined"
@@ -96,6 +96,7 @@
                     <HeaderContent>
                         <MudTh Style="width:40px;"></MudTh>
                         <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.OrderId))">@Localizer["OrderID"]</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.BranchName ?? ""))">الفرع</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortBy="@(new Func<VoidReportDto, object>(r => r.OrderType ?? ""))">@Localizer["OrderType"]</MudTableSortLabel></MudTh>
                         <MudTh>@Localizer["Customer"]</MudTh>
                         <MudTh>@Localizer["CashierName"]</MudTh>
@@ -117,6 +118,9 @@
                         </MudTd>
                         <MudTd DataLabel="Order#">
                             <span class="order-id-badge">#@context.OrderId</span>
+                        </MudTd>
+                        <MudTd DataLabel="الفرع">
+                            <span class="branch-badge">@(string.IsNullOrEmpty(context.BranchName) ? "المركز الرئيسي" : context.BranchName)</span>
                         </MudTd>
                         <MudTd DataLabel="Type">
                             <MudChip T="string" Size="Size.Small" Color="@GetOrderTypeColor(context.OrderType)" Variant="Variant.Filled">
@@ -187,7 +191,7 @@
                         @if (IsExpanded(context.OrderDbId) && context.VoidedItems.Any())
                         {
                             <MudTr>
-                                <td colspan="13" style="padding: 0; background: #fef2f2;">
+                                <td colspan="14" style="padding: 0; background: #fef2f2;">
                                     <div class="void-items-panel">
                                         <div class="void-items-header">
                                             <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" Class="mr-1" />
@@ -266,7 +270,7 @@
                         }
                     </ChildRowContent>
                     <FooterContent>
-                        <MudTd colspan="8" Style="font-weight:700; padding: 8px 16px;">@Localizer["Total"] (@FilteredReport.Count() @Localizer["Orders"])</MudTd>
+                        <MudTd colspan="9" Style="font-weight:700; padding: 8px 16px;">@Localizer["Total"] (@FilteredReport.Count() @Localizer["Orders"])</MudTd>
                         <MudTd Style="text-align:right; font-weight:700; color: #374151;">@FilteredReport.Sum(r => r.OriginalTotal ?? 0).ToString("N2")</MudTd>
                         <MudTd Style="text-align:right; font-weight:700; color: #ef4444;">-@FilteredReport.Sum(r => r.VoidedAmount ?? 0).ToString("N2")</MudTd>
                         <MudTd Style="text-align:right; font-weight:700; color: #10b981;">@FilteredReport.Sum(r => r.RemainingTotal ?? 0).ToString("N2")</MudTd>
@@ -368,6 +372,16 @@
         border-radius: 6px;
         font-weight: 700;
         font-size: 0.85rem;
+    }
+
+    .branch-badge {
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        display: inline-block;
     }
 
     .customer-cell {

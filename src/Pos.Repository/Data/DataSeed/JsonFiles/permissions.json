@@ -988,6 +988,23 @@
     "ScreenEnglishName": "Reports",
     "IsBackOffice": true,
     "Id": 110
+  },
+  {
+    "Name": "CanResetUserPasswordAtBackOffice",
+    "PoliceArabicName": "تغيير كلمة مرور أي مستخدم",
+    "PoliceEnglishNameEn": "Reset Any User Password",
+    "ScreenArabicName": "البيانات الأساسية",
+    "ScreenEnglishName": "Basic Data",
+    "IsBackOffice": true,
+    "Id": 111
+  },
+  {
+    "Name": "CanChangeOwnPasswordAtBackOffice",
+    "PoliceArabicName": "تغيير كلمة المرور الخاصة",
+    "PoliceEnglishNameEn": "Change Own Password",
+    "ScreenArabicName": "البيانات الأساسية",
+    "ScreenEnglishName": "Basic Data",
+    "IsBackOffice": true,
+    "Id": 112
   }
-
 ]

@@ -312,14 +312,33 @@
     <!-- User & Exit Section -->
     <div class="nav-actions">
 
-        <div class="user-pill">
-            <div class="user-avatar">@_userInitials</div>
-            <span class="user-name">@_userName</span>
-        </div>
-        
-        <div class="logout-action" @onclick="Logout" title="@(LocalizerService.GetCurrentLanguage() == "ar" ? "تسجيل الخروج" : "Logout")">
-            <MudIcon Icon="@Icons.Material.Rounded.Logout" Size="Size.Medium" />
-        </div>
+        <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" ListClass="pa-2" PopoverClass="settings-menu-popover">
+            <ActivatorContent>
+                <div class="user-pill" style="cursor: pointer;" title="@(LocalizerService.GetCurrentLanguage() == "ar" ? "خيارات الحساب" : "Account Options")">
+                    <div class="user-avatar">@_userInitials</div>
+                    <span class="user-name">@_userName</span>
+                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Class="dropdown-arrow" Style="font-size: 1.1rem; opacity: 0.7;" />
+                </div>
+            </ActivatorContent>
+            <ChildContent>
+                @if (_canChangeOwnPassword)
+                {
+                    <MudMenuItem OnClick="OpenChangePasswordDialog">
+                        <div class="menu-item-content d-flex align-center gap-2">
+                            <MudIcon Icon="@Icons.Material.Rounded.VpnKey" Size="Size.Small" Color="Color.Success" />
+                            @(LocalizerService.GetCurrentLanguage() == "ar" ? "تغيير كلمة المرور" : "Change Password")
+                        </div>
+                    </MudMenuItem>
+                    <MudDivider Class="my-1" />
+                }
+                <MudMenuItem OnClick="Logout">
+                    <div class="menu-item-content d-flex align-center gap-2">
+                        <MudIcon Icon="@Icons.Material.Rounded.Logout" Size="Size.Small" Color="Color.Error" />
+                        @(LocalizerService.GetCurrentLanguage() == "ar" ? "تسجيل الخروج" : "Logout")
+                    </div>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </div>
 </div>
 
@@ -360,6 +379,7 @@
     private bool _canViewQueries;
     private bool _canViewRegistration;
     private bool _canViewClosing;
+    private bool _canChangeOwnPassword;
 
     protected override async Task OnInitializedAsync()
     {
@@ -412,6 +432,7 @@
             _canViewQueries       = (await AuthorizationService.AuthorizeAsync(user, "CanViewQueriesAtBackOffice")).Succeeded;
             _canViewRegistration  = (await AuthorizationService.AuthorizeAsync(user, "CanViewRegistrationAtBackOffice")).Succeeded;
             _canViewClosing       = (await AuthorizationService.AuthorizeAsync(user, "CanViewClosingAtBackOffice")).Succeeded;
+            _canChangeOwnPassword = (await AuthorizationService.AuthorizeAsync(user, "CanChangeOwnPasswordAtBackOffice")).Succeeded;
 
             _canManageSettings = _canManageCompany || _canManageOrders || _canManagePrinters || _canManageSystem || _canSyncData || _canManageGeneralSettings || _canManagePosSettings || _canManageLanguageSettings;
             _canManageBasicData = _canManageUsers || _canManageRoles || _canManagePermissions || _canManageItems || _canManageDelivery || _canManageTables || _canManagePaymentMethods;
@@ -560,5 +581,21 @@
         var current = LocalizerService.GetCurrentLanguage();
         var newLang = current == "ar" ? "en" : "ar";
         await SetLanguage(newLang);
+    }
+
+    private async Task OpenChangePasswordDialog()
+    {
+        var isArabic = LocalizerService.GetCurrentLanguage() == "ar";
+        var parameters = new DialogParameters<BackOffice.Desktop.Components.Pages.Users.ChangeOwnPasswordDialog>
+        {
+            { x => x.UserName, _userName },
+            { x => x.IsArabic, isArabic }
+        };
+        var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        await DialogService.ShowAsync<BackOffice.Desktop.Components.Pages.Users.ChangeOwnPasswordDialog>(
+            isArabic ? "تغيير كلمة المرور" : "Change Password",
+            parameters,
+            options
+        );
     }
 }

@@ -46,6 +46,9 @@ public class OrderItemsDetails:BaseEntity
     public bool IsStaffMeal { get; set; }
     public string? StaffMealEmployeeName { get; set; }
 
+    // Per-item comment (e.g. "بدون بصل", "حار جداً")
+    public string? LineComment { get; set; }
+
     public Orders? Order { get; set; }
     
     public int? DineInOrderId { get; set; }

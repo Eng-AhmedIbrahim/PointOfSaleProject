@@ -23,6 +23,8 @@ public class VoidReportDto
 
     // Delivery specifics
     public string? DriverName { get; set; }
+    public string? BranchName { get; set; }
+    public int? BranchId { get; set; }
 
     // Void details
     public string? VoidBy { get; set; }

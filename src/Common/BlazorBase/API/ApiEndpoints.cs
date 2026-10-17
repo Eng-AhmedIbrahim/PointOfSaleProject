@@ -110,6 +110,8 @@ public record ApiEndpoints
     public string? GetAllPermissions { get; set; }
     public string? GetRolePermissions { get; set; }
     public string? UpdateRolePermissions { get; set; }
+    public string? AdminResetPassword { get; set; }
+    public string? ChangeOwnPassword { get; set; }
     public string? GetPosFeatureSettings { get; set; }
     public string? UpdatePosFeatureSettings { get; set; }
     public string? GetHqSettings { get; set; }
