@@ -259,7 +259,18 @@ public class DistributionController : BaseApiController
 
     private string ResolveCallCenterApiUrl(string? currentUrl)
     {
-        // 1. Primary: Use configured ApiBaseUrl if valid and NOT localhost/127.0.0.1
+        // 1. PRIMARY: Use the per-order CallCenterApiUrl (set by CC when dispatching to branch).
+        //    This is the most authoritative source — the CC explicitly told us its own URL.
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 2. FALLBACK: Use configured ApiBaseUrl only if no per-order URL is available.
+        //    WARNING: On branch machines, ApiBaseUrl may point to the branch itself — not the CC.
+        //    This fallback should only trigger if the order has no stored CallCenterApiUrl.
         var apiBaseUrl = _configuration?["ApiBaseUrl"];
         if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
             !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
@@ -268,15 +279,7 @@ public class DistributionController : BaseApiController
             return apiBaseUrl.Trim().TrimEnd('/', '\\');
         }
 
-        // 2. Secondary: If currentUrl is valid and NOT localhost/127.0.0.1, use it
-        if (!string.IsNullOrWhiteSpace(currentUrl) &&
-            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
-            !currentUrl.Contains("127.0.0.1"))
-        {
-            return currentUrl.Trim().TrimEnd('/', '\\');
-        }
-
-        // 3. Fallback: Check CallCenterHubs:Urls:0 (strip /callcenterhub)
+        // 3. Last resort: Check CallCenterHubs:Urls:0 (strip /callcenterhub suffix)
         var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
         if (!string.IsNullOrWhiteSpace(hubUrl) &&
             !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
@@ -294,9 +297,16 @@ public class DistributionController : BaseApiController
     private async Task SendUpdateToCallCenter(OrderDto orderDto)
     {
         var targetUrl = ResolveCallCenterApiUrl(orderDto.CallCenterApiUrl);
-        if (string.IsNullOrEmpty(targetUrl) || !orderDto.CallCenterOrderId.HasValue)
+        if (string.IsNullOrEmpty(targetUrl))
         {
-            _logger.LogDebug("Order {OrderId} does not have valid CallCenterApiUrl or CallCenterOrderId. Skipping sync.", orderDto.OrderId);
+            _logger.LogDebug("Order {OrderId} does not have a valid CallCenterApiUrl. Skipping sync.", orderDto.OrderId);
+            return;
+        }
+
+        // Allow sync if we have CallCenterOrderId OR if we have BranchId+OrderId for fallback lookup on CC side
+        if (!orderDto.CallCenterOrderId.HasValue && orderDto.BranchId <= 0)
+        {
+            _logger.LogDebug("Order {OrderId} has no CallCenterOrderId and no BranchId. Cannot sync to CC.", orderDto.OrderId);
             return;
         }
         orderDto.CallCenterApiUrl = targetUrl;

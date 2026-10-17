@@ -1323,7 +1323,17 @@ public class OrderController : BaseApiController
 
     private string ResolveCallCenterApiUrl(string? currentUrl)
     {
-        // 1. Primary: Use configured ApiBaseUrl if valid and NOT localhost/127.0.0.1
+        // 1. PRIMARY: Use the per-order CallCenterApiUrl (set by CC when dispatching to branch).
+        //    This is the most authoritative source — the CC explicitly told us its own URL.
+        //    CRITICAL: Branch ApiBaseUrl = branch's own URL (100.92.76.62), NOT the CC URL.
+        if (!string.IsNullOrWhiteSpace(currentUrl) &&
+            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
+            !currentUrl.Contains("127.0.0.1"))
+        {
+            return currentUrl.Trim().TrimEnd('/', '\\');
+        }
+
+        // 2. FALLBACK: ApiBaseUrl (only when no per-order URL is available)
         var apiBaseUrl = _configuration?["ApiBaseUrl"];
         if (!string.IsNullOrWhiteSpace(apiBaseUrl) &&
             !apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
@@ -1332,15 +1342,7 @@ public class OrderController : BaseApiController
             return apiBaseUrl.Trim().TrimEnd('/', '\\');
         }
 
-        // 2. Secondary: If currentUrl is valid and NOT localhost/127.0.0.1, use it
-        if (!string.IsNullOrWhiteSpace(currentUrl) &&
-            !currentUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
-            !currentUrl.Contains("127.0.0.1"))
-        {
-            return currentUrl.Trim().TrimEnd('/', '\\');
-        }
-
-        // 3. Fallback: Check CallCenterHubs:Urls:0 (strip /callcenterhub)
+        // 3. Last resort: Check CallCenterHubs:Urls:0 (strip /callcenterhub suffix)
         var hubUrl = _configuration?["CallCenterHubs:Urls:0"];
         if (!string.IsNullOrWhiteSpace(hubUrl) &&
             !hubUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase) &&
