@@ -880,16 +880,16 @@
     <value>يرجى البحث عن عميل أولاً</value>
   </data>
   <data name="Distribution_AssignedOrders" xml:space="preserve">
-    <value>الطلبات المعينة</value>
+    <value>طلبات مع طيار</value>
   </data>
   <data name="Distribution_UnassignedOrders" xml:space="preserve">
-    <value>طلبات لم تعين</value>
+    <value>طلبات في انتظار طيار</value>
   </data>
   <data name="Distribution_Assigned" xml:space="preserve">
-    <value>تم التعيين</value>
+    <value>مع طيار</value>
   </data>
   <data name="Distribution_Unassigned" xml:space="preserve">
-    <value>لم يتم التعيين</value>
+    <value>في انتظار طيار</value>
   </data>
   <data name="Distribution_AssignDriver" xml:space="preserve">
     <value>تعيين طيار</value>

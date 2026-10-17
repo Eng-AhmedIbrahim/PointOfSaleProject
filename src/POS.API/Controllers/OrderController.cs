@@ -460,9 +460,9 @@ public class OrderController : BaseApiController
             order.CallCenterOrderId = orderDto.Id; 
             order.RemoteOrderId = orderDto.OrderId; 
             order.CallCenterApiUrl = orderDto.CallCenterApiUrl;
-            // Branch always starts a received order as Pending — no driver assigned yet
-            order.OrderState = OrderStates.Pending;
-            Log.Information("[Branch Receive] Forcing OrderState to Pending for newly received Order {OrderId} (was: {PrevState})", orderDto.OrderId, orderDto.OrderState);
+            // Branch starts received CC order as SentToBranch ("وصل للفرع")
+            order.OrderState = OrderStates.SentToBranch;
+            Log.Information("[Branch Receive] Setting OrderState to SentToBranch for newly received Order {OrderId} (was: {PrevState})", orderDto.OrderId, orderDto.OrderState);
 
             // Validate that all items exist in the branch database to avoid FK violation errors
             if (order.OrderDetails != null)
@@ -573,10 +573,22 @@ public class OrderController : BaseApiController
 
             // Update the order with new status
             order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
-            order.DriverID = orderDto.DriverID ?? order.DriverID;
-            order.DriverName = orderDto.DriverName ?? order.DriverName;
-            order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
-            order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
+            
+            // If the order was un-dispatched / set back to SentToBranch, clear driver info
+            if (order.OrderState == OrderStates.SentToBranch || string.IsNullOrEmpty(orderDto.DriverID))
+            {
+                order.DriverID = null;
+                order.DriverName = null;
+                order.AssignTime = null;
+                order.DispatchID = null;
+            }
+            else
+            {
+                order.DriverID = orderDto.DriverID ?? order.DriverID;
+                order.DriverName = orderDto.DriverName ?? order.DriverName;
+                order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
+                order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
+            }
             order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
             order.CollectorID = orderDto.CollectorID ?? order.CollectorID;
             order.CollectorName = orderDto.CollectorName ?? order.CollectorName;

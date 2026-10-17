@@ -69,16 +69,19 @@ public class DistributionServices : IDistributionServices
         
         if (order == null) return false;
 
-        // Reset order state and clear driver info
-        order.OrderState = OrderStates.Assigned; // Assigned but no driver means it's ready for dispatch in this system
+        // Reset driver info
         order.DriverID = null;
         order.DriverName = null;
         order.AssignTime = null;
         order.DispatchID = null;
 
+        // Set back to SentToBranch ("وصل للفرع") so both CC and branch display it correctly
+        order.OrderState = OrderStates.SentToBranch;
+
         _unitOfWork.Repository<Orders>().Update(order);
         return await _unitOfWork.CompleteAsync() > 0;
     }
+
 
     public async Task<ICollection<Orders>> GetOrdersByDriverAsync(string driverId)
     {

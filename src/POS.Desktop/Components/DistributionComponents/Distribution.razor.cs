@@ -327,6 +327,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                         order.DriverName = null;
                         order.AssignTime = null;
                         order.DispatchID = null;
+                        order.OrderState = "SentToBranch";
                         UpdateDriverStatus();
                         StateHasChanged();
                     }
@@ -448,19 +449,19 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private string GetStateText(string? state) => state switch
     {
-        "SentToBranch" => "تم الإرسال للفرع",
+        "SentToBranch" => "وصل للفرع",
         "FailedToDeliverToBranch" => "فشل الإرسال للفرع",
-        "Assigned" => "تم التعيين",
+        "Assigned" => "تم إسناد طيار",
         "Dispatched" => "خرج للتوصيل",
         "Completed" => "تم التسليم",
         "Voided" => "ملغي",
-        "Pending" => "معلق",
-        _ => state ?? "معلق"
+        "Pending" => "وصل للفرع",
+        _ => "وصل للفرع"
     };
 
     private Color GetStateColor(string? state) => state switch
     {
-        "SentToBranch" => Color.Success,
+        "SentToBranch" => Color.Warning,
         "FailedToDeliverToBranch" => Color.Error,
         "Dispatched" => Color.Info,
         "Assigned" => Color.Primary,
@@ -626,6 +627,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             order.DriverName = null;
             order.AssignTime = null;
             order.DispatchID = null;
+            order.OrderState = "SentToBranch";
             UpdateDriverStatus();
             Snackbar.Add(Localizer["Distribution_UnDispatchedSuccess"], Severity.Success);
             StateHasChanged();
