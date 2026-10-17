@@ -884,10 +884,41 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> _recentlyPrintedOrders = new();
+
     public async Task PrintReceivedOrderAsync(OrderDto order)
     {
         try
         {
+            var orderKey = $"{order.Id}_{order.OrderId}";
+            if (_recentlyPrintedOrders.TryGetValue(orderKey, out var lastPrintTime) && (DateTime.UtcNow - lastPrintTime).TotalSeconds < 15)
+            {
+                Log.Warning("[Print Guard] Order {Key} was already printed {Seconds:F1}s ago. Skipping duplicate print.", orderKey, (DateTime.UtcNow - lastPrintTime).TotalSeconds);
+                return;
+            }
+            _recentlyPrintedOrders[orderKey] = DateTime.UtcNow;
+
+            // Clean up keys older than 1 minute to keep dictionary compact
+            foreach (var kvp in _recentlyPrintedOrders)
+            {
+                if ((DateTime.UtcNow - kvp.Value).TotalMinutes > 1)
+                    _recentlyPrintedOrders.TryRemove(kvp.Key, out _);
+            }
+
+            // Always fetch fresh settings for this machine to respect any BackOffice updates at branch
+            try
+            {
+                var freshSettings = await _orderSettingsService.GetOrderSettingsAsync(Environment.MachineName);
+                if (freshSettings != null && freshSettings.Any())
+                {
+                    _commonProperties.OrderSettings = freshSettings;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[PrintReceivedOrderAsync] Failed to fetch fresh order settings, falling back to cached settings.");
+            }
+
             order.OrderSettings = _commonProperties.OrderSettings;
 
             await PrintDeliveryLocally(order, order);
