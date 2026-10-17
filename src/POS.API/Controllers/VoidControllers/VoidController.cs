@@ -184,16 +184,22 @@ public class VoidController : BaseApiController
             var json = JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync($"{targetUrl}/api/order/receiveOrderUpdate", content);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
+                PendingCallCenterSyncQueue.TryRemove(orderDto.Id);
+            }
+            else
+            {
+                PendingCallCenterSyncQueue.Enqueue(orderDto);
                 var error = await response.Content.ReadAsStringAsync();
-                Log.Warning("[VoidController] Failed to sync void update to CC at {Url}. Status: {StatusCode}, Error: {Error}",
+                Log.Warning("[VoidController] Failed to sync void update to CC at {Url}. Status: {StatusCode}, Error: {Error}. Queued for retry.",
                     targetUrl, response.StatusCode, error);
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error syncing void update to Call Center at {Url} for order {OrderId}", targetUrl, orderDto.Id);
+            PendingCallCenterSyncQueue.Enqueue(orderDto);
+            Log.Error(ex, "Error syncing void update to Call Center at {Url} for order {OrderId}. Queued for retry.", targetUrl, orderDto.Id);
         }
     }
 

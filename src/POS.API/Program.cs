@@ -19,7 +19,11 @@ var callCenterSettings = builder.Configuration.GetSection("CallCenterSettings")
     .Get<CallCenterSettings>() ?? new CallCenterSettings();
 builder.Services.AddSingleton(callCenterSettings);
 
-if (callCenterSettings.IsCentralCallCenter)
+var isDispatcher = callCenterSettings.IsDispatcher 
+    || (builder.Configuration.GetSection("DispatcherSettings")?.GetValue<bool>("IsDispatcher") ?? false);
+
+// Only run if Central Call Center OR Dispatcher
+if (callCenterSettings.IsCentralCallCenter || isDispatcher)
 {
     builder.Services.AddHostedService<OrderRetryBackgroundService>();
 }

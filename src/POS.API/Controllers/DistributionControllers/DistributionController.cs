@@ -324,19 +324,22 @@ public class DistributionController : BaseApiController
 
             if (response.IsSuccessStatusCode)
             {
+                PendingCallCenterSyncQueue.TryRemove(orderDto.Id);
                 _logger.LogInformation("Order {OrderId} update sent to Call Center at {Url} successfully. State: {State}", 
                     orderDto.OrderId, targetUrl, orderDto.OrderState);
             }
             else
             {
+                PendingCallCenterSyncQueue.Enqueue(orderDto);
                 var errorContent = await response.Content.ReadAsStringAsync();
-                _logger.LogWarning("Failed to send order update to Call Center at {Url}. Status: {StatusCode}, Error: {Error}", 
+                _logger.LogWarning("Failed to send order update to Call Center at {Url}. Status: {StatusCode}, Error: {Error}. Queued for retry.", 
                     targetUrl, response.StatusCode, errorContent);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception while sending order update to Call Center at {Url} for order {OrderId}", targetUrl, orderDto.OrderId);
+            PendingCallCenterSyncQueue.Enqueue(orderDto);
+            _logger.LogError(ex, "Exception while sending order update to Call Center at {Url} for order {OrderId}. Queued for retry.", targetUrl, orderDto.OrderId);
         }
     }
 
