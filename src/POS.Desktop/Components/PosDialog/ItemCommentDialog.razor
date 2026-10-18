@@ -3,10 +3,10 @@
 @inject CartService _cartService
 @inject LocalizationService Localizer
 
-<MudDialog FullWidth="true" MaxWidth="MaxWidth.Medium">
+<MudDialog Style="min-width: 500px; max-width: 580px; border-radius: 12px; overflow: hidden;">
     <TitleContent>
         <div class="comment-dialog-header">
-            <MudIcon Icon="@Icons.Material.Filled.Comment" Style="color:#fff; font-size:1.3rem;" />
+            <MudIcon Icon="@Icons.Material.Filled.RateReview" Style="color:#fff; font-size:1.3rem;" />
             <span class="comment-dialog-title">@Localizer["ItemComment"]</span>
         </div>
     </TitleContent>
@@ -48,7 +48,7 @@
             <MudTextField @bind-Value="UserComment"
                           Placeholder="@Localizer["TypeCommentHere"]"
                           Variant="Variant.Outlined"
-                          Lines="2"
+                          Lines="3"
                           FullWidth="true"
                           Class="comment-input"
                           Immediate="true" />
@@ -92,7 +92,7 @@
             }
 
             <MudButton OnClick="CloseDialog"
-                       Variant="Variant.Text"
+                       Variant="Variant.Outlined"
                        StartIcon="@Icons.Material.Filled.Close"
                        Class="btn-close">
                 @Localizer["Close"]
@@ -204,32 +204,47 @@
     /* ─── Actions ─── */
     .comment-dialog-actions {
         display: flex;
-        gap: 8px;
-        padding: 8px 4px 4px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 6px 6px;
         width: 100%;
-        flex-wrap: wrap;
     }
     .btn-add {
         background: linear-gradient(135deg, #2e7d32, #43a047) !important;
         color: #fff !important;
-        border-radius: 8px;
-        font-weight: 700;
-        flex: 1;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        height: 42px !important;
+        min-width: 140px !important;
+        box-shadow: 0 2px 6px rgba(46,125,50,0.3) !important;
     }
     .btn-save-edit {
         background: linear-gradient(135deg, #1565c0, #1e88e5) !important;
         color: #fff !important;
-        border-radius: 8px;
-        font-weight: 700;
-        flex: 1;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        height: 42px !important;
+        min-width: 140px !important;
     }
     .btn-clear {
-        border-radius: 8px;
+        border-radius: 8px !important;
+        height: 42px !important;
         color: #f57c00 !important;
         border-color: #f57c00 !important;
     }
     .btn-close {
-        border-radius: 8px;
-        color: #757575 !important;
+        border-radius: 8px !important;
+        height: 42px !important;
+        min-width: 110px !important;
+        color: #555 !important;
+        border: 1.5px solid #bdbdbd !important;
+        font-weight: 700 !important;
+        background: #fdfdfd !important;
+    }
+    .btn-close:hover {
+        background: #f0f0f0 !important;
+        border-color: #757575 !important;
+        color: #212121 !important;
     }
 </style>

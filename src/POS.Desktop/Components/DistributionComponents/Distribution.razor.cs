@@ -1,4 +1,5 @@
 using BlazorBase.Components.Shared;
+using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
 
@@ -7,6 +8,7 @@ namespace POS.Desktop.Components.DistributionComponents;
 public partial class Distribution : IDisposable, IAsyncDisposable
 {
     [Inject] public IDistributionErpService _distributionService { get; set; } = default!;
+    [Inject] public IBranchService _branchService { get; set; } = default!;
     [Inject] public CallCenterHubSettings _hubSettings { get; set; } = default!;
     [Inject] public ISystemSettingsServices _systemSettingsServices { get; set; } = default!;
     [Inject] public IPosFeatureSettingsService _featureSettingsService { get; set; } = default!;
@@ -88,9 +90,43 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private List<OrderDto> Orders = new();
     private Timer? _timer;
 
-    private IEnumerable<OrderDto> FilteredOrders => showAssigned
-        ? Orders.Where(o => !String.IsNullOrEmpty(o.DriverName))
-        : Orders.Where(o => String.IsNullOrEmpty(o.DriverName));
+    // Branch filter (null = all branches)
+    private int? _selectedBranchId = null;
+
+    private List<(int Id, string Name)> _allBranchesList = new();
+
+    // Available branches derived from loaded branches and orders
+    private IEnumerable<(int Id, string Name)> AvailableBranches
+    {
+        get
+        {
+            var dict = new Dictionary<int, string>();
+            foreach (var b in _allBranchesList)
+            {
+                dict[b.Id] = b.Name;
+            }
+            foreach (var o in Orders.Where(o => o.BranchId > 0 && !string.IsNullOrEmpty(o.BranchName)))
+            {
+                dict[o.BranchId] = o.BranchName!;
+            }
+            return dict.Select(kv => (Id: kv.Key, Name: kv.Value)).OrderBy(b => b.Name).ToList();
+        }
+    }
+
+    private IEnumerable<OrderDto> FilteredOrders
+    {
+        get
+        {
+            var q = showAssigned
+                ? Orders.Where(o => !string.IsNullOrEmpty(o.DriverName))
+                : Orders.Where(o => string.IsNullOrEmpty(o.DriverName));
+
+            if (_selectedBranchId.HasValue)
+                q = q.Where(o => o.BranchId == _selectedBranchId.Value);
+
+            return q;
+        }
+    }
 
     private HashSet<int> SelectedOrderIds = new();
     private bool SelectAllOrders = false;
@@ -172,14 +208,29 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         // Connect to hubs in background (non-blocking) so the UI can render immediately
         _ = Task.Run(async () => await ConnectToExternalHubs());
 
-        // Fetch orders, drivers, and settings in parallel
+        // Fetch orders, drivers, settings, and branches in parallel
         var ordersTask   = _distributionService.GetUnCompletedDeliveryOrders();
         var driversTask  = _commonProperties.Drivers.Any()
                             ? Task.FromResult<ICollection<POS.Contract.Dtos.DineInDtos.UserToReturnDto>>(new List<POS.Contract.Dtos.DineInDtos.UserToReturnDto>())
                             : _distributionService.GetDeliveryUsers();
         var settingsTask = _systemSettingsServices.GetDispatcherSettingsAsync();
+        var branchesTask = _branchService.GetBranches();
 
-        await Task.WhenAll(ordersTask, driversTask, settingsTask);
+        await Task.WhenAll(ordersTask, driversTask, settingsTask, branchesTask);
+
+        try
+        {
+            var branchList = branchesTask.Result;
+            if (branchList != null)
+            {
+                _allBranchesList = branchList
+                    .Where(b => !string.IsNullOrWhiteSpace(b.Name))
+                    .Select(b => (Id: b.Id, Name: b.Name!.Trim()))
+                    .DistinctBy(b => b.Id)
+                    .ToList();
+            }
+        }
+        catch { /* continue */ }
 
         var orders = ordersTask.Result;
         if (orders != null)
@@ -737,7 +788,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     private async Task ShowVoidedOrders()
     {
         var options = new DialogOptions { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, CloseButton = true };
-        await _dialogService.ShowAsync<VoidedOrdersDialog>(Localizer["Distribution_VoidHistory"], options);
+        var parameters = new DialogParameters<VoidedOrdersDialog>();
+        parameters.Add(x => x.DefaultOrderType, "Delivery");
+        await _dialogService.ShowAsync<VoidedOrdersDialog>(Localizer["Distribution_VoidHistory"], parameters, options);
     }
 
     private async Task ViewOrder(OrderDto context)

@@ -76,6 +76,7 @@ public class OrderItemsDetailsDto
     public string? CategoryName { get; set; }
     public List<OrderItemAttributesDto>? OrderItemAttributes { get; set; } = new();
     public List<OrderItemCommentDto>? OrderItemComments { get; set; } = new();
+    public string? LineComment { get; set; }
     
     // Discount properties
     public bool? Discount { get; set; }

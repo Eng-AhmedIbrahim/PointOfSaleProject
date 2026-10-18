@@ -677,12 +677,17 @@ public class OrderController : BaseApiController
                     var existingVoids = await _unitOfWork.Repository<OrderVoid>().GetAllWithSpecificationAsync(existingVoidSpec);
                     if (!existingVoids.Any())
                     {
+                        var appDates = await _unitOfWork.Repository<AppDate>().GetAllAsync();
+                        var appDate = appDates?.FirstOrDefault();
+                        DateTime workingDate = (appDate != null && appDate.PosDate.Year > 2000) ? appDate.PosDate.Date : DateTime.Today;
+                        DateTime effVoidTime = order.VoidTime ?? workingDate.Add(DateTime.Now.TimeOfDay);
+
                         var voidOp = new OrderVoid
                         {
                             OrderId = order.Id,
                             OrderType = order.OrderType ?? OrderTypes.Delivery,
                             OrderStateAtVoid = OrderStates.Assigned,
-                            VoidDate = order.VoidTime ?? DateTime.Now,
+                            VoidDate = effVoidTime,
                             VoidedBy = order.VoidBy ?? "System",
                             VoidedByName = order.VoidByName ?? "الفرع",
                             Reason = order.VoidReason ?? "إلغاء من الفرع",
@@ -988,12 +993,20 @@ public class OrderController : BaseApiController
             OrderDate = OrderDto.OrderDate,
             PaymentMethod = OrderDto.PaymentMethod,
             OrderState = DetermineInitialState(OrderDto, orderType),
-            Discount = OrderDto.TotalOrderDiscount,
+            Discount = (OrderDto.TotalDiscount.HasValue && OrderDto.TotalDiscount.Value > 0)
+                ? OrderDto.TotalDiscount.Value
+                : ((OrderDto.TotalOrderDiscount.HasValue && OrderDto.TotalOrderDiscount.Value > 0)
+                    ? OrderDto.TotalOrderDiscount.Value
+                    : (OrderDto.DiscountedItems ?? 0)),
             DiscountByName = OrderDto.DiscountByName,
             DiscountReason = OrderDto.DiscountReason,
             DiscountType = OrderDto.DiscountType,
             DiscountPercentage = OrderDto.DiscountPercentage,
-            TotalDiscount = OrderDto.TotalDiscount,
+            TotalDiscount = (OrderDto.TotalDiscount.HasValue && OrderDto.TotalDiscount.Value > 0)
+                ? OrderDto.TotalDiscount.Value
+                : ((OrderDto.TotalOrderDiscount.HasValue && OrderDto.TotalOrderDiscount.Value > 0)
+                    ? OrderDto.TotalOrderDiscount.Value
+                    : (OrderDto.DiscountedItems ?? 0)),
             TotalVoid = OrderDto.TotalVoid,
             VoidCount = OrderDto.VoidCount,
             VoidAmount = OrderDto.VoidAmount,
@@ -1049,6 +1062,11 @@ public class OrderController : BaseApiController
                 HospitalityResponsibleName = detail.HospitalityResponsibleName,
                 IsStaffMeal = detail.IsStaffMeal,
                 StaffMealEmployeeName = detail.StaffName,
+                LineComment = !string.IsNullOrWhiteSpace(detail.LineComment)
+                    ? detail.LineComment
+                    : (detail.Attributes?.Any(a => a.Id >= 5000) == true
+                        ? string.Join(", ", detail.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name))
+                        : null),
                 OrderItemAttributes = detail.Attributes?
                 .Where(a => a.Id < 5000)
                 .Select(a => new OrderItemAttributes

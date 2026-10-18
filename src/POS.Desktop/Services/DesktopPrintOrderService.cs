@@ -93,7 +93,8 @@ public class DesktopPrintOrderService : IPrintOrderService
                     DiscountReason = _commonProperties.OrderDiscount?.DiscountReason,
                     DiscountType = _commonProperties.OrderDiscount?.DiscountType,
                     DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0,
-                    TotalOrderDiscount = _commonProperties.TotalDiscount
+                    TotalOrderDiscount = _commonProperties.TotalDiscount,
+                    TotalDiscount = _commonProperties.TotalDiscount
                 };
 
                 Log.Information("PrintInitialDineInOrder: Processing {Count} items for kitchen printing", order.BasicOrderDetails.Items?.Count ?? 0);
@@ -462,9 +463,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.Services = _commonProperties._financeSettingsList?.Count > 3 ? _commonProperties._financeSettingsList[3].Value : 0M;
         _commonProperties.OrderDto.Tax = _commonProperties._financeSettingsList?.Count > 2 ? _commonProperties._financeSettingsList[2].Value : 0M;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
+        _commonProperties.OrderDto.TotalDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0;
         _commonProperties.OrderDto.DiscountReason = _commonProperties.OrderDiscount?.DiscountReason;
         _commonProperties.OrderDto.DiscountType = _commonProperties.OrderDiscount?.DiscountType;
+        _commonProperties.OrderDto.DiscountByName = _commonProperties.CurrentUser;
+        _commonProperties.OrderDto.DiscountTime = DateTime.Now;
         _commonProperties.OrderDto.GrandTotal = _commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0;
         _commonProperties.OrderDto.OrderDate = DateTime.Now;
         _commonProperties.OrderDto.OrderState = "Completed";
@@ -640,6 +644,26 @@ public class DesktopPrintOrderService : IPrintOrderService
             return;
         }
 
+        // Ensure per-item comments are preserved from in-memory order.OrderDetails
+        if (order.OrderDetails != null)
+        {
+            foreach (var item in itemsToProcess)
+            {
+                if (string.IsNullOrWhiteSpace(item.LineComment))
+                {
+                    var source = order.OrderDetails.FirstOrDefault(o => o.Id == item.Id && !string.IsNullOrWhiteSpace(o.LineComment));
+                    if (source != null)
+                    {
+                        item.LineComment = source.LineComment;
+                    }
+                    else if (item.Attributes?.Any(a => a.Id >= 5000) == true)
+                    {
+                        item.LineComment = string.Join(", ", item.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name));
+                    }
+                }
+            }
+        }
+
         var filteredItems = itemsToProcess
             .Where(i => i.PrintInBackupReceiptFromItem ?? i.PrintInBackupReceiptFromCategory ?? true)
             .ToList();
@@ -738,6 +762,14 @@ public class DesktopPrintOrderService : IPrintOrderService
         {
             Log.Information("PrintKitchenReceiptsLocally: No items to process (isReprint={isReprint}).", isReprint);
             return;
+        }
+
+        foreach (var item in itemsToProcess)
+        {
+            if (string.IsNullOrWhiteSpace(item.LineComment) && item.Attributes?.Any(a => a.Id >= 5000) == true)
+            {
+                item.LineComment = string.Join(", ", item.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name));
+            }
         }
 
         var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
@@ -916,9 +948,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         _commonProperties.OrderDto.Services = 0M;
         _commonProperties.OrderDto.Tax = _commonProperties._financeSettingsList?.Count > 2 ? _commonProperties._financeSettingsList[2].Value : 0M;
         _commonProperties.OrderDto.TotalOrderDiscount = _commonProperties.TotalDiscount;
+        _commonProperties.OrderDto.TotalDiscount = _commonProperties.TotalDiscount;
         _commonProperties.OrderDto.DiscountPercentage = _commonProperties.OrderDiscount?.Percentage ?? 0;
         _commonProperties.OrderDto.DiscountReason = _commonProperties.OrderDiscount?.DiscountReason;
         _commonProperties.OrderDto.DiscountType = _commonProperties.OrderDiscount?.DiscountType;
+        _commonProperties.OrderDto.DiscountByName = _commonProperties.CurrentUser;
+        _commonProperties.OrderDto.DiscountTime = DateTime.Now;
         _commonProperties.OrderDto.GrandTotal = _commonProperties._financeSettingsList != null && _commonProperties._financeSettingsList.Count > 4 ? _commonProperties._financeSettingsList[4].Value : 0;
         _commonProperties.OrderDto.OrderDate = DateTime.Now;
         if (!_commonProperties.UpdateDeliveryOrder)
@@ -1391,6 +1426,69 @@ public class DesktopPrintOrderService : IPrintOrderService
             {
                 Log.Error(ex, "Error printing VOID ticket for {KitchenName}", kitchen.KitchenName);
             }
+        }
+
+        // ─── Also print VOID on the Backup/Packup printer ───
+        try
+        {
+            var backupItems = items
+                .Where(i => i.PrintInBackupReceiptFromItem ?? i.PrintInBackupReceiptFromCategory ?? true)
+                .ToList();
+
+            if (backupItems.Any())
+            {
+                var backupReceipt = new KitchenReceipt()
+                {
+                    Id = orderId,
+                    CashierName = cashier ?? "Cashier",
+                    OrderType = orderType,
+                    DateCreated = date.HasValue ? new DateTimeOffset(date.Value) : DateTimeOffset.Now,
+                    Items = backupItems,
+                    KitchenNote = notice ?? "",
+                    KitchenType = "Packup",
+                    TableName = tableName,
+                    IsVoid = true
+                };
+
+                var backupDocument = new KitchenReceiptDocument(backupReceipt, backupItems);
+                var reportsFolder2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reports");
+                Directory.CreateDirectory(reportsFolder2);
+                var backupOutputPath = Path.Combine(reportsFolder2, $"Order_{orderId}_VOID_Backup_{DateTime.Now:yyyyMMddHHmmss}.pdf");
+                backupDocument.GeneratePdf(backupOutputPath);
+
+                var backupKitchen = kitchens.FirstOrDefault(k => k.KitchenName != null &&
+                    (k.KitchenName.Equals("Backup", StringComparison.OrdinalIgnoreCase) ||
+                     k.KitchenName.Equals("Packup", StringComparison.OrdinalIgnoreCase)))
+                    ?? kitchens.ElementAtOrDefault(1)
+                    ?? kitchens.FirstOrDefault();
+
+                if (backupKitchen != null)
+                {
+                    var backupPrinters = backupKitchen.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == Environment.MachineName)
+                        ?? backupKitchen.KitchenPrinters?.FirstOrDefault();
+
+                    if (backupPrinters != null)
+                    {
+                        var settingsOrderType = (orderType == "Staff" || orderType == "Hospitality") ? "TakeAway" : orderType;
+                        var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType);
+                        var receiptCount = orderSettings?.FullKitchenReceiptCount ?? 1;
+
+                        for (int idx = 1; idx <= receiptCount; idx++)
+                        {
+                            var backupPrinterName = typeof(KitchenPrinters).GetProperty($"Copy{idx}")?.GetValue(backupPrinters) as string;
+                            if (!string.IsNullOrEmpty(backupPrinterName))
+                            {
+                                Log.Information("Printing VOID backup receipt to {Printer}", backupPrinterName);
+                                await _printerServices.PrintPdfAsync(backupOutputPath, backupPrinterName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error printing VOID backup receipt for order {OrderId}", orderId);
         }
     }
 

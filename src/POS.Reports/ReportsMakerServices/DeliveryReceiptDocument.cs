@@ -288,8 +288,12 @@ public class DeliveryReceiptDocument : IDocument
                 i.IsVoided,
                 i.HasDiscount,
                 i.DiscountPercentage,
-                i.LineComment,
-                AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
+                LineComment = !string.IsNullOrWhiteSpace(i.LineComment)
+                    ? i.LineComment
+                    : (i.Attributes?.Any(a => a.Id >= 5000) == true
+                        ? string.Join(", ", i.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name))
+                        : null),
+                AttributesHash = string.Join("|", i.Attributes?.Where(a => a.Id < 5000).OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
             })
             .Select(g =>
             {
@@ -301,12 +305,12 @@ public class DeliveryReceiptDocument : IDocument
                     Price = first.Price,
                     Quantity = g.Sum(x => x.Quantity),
                     TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
-                    Attributes = first.Attributes,
+                    Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
                     IsVoided = first.IsVoided,
                     VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
-                    LineComment = first.LineComment
+                    LineComment = g.Key.LineComment
                 };
             }).ToList();
 
@@ -374,9 +378,10 @@ public class DeliveryReceiptDocument : IDocument
                     }
 
                     // Add attributes if available
-                    if (item.Attributes?.Any() == true)
+                    if (item.Attributes?.Any(a => a.Id < 5000) == true)
                     {
                         var groupedAttrs = item.Attributes
+                            .Where(a => a.Id < 5000)
                             .GroupBy(a => a.Name)
                             .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
 
@@ -392,16 +397,20 @@ public class DeliveryReceiptDocument : IDocument
                     }
 
                     // Add line comment if available
-                    if (!string.IsNullOrWhiteSpace(item.LineComment))
+                    var lineComment = !string.IsNullOrWhiteSpace(item.LineComment)
+                        ? item.LineComment
+                        : (item.Attributes?.Any(a => a.Id >= 5000) == true
+                            ? string.Join(", ", item.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name))
+                            : null);
+
+                    if (!string.IsNullOrWhiteSpace(lineComment))
                     {
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(25)
-                            .Text($"⟵ {item.LineComment}")
+                            .Text($"{lineComment} ⟵")
                             .FontSize(10)
-                            .Italic()
                             .Bold()
-                            .FontColor(Colors.Orange.Darken2)
                             .AlignEnd();
                     }
 

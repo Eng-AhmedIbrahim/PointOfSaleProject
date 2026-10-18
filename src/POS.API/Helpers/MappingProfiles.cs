@@ -224,7 +224,26 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.HospitalityReason, opt => opt.MapFrom(src => src.HospitalityReason))
             .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
             .ForMember(dest => dest.StaffMealEmployeeId, opt => opt.MapFrom(src => src.StaffMealEmployeeId))
-            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName));
+            .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
+            // ─── Fix case mismatch: Entity.Subtotal → Dto.SubTotal ───
+            .ForMember(dest => dest.SubTotal, opt => opt.MapFrom(src => src.Subtotal))
+            // ─── TotalDiscount explicit (same name but belt-and-suspenders) ───
+            .ForMember(dest => dest.TotalDiscount, opt => opt.MapFrom(src => src.TotalDiscount))
+            // ─── Discount details ───
+            .ForMember(dest => dest.DiscountType, opt => opt.MapFrom(src => src.DiscountType))
+            .ForMember(dest => dest.DiscountPercentage, opt => opt.MapFrom(src => src.DiscountPercentage))
+            .ForMember(dest => dest.DiscountBy, opt => opt.MapFrom(src => src.DiscountBy))
+            .ForMember(dest => dest.DiscountByName, opt => opt.MapFrom(src => src.DiscountByName))
+            .ForMember(dest => dest.DiscountTime, opt => opt.MapFrom(src => src.DiscountTime))
+            .ForMember(dest => dest.DiscountReason, opt => opt.MapFrom(src => src.DiscountReason))
+            // ─── Void details ───
+            .ForMember(dest => dest.VoidAmount, opt => opt.MapFrom(src => src.VoidAmount))
+            .ForMember(dest => dest.VoidBy, opt => opt.MapFrom(src => src.VoidBy))
+            .ForMember(dest => dest.VoidByName, opt => opt.MapFrom(src => src.VoidByName))
+            .ForMember(dest => dest.VoidTime, opt => opt.MapFrom(src => src.VoidTime))
+            .ForMember(dest => dest.VoidReason, opt => opt.MapFrom(src => src.VoidReason))
+            .ForMember(dest => dest.VoidCount, opt => opt.MapFrom(src => src.VoidCount))
+            .ForMember(dest => dest.TotalVoid, opt => opt.MapFrom(src => src.TotalVoid));
 
         CreateMap<OrderItemsDetails, TableItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.MenuSalesItemId))
@@ -296,9 +315,11 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.HospitalityResponsibleName, opt => opt.MapFrom(src => src.HospitalityResponsibleName))
             .ForMember(dest => dest.IsStaffMeal, opt => opt.MapFrom(src => src.IsStaffMeal))
             .ForMember(dest => dest.StaffMealEmployeeName, opt => opt.MapFrom(src => src.StaffMealEmployeeName))
+            .ForMember(dest => dest.LineComment, opt => opt.MapFrom(src => src.LineComment))
             .ReverseMap()
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.OrderItemComments, opt => opt.MapFrom(src => src.OrderItemComments))
+            .ForMember(dest => dest.LineComment, opt => opt.MapFrom(src => src.LineComment))
             // Map Kitchen properties FROM DTO TO Entity
             .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))

@@ -76,8 +76,88 @@
                     <MudChip T="string" Color="@GetStatusColor(context.OrderState)" Size="Size.Small" Variant="MudBlazor.Variant.Text" Style="font-weight: 800;">@Localizer[context.OrderState ?? ""]</MudChip>
                 </MudTd>
                 <MudTd Style="text-align: right; font-family: 'Outfit', sans-serif;">@context.SubTotal?.ToString("N2")</MudTd>
-                <MudTd Style="text-align: right; font-family: 'Outfit', sans-serif;" Class="text-red">@context.TotalDiscount?.ToString("N2")</MudTd>
-                <MudTd Style="text-align: right;"><b class="total-text" style="font-weight: 950; color: #1e293b; font-family: 'Outfit', sans-serif;">@context.GrandTotal?.ToString("N2")</b></MudTd>
+                <MudTd Style="text-align: right; font-family: 'Outfit', sans-serif;" Class="text-red">
+                    @if (context.TotalDiscount > 0)
+                    {
+                        <MudTooltip Placement="Placement.Bottom" Color="Color.Dark">
+                            <ChildContent>
+                                <span style="cursor:pointer;">
+                                    @context.TotalDiscount?.ToString("N2")
+                                    @if (!string.IsNullOrEmpty(context.DiscountReason) || !string.IsNullOrEmpty(context.DiscountByName))
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" Style="font-size:14px; margin-right:2px; color:#ef4444;" />
+                                    }
+                                </span>
+                            </ChildContent>
+                            <TooltipContent>
+                                <div style="text-align:right; direction:rtl; min-width:180px; padding:4px;">
+                                    @if (!string.IsNullOrEmpty(context.DiscountType))
+                                    {
+                                        <div>نوع الخصم: <b>@context.DiscountType</b></div>
+                                    }
+                                    @if (context.DiscountPercentage > 0)
+                                    {
+                                        <div>نسبة الخصم: <b>@context.DiscountPercentage?.ToString("0.##")%</b></div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(context.DiscountByName))
+                                    {
+                                        <div>بواسطة: <b>@context.DiscountByName</b></div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(context.DiscountReason))
+                                    {
+                                        <div>← @context.DiscountReason</div>
+                                    }
+                                    @if (context.DiscountTime.HasValue)
+                                    {
+                                        <div>وقت الخصم: <b>@context.DiscountTime?.ToString("hh:mm tt")</b></div>
+                                    }
+                                </div>
+                            </TooltipContent>
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </MudTd>
+                <MudTd Style="text-align: right;">
+                    @if (context.OrderState == "Voided")
+                    {
+                        <MudTooltip Placement="Placement.Bottom" Color="Color.Dark">
+                            <ChildContent>
+                                <span style="color:#ef4444; font-weight:900; cursor:pointer;">
+                                    @context.GrandTotal?.ToString("N2")
+                                    <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" Style="font-size:14px; margin-right:2px;" />
+                                </span>
+                            </ChildContent>
+                            <TooltipContent>
+                                <div style="text-align:right; direction:rtl; min-width:180px; padding:4px;">
+                                    <div style="color:#ff6b6b; font-weight:900; margin-bottom:4px;">⚠ طلب ملغي</div>
+                                    @if (!string.IsNullOrEmpty(context.VoidByName))
+                                    {
+                                        <div>بواسطة: <b>@context.VoidByName</b></div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(context.VoidReason))
+                                    {
+                                        <div>← سبب الإلغاء: <b>@context.VoidReason</b></div>
+                                    }
+                                    @if (context.VoidTime.HasValue)
+                                    {
+                                        <div>وقت الإلغاء: <b>@context.VoidTime?.ToString("hh:mm tt")</b></div>
+                                    }
+                                    @if (context.VoidAmount > 0)
+                                    {
+                                        <div>مبلغ الإلغاء: <b>@context.VoidAmount?.ToString("N2")</b></div>
+                                    }
+                                </div>
+                            </TooltipContent>
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <b class="total-text" style="font-weight: 950; color: #1e293b; font-family: 'Outfit', sans-serif;">@context.GrandTotal?.ToString("N2")</b>
+                    }
+                </MudTd>
                 <MudTd style="text-align: center;">
                     <MudMenu TransformOrigin="Origin.TopRight" AnchorOrigin="Origin.BottomRight" Dense="true">
                         <ActivatorContent>

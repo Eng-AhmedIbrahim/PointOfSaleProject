@@ -175,7 +175,12 @@ public class KitchenReceiptDocument : IDocument
                 i.Id,
                 i.Name,
                 i.IsVoided,
-                AttributesHash = string.Join("|", i.Attributes?.OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
+                LineComment = !string.IsNullOrWhiteSpace(i.LineComment)
+                    ? i.LineComment
+                    : (i.Attributes?.Any(a => a.Id >= 5000) == true
+                        ? string.Join(", ", i.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name))
+                        : null),
+                AttributesHash = string.Join("|", i.Attributes?.Where(a => a.Id < 5000).OrderBy(a => a.Id).Select(a => a.Id) ?? Enumerable.Empty<int?>())
             })
             .Select(g =>
             {
@@ -185,9 +190,10 @@ public class KitchenReceiptDocument : IDocument
                     Id = first.Id,
                     Name = first.Name,
                     Quantity = g.Sum(x => x.Quantity),
-                    Attributes = first.Attributes,
+                    Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
                     IsVoided = first.IsVoided,
-                    ByWeight = first.ByWeight
+                    ByWeight = first.ByWeight,
+                    LineComment = g.Key.LineComment
                 };
             }).ToList();
 
@@ -230,9 +236,10 @@ public class KitchenReceiptDocument : IDocument
                     if (item.ByWeight) qtyText += " كجم";
                     table.Cell().Element(CellStyle).AlignCenter().Text(qtyText);
 
-                    if (item.Attributes?.Any() == true)
+                    if (item.Attributes?.Any(a => a.Id < 5000) == true)
                     {
                         var groupedAttrs = item.Attributes
+                            .Where(a => a.Id < 5000)
                             .GroupBy(a => a.Name)
                             .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
 
@@ -247,17 +254,21 @@ public class KitchenReceiptDocument : IDocument
                         }
                     }
 
-                    // Print per-item comment (LineComment)
-                    if (!string.IsNullOrWhiteSpace(item.LineComment))
+                    // Print per-item comment (LineComment or manual comments in Attributes)
+                    var lineComment = !string.IsNullOrWhiteSpace(item.LineComment)
+                        ? item.LineComment
+                        : (item.Attributes?.Any(a => a.Id >= 5000) == true
+                            ? string.Join(", ", item.Attributes.Where(a => a.Id >= 5000).Select(a => a.Name))
+                            : null);
+
+                    if (!string.IsNullOrWhiteSpace(lineComment))
                     {
                         table.Cell().ColumnSpan(2)
                             .Element(CellStyle)
                             .PaddingRight(20)
-                            .Text($"⟵ {item.LineComment}")
+                            .Text($"{lineComment} ⟵")
                             .FontSize(11)
                             .Bold()
-                            .Italic()
-                            .FontColor(Colors.Orange.Darken2)
                             .AlignEnd();
                     }
                 }

@@ -25,3 +25,6 @@ Desktop.ini
 # IDEs settings
 .idea/
 .vscode/
+
+# Presentations
+*.pdf

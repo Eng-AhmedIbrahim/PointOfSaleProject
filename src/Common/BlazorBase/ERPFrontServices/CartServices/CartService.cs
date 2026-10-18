@@ -418,6 +418,8 @@ public class CartService : ICartService
         var tableItem = _commonProperties!.TableItems!
             .FirstOrDefault(i => i.Id == SelectedItem.Id);
 
+        if (tableItem == null) return null;
+
         var random = new Random();
         var commentAttribute = new AttributeDto()
         {
@@ -425,7 +427,10 @@ public class CartService : ICartService
             Name = comment
         };
 
-        tableItem!.Attributes!.Add(commentAttribute);
+        tableItem.Attributes ??= new List<AttributeDto>();
+        tableItem.Attributes.Add(commentAttribute);
+
+        UpdateTableItemLineComment(tableItem);
 
         NotifyStateChanged();
 
@@ -434,19 +439,23 @@ public class CartService : ICartService
 
     public string? EditItemComment(string oldComment, string newComment)
     {
-        if (SelectedItem!.Id == 0)
+        if (SelectedItem == null || SelectedItem.Id == 0)
             return null;
 
         var tableItem = _commonProperties!.TableItems!
             .FirstOrDefault(i => i.Id == SelectedItem.Id);
 
-        var existingComment = tableItem?.Attributes?
+        if (tableItem == null) return null;
+
+        var existingComment = tableItem.Attributes?
             .FirstOrDefault(attr => attr.Name == oldComment);
 
         if (existingComment == null)
             return "comment not found";
 
         existingComment.Name = newComment;
+
+        UpdateTableItemLineComment(tableItem);
 
         NotifyStateChanged();
 
@@ -455,23 +464,39 @@ public class CartService : ICartService
 
     public string? DeleteItemComment(string comment)
     {
-        if (SelectedItem!.Id == 0)
+        if (SelectedItem == null || SelectedItem.Id == 0)
             return null;
 
         var tableItem = _commonProperties!.TableItems!
             .FirstOrDefault(i => i.Id == SelectedItem.Id);
 
-        var commentToRemove = tableItem?.Attributes?
+        if (tableItem == null) return null;
+
+        var commentToRemove = tableItem.Attributes?
             .FirstOrDefault(attr => attr.Name == comment);
 
         if (commentToRemove == null)
             return "comment not found";
 
-        tableItem!.Attributes!.Remove(commentToRemove);
+        tableItem.Attributes?.Remove(commentToRemove);
+
+        UpdateTableItemLineComment(tableItem);
 
         NotifyStateChanged();
 
         return "success";
+    }
+
+    private void UpdateTableItemLineComment(TableItem tableItem)
+    {
+        var comments = tableItem.Attributes?
+            .Where(attr => attr.Id >= 5000 && !string.IsNullOrWhiteSpace(attr.Name))
+            .Select(attr => attr.Name!.Trim())
+            .ToList();
+
+        tableItem.LineComment = (comments != null && comments.Any())
+            ? string.Join(", ", comments)
+            : null;
     }
 
     public void AddItemDiscount(string discountType, decimal discountValue)

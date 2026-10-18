@@ -24,6 +24,25 @@
 
                 <MudSpacer />
 
+                @if (AvailableBranches.Any())
+                {
+                    <div class="mx-3" style="min-width: 170px;">
+                        <MudSelect T="int?" @bind-Value="_selectedBranchId" 
+                                   Dense="true" 
+                                   Variant="Variant.Outlined" 
+                                   Margin="Margin.Dense" 
+                                   Placeholder="جميع الفروع" 
+                                   Clearable="true"
+                                   Style="background: white; border-radius: 6px;">
+                            <MudSelectItem T="int?" Value="@((int?)null)">جميع الفروع</MudSelectItem>
+                            @foreach (var b in AvailableBranches)
+                            {
+                                <MudSelectItem T="int?" Value="@((int?)b.Id)">@b.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+                }
+
                 <div class="toggle-group">
                     <MudButton OnClick="() => ToggleAssigned(false)"
                              Disabled="@(!showAssigned)"

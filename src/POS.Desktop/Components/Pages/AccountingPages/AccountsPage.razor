@@ -16,6 +16,8 @@
             
             <div class="filter-section d-flex align-center">
                 <MudDatePicker @bind-Date="_selectedDate" 
+                               DateFormat="dd/MM/yyyy"
+                               PickerVariant="PickerVariant.Dialog"
                                Label="@Localizer["SelectDate"]" 
                                Variant="Variant.Outlined" 
                                Margin="Margin.Dense" 

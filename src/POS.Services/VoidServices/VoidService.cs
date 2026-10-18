@@ -6,6 +6,7 @@ using POS.Core.Entities.Item;
 using POS.Core.Repository.Contract;
 using POS.Core.Services.Contract.VoidServices;
 using POS.Core.Services.Contract.InventoryServices;
+using POS.Core.Entities.Date;
 using Serilog;
 
 namespace POS.Services.VoidServices;
@@ -30,15 +31,20 @@ public class VoidService : IVoidService
 
         // Get all orders that have any voiding records in history
         var voidSpec = new OrderVoidSpecs(dateStart, dateEnd);
+        var voidSessions = (await _unitOfWork.Repository<OrderVoid>().GetAllWithSpecificationAsync(voidSpec))?.ToList() ?? new();
+        
+        // Also include orders marked voided or having voided amount on this date or created on this date
+        var directVoidSpec = new BaseSpecifications<Orders>(o =>
+            (o.OrderState == OrderStates.Voided || (o.TotalVoid.HasValue && o.TotalVoid > 0)) &&
+            ((o.VoidTime.HasValue && o.VoidTime >= dateStart && o.VoidTime < dateEnd) ||
+             (o.OrderDate.HasValue && o.OrderDate >= dateStart && o.OrderDate < dateEnd)));
+        directVoidSpec.Includes.Add(o => o.OrderDetails!);
+        var directVoidOrders = (await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(directVoidSpec))?.ToList() ?? new();
 
-        var voidSessions = await _unitOfWork.Repository<OrderVoid>().GetAllWithSpecificationAsync(voidSpec);
-        
-        // Group by Order to show summaries or list sessions
-        // For compatibility with previous DTO, we might want to return a list of orders with their aggregated void info
-        // But the user specifically asked to see WHO and WHEN for MULTIPLE people.
-        
-        // Let's adapt the existing report to show orders but include nested history
-        var orderIds = voidSessions.Select(v => v.OrderId).Distinct().ToList();
+        var orderIds = voidSessions.Select(v => v.OrderId)
+            .Union(directVoidOrders.Select(o => o.Id))
+            .Distinct()
+            .ToList();
         
         var ordersSpec = new BaseSpecifications<Orders>(o => orderIds.Contains(o.Id));
         ordersSpec.Includes.Add(o => o.OrderDetails!);
@@ -49,10 +55,10 @@ public class VoidService : IVoidService
             var sessions = voidSessions.Where(v => v.OrderId == order.Id).OrderBy(v => v.VoidDate).ToList();
             var lastSession = sessions.LastOrDefault();
 
-            decimal voidedAmt = sessions.Sum(s => s.TotalVoidedAmount);
+            decimal voidedAmt = sessions.Any() ? sessions.Sum(s => s.TotalVoidedAmount) : (order.VoidAmount ?? order.TotalVoid ?? 0);
             decimal currentTotal = order.GrandTotal ?? 0;
-            decimal originalTotal = (order.OrderState == OrderStates.Voided && sessions.Any(s => s.IsFullVoid))
-                ? voidedAmt 
+            decimal originalTotal = (order.OrderState == OrderStates.Voided && (sessions.Any(s => s.IsFullVoid) || !sessions.Any()))
+                ? (voidedAmt > 0 ? voidedAmt : currentTotal) 
                 : currentTotal + voidedAmt;
 
             var voidedItems = (order.OrderDetails ?? new List<OrderItemsDetails>())
@@ -69,9 +75,9 @@ public class VoidService : IVoidService
                     VoidedValue = d.TotalVoidAmount,
                     IsFullyVoided = d.IsVoided == true,
                     // Note: These now represent the LATEST void info for this item
-                    VoidByName = d.VoidByName,
-                    VoidTime = d.VoidTime,
-                    VoidReason = d.VoidReason
+                    VoidByName = d.VoidByName ?? order.VoidByName,
+                    VoidTime = d.VoidTime ?? order.VoidTime,
+                    VoidReason = d.VoidReason ?? order.VoidReason
                 }).ToList();
 
             return new VoidReportDto
@@ -90,10 +96,10 @@ public class VoidService : IVoidService
                 DriverName = order.DriverName,
                 BranchName = order.BranchName,
                 BranchId = order.BranchID,
-                VoidBy = lastSession?.VoidedBy,
-                VoidByName = lastSession?.VoidedByName,
-                VoidTime = lastSession?.VoidDate,
-                VoidReason = lastSession?.Reason,
+                VoidBy = lastSession?.VoidedBy ?? order.VoidBy,
+                VoidByName = lastSession?.VoidedByName ?? order.VoidByName,
+                VoidTime = lastSession?.VoidDate ?? order.VoidTime,
+                VoidReason = lastSession?.Reason ?? order.VoidReason,
                 VoidCount = order.VoidCount,
                 OriginalTotal = originalTotal,
                 VoidedAmount = voidedAmt,
@@ -116,7 +122,10 @@ public class VoidService : IVoidService
 
             if (order is null) return false;
 
-            DateTime voidTime = DateTime.Now;
+            var appDates = await _unitOfWork.Repository<AppDate>().GetAllAsync();
+            var appDate = appDates?.FirstOrDefault();
+            DateTime workingDate = (appDate != null && appDate.PosDate.Year > 2000) ? appDate.PosDate.Date : DateTime.Today;
+            DateTime voidTime = workingDate.Add(DateTime.Now.TimeOfDay);
 
             // Create Void Header (History)
             var voidOperation = new OrderVoid
@@ -270,7 +279,10 @@ public class VoidService : IVoidService
             var order = await _unitOfWork.Repository<Orders>().GetByIdWithSpecificationTrackedAsync(spec);
             if (order is null) return false;
 
-            DateTime voidTime = DateTime.Now;
+            var appDates = await _unitOfWork.Repository<AppDate>().GetAllAsync();
+            var appDate = appDates?.FirstOrDefault();
+            DateTime workingDate = (appDate != null && appDate.PosDate.Year > 2000) ? appDate.PosDate.Date : DateTime.Today;
+            DateTime voidTime = workingDate.Add(DateTime.Now.TimeOfDay);
 
             var voidOperation = new OrderVoid
             {

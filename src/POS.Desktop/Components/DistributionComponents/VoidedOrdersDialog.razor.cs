@@ -1,4 +1,5 @@
 using BlazorBase.ERPFrontServices.AppDateServices;
+using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.VoidServices;
 using POS.Contract.Dtos.VoidDtos;
 
@@ -8,8 +9,11 @@ public partial class VoidedOrdersDialog
 {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
+    [Parameter] public string? DefaultOrderType { get; set; }
+
     [Inject] IAppDateService AppDateService { get; set; } = default!;
     [Inject] IVoidErpService VoidErpService { get; set; } = default!;
+    [Inject] IBranchService BranchService { get; set; } = default!;
 
     private List<VoidReportDto> Report { get; set; } = new();
     private bool _isLoading = false;
@@ -18,15 +22,33 @@ public partial class VoidedOrdersDialog
     private DateTime? _selectedDateNullable = DateTime.Today;
 
     private string? _filterOrderType;
+    private string? _filterBranch;
     private string? _filterVoidStatus;
     private string? _searchText;
 
     private MudTable<VoidReportDto>? _table;
 
+    private List<string> _allBranchNames = new();
+
+    private IEnumerable<string> AvailableBranches
+    {
+        get
+        {
+            var branches = new HashSet<string>(_allBranchNames);
+            foreach (var r in Report.Where(x => !string.IsNullOrEmpty(x.BranchName)))
+            {
+                branches.Add(r.BranchName!);
+            }
+            return branches.OrderBy(b => b).ToList();
+        }
+    }
+
     private IEnumerable<VoidReportDto> FilteredReport => Report
         .Where(r =>
         {
             if (!string.IsNullOrEmpty(_filterOrderType) && r.OrderType != _filterOrderType)
+                return false;
+            if (_filterOrderType == "Delivery" && !string.IsNullOrEmpty(_filterBranch) && r.BranchName != _filterBranch)
                 return false;
             if (!string.IsNullOrEmpty(_filterVoidStatus))
             {
@@ -40,6 +62,7 @@ public partial class VoidedOrdersDialog
                     || (r.VoidByName?.ToLower().Contains(s) ?? false)
                     || (r.VoidReason?.ToLower().Contains(s) ?? false)
                     || (r.Phone?.Contains(s) ?? false)
+                    || (r.BranchName?.ToLower().Contains(s) ?? false)
                     || r.OrderId.ToString().Contains(s);
             }
             return true;
@@ -49,6 +72,11 @@ public partial class VoidedOrdersDialog
 
     protected override async Task OnInitializedAsync()
     {
+        if (!string.IsNullOrEmpty(DefaultOrderType))
+        {
+            _filterOrderType = DefaultOrderType;
+        }
+
         try
         {
             var appDate = await AppDateService.GetAppDate();
@@ -64,6 +92,23 @@ public partial class VoidedOrdersDialog
         catch
         {
             _selectedDateNullable = DateTime.Today;
+        }
+
+        try
+        {
+            var branchList = await BranchService.GetBranches();
+            if (branchList != null && branchList.Any())
+            {
+                _allBranchNames = branchList
+                    .Where(b => !string.IsNullOrWhiteSpace(b.Name))
+                    .Select(b => b.Name!.Trim())
+                    .Distinct()
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading branches: {ex.Message}");
         }
 
         await LoadReport();
