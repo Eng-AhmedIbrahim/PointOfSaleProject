@@ -783,7 +783,7 @@ public class OrderController : BaseApiController
             if (!wasAlreadyVoided)
             {
                 var resultDto = _mapper.Map<OrderDto>(order);
-                var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                var orderSettings = await _orderService.GetOrderSettingsAsync(null); // CC's MachineName not registered at branch
                 resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
                 
                 // Trigger kitchen void print locally at the branch
@@ -812,7 +812,8 @@ public class OrderController : BaseApiController
                 var resultDto = _mapper.Map<OrderDto>(order);
                 resultDto.OrderDetails = orderDto.OrderDetails; // keep original items list for printing
                 resultDto.CallCenterOrderId = order.CallCenterOrderId;
-                var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                // Use null so we get ALL settings (CC's MachineName is not registered at the branch)
+                var orderSettings = await _orderService.GetOrderSettingsAsync(null);
                 resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
                 var settingForType = orderSettings.FirstOrDefault(s =>
