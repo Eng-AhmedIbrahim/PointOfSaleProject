@@ -745,7 +745,7 @@ public class OrderController : BaseApiController
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    [HttpPut("receiveUpdateFromCallCenter")]
+    [HttpPost("receiveUpdateFromCallCenter")]
     public async Task<IActionResult> ReceiveUpdateFromCallCenter([FromBody] OrderDto orderDto)
     {
         if (orderDto == null || orderDto.Id <= 0)
@@ -795,21 +795,60 @@ public class OrderController : BaseApiController
         if (orderDto.GrandTotal.HasValue && orderDto.GrandTotal > 0) order.GrandTotal = orderDto.GrandTotal.Value;
         if (orderDto.SubTotal.HasValue && orderDto.SubTotal > 0) order.Subtotal = orderDto.SubTotal.Value;
 
-        if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
+        bool hasItemChanges = orderDto.OrderDetails != null && orderDto.OrderDetails.Any();
+
+        if (hasItemChanges)
         {
-            var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails);
+            var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails!);
             order.OrderDetails = orderItems;
             order.Tax = orderDto.Tax ?? order.Tax;
             order.TotalDiscount = orderDto.TotalOrderDiscount ?? order.TotalDiscount;
             order.Discount = orderDto.DiscountPercentage ?? order.Discount;
             await _orderService.FullUpdateOrderAsync(order);
+
+            // Print kitchen + delivery receipts for the updated items at the branch
+            try
+            {
+                var resultDto = _mapper.Map<OrderDto>(order);
+                resultDto.OrderDetails = orderDto.OrderDetails; // keep original items list for printing
+                resultDto.CallCenterOrderId = order.CallCenterOrderId;
+                var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+                resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
+
+                var settingForType = orderSettings.FirstOrDefault(s =>
+                    string.Equals(s.OrderType, order.OrderType.ToString(), StringComparison.OrdinalIgnoreCase));
+
+                if (settingForType != null)
+                {
+                    List<string> branchDetails = await GetBranchDetails(resultDto);
+                    if (order.OrderType == OrderTypes.Delivery)
+                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: true);
+                    else if (order.OrderType == OrderTypes.TakeAway)
+                        await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: true);
+
+                    if (settingForType.FullKitchenReceiptCount > 0)
+                        await PrintBackupReceipts(resultDto, order, isFollowUp: true);
+
+                    if (settingForType.SeparateReceiptCount > 0)
+                        await PrintKitchenReceipts(resultDto, order, isFollowUp: true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "[CC Update] Error printing receipts for updated order {OrderId} at branch", order.OrderID);
+            }
+
+            // Trigger bell + re-print on Distribution page by sending ReceiveNewDeliveryOrder
+            var notifyDto = _mapper.Map<OrderDto>(order);
+            notifyDto.CallCenterOrderId = order.CallCenterOrderId;
+            await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", notifyDto);
         }
         else
         {
             await _orderService.UpdateOrderAsync(order);
         }
 
-        // Notify UI (Dispatcher etc)
+        // Always notify UI for state/driver updates
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
 
         return Ok(true);

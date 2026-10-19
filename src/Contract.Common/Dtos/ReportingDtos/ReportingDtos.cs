@@ -83,6 +83,9 @@ public class ModeDetails
     public decimal NetSales => Subtotal - Discount;
     public decimal TotalTaxAndService { get; set; }
     public decimal GrandTotal { get; set; }
+    public decimal VoidAmount { get; set; }
+    public int VoidCount { get; set; }
+    public int DiscountCount { get; set; }
     public int OrderCount { get; set; }
 }
 
@@ -113,7 +116,13 @@ public class AccountSummaryDto
     public decimal Expenses { get; set; }
     public decimal VoidAmount { get; set; }
     public decimal DiscountAmount { get; set; }
-    public int OrderCount { get; set; }
+    public int OrderCount { get; set; } // Total orders handled
+    public int CompletedCount { get; set; }
+    public int VoidCount { get; set; }
+    public int DiscountCount { get; set; }
+    public int TakeAwayCount { get; set; }
+    public int DeliveryCount { get; set; }
+    public int DineInCount { get; set; }
     public decimal TotalAmount => CashAmount + CreditAmount + OnAccountAmount;
 }
 

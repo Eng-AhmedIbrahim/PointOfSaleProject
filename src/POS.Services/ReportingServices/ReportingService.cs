@@ -141,7 +141,7 @@ public class ReportingService : IReportingService
             .ToList();
 
         // Analytics: Mode Details (Rich Breakdown)
-        summary.Overall.ModeDetails = new List<ModeDetails>
+        var allModes = new List<ModeDetails>
         {
             CreateModeDetail("الصالة", orders, OrderTypes.DineIn),
             CreateModeDetail("التوصيل", orders, OrderTypes.Delivery),
@@ -149,6 +149,7 @@ public class ReportingService : IReportingService
             CreateModeDetail("العاملين", orders, OrderTypes.Staff),
             CreateModeDetail("ضيافة", orders, OrderTypes.Hospitality)
         };
+        summary.Overall.ModeDetails = allModes.Where(m => m.OrderCount > 0 || m.GrandTotal > 0 || m.Discount > 0 || m.VoidAmount > 0).ToList();
 
         decimal totalValue = summary.Overall.TotalSales + summary.Overall.PendingAmount;
         if (totalValue > 0)
@@ -171,9 +172,15 @@ public class ReportingService : IReportingService
                 Type = "Cashier",
                 CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
                 CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
-                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
-                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
-                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
+                VoidAmount = g.Sum(o => (o.TotalVoid ?? 0) > 0 ? o.TotalVoid.Value : (o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? (o.GrandTotal ?? (o.Subtotal ?? 0)) : 0))),
+                DiscountAmount = g.Sum(o => (o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : ((o.Discount ?? 0) > 0 ? o.Discount.Value : (o.DiscountedItems ?? 0))),
+                OrderCount = g.Count(),
+                CompletedCount = g.Count(o => o.OrderState == OrderStates.Completed),
+                VoidCount = g.Count(o => o.OrderState == OrderStates.Voided || (o.VoidAmount ?? 0) > 0 || (o.TotalVoid ?? 0) > 0),
+                DiscountCount = g.Count(o => (o.TotalDiscount ?? 0) > 0 || (o.Discount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0),
+                TakeAwayCount = g.Count(o => o.OrderType == OrderTypes.TakeAway),
+                DeliveryCount = g.Count(o => o.OrderType == OrderTypes.Delivery),
+                DineInCount = g.Count(o => o.OrderType == OrderTypes.DineIn)
             }).ToList();
 
         // 2. Waiter Summaries (for Dine-In)
@@ -187,9 +194,15 @@ public class ReportingService : IReportingService
                 Type = "Waiter",
                 CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
                 CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
-                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
-                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
-                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
+                VoidAmount = g.Sum(o => (o.TotalVoid ?? 0) > 0 ? o.TotalVoid.Value : (o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? (o.GrandTotal ?? (o.Subtotal ?? 0)) : 0))),
+                DiscountAmount = g.Sum(o => (o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : ((o.Discount ?? 0) > 0 ? o.Discount.Value : (o.DiscountedItems ?? 0))),
+                OrderCount = g.Count(),
+                CompletedCount = g.Count(o => o.OrderState == OrderStates.Completed),
+                VoidCount = g.Count(o => o.OrderState == OrderStates.Voided || (o.VoidAmount ?? 0) > 0 || (o.TotalVoid ?? 0) > 0),
+                DiscountCount = g.Count(o => (o.TotalDiscount ?? 0) > 0 || (o.Discount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0),
+                TakeAwayCount = g.Count(o => o.OrderType == OrderTypes.TakeAway),
+                DeliveryCount = g.Count(o => o.OrderType == OrderTypes.Delivery),
+                DineInCount = g.Count(o => o.OrderType == OrderTypes.DineIn)
             }).ToList();
 
         // 3. Driver Summaries (for Delivery)
@@ -203,9 +216,15 @@ public class ReportingService : IReportingService
                 Type = "Driver",
                 CashAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
                 CreditAmount = g.Where(o => o.OrderState == OrderStates.Completed && o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
-                VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? o.GrandTotal ?? 0 : 0)),
-                DiscountAmount = g.Sum(o => o.TotalDiscount ?? 0),
-                OrderCount = g.Count(o => o.OrderState == OrderStates.Completed)
+                VoidAmount = g.Sum(o => (o.TotalVoid ?? 0) > 0 ? o.TotalVoid.Value : (o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? (o.GrandTotal ?? (o.Subtotal ?? 0)) : 0))),
+                DiscountAmount = g.Sum(o => (o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : ((o.Discount ?? 0) > 0 ? o.Discount.Value : (o.DiscountedItems ?? 0))),
+                OrderCount = g.Count(),
+                CompletedCount = g.Count(o => o.OrderState == OrderStates.Completed),
+                VoidCount = g.Count(o => o.OrderState == OrderStates.Voided || (o.VoidAmount ?? 0) > 0 || (o.TotalVoid ?? 0) > 0),
+                DiscountCount = g.Count(o => (o.TotalDiscount ?? 0) > 0 || (o.Discount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0),
+                TakeAwayCount = g.Count(o => o.OrderType == OrderTypes.TakeAway),
+                DeliveryCount = g.Count(o => o.OrderType == OrderTypes.Delivery),
+                DineInCount = g.Count(o => o.OrderType == OrderTypes.DineIn)
             }).ToList();
 
         // Combine all and ensure unique entries per ID+Type
@@ -254,14 +273,29 @@ public class ReportingService : IReportingService
         var modeOrders = orders.Where(o => o.OrderType == type).ToList();
         var completed = modeOrders.Where(o => o.OrderState == OrderStates.Completed).ToList();
         
+        decimal voidAmount = modeOrders.Sum(o => (o.TotalVoid ?? 0) > 0 ? o.TotalVoid.Value : (o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? (o.GrandTotal ?? (o.Subtotal ?? 0)) : 0)));
+        foreach (var o in completed)
+        {
+            if (o.OrderDetails != null)
+            {
+                var itemVoids = o.OrderDetails.Where(i => i.IsVoided == true || (i.TotalVoidAmount ?? 0) > 0 || (i.VoidAmount ?? 0) > 0)
+                    .Sum(i => (i.TotalVoidAmount ?? 0) > 0 ? i.TotalVoidAmount.Value : (i.TotalAmount ?? ((i.UnitPrice ?? 0) * (i.Quantity ?? 1))));
+                if ((o.VoidAmount ?? 0) == 0 && (o.TotalVoid ?? 0) == 0 && itemVoids > 0)
+                {
+                    voidAmount += itemVoids;
+                }
+            }
+        }
+
         return new ModeDetails
         {
             ModeTitle = title,
             Subtotal = completed.Sum(o => o.Subtotal ?? 0),
-            Discount = completed.Sum(o => o.Discount ?? 0),
+            Discount = modeOrders.Sum(o => (o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : ((o.Discount ?? 0) > 0 ? o.Discount.Value : (o.DiscountedItems ?? 0))),
             TotalTaxAndService = completed.Sum(o => (o.Tax ?? 0) + (o.Service ?? 0) + (o.DeliveryFees ?? 0)),
             GrandTotal = completed.Sum(o => o.GrandTotal ?? 0),
-            OrderCount = modeOrders.Count
+            OrderCount = modeOrders.Count,
+            VoidAmount = voidAmount
         };
     }
 
@@ -290,22 +324,76 @@ public class ReportingService : IReportingService
 
     public async Task<List<AccountSummaryDto>> GetAccountsSummaryAsync(DateTime posDate, string staffType)
     {
-        var spec = new BaseSpecifications<Orders>(o => o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date && o.OrderState == OrderStates.Completed);
+        Expression<Func<Orders, bool>> criteria = o =>
+            (o.OrderDate.HasValue && o.OrderDate.Value.Date == posDate.Date) ||
+            (o.VoidTime.HasValue && o.VoidTime.Value.Date == posDate.Date);
+
+        var spec = new BaseSpecifications<Orders>(criteria);
+        spec.Includes.Add(o => o.OrderDetails!);
         var orders = await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec);
+
+        AccountSummaryDto MapGroup(IGrouping<string, Orders> g, string type)
+        {
+            var first = g.First();
+            string name = type.Equals("Cashier", StringComparison.OrdinalIgnoreCase) ? (first.CashierName ?? "Unknown") :
+                          type.Equals("Waiter", StringComparison.OrdinalIgnoreCase) ? (first.WaiterName ?? "Unknown") :
+                          (first.DriverName ?? "Unknown");
+
+            var completedOrders = g.Where(o => o.OrderState == OrderStates.Completed).ToList();
+            
+            decimal cash = completedOrders.Where(o => o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0);
+            decimal credit = completedOrders.Where(o => o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0);
+            decimal onAccount = completedOrders.Sum(o => o.Remain ?? 0);
+
+            decimal discount = g.Sum(o => (o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : ((o.Discount ?? 0) > 0 ? o.Discount.Value : (o.DiscountedItems ?? 0)));
+
+            decimal voidAmount = g.Sum(o => (o.TotalVoid ?? 0) > 0 ? o.TotalVoid.Value : (o.VoidAmount ?? (o.OrderState == OrderStates.Voided ? (o.GrandTotal ?? (o.Subtotal ?? 0)) : 0)));
+            foreach (var o in completedOrders)
+            {
+                if (o.OrderDetails != null)
+                {
+                    var itemVoids = o.OrderDetails.Where(i => i.IsVoided == true || (i.TotalVoidAmount ?? 0) > 0 || (i.VoidAmount ?? 0) > 0)
+                        .Sum(i => (i.TotalVoidAmount ?? 0) > 0 ? i.TotalVoidAmount.Value : (i.TotalAmount ?? ((i.UnitPrice ?? 0) * (i.Quantity ?? 1))));
+                    if ((o.VoidAmount ?? 0) == 0 && (o.TotalVoid ?? 0) == 0 && itemVoids > 0)
+                    {
+                        voidAmount += itemVoids;
+                    }
+                }
+            }
+
+            return new AccountSummaryDto
+            {
+                Id = g.Key,
+                Name = name,
+                Type = type,
+                CashAmount = cash,
+                CreditAmount = credit,
+                OnAccountAmount = onAccount,
+                DiscountAmount = discount,
+                VoidAmount = voidAmount,
+                OrderCount = g.Count(),
+                CompletedCount = completedOrders.Count,
+                VoidCount = g.Count(o => o.OrderState == OrderStates.Voided || (o.VoidAmount ?? 0) > 0 || (o.TotalVoid ?? 0) > 0),
+                DiscountCount = g.Count(o => (o.TotalDiscount ?? 0) > 0 || (o.Discount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0),
+                TakeAwayCount = g.Count(o => o.OrderType == OrderTypes.TakeAway),
+                DeliveryCount = g.Count(o => o.OrderType == OrderTypes.Delivery),
+                DineInCount = g.Count(o => o.OrderType == OrderTypes.DineIn)
+            };
+        }
 
         if (staffType.Equals("All", StringComparison.OrdinalIgnoreCase))
         {
             var cashiers = orders.Where(o => !string.IsNullOrEmpty(o.CashierID))
                 .GroupBy(o => o.CashierID!)
-                .Select(g => new AccountSummaryDto { Id = g.Key, Name = g.First().CashierName ?? "Unknown", Type = "Cashier", OrderCount = g.Count() });
+                .Select(g => MapGroup(g, "Cashier"));
 
             var waiters = orders.Where(o => !string.IsNullOrEmpty(o.WaiterID))
                 .GroupBy(o => o.WaiterID!)
-                .Select(g => new AccountSummaryDto { Id = g.Key, Name = g.First().WaiterName ?? "Unknown", Type = "Waiter", OrderCount = g.Count() });
+                .Select(g => MapGroup(g, "Waiter"));
 
             var drivers = orders.Where(o => !string.IsNullOrEmpty(o.DriverID))
                 .GroupBy(o => o.DriverID!)
-                .Select(g => new AccountSummaryDto { Id = g.Key, Name = g.First().DriverName ?? "Unknown", Type = "Driver", OrderCount = g.Count() });
+                .Select(g => MapGroup(g, "Driver"));
 
             return cashiers.Concat(waiters).Concat(drivers)
                 .GroupBy(s => new { s.Id, s.Type })
@@ -323,18 +411,7 @@ public class ReportingService : IReportingService
         else // Driver
             groups = orders.Where(o => !string.IsNullOrEmpty(o.DriverID)).GroupBy(o => o.DriverID!);
 
-        return groups.Select(g => new AccountSummaryDto
-        {
-            Id = g.Key,
-            Name = staffType.Equals("Cashier", StringComparison.OrdinalIgnoreCase) ? g.First().CashierName ?? "Unknown" :
-                   staffType.Equals("Waiter", StringComparison.OrdinalIgnoreCase) ? g.First().WaiterName ?? "Unknown" :
-                   g.First().DriverName ?? "Unknown",
-            Type = staffType,
-            CashAmount = g.Where(o => o.PaymentMethod == PaymentMethod.Cash).Sum(o => o.GrandTotal ?? 0),
-            CreditAmount = g.Where(o => o.PaymentMethod == PaymentMethod.Visa).Sum(o => o.GrandTotal ?? 0),
-            OnAccountAmount = g.Sum(o => o.Remain ?? 0),
-            OrderCount = g.Count()
-        }).ToList();
+        return groups.Select(g => MapGroup(g, staffType)).ToList();
     }
 
     public async Task<List<OrderDto>> GetTodayOrdersAsync(DateTime posDate, string? orderType = null)

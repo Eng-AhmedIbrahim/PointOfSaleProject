@@ -124,9 +124,49 @@
 
                         @{
                             // ── Shared data used in both Cashier and A4 ──
-                            var modeDetails = SummaryData.Overall != null && SummaryData.Overall.ModeDetails != null
+                            var resolvedBranchName = !string.IsNullOrWhiteSpace(BranchName)
+                                ? BranchName
+                                : (SummaryData.DetailedOrders?.FirstOrDefault(o => !string.IsNullOrEmpty(o.BranchName))?.BranchName
+                                   ?? _commonProperties.BranchDetails?.Name
+                                   ?? _commonProperties.StoreName
+                                   ?? (_isArabic ? "الفرع الرئيسي" : "Main Branch"));
+
+                            var modeDetails = SummaryData.Overall != null && SummaryData.Overall.ModeDetails != null && SummaryData.Overall.ModeDetails.Any()
                                 ? SummaryData.Overall.ModeDetails
-                                : new List<global::POS.Contract.Dtos.ReportingDtos.ModeDetails>();
+                                : (SummaryData.DetailedOrders != null && SummaryData.DetailedOrders.Any()
+                                    ? SummaryData.DetailedOrders
+                                        .GroupBy(o => o.OrderType ?? "TakeAway")
+                                        .Select(g => new global::POS.Contract.Dtos.ReportingDtos.ModeDetails
+                                        {
+                                            ModeTitle = g.Key == "TakeAway" ? (_isArabic ? "تيك أواي" : "Takeaway") :
+                                                        g.Key == "Delivery" ? (_isArabic ? "دليفري" : "Delivery") :
+                                                        g.Key == "DineIn" ? (_isArabic ? "صالة" : "Dine-In") :
+                                                        g.Key == "Hospitality" ? (_isArabic ? "ضيافة" : "Hospitality") : g.Key,
+                                            OrderCount = g.Count(),
+                                            Discount = g.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0))),
+                                            VoidAmount = g.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0)),
+                                            VoidCount = g.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0),
+                                            DiscountCount = g.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0),
+                                            GrandTotal = g.Where(o => o.OrderState == "Completed").Sum(o => o.GrandTotal ?? 0)
+                                        }).ToList()
+                                    : new List<global::POS.Contract.Dtos.ReportingDtos.ModeDetails>());
+
+                            if ((Items == null || !Items.Any()) && SummaryData.DetailedOrders != null && SummaryData.DetailedOrders.Any())
+                            {
+                                Items = SummaryData.DetailedOrders
+                                    .SelectMany(o => o.OrderDetails ?? new List<global::POS.Contract.Models.TableItem>())
+                                    .Where(i => !i.IsVoided && (i.VoidAmount ?? 0) == 0)
+                                    .GroupBy(i => new { Name = i.Name ?? "صنف", Price = i.Price ?? 0 })
+                                    .Select(g => new SalesItemSummaryDto
+                                    {
+                                        ItemName = g.Key.Name,
+                                        Quantity = g.Sum(x => x.Quantity),
+                                        UnitPrice = g.Key.Price,
+                                        TotalAmount = g.Sum(x => x.Total ?? (x.Quantity * (x.Price ?? 0)))
+                                    })
+                                    .OrderByDescending(x => x.TotalAmount)
+                                    .ToList();
+                            }
                             
                             var filteredOrders = (_showOrderDetails && SummaryData.DetailedOrders != null)
                                 ? GetFilteredOrders().ToList()
@@ -142,7 +182,7 @@
                             <div class="cashier-receipt">
                                 @* Header *@
                                 <div class="cr-header">
-                                    <div class="cr-store">@BranchName</div>
+                                    <div class="cr-store">@resolvedBranchName</div>
                                     <div class="cr-report-title">
                                         @(_isArabic ? "مـلـخـص الـمـبـيـعـات" : "SALES SUMMARY")
                                     </div>
@@ -186,17 +226,34 @@
                                             <tr>
                                                 <th>@(_isArabic ? "الموظف" : "Staff")</th>
                                                 <th>@(_isArabic ? "العدد" : "Qty")</th>
-                                                <th>@(_isArabic ? "فويد/خصم" : "V/D")</th>
+                                                <th>@(_isArabic ? "الخصم" : "Disc")</th>
+                                                <th>@(_isArabic ? "الفويد" : "Void")</th>
                                                 <th>@(_isArabic ? "الإجمالي" : "Total")</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach (var s in SummaryData.CashierSummaries)
                                             {
+                                                var sOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                                var sDisc = s.DiscountAmount > 0 
+                                                    ? s.DiscountAmount 
+                                                    : sOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                                var sVoid = s.VoidAmount > 0 
+                                                    ? s.VoidAmount 
+                                                    : sOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
+                                                var sVoidCount = s.VoidCount > 0 ? s.VoidCount : sOrders.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0);
+                                                var sDiscCount = s.DiscountCount > 0 ? s.DiscountCount : sOrders.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0);
                                                 <tr>
                                                     <td>@s.Name</td>
                                                     <td class="text-center">@s.OrderCount</td>
-                                                    <td class="text-center">@((s.VoidAmount + s.DiscountAmount).ToString("0.##"))</td>
+                                                    <td class="text-center" style="color:#2e7d32;">
+                                                        @sDisc.ToString("0.##")
+                                                        @if (sDiscCount > 0) { <small style="color:#888;">(@sDiscCount)</small> }
+                                                    </td>
+                                                    <td class="text-center" style="color:#c62828;">
+                                                        @sVoid.ToString("0.##")
+                                                        @if (sVoidCount > 0) { <small style="color:#888;">(@sVoidCount)</small> }
+                                                    </td>
                                                     <td class="text-center fw-bold">@s.TotalAmount.ToString("0.##")</td>
                                                 </tr>
                                             }
@@ -218,16 +275,17 @@
                                     <tbody>
                                         @foreach (var m in modeDetails)
                                         {
-                                            var vEvts = SummaryData.VoidEvents ?? new List<VoidEventDto>();
-                                            var mVoid = vEvts.Where(v => v.OrderType.Equals(
-                                                m.ModeTitle.Contains("صالة") || m.ModeTitle.Contains("Dine") ? "DineIn" :
-                                                m.ModeTitle.Contains("تيك") || m.ModeTitle.Contains("Take") ? "TakeAway" : "Delivery",
-                                                StringComparison.OrdinalIgnoreCase)).Sum(v => v.TotalVoidedAmount);
                                             <tr>
                                                 <td>@m.ModeTitle</td>
                                                 <td class="text-center">@m.OrderCount</td>
-                                                <td class="text-center">@m.Discount.ToString("0.##")</td>
-                                                <td class="text-center">@mVoid.ToString("0.##")</td>
+                                                <td class="text-center" style="color:#2e7d32;">
+                                                    @m.Discount.ToString("0.##")
+                                                    @if (m.DiscountCount > 0) { <small style="color:#888;">(@m.DiscountCount)</small> }
+                                                </td>
+                                                <td class="text-center" style="color:#c62828;">
+                                                    @m.VoidAmount.ToString("0.##")
+                                                    @if (m.VoidCount > 0) { <small style="color:#888;">(@m.VoidCount)</small> }
+                                                </td>
                                                 <td class="text-center fw-bold">@m.GrandTotal.ToString("0.##")</td>
                                             </tr>
                                         }
@@ -297,12 +355,17 @@
                                             <tbody>
                                                 @foreach (var order in printOrders)
                                                 {
-                                                    <tr>
+                                                    var isOrderVoided = order.OrderState == "Voided" || (order.VoidAmount ?? 0) > 0;
+                                                    var oVoidAmount = (order.VoidAmount ?? 0) > 0 ? order.VoidAmount.Value : (order.OrderState == "Voided" ? (order.GrandTotal ?? (order.SubTotal ?? 0)) : 0);
+                                                    var oDiscAmount = (order.TotalOrderDiscount ?? 0) > 0 ? order.TotalOrderDiscount.Value : ((order.TotalDiscount ?? 0) > 0 ? order.TotalDiscount.Value : (order.DiscountedItems ?? 0));
+                                                    var hasDiscount = oDiscAmount > 0;
+
+                                                    <tr style="@(isOrderVoided ? "background-color: #fff0f0;" : hasDiscount ? "background-color: #f0fff4;" : "")">
                                                         @if (_isArabic)
                                                         {
-                                                            <td class="num">@order.GrandTotal?.ToString("0.##")</td>
-                                                            <td class="num" style="color:#c62828;">@(order.VoidAmount > 0 ? order.VoidAmount?.ToString("0.##") : "")</td>
-                                                            <td class="num" style="color:#2e7d32;">@(order.TotalDiscount > 0 ? order.TotalDiscount?.ToString("0.##") : "")</td>
+                                                            <td class="num fw-bold @(isOrderVoided ? "text-decoration-line-through" : "")">@order.GrandTotal?.ToString("0.##")</td>
+                                                            <td class="num" style="color:#c62828;">@(isOrderVoided ? oVoidAmount.ToString("0.##") : "")</td>
+                                                            <td class="num" style="color:#2e7d32;">@(hasDiscount ? oDiscAmount.ToString("0.##") : "")</td>
                                                             <td class="lbl-cell">@order.OrderType</td>
                                                             <td class="num">#@order.OrderId</td>
                                                         }
@@ -310,37 +373,38 @@
                                                         {
                                                             <td class="num">#@order.OrderId</td>
                                                             <td class="lbl-cell">@order.OrderType</td>
-                                                            <td class="num" style="color:#2e7d32;">@(order.TotalDiscount > 0 ? order.TotalDiscount?.ToString("0.##") : "")</td>
-                                                            <td class="num" style="color:#c62828;">@(order.VoidAmount > 0 ? order.VoidAmount?.ToString("0.##") : "")</td>
-                                                            <td class="num">@order.GrandTotal?.ToString("0.##")</td>
+                                                            <td class="num" style="color:#2e7d32;">@(hasDiscount ? oDiscAmount.ToString("0.##") : "")</td>
+                                                            <td class="num" style="color:#c62828;">@(isOrderVoided ? oVoidAmount.ToString("0.##") : "")</td>
+                                                            <td class="num fw-bold @(isOrderVoided ? "text-decoration-line-through" : "")">@order.GrandTotal?.ToString("0.##")</td>
                                                         }
                                                     </tr>
-                                                    @if (_showVoidDiscountDetails)
+                                                    @if (isOrderVoided)
                                                     {
-                                                        @if ((order.VoidAmount ?? 0) > 0)
-                                                        {
-                                                            <tr class="reason-row reason-void">
-                                                                <td colspan="5">
-                                                                    🚫 <strong>@(_isArabic ? "سبب الفويد:" : "Void:")</strong> @(order.VoidReason ?? "—")
-                                                                    @if (!string.IsNullOrEmpty(order.VoidByName))
-                                                                    {
-                                                                        <span class="by"> — @order.VoidByName</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                        @if ((order.TotalDiscount ?? 0) > 0)
-                                                        {
-                                                            <tr class="reason-row reason-disc">
-                                                                <td colspan="5">
-                                                                    🏷️ <strong>@(_isArabic ? "سبب الخصم:" : "Disc:")</strong> @(order.DiscountReason ?? "—")
-                                                                    @if (!string.IsNullOrEmpty(order.DiscountByName))
-                                                                    {
-                                                                        <span class="by"> — @order.DiscountByName</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
+                                                        <tr class="reason-row reason-void">
+                                                            <td colspan="5">
+                                                                🚫 <strong>@(_isArabic ? "سبب الفويد:" : "Void:")</strong> @(string.IsNullOrEmpty(order.VoidReason) ? (_isArabic ? "ملغي" : "Voided") : order.VoidReason)
+                                                                @if (!string.IsNullOrEmpty(order.VoidByName))
+                                                                {
+                                                                    <span class="by"> — @order.VoidByName</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    @if (hasDiscount)
+                                                    {
+                                                        <tr class="reason-row reason-disc">
+                                                            <td colspan="5">
+                                                                🏷️ <strong>@(_isArabic ? "سبب الخصم:" : "Disc:")</strong> @(string.IsNullOrEmpty(order.DiscountReason) ? (_isArabic ? "خصم" : "Discount") : order.DiscountReason)
+                                                                @if (!string.IsNullOrEmpty(order.DiscountByName))
+                                                                {
+                                                                    <span class="by"> — @order.DiscountByName</span>
+                                                                }
+                                                                @if (!string.IsNullOrEmpty(order.DiscountType))
+                                                                {
+                                                                    <span class="by"> — @order.DiscountType</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
                                                     }
                                                 }
                                             </tbody>
@@ -356,15 +420,37 @@
                                     {
                                         foreach (var s in SummaryData.CashierSummaries)
                                         {
+                                            var staffOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                            var sDisc = s.DiscountAmount > 0 
+                                                ? s.DiscountAmount 
+                                                : staffOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                            var sVoid = s.VoidAmount > 0 
+                                                ? s.VoidAmount 
+                                                : staffOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
+
+                                            var sVoidCount = s.VoidCount > 0 ? s.VoidCount : staffOrders.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0);
+                                            var sDiscCount = s.DiscountCount > 0 ? s.DiscountCount : staffOrders.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0);
+
                                             <div class="cr-section-title" style="background:#1e88e5; color:white; padding:4px;">@(s.Name)</div>
                                             <table class="cr-table" style="margin-bottom:8px; border:1px solid #1e88e5;">
                                                 <tr><td class="lbl-cell" style="width:60%;">@(_isArabic ? "العدد" : "Qty")</td><td class="num">@s.OrderCount</td></tr>
-                                                <tr><td class="lbl-cell" style="width:60%; color:#c62828;">@(_isArabic ? "إجمالي الفويد" : "Total Void")</td><td class="num" style="color:#c62828;">@s.VoidAmount.ToString("0.##")</td></tr>
-                                                <tr><td class="lbl-cell" style="width:60%; color:#1b5e20;">@(_isArabic ? "إجمالي الخصم" : "Total Discount")</td><td class="num" style="color:#1b5e20;">@s.DiscountAmount.ToString("0.##")</td></tr>
+                                                <tr>
+                                                    <td class="lbl-cell" style="width:60%; color:#c62828;">@(_isArabic ? "إجمالي الفويد" : "Total Void")</td>
+                                                    <td class="num" style="color:#c62828;">
+                                                        @sVoid.ToString("0.##")
+                                                        @if (sVoidCount > 0) { <small style="color:#888;"> (@(_isArabic ? $"{sVoidCount} طلب" : $"{sVoidCount} ord"))</small> }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="lbl-cell" style="width:60%; color:#1b5e20;">@(_isArabic ? "إجمالي الخصم" : "Total Discount")</td>
+                                                    <td class="num" style="color:#1b5e20;">
+                                                        @sDisc.ToString("0.##")
+                                                        @if (sDiscCount > 0) { <small style="color:#888;"> (@(_isArabic ? $"{sDiscCount} طلب" : $"{sDiscCount} ord"))</small> }
+                                                    </td>
+                                                </tr>
                                                 <tr><td class="lbl-cell cr-bold" style="width:60%;">@(_isArabic ? "الإجمالي" : "Total")</td><td class="num cr-bold">@s.TotalAmount.ToString("0.##")</td></tr>
                                             </table>
                                             
-                                            var staffOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
                                             var staffItems = staffOrders.SelectMany(o => o.OrderDetails ?? new List<global::POS.Contract.Models.TableItem>())
                                                 .GroupBy(i => i.Name)
                                                 .Select(g => new { Name = g.Key, Qty = g.Sum(x => x.Quantity), Total = g.Sum(x => x.Total ?? ((x.Price ?? 0) * x.Quantity)) })
@@ -402,7 +488,8 @@
                                             <thead>
                                                 <tr>
                                                     <th>@(_isArabic ? "الإجمالي" : "Total")</th>
-                                                    <th>@(_isArabic ? "فويد/خصم" : "V/D")</th>
+                                                    <th>@(_isArabic ? "الفويد" : "Void")</th>
+                                                    <th>@(_isArabic ? "الخصم" : "Disc")</th>
                                                     <th>@(_isArabic ? "العدد" : "Qty")</th>
                                                     <th>@(_isArabic ? "الموظف" : "Staff")</th>
                                                 </tr>
@@ -410,9 +497,25 @@
                                             <tbody>
                                                 @foreach (var s in SummaryData.CashierSummaries)
                                                 {
+                                                    var sOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                                    var sDisc = s.DiscountAmount > 0 
+                                                        ? s.DiscountAmount 
+                                                        : sOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                                    var sVoid = s.VoidAmount > 0 
+                                                        ? s.VoidAmount 
+                                                        : sOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
+                                                    var sVoidCount = s.VoidCount > 0 ? s.VoidCount : sOrders.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0);
+                                                    var sDiscCount = s.DiscountCount > 0 ? s.DiscountCount : sOrders.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0);
                                                     <tr>
                                                         <td class="num">@s.TotalAmount.ToString("0.##")</td>
-                                                        <td class="num" style="font-size: 9px;">@s.VoidAmount.ToString("0.##") / @s.DiscountAmount.ToString("0.##")</td>
+                                                        <td class="num" style="color:#c62828;">
+                                                            @sVoid.ToString("0.##")
+                                                            @if (sVoidCount > 0) { <small style="color:#888;">(@sVoidCount)</small> }
+                                                        </td>
+                                                        <td class="num" style="color:#2e7d32;">
+                                                            @sDisc.ToString("0.##")
+                                                            @if (sDiscCount > 0) { <small style="color:#888;">(@sDiscCount)</small> }
+                                                        </td>
                                                         <td class="num">@s.OrderCount</td>
                                                         <td>@s.Name</td>
                                                     </tr>
@@ -482,7 +585,7 @@
                                 }
 
                                 <div class="cr-footer">
-                                    @(_isArabic ? "طُبع في:" : "Printed:") @DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+                                    @(_isArabic ? "طُبع في:" : "Printed:") @DateTime.Now.ToString("dd/MM/yyyy  hh:mm tt")
                                 </div>
                             </div>
                         }
@@ -584,12 +687,19 @@
                                         <tbody>
                                             @foreach (var s in SummaryData.CashierSummaries)
                                             {
+                                                var sOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                                var sDisc = s.DiscountAmount > 0 
+                                                    ? s.DiscountAmount 
+                                                    : sOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                                var sVoid = s.VoidAmount > 0 
+                                                    ? s.VoidAmount 
+                                                    : sOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
                                                 <tr>
                                                     <td>@s.Name</td>
                                                     <td class="text-center">@s.OrderCount</td>
                                                     <td class="text-center">@s.CashAmount.ToString("N2")</td>
                                                     <td class="text-center">@s.CreditAmount.ToString("N2")</td>
-                                                    <td class="text-center">@((s.VoidAmount + s.DiscountAmount).ToString("0.##"))</td>
+                                                    <td class="text-center">@((sVoid + sDisc).ToString("0.##"))</td>
                                                     <td class="text-center fw-bold">@s.TotalAmount.ToString("0.##")</td>
                                                 </tr>
                                             }
@@ -626,54 +736,56 @@
                                             <tbody>
                                                 @foreach (var order in printOrders)
                                                 {
-                                                    <tr>
+                                                    var isOrderVoided = order.OrderState == "Voided" || (order.VoidAmount ?? 0) > 0;
+                                                    var oVoidAmount = (order.VoidAmount ?? 0) > 0 ? order.VoidAmount.Value : (order.OrderState == "Voided" ? (order.GrandTotal ?? (order.SubTotal ?? 0)) : 0);
+                                                    var oDiscAmount = (order.TotalOrderDiscount ?? 0) > 0 ? order.TotalOrderDiscount.Value : ((order.TotalDiscount ?? 0) > 0 ? order.TotalDiscount.Value : (order.DiscountedItems ?? 0));
+                                                    var hasDiscount = oDiscAmount > 0;
+
+                                                    <tr style="@(isOrderVoided ? "background-color: #fff0f0;" : hasDiscount ? "background-color: #f0fff4;" : "")">
                                                         @if (_isArabic)
                                                         {
-                                                            <td class="text-center fw-bold">@order.GrandTotal?.ToString("0.##")</td>
-                                                            <td class="text-center" style="color:#c62828;">@(order.VoidAmount > 0 ? order.VoidAmount?.ToString("0.##") : "")</td>
-                                                            <td class="text-center" style="color:#2e7d32;">@(order.TotalDiscount > 0 ? order.TotalDiscount?.ToString("0.##") : "")</td>
+                                                            <td class="text-center fw-bold @(isOrderVoided ? "text-decoration-line-through" : "")">@order.GrandTotal?.ToString("0.##")</td>
+                                                            <td class="text-center" style="color:#c62828;">@(isOrderVoided ? oVoidAmount.ToString("0.##") : "")</td>
+                                                            <td class="text-center" style="color:#2e7d32;">@(hasDiscount ? oDiscAmount.ToString("0.##") : "")</td>
                                                             <td>@order.OrderType #@order.OrderId</td>
                                                         }
                                                         else
                                                         {
                                                             <td>@order.OrderType #@order.OrderId</td>
-                                                            <td class="text-center" style="color:#2e7d32;">@(order.TotalDiscount > 0 ? order.TotalDiscount?.ToString("0.##") : "")</td>
-                                                            <td class="text-center" style="color:#c62828;">@(order.VoidAmount > 0 ? order.VoidAmount?.ToString("0.##") : "")</td>
-                                                            <td class="text-center fw-bold">@order.GrandTotal?.ToString("0.##")</td>
+                                                            <td class="text-center" style="color:#2e7d32;">@(hasDiscount ? oDiscAmount.ToString("0.##") : "")</td>
+                                                            <td class="text-center" style="color:#c62828;">@(isOrderVoided ? oVoidAmount.ToString("0.##") : "")</td>
+                                                            <td class="text-center fw-bold @(isOrderVoided ? "text-decoration-line-through" : "")">@order.GrandTotal?.ToString("0.##")</td>
                                                         }
                                                     </tr>
-                                                    @if (_showVoidDiscountDetails)
+                                                    @if (isOrderVoided)
                                                     {
-                                                        if ((order.VoidAmount ?? 0) > 0)
-                                                        {
-                                                            <tr class="a4-reason-void">
-                                                                <td colspan="4">
-                                                                    🚫 <strong>@(_isArabic ? "سبب الفويد:" : "Void Reason:")</strong>
-                                                                    @(order.VoidReason ?? "—")
-                                                                    @if (!string.IsNullOrEmpty(order.VoidByName))
-                                                                    {
-                                                                        <span class="a4-by"> | @(_isArabic ? "بواسطة:" : "By:") @order.VoidByName</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                        if ((order.TotalDiscount ?? 0) > 0)
-                                                        {
-                                                            <tr class="a4-reason-disc">
-                                                                <td colspan="4">
-                                                                    🏷️ <strong>@(_isArabic ? "سبب الخصم:" : "Discount Reason:")</strong>
-                                                                    @(order.DiscountReason ?? "—")
-                                                                    @if (!string.IsNullOrEmpty(order.DiscountByName))
-                                                                    {
-                                                                        <span class="a4-by"> | @(_isArabic ? "بواسطة:" : "By:") @order.DiscountByName</span>
-                                                                    }
-                                                                    @if (!string.IsNullOrEmpty(order.DiscountType))
-                                                                    {
-                                                                        <span class="a4-by"> | @(_isArabic ? "نوع:" : "Type:") @order.DiscountType</span>
-                                                                    }
-                                                                </td>
-                                                            </tr>
-                                                        }
+                                                        <tr class="a4-reason-void">
+                                                            <td colspan="4">
+                                                                🚫 <strong>@(_isArabic ? "سبب الفويد:" : "Void Reason:")</strong>
+                                                                @(string.IsNullOrEmpty(order.VoidReason) ? (_isArabic ? "ملغي" : "Voided") : order.VoidReason)
+                                                                @if (!string.IsNullOrEmpty(order.VoidByName))
+                                                                {
+                                                                    <span class="a4-by"> | @(_isArabic ? "بواسطة:" : "By:") @order.VoidByName</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    @if (hasDiscount)
+                                                    {
+                                                        <tr class="a4-reason-disc">
+                                                            <td colspan="4">
+                                                                🏷️ <strong>@(_isArabic ? "سبب الخصم:" : "Discount Reason:")</strong>
+                                                                @(string.IsNullOrEmpty(order.DiscountReason) ? (_isArabic ? "خصم" : "Discount") : order.DiscountReason)
+                                                                @if (!string.IsNullOrEmpty(order.DiscountByName))
+                                                                {
+                                                                    <span class="a4-by"> | @(_isArabic ? "بواسطة:" : "By:") @order.DiscountByName</span>
+                                                                }
+                                                                @if (!string.IsNullOrEmpty(order.DiscountType))
+                                                                {
+                                                                    <span class="a4-by"> | @(_isArabic ? "نوع:" : "Type:") @order.DiscountType</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
                                                     }
                                                 }
                                             </tbody>
@@ -688,6 +800,17 @@
                                     {
                                         foreach (var s in SummaryData.CashierSummaries)
                                         {
+                                            var staffOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                            var sDisc = s.DiscountAmount > 0 
+                                                ? s.DiscountAmount 
+                                                : staffOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                            var sVoid = s.VoidAmount > 0 
+                                                ? s.VoidAmount 
+                                                : staffOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
+
+                                            var sVoidCount = s.VoidCount > 0 ? s.VoidCount : staffOrders.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0);
+                                            var sDiscCount = s.DiscountCount > 0 ? s.DiscountCount : staffOrders.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0);
+
                                             <div class="a4-section-title" style="background:#1e88e5; text-align:right;">@(s.Name)</div>
                                             <table class="a4-table" style="background:#f1f8fe; margin-bottom:5px;">
                                                 <thead><tr>
@@ -698,13 +821,18 @@
                                                 </tr></thead>
                                                 <tr>
                                                     <td class="text-center">@s.OrderCount</td>
-                                                    <td class="text-center">@s.DiscountAmount.ToString("0.##")</td>
-                                                    <td class="text-center">@s.VoidAmount.ToString("0.##")</td>
+                                                    <td class="text-center" style="color:#2e7d32;">
+                                                        @sDisc.ToString("0.##")
+                                                        @if (sDiscCount > 0) { <small style="color:#888;"> (@sDiscCount)</small> }
+                                                    </td>
+                                                    <td class="text-center" style="color:#c62828;">
+                                                        @sVoid.ToString("0.##")
+                                                        @if (sVoidCount > 0) { <small style="color:#888;"> (@sVoidCount)</small> }
+                                                    </td>
                                                     <td class="text-center fw-bold">@s.TotalAmount.ToString("0.##")</td>
                                                 </tr>
                                             </table>
                                             
-                                            var staffOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
                                             var staffItems = staffOrders.SelectMany(o => o.OrderDetails ?? new List<global::POS.Contract.Models.TableItem>())
                                                 .GroupBy(i => i.Name)
                                                 .Select(g => new { Name = g.Key, Qty = g.Sum(x => x.Quantity), Total = g.Sum(x => x.Total ?? ((x.Price ?? 0) * x.Quantity)) })
@@ -762,21 +890,42 @@
                                             <tbody>
                                                 @foreach (var s in SummaryData.CashierSummaries)
                                                 {
+                                                    var sOrders = SummaryData.DetailedOrders?.Where(o => o.CashierId == s.Id || o.CashierName == s.Name).ToList() ?? new();
+                                                    var sDisc = s.DiscountAmount > 0 
+                                                        ? s.DiscountAmount 
+                                                        : sOrders.Sum(o => (o.TotalOrderDiscount ?? 0) > 0 ? o.TotalOrderDiscount.Value : ((o.TotalDiscount ?? 0) > 0 ? o.TotalDiscount.Value : (o.DiscountedItems ?? 0)));
+                                                    var sVoid = s.VoidAmount > 0 
+                                                        ? s.VoidAmount 
+                                                        : sOrders.Sum(o => o.VoidAmount ?? (o.OrderState == "Voided" ? (o.GrandTotal ?? (o.SubTotal ?? 0)) : 0));
+                                                    var sVoidCount = s.VoidCount > 0 ? s.VoidCount : sOrders.Count(o => o.OrderState == "Voided" || (o.VoidAmount ?? 0) > 0);
+                                                    var sDiscCount = s.DiscountCount > 0 ? s.DiscountCount : sOrders.Count(o => (o.TotalOrderDiscount ?? 0) > 0 || (o.TotalDiscount ?? 0) > 0 || (o.DiscountedItems ?? 0) > 0);
                                                     <tr>
                                                         @if (_isArabic)
                                                         {
                                                             <td>@s.Name</td>
                                                             <td class="text-center">@s.OrderCount</td>
-                                                            <td class="text-center" style="color:#2e7d32;">@s.DiscountAmount.ToString("0.##")</td>
-                                                            <td class="text-center" style="color:#c62828;">@s.VoidAmount.ToString("0.##")</td>
+                                                            <td class="text-center" style="color:#2e7d32;">
+                                                                @sDisc.ToString("0.##")
+                                                                @if (sDiscCount > 0) { <small style="color:#888;"> (@sDiscCount)</small> }
+                                                            </td>
+                                                            <td class="text-center" style="color:#c62828;">
+                                                                @sVoid.ToString("0.##")
+                                                                @if (sVoidCount > 0) { <small style="color:#888;"> (@sVoidCount)</small> }
+                                                            </td>
                                                             <td class="text-center fw-bold">@s.TotalAmount.ToString("0.##")</td>
                                                         }
                                                         else
                                                         {
                                                             <td>@s.Name</td>
                                                             <td class="text-center">@s.OrderCount</td>
-                                                            <td class="text-center" style="color:#2e7d32;">@s.DiscountAmount.ToString("0.##")</td>
-                                                            <td class="text-center" style="color:#c62828;">@s.VoidAmount.ToString("0.##")</td>
+                                                            <td class="text-center" style="color:#2e7d32;">
+                                                                @sDisc.ToString("0.##")
+                                                                @if (sDiscCount > 0) { <small style="color:#888;"> (@sDiscCount)</small> }
+                                                            </td>
+                                                            <td class="text-center" style="color:#c62828;">
+                                                                @sVoid.ToString("0.##")
+                                                                @if (sVoidCount > 0) { <small style="color:#888;"> (@sVoidCount)</small> }
+                                                            </td>
                                                             <td class="text-center fw-bold">@s.TotalAmount.ToString("0.##")</td>
                                                         }
                                                     </tr>
@@ -856,7 +1005,7 @@
 
                                 <div class="a4-footer">
                                     @(_isArabic ? "طُبع بواسطة:" : "Printed By:") @_commonProperties.CurrentUser
-                                    &nbsp;|&nbsp; @DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+                                    &nbsp;|&nbsp; @DateTime.Now.ToString("dd/MM/yyyy  hh:mm tt")
                                 </div>
                             </div>
                         }

@@ -502,12 +502,12 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     {
         "SentToBranch" => "وصل للفرع",
         "FailedToDeliverToBranch" => "فشل الإرسال للفرع",
-        "Assigned" => "تم إسناد طيار",
+        "Assigned" => "تحت التجهيز",
         "Dispatched" => "خرج للتوصيل",
         "Completed" => "تم التسليم",
         "Voided" => "ملغي",
-        "Pending" => "وصل للفرع",
-        _ => "وصل للفرع"
+        "Pending" => "تحت التجهيز",
+        _ => "تحت التجهيز"
     };
 
     private Color GetStateColor(string? state) => state switch

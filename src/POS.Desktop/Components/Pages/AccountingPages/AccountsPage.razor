@@ -36,15 +36,68 @@
             <MudTable Items="@_summaries" Hover="true" Dense="true" Loading="@_isLoading" Elevation="0" Height="calc(100vh - 300px)" FixedHeader="true" Class="custom-table" RowClassFunc="@((item, idx) => "table-row")">
                 <HeaderContent>
                     <MudTh Style="text-align: right;">@Localizer["StaffName"]</MudTh>
-                    <MudTh Style="text-align: right;">@Localizer["OrderCount"]</MudTh>
+                    <MudTh Style="text-align: center;">@(Localizer.GetCurrentLanguage() == "ar" ? "الطلبات والتقسيم" : "Orders & Breakdown")</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["Discount"]</MudTh>
+                    <MudTh Style="text-align: center;">@Localizer["Void"]</MudTh>
                     <MudTh Style="text-align: right;">@Localizer["CashAmount"]</MudTh>
                     <MudTh Style="text-align: right;">@Localizer["CreditAmount"]</MudTh>
                     <MudTh Style="text-align: right;">@Localizer["TotalAmount"]</MudTh>
                     <MudTh Style="text-align: center;">@Localizer["Actions"]</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd Style="text-align: right;"><b>@context.Name</b></MudTd>
-                    <MudTd Style="text-align: right;"><MudChip T="string" Color="Color.Info" Size="Size.Small" Variant="Variant.Text">@context.OrderCount</MudChip></MudTd>
+                    <MudTd Style="text-align: right;">
+                        <div style="font-weight: 800; font-size: 0.95rem;">@context.Name</div>
+                        <div style="font-size: 0.75rem; color: #888;">@context.Type</div>
+                    </MudTd>
+                    <MudTd Style="text-align: center;">
+                        <div class="d-flex align-center justify-center gap-1 flex-wrap">
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled" Style="font-weight: 800;">
+                                @context.OrderCount @(Localizer.GetCurrentLanguage() == "ar" ? "طلب" : "orders")
+                            </MudChip>
+                        </div>
+                        <div class="d-flex align-center justify-center gap-1 mt-1 flex-wrap" style="font-size: 0.7rem;">
+                            @if (context.TakeAwayCount > 0)
+                            {
+                                <span class="badge-channel" style="background: #e8f5e9; color: #2e7d32; padding: 1px 4px; border-radius: 4px;">تيك أواي: @context.TakeAwayCount</span>
+                            }
+                            @if (context.DeliveryCount > 0)
+                            {
+                                <span class="badge-channel" style="background: #fff3e0; color: #e65100; padding: 1px 4px; border-radius: 4px;">دليفري: @context.DeliveryCount</span>
+                            }
+                            @if (context.DineInCount > 0)
+                            {
+                                <span class="badge-channel" style="background: #e3f2fd; color: #1565c0; padding: 1px 4px; border-radius: 4px;">صالة: @context.DineInCount</span>
+                            }
+                        </div>
+                    </MudTd>
+                    <MudTd Style="text-align: center;">
+                        @if (context.DiscountAmount > 0)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Success" Style="font-weight: 700;">@context.DiscountAmount.ToString("0.##")</MudText>
+                            @if (context.DiscountCount > 0)
+                            {
+                                <div style="font-size: 0.7rem; color: #666;">(@context.DiscountCount @(Localizer.GetCurrentLanguage() == "ar" ? "طلب" : ""))</div>
+                            }
+                        }
+                        else
+                        {
+                            <span style="color: #bbb;">-</span>
+                        }
+                    </MudTd>
+                    <MudTd Style="text-align: center;">
+                        @if (context.VoidAmount > 0)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Error" Style="font-weight: 700;">@context.VoidAmount.ToString("0.##")</MudText>
+                            @if (context.VoidCount > 0)
+                            {
+                                <div style="font-size: 0.7rem; color: #c62828;">(@context.VoidCount @(Localizer.GetCurrentLanguage() == "ar" ? "ملغي" : ""))</div>
+                            }
+                        }
+                        else
+                        {
+                            <span style="color: #bbb;">-</span>
+                        }
+                    </MudTd>
                     <MudTd Style="text-align: right;">@context.CashAmount.ToString("0.##")</MudTd>
                     <MudTd Style="text-align: right;">@context.CreditAmount.ToString("0.##")</MudTd>
                     <MudTd Style="text-align: right;">
@@ -65,6 +118,18 @@
 
         <div class="accounts-footer">
             <div class="footer-stats-grid">
+                <div class="footer-stat">
+                    <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الطلبات" : "Total Orders")</span>
+                    <span class="value" style="color: #1976d2;">@_summaries.Sum(a => a.OrderCount)</span>
+                </div>
+                <div class="footer-stat">
+                    <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الخصم" : "Total Discount")</span>
+                    <span class="value" style="color: #2e7d32;">@_summaries.Sum(a => a.DiscountAmount).ToString("0.##")</span>
+                </div>
+                <div class="footer-stat">
+                    <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الفويد" : "Total Void")</span>
+                    <span class="value" style="color: #c62828;">@_summaries.Sum(a => a.VoidAmount).ToString("0.##")</span>
+                </div>
                 <div class="footer-stat">
                     <span class="label">@(Localizer.GetCurrentLanguage() == "ar" ? "إجمالي الكاش" : "Total Cash")</span>
                     <span class="value">@_summaries.Sum(a => a.CashAmount).ToString("0.##")</span>
