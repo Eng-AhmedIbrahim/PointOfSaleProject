@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Drawing.Printing;
+using PdfiumViewer;
+using System.Diagnostics;
 using Pos.Repository.Data.DataSeed;
 
 namespace POS.Services.PrinterServices;
@@ -291,80 +293,107 @@ public class PrinterService : IPrinterServices
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public async Task<bool> PrintPdfAsync(string filePath, string printerName)
     {
-        var exePath = _configuration["PrinterPath"];
+        var stopwatch = Stopwatch.StartNew();
 
-        if (!File.Exists(filePath))
-            throw new FileNotFoundException("PDF file not found.", filePath);
-
-        var psi = new ProcessStartInfo
+        try
         {
-            FileName = exePath,
-            Arguments = $"\"{filePath}\" \"{printerName}\" /s /R0", // إضافة خيارات تحسين
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = false, // تعطيل الإخراج
-            RedirectStandardError = false   // تعطيل الأخطاء
-        };
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("PDF file not found.", filePath);
 
-        using var process = new Process { StartInfo = psi };
+            // Manual Rendering (Using internal PdfiumViewer library - NO PDFtoPrinter.exe)
+            byte[] pdfBytes = await File.ReadAllBytesAsync(filePath);
+            using (var memoryStream = new MemoryStream(pdfBytes))
+            using (var pdfDocument = PdfDocument.Load(memoryStream))
+            {
+                var printDoc = new PrintDocument
+                {
+                    PrinterSettings = new PrinterSettings { PrinterName = printerName },
+                    PrintController = new StandardPrintController()
+                };
 
-        process.Start();
-        await process.WaitForExitAsync(); // انتظار غير متزامن
+                double pageWidthPoints = pdfDocument.PageSizes.Count > 0 ? pdfDocument.PageSizes[0].Width : 226;
+                double pageHeightPoints = pdfDocument.PageSizes.Count > 0 ? pdfDocument.PageSizes[0].Height : 842;
 
-        if (process.ExitCode != 0)
-            throw new Exception($"فشلت الطباعة. الرمز: {process.ExitCode}");
+                int widthInHundredths = (int)(pageWidthPoints / 72.0 * 100.0);
+                int heightInHundredths = (int)(pageHeightPoints / 72.0 * 100.0);
 
-        return true;
+                string paperName = "CustomSize";
+                int paperKindInt = (int)PaperKind.Custom;
+
+                if (widthInHundredths < 450)
+                {
+                    widthInHundredths = 285;
+                    paperName = "Receipt72mm";
+                }
+                else if (widthInHundredths >= 800 && widthInHundredths <= 850)
+                {
+                    paperName = "A4";
+                    paperKindInt = (int)PaperKind.A4;
+                }
+
+                var customSize = new PaperSize(paperName, widthInHundredths, heightInHundredths)
+                {
+                    RawKind = paperKindInt
+                };
+
+                printDoc.DefaultPageSettings.PaperSize = customSize;
+                printDoc.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
+
+                printDoc.DefaultPageSettings.PrinterResolution = printDoc.PrinterSettings.PrinterResolutions
+                    .Cast<PrinterResolution>()
+                    .FirstOrDefault(r => r.Kind == PrinterResolutionKind.High)
+                    ?? new PrinterResolution { Kind = PrinterResolutionKind.Custom, X = 203, Y = 203 };
+
+                int currentPage = 0;
+                printDoc.PrintPage += (sender, e) =>
+                {
+                    if (currentPage < pdfDocument.PageCount)
+                    {
+                        if (e.Graphics != null)
+                        {
+                            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                            int dpiX = (int)e.Graphics.DpiX;
+                            int dpiY = (int)e.Graphics.DpiY;
+
+                            if (dpiX < 200) dpiX = 203;
+                            if (dpiY < 200) dpiY = 203;
+
+                            if (printDoc.DefaultPageSettings.PrinterResolution.Kind != PrinterResolutionKind.Custom)
+                            {
+                                if (printDoc.DefaultPageSettings.PrinterResolution.X > 0) dpiX = printDoc.DefaultPageSettings.PrinterResolution.X;
+                                if (printDoc.DefaultPageSettings.PrinterResolution.Y > 0) dpiY = printDoc.DefaultPageSettings.PrinterResolution.Y;
+                            }
+
+                            int widthPx = (int)((printDoc.DefaultPageSettings.PaperSize.Width / 100.0) * dpiX);
+                            int heightPx = (int)((printDoc.DefaultPageSettings.PaperSize.Height / 100.0) * dpiY);
+
+                            pdfDocument.Render(currentPage, e.Graphics, dpiX, dpiY, new System.Drawing.Rectangle(0, 0, widthPx, heightPx), PdfRenderFlags.CorrectFromDpi);
+                        }
+
+                        currentPage++;
+                        e.HasMorePages = currentPage < pdfDocument.PageCount;
+                    }
+                };
+
+                await Task.Run(() => printDoc.Print());
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Print failed: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            Log.Information($"PrintPdfAsync total time: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
+        }
     }
-
-    //public async Task<bool> PrintPdfAsync(string pdfFilePath, string printerName)
-    //{
-    //    var stopwatch = Stopwatch.StartNew(); // بدء قياس الوقت
-
-    //    try
-    //    {
-    //        byte[] pdfBytes = await File.ReadAllBytesAsync(pdfFilePath);
-    //        using (var memoryStream = new MemoryStream(pdfBytes))
-    //        using (var pdfDocument = PdfDocument.Load(memoryStream))
-    //        {
-    //            var printDoc = new PrintDocument
-    //            {
-    //                PrinterSettings = new PrinterSettings { PrinterName = printerName },
-    //                DefaultPageSettings = new PageSettings
-    //                {
-    //                    // PaperSize = new PaperSize("A6", 413, 583),
-    //                    Margins = new Margins(0, 0, 0, 0)
-    //                }
-    //            };
-
-    //            int currentPage = 0;
-    //            printDoc.PrintPage += (sender, e) =>
-    //            {
-    //                if (currentPage < pdfDocument.PageCount)
-    //                {
-    //                    pdfDocument.Render(currentPage, e.Graphics, 150, 150, e.PageBounds, true);
-    //                    currentPage++;
-    //                    e.HasMorePages = currentPage < pdfDocument.PageCount;
-    //                }
-    //            };
-
-    //            printDoc.Print(); // عملية الطباعة الفعلية (تستغرق وقتًا)
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine($"Print failed: {ex.Message}");
-    //    }
-    //    finally
-    //    {
-    //        stopwatch.Stop(); // إيقاف القياس
-    //        Console.WriteLine($"Total time: {stopwatch.Elapsed.TotalSeconds:F2} seconds");
-    //    }
-
-    //    return true;
-    //}
-
-
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public async Task PrintPdfToMultipleAsync(string pdfFilePath, List<string> printerNames)
     {
