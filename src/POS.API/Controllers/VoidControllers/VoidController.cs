@@ -213,7 +213,7 @@ public class VoidController : BaseApiController
             httpClient.Timeout = TimeSpan.FromSeconds(10);
             var json = JsonSerializer.Serialize(orderDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            await httpClient.PutAsync($"{branchUrl}/api/order/{endpoint}", content);
+            await httpClient.PostAsync($"{branchUrl}/api/order/{endpoint}", content);
         }
         catch (Exception ex)
         {

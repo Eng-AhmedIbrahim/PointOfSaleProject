@@ -525,7 +525,14 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void UpdateOrderStatus(OrderDto updatedOrder)
     {
-        var existingOrder = Orders.FirstOrDefault(o => o.Id == updatedOrder.Id);
+        // Match by local Id first; fall back to CallCenterOrderId cross-matching so the CC
+        // correctly identifies branch-originated ReceiveOrderDispatched events where the
+        // incoming Id is the branch PK (stored as CallCenterOrderId on the CC copy).
+        var existingOrder = Orders.FirstOrDefault(o =>
+            o.Id == updatedOrder.Id
+            || (updatedOrder.CallCenterOrderId.HasValue && o.CallCenterOrderId == updatedOrder.CallCenterOrderId.Value)
+            || o.CallCenterOrderId == updatedOrder.Id);
+
         if (existingOrder != null)
         {
             existingOrder.DriverName = updatedOrder.DriverName;
