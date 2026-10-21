@@ -1,4 +1,4 @@
-namespace POS.API.Controllers.VoidControllers;
+﻿namespace POS.API.Controllers.VoidControllers;
 
 public class VoidController : BaseApiController
 {
@@ -58,7 +58,11 @@ public class VoidController : BaseApiController
                     await PrintVoidToKitchen(orderDto, order.OrderDetails?.ToList());
                 }
 
-                // 2. Sync to Call Center / Branch
+                // 2. Broadcast void on local hub so ALL connected clients on this machine
+                //    (other CC/branch screens) update their distribution list immediately
+                await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", orderDto);
+
+                // 3. Sync to Call Center / Branch
                 await SyncVoidUpdate(orderDto);
             }
         }
@@ -95,7 +99,11 @@ public class VoidController : BaseApiController
                     await PrintVoidToKitchen(orderDto, itemsForKitchen);
                 }
 
-                // 2. Sync to Call Center / Branch
+                // 2. Broadcast void on local hub so ALL connected clients on this machine
+                //    (other CC/branch screens) update their distribution list immediately
+                await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", orderDto);
+
+                // 3. Sync to Call Center / Branch
                 await SyncVoidUpdate(orderDto);
             }
         }
