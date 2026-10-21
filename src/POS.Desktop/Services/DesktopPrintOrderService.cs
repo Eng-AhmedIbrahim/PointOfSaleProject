@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract;
+﻿using POS.Core.Services.Contract;
 
 namespace POS.Desktop.Services;
 
@@ -634,7 +634,7 @@ public class DesktopPrintOrderService : IPrintOrderService
     {
         if (order.OrderDetails == null) return;
 
-        var itemsToProcess = (isReprint || isFollowUp)
+        var itemsToProcess = isReprint
             ? (createdOrder.OrderDetails?.Any() == true ? createdOrder.OrderDetails : order.OrderDetails)
             : order.OrderDetails.Where(i => i.DatabaseId == 0).ToList();
 

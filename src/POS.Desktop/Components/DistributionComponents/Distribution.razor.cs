@@ -1,4 +1,4 @@
-using BlazorBase.Components.Shared;
+﻿using BlazorBase.Components.Shared;
 using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
@@ -443,12 +443,14 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                             existingOrder.AssignTime = orderDto.AssignTime;
                             existingOrder.DispatchID = orderDto.DispatchID;
                             
-                            // Update order details if modified
+                            // Update order details if modified; ring bell so Dispatcher is alerted
                             if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
                             {
                                 existingOrder.OrderDetails = orderDto.OrderDetails;
                                 existingOrder.GrandTotal = orderDto.GrandTotal;
                                 existingOrder.SubTotal = orderDto.SubTotal;
+                                // New items were added to this order from CC – alert the dispatcher
+                                PlayBellForOneSecond();
                             }
                         }
                         else

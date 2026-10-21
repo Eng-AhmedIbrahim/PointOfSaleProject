@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 
 namespace POS.API.Controllers;
 
@@ -799,6 +799,12 @@ public class OrderController : BaseApiController
 
         if (hasItemChanges)
         {
+            // Capture existing items before update to compute only added/increased items for kitchen printing
+            var existingItemMap = order.OrderDetails?
+                .GroupBy(d => d.MenuSalesItemId ?? 0)
+                .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity ?? 0))
+                ?? new Dictionary<int, decimal>();
+
             var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails!);
             order.OrderDetails = orderItems;
             order.Tax = orderDto.Tax ?? order.Tax;
@@ -806,11 +812,27 @@ public class OrderController : BaseApiController
             order.Discount = orderDto.DiscountPercentage ?? order.Discount;
             await _orderService.FullUpdateOrderAsync(order);
 
+            // Compute only the newly added / quantity-increased items for kitchen & backup printing
+            var addedItems = new List<TableItem>();
+            foreach (var item in orderDto.OrderDetails!)
+            {
+                var existingQty = existingItemMap.TryGetValue(item.Id, out var eq) ? eq : 0m;
+                var incomingQty = item.Quantity;
+                if (incomingQty > existingQty)
+                {
+                    var addedItem = item.Clone();
+                    addedItem.Quantity = incomingQty - existingQty;
+                    addedItem.Total = addedItem.Quantity * (item.Price ?? 0);
+                    addedItem.TotalAmount = addedItem.Quantity * (item.Price ?? 0);
+                    addedItems.Add(addedItem);
+                }
+            }
+
             // Print kitchen + delivery receipts for the updated items at the branch
             try
             {
                 var resultDto = _mapper.Map<OrderDto>(order);
-                resultDto.OrderDetails = orderDto.OrderDetails; // keep original items list for printing
+                resultDto.OrderDetails = orderDto.OrderDetails; // Full order for customer receipt (تابع)
                 resultDto.CallCenterOrderId = order.CallCenterOrderId;
                 // Use null so we get ALL settings (CC's MachineName is not registered at the branch)
                 var orderSettings = await _orderService.GetOrderSettingsAsync(null);
@@ -822,35 +844,47 @@ public class OrderController : BaseApiController
                 if (settingForType != null)
                 {
                     List<string> branchDetails = await GetBranchDetails(resultDto);
+
+                    // Customer receipt: full order, labelled تابع
                     if (order.OrderType == OrderTypes.Delivery)
                         await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: true);
                     else if (order.OrderType == OrderTypes.TakeAway)
                         await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: true);
 
-                    if (settingForType.FullKitchenReceiptCount > 0)
-                        await PrintBackupReceipts(resultDto, order, isFollowUp: true);
+                    // Kitchen & backup: only the newly added items
+                    if (addedItems.Count > 0)
+                    {
+                        var kitchenDto = _mapper.Map<OrderDto>(order);
+                        kitchenDto.OrderDetails = addedItems;
+                        kitchenDto.CallCenterOrderId = order.CallCenterOrderId;
+                        kitchenDto.OrderSettings = resultDto.OrderSettings;
 
-                    if (settingForType.SeparateReceiptCount > 0)
-                        await PrintKitchenReceipts(resultDto, order, isFollowUp: true);
+                        if (settingForType.FullKitchenReceiptCount > 0)
+                            await PrintBackupReceipts(kitchenDto, order, isFollowUp: true);
+
+                        if (settingForType.SeparateReceiptCount > 0)
+                            await PrintKitchenReceipts(kitchenDto, order, isFollowUp: true);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "[CC Update] Error printing receipts for updated order {OrderId} at branch", order.OrderID);
             }
-
-            // Trigger bell + re-print on Distribution page by sending ReceiveNewDeliveryOrder
-            var notifyDto = _mapper.Map<OrderDto>(order);
-            notifyDto.CallCenterOrderId = order.CallCenterOrderId;
-            await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", notifyDto);
+            // NOTE: ReceiveOrderUpdated below handles the UI bell & order-list refresh.
+            // Do NOT send ReceiveNewDeliveryOrder here — it would cause a full COPY reprint on the Dispatcher.
         }
         else
         {
             await _orderService.UpdateOrderAsync(order);
         }
 
-        // Always notify UI for state/driver updates
-        await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", _mapper.Map<OrderDto>(order));
+        // Always notify UI for state/driver updates; include updated items so Dispatcher list stays current
+        var updatedNotifyDto = _mapper.Map<OrderDto>(order);
+        updatedNotifyDto.CallCenterOrderId = order.CallCenterOrderId;
+        if (hasItemChanges)
+            updatedNotifyDto.OrderDetails = orderDto.OrderDetails;
+        await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", updatedNotifyDto);
 
         return Ok(true);
     }
