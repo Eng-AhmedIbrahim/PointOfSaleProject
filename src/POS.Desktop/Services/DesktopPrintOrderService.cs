@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract;
+﻿using POS.Core.Services.Contract;
 
 namespace POS.Desktop.Services;
 
@@ -1387,6 +1387,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             var kitchen = kitchens.FirstOrDefault(k => k.Id == kitchenId);
 
             if (kitchen == null) continue;
+            // Do not print void receipt to the Customer kitchen (index 0) — only production/backup kitchens get void tickets
+            if (string.Equals(kitchen.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase) || kitchens.IndexOf(kitchen) == 0) continue;
             var printers = kitchen.KitchenPrinters?.FirstOrDefault();
             if (printers == null) continue;
 
@@ -1476,7 +1478,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
                         for (int idx = 1; idx <= receiptCount; idx++)
                         {
-                            var backupPrinterName = typeof(KitchenPrinters).GetProperty($"Copy{idx}")?.GetValue(backupPrinters) as string;
+                            var backupPrinterName = backupPrinters.GetType().GetProperty($"Copy{idx}")?.GetValue(backupPrinters) as string;
                             if (!string.IsNullOrEmpty(backupPrinterName))
                             {
                                 Log.Information("Printing VOID backup receipt to {Printer}", backupPrinterName);

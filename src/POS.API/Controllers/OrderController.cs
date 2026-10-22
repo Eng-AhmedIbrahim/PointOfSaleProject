@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract.VoidServices;
+﻿using POS.Core.Services.Contract.VoidServices;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace POS.API.Controllers;
@@ -799,13 +799,13 @@ public class OrderController : BaseApiController
                     await PrintBackupReceipts(resultDto, order, isFollowUp: false);
                 }
 
-                // 3. Customer void receipt (shows big X Ù…Ù„ØºÙŠ X and voided items)
+
+                // 3. Customer void receipt - only for TakeAway (Delivery does not print customer copy on void)
                 List<string> branchDetails = await GetBranchDetails(resultDto);
-                if (order.OrderType == OrderTypes.Delivery)
-                    await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                else if (order.OrderType == OrderTypes.TakeAway)
+                if (order.OrderType == OrderTypes.TakeAway)
                     await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
-            }
+                // Delivery: no customer-facing void receipt is printed
+            }  // end try
             catch (Exception ex)
             {
                 Log.Error(ex, "[CC Void Sync] Error printing void receipts for order {OrderId} at branch", order.OrderID);
@@ -858,11 +858,11 @@ public class OrderController : BaseApiController
                     var voidedDetails = order.OrderDetails?.Where(d => itemsToVoidAtBranch.Any(v => v.OrderItemDetailId == d.Id)).ToList();
                     await PrintVoidToKitchen(resultDto, voidedDetails);
 
+                    // Customer void receipt - only for TakeAway; Delivery does not print customer copy on void
                     List<string> branchDetails = await GetBranchDetails(resultDto);
-                    if (order.OrderType == OrderTypes.Delivery)
-                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                    else if (order.OrderType == OrderTypes.TakeAway)
+                    if (order.OrderType == OrderTypes.TakeAway)
                         await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                    // Delivery: no customer-facing void receipt is printed
                 }
                 catch (Exception ex)
                 {
@@ -1393,7 +1393,7 @@ public class OrderController : BaseApiController
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
+            var printerName = targetPrinter.GetType().GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1468,7 +1468,7 @@ public class OrderController : BaseApiController
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
+            var printerName = targetPrinter.GetType().GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1544,7 +1544,7 @@ public class OrderController : BaseApiController
 
             for (int i = 1; i <= receiptCount; i++)
             {
-                var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                var printerName = printers.GetType().GetProperty($"Copy{i}")?.GetValue(printers) as string;
                 if (!string.IsNullOrEmpty(printerName))
                 {
                     printerNamesToUse.Add(printerName);

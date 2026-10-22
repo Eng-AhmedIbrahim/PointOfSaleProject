@@ -239,6 +239,11 @@ public class VoidController : BaseApiController
             var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
             var kitchenItems = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(itemsToVoid);
 
+            // Fetch order settings to get FullKitchenReceiptCount for the correct order type
+            var orderSettings = await _orderService.GetOrderSettingsAsync(null);
+            var settingsOrderType = (orderDto.OrderType == "Staff" || orderDto.OrderType == "Hospitality") ? "TakeAway" : (orderDto.OrderType ?? "TakeAway");
+            var fullKitchenCount = orderSettings?.FirstOrDefault(s => string.Equals(s.OrderType, settingsOrderType, StringComparison.OrdinalIgnoreCase))?.FullKitchenReceiptCount ?? 1;
+
             // Group by kitchen
             var groupedItems = kitchenItems
                 .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
@@ -282,9 +287,9 @@ public class VoidController : BaseApiController
                 document.GeneratePdf(outputPath);
 
                 var printers = group.Printers;
-                for (int i = 1; i <= 3; i++)
+                for (int i = 1; i <= fullKitchenCount; i++)
                 {
-                    var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                    var printerName = printers.GetType().GetProperty($"Copy{i}")?.GetValue(printers) as string;
                     if (!string.IsNullOrEmpty(printerName))
                     {
                         await _printerServices.PrintPdfAsync(outputPath, printerName);
