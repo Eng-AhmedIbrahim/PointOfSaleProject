@@ -133,6 +133,8 @@
 </MudDialog>
 
 @code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
+
     [Parameter] public string? OrderClientName { get; set; }
     [Parameter] public string? OrderAddress { get; set; }
     [Parameter] public string? OrderTime { get; set; }
@@ -144,7 +146,18 @@
 
 
     private void CloseDialog()
-        => _commonProperties.ChoiceDriverDialogReference?.Close();
+    {
+        MudDialog?.Cancel();
+        _commonProperties.ChoiceDriverDialogReference?.Close();
+    }
+
+    private void ConfirmAndClose()
+    {
+        MudDialog?.Close(DialogResult.Ok(true));
+        _commonProperties.ChoiceDriverDialogReference?.Close();
+    }
+
+
 
     private async Task Assign()
     {
@@ -171,7 +184,10 @@
         var appDateToReturnDto = await _appDateService.GetAppDate();
 
         CurrentDeliveryOrder.DriverID = SelectedDriverId;
-        CurrentDeliveryOrder.DriverName = !string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName;
+        var driverName = !string.IsNullOrEmpty(driver.ArabicName)
+            ? driver.ArabicName
+            : (!string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName);
+        CurrentDeliveryOrder.DriverName = driverName;
         CurrentDeliveryOrder.OrderState = OrderStates.Dispatched.ToString();
         CurrentDeliveryOrder.AssignTime = appDateToReturnDto.PosDate.Date.Add(DateTime.Now.TimeOfDay);
         CurrentDeliveryOrder.DispatchID = _commonProperties.CurrentUserId;
@@ -188,7 +204,7 @@
             {
                 Serilog.Log.Information("[Dispatcher] DispatchOrder succeeded for OrderId={OrderId}. Printing...", orderId);
                 await _printOrderService.PrintDispatchOrderAsync(CurrentDeliveryOrder);
-                CloseDialog();
+                ConfirmAndClose();
                 return;
             }
 

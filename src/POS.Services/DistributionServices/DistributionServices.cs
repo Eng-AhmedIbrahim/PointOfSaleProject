@@ -29,7 +29,7 @@ public class DistributionServices : IDistributionServices
     {
         if (orderDto == null) return false;
 
-        var spec = new BaseSpecifications<Orders>(o => o.Id == orderDto.Id && o.BranchID == orderDto.BranchId);
+        var spec = new BaseSpecifications<Orders>(o => o.Id == orderDto.Id && (orderDto.BranchId == 0 || o.BranchID == orderDto.BranchId));
         var order = (await _unitOfWork.Repository<Orders>().GetAllWithSpecificationAsync(spec)).FirstOrDefault();
         
         if (order == null) return false;

@@ -96,6 +96,10 @@ public class DistributionController : BaseApiController
                     ? updatedOrder.CallCenterOrderId
                     : orderDto.CallCenterOrderId;
 
+                syncDto.DriverID = updatedOrder.DriverID ?? orderDto.DriverID;
+                syncDto.DriverName = updatedOrder.DriverName ?? orderDto.DriverName;
+                syncDto.OrderState = updatedOrder.OrderState.ToString();
+
                 _logger.LogInformation("[Branch Dispatch] Syncing Order {OrderId} to CC. CallCenterApiUrl={Url}, CallCenterOrderId={CCId}, State={State}",
                     syncDto.OrderId, syncDto.CallCenterApiUrl, syncDto.CallCenterOrderId, syncDto.OrderState);
 
@@ -194,6 +198,11 @@ public class DistributionController : BaseApiController
         if (order != null)
         {
             var orderDto = _mapper.Map<OrderDto>(order);
+            orderDto.DriverID = null;
+            orderDto.DriverName = null;
+            orderDto.AssignTime = null;
+            orderDto.DispatchID = null;
+
             _logger.LogInformation("[Branch UnDispatch] Syncing Order {OrderId} to CC. CallCenterApiUrl={Url}, CallCenterOrderId={CCId}",
                 orderDto.OrderId, orderDto.CallCenterApiUrl, orderDto.CallCenterOrderId);
             await SendUpdateToCallCenter(orderDto);

@@ -113,13 +113,21 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         }
     }
 
+    private bool IsOrderAssigned(OrderDto o)
+    {
+        return !string.IsNullOrEmpty(o.DriverName) 
+            || !string.IsNullOrEmpty(o.DriverID) 
+            || o.OrderState == "Dispatched" 
+            || o.OrderState == "Delivering";
+    }
+
     private IEnumerable<OrderDto> FilteredOrders
     {
         get
         {
             var q = showAssigned
-                ? Orders.Where(o => !string.IsNullOrEmpty(o.DriverName))
-                : Orders.Where(o => string.IsNullOrEmpty(o.DriverName));
+                ? Orders.Where(IsOrderAssigned)
+                : Orders.Where(o => !IsOrderAssigned(o));
 
             if (_selectedBranchId.HasValue)
                 q = q.Where(o => o.BranchId == _selectedBranchId.Value);
@@ -324,11 +332,13 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                     var existing = Orders.FirstOrDefault(o => o.Id == orderDto.Id || (orderDto.CallCenterOrderId.HasValue && o.CallCenterOrderId == orderDto.CallCenterOrderId.Value));
                     if (existing != null)
                     {
-                        existing.OrderState = orderDto.OrderState ?? "SentToBranch";
+                        existing.OrderState = !_isCallCenter ? "Assigned" : (orderDto.OrderState ?? "SentToBranch");
                         existing.CallCenterOrderId = orderDto.CallCenterOrderId;
                     }
                     else
                     {
+
+
                         AddNewDeliveryOrder(orderDto);
                     }
                     UpdateDriverStatus();
@@ -349,6 +359,8 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                     else
                     {
                         orderDto.OrderState = "FailedToDeliverToBranch";
+
+
                         AddNewDeliveryOrder(orderDto);
                     }
                     UpdateDriverStatus();
@@ -371,14 +383,14 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 Console.WriteLine($"Order un-dispatched: {id}");
                 InvokeAsync(() =>
                 {
-                    var order = Orders.FirstOrDefault(o => o.Id == id);
+                    var order = Orders.FirstOrDefault(o => o.Id == id || (o.CallCenterOrderId.HasValue && o.CallCenterOrderId == id));
                     if (order != null)
                     {
                         order.DriverID = null;
                         order.DriverName = null;
                         order.AssignTime = null;
                         order.DispatchID = null;
-                        order.OrderState = "Assigned";
+                        order.OrderState = _isCallCenter ? "SentToBranch" : "Assigned";
                         UpdateDriverStatus();
                         StateHasChanged();
                     }
@@ -439,7 +451,24 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                         {
                             existingOrder.DriverName = orderDto.DriverName;
                             existingOrder.DriverID = orderDto.DriverID;
-                            existingOrder.OrderState = orderDto.OrderState;
+                            if (string.IsNullOrEmpty(existingOrder.DriverName) && !string.IsNullOrEmpty(existingOrder.DriverID))
+                            {
+                                var driver = _commonProperties.Drivers.Keys.FirstOrDefault(d => d.Id == existingOrder.DriverID);
+                                if (driver != null)
+                                {
+                                    existingOrder.DriverName = !string.IsNullOrEmpty(driver.ArabicName) 
+                                        ? driver.ArabicName 
+                                        : (!string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName);
+                                }
+                            }
+                            if (!_isCallCenter && orderDto.OrderState == "SentToBranch")
+                            {
+                                existingOrder.OrderState = "Assigned";
+                            }
+                            else
+                            {
+                                existingOrder.OrderState = orderDto.OrderState;
+                            }
                             existingOrder.AssignTime = orderDto.AssignTime;
                             existingOrder.DispatchID = orderDto.DispatchID;
                             
@@ -455,7 +484,9 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                         }
                         else
                         {
-                            AddNewDeliveryOrder(orderDto);
+    
+
+                        AddNewDeliveryOrder(orderDto);
                         }
                         UpdateDriverStatus();
                         StateHasChanged();
@@ -479,7 +510,26 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void AddNewDeliveryOrder(OrderDto newOrder)
     {
-        var existing = Orders.FirstOrDefault(o => o.Id == newOrder.Id || (newOrder.CallCenterOrderId.HasValue && o.CallCenterOrderId == newOrder.CallCenterOrderId.Value));
+        var existing = Orders.FirstOrDefault(o => o.Id == newOrder.Id 
+            || (newOrder.CallCenterOrderId.HasValue && o.CallCenterOrderId == newOrder.CallCenterOrderId.Value)
+            || o.CallCenterOrderId == newOrder.Id
+            || (newOrder.CallCenterOrderId.HasValue && o.Id == newOrder.CallCenterOrderId.Value));
+
+        if (string.IsNullOrEmpty(newOrder.DriverName) && !string.IsNullOrEmpty(newOrder.DriverID))
+        {
+            var driver = _commonProperties.Drivers.Keys.FirstOrDefault(d => d.Id == newOrder.DriverID);
+            if (driver != null)
+            {
+                newOrder.DriverName = !string.IsNullOrEmpty(driver.ArabicName) 
+                    ? driver.ArabicName 
+                    : (!string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName);
+            }
+        }
+
+        if (!_isCallCenter && newOrder.OrderState == "SentToBranch")
+        {
+            newOrder.OrderState = "Assigned";
+        }
         if (existing == null)
         {
             if (string.IsNullOrEmpty(newOrder.DriverName))
@@ -531,13 +581,31 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         var existingOrder = Orders.FirstOrDefault(o =>
             o.Id == updatedOrder.Id
             || (updatedOrder.CallCenterOrderId.HasValue && o.CallCenterOrderId == updatedOrder.CallCenterOrderId.Value)
-            || o.CallCenterOrderId == updatedOrder.Id);
+            || o.CallCenterOrderId == updatedOrder.Id
+            || (updatedOrder.CallCenterOrderId.HasValue && o.Id == updatedOrder.CallCenterOrderId.Value));
 
         if (existingOrder != null)
         {
             existingOrder.DriverName = updatedOrder.DriverName;
             existingOrder.DriverID = updatedOrder.DriverID;
-            existingOrder.OrderState = updatedOrder.OrderState;
+            if (string.IsNullOrEmpty(existingOrder.DriverName) && !string.IsNullOrEmpty(existingOrder.DriverID))
+            {
+                var driver = _commonProperties.Drivers.Keys.FirstOrDefault(d => d.Id == existingOrder.DriverID);
+                if (driver != null)
+                {
+                    existingOrder.DriverName = !string.IsNullOrEmpty(driver.ArabicName) 
+                        ? driver.ArabicName 
+                        : (!string.IsNullOrEmpty(driver.DisplayName) ? driver.DisplayName : driver.UserName);
+                }
+            }
+            if (!_isCallCenter && updatedOrder.OrderState == "SentToBranch")
+            {
+                existingOrder.OrderState = "Assigned";
+            }
+            else
+            {
+                existingOrder.OrderState = updatedOrder.OrderState;
+            }
             existingOrder.AssignTime = updatedOrder.AssignTime;
             existingOrder.DispatchID = updatedOrder.DispatchID;
             UpdateDriverStatus();
@@ -687,7 +755,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
             order.DriverName = null;
             order.AssignTime = null;
             order.DispatchID = null;
-            order.OrderState = "Assigned";
+            order.OrderState = _isCallCenter ? "SentToBranch" : "Assigned";
             UpdateDriverStatus();
             Snackbar.Add(Localizer["Distribution_UnDispatchedSuccess"], Severity.Success);
             StateHasChanged();
@@ -730,7 +798,14 @@ public partial class Distribution : IDisposable, IAsyncDisposable
         parameters.Add(x => x.OrderAddress, $"{order.AddressNotice}-{order.StreetName}");
         parameters.Add(x => x.OrderTime, order.OrderDate.HasValue ? order.OrderDate.Value.ToString("hh:mm tt") : "");
 
-        _commonProperties.ChoiceDriverDialogReference = await _dialogService.ShowAsync<ChoiceDriverDialog>(Localizer["Distribution_ChoiceDriver"], parameters);
+        var dialog = await _dialogService.ShowAsync<ChoiceDriverDialog>(Localizer["Distribution_ChoiceDriver"], parameters);
+        _commonProperties.ChoiceDriverDialogReference = dialog;
+        var result = await dialog.Result;
+        if (result != null && !result.Canceled)
+        {
+            UpdateDriverStatus();
+            StateHasChanged();
+        }
     }
 
     private void AutoDistribute()
