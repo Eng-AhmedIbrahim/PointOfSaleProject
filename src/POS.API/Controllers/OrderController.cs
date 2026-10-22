@@ -1613,25 +1613,36 @@ public class OrderController : BaseApiController
             await SendUpdateToCallCenter(resultDto);
         }
 
-        // Print Kitchen ONLY for new items
-        var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
-        resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
-        
-        if (resultDto.OrderSettings.Any(s => s.SeparateReceiptCount > 0))
-            await PrintKitchenReceipts(resultDto, createdOrder, isFollowUp: true);
-
-        // Also print Customer and Backup receipts for the added items
-        if (orderDto.SkipPrintingOnServer != true)
+        // Print for added items ONLY when running at the Branch.
+        // When running at the Central Call Center, the branch handles printing
+        // after it receives the dispatched order via ReceiveUpdateFromCallCenter.
+        if (!_callCenterSettings.IsCentralCallCenter)
         {
-            List<string> branchDetails = await GetBranchDetails(orderDto);
-            
-            if (parentOrder.OrderType == OrderTypes.Delivery)
-                 await printDeliveryReceipts(resultDto, createdOrder, branchDetails, isFollowUp: true, parentDeliveryFees: parentOrder.DeliveryFees);
-            else
-                 await printTakeAwayReceipts(resultDto, createdOrder, branchDetails, isFollowUp: true);
+            var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
+            resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
-            if (resultDto.OrderSettings.Any(s => s.FullKitchenReceiptCount > 0))
-                 await PrintBackupReceipts(resultDto, createdOrder, isFollowUp: true, KitchenType: "Backup");
+            if (resultDto.OrderSettings.Any(s => s.SeparateReceiptCount > 0))
+                await PrintKitchenReceipts(resultDto, createdOrder, isFollowUp: true);
+
+            // Also print Customer and Backup receipts for the added items
+            if (orderDto.SkipPrintingOnServer != true)
+            {
+                List<string> branchDetails = await GetBranchDetails(orderDto);
+
+                if (parentOrder.OrderType == OrderTypes.Delivery)
+                     await printDeliveryReceipts(resultDto, createdOrder, branchDetails, isFollowUp: true, parentDeliveryFees: parentOrder.DeliveryFees);
+                else
+                     await printTakeAwayReceipts(resultDto, createdOrder, branchDetails, isFollowUp: true);
+
+                if (resultDto.OrderSettings.Any(s => s.FullKitchenReceiptCount > 0))
+                     await PrintBackupReceipts(resultDto, createdOrder, isFollowUp: true, KitchenType: "Backup");
+            }
+        }
+        else
+        {
+            // At CC: we still need OrderSettings populated on resultDto for the response
+            var orderSettings = await _orderService.GetOrderSettingsAsync(null);
+            resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
         }
 
         return Ok(resultDto);
