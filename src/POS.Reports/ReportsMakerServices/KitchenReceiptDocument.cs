@@ -185,13 +185,17 @@ public class KitchenReceiptDocument : IDocument
             .Select(g =>
             {
                 var first = g.First();
+                decimal totalQty = g.Sum(x => x.Quantity);
+                decimal totalVoidQty = g.Sum(x => x.VoidAmount ?? 0);
+                decimal displayQty = totalQty > 0 ? totalQty : (totalVoidQty > 0 ? totalVoidQty : totalQty);
                 return new TableItem
                 {
                     Id = first.Id,
                     Name = first.Name,
-                    Quantity = g.Sum(x => x.Quantity),
+                    Quantity = displayQty,
+                    VoidAmount = totalVoidQty,
                     Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
-                    IsVoided = first.IsVoided,
+                    IsVoided = first.IsVoided || receipt.IsVoid,
                     ByWeight = first.ByWeight,
                     LineComment = g.Key.LineComment
                 };

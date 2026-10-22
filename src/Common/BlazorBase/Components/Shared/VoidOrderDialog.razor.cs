@@ -309,7 +309,11 @@ public partial class VoidOrderDialog
                             return item;
                         }).ToList();
 
-                        await _printOrderService.PrintVoidReceiptAsync(DistributionOrder, voidedTableItems);
+                        bool isCallCenter = _commonProperties.IsFeatureEnabled("IsCallCenter");
+                        if (!isCallCenter)
+                        {
+                            await _printOrderService.PrintVoidReceiptAsync(DistributionOrder, voidedTableItems);
+                        }
                     }
                 }
                 catch (Exception ex)

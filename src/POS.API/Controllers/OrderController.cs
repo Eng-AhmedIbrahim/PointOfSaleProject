@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+using POS.Core.Services.Contract.VoidServices;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace POS.API.Controllers;
 
@@ -17,6 +18,7 @@ public class OrderController : BaseApiController
     private readonly IDeliveryZoneServices _deliveryZoneServices;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
+    private readonly IVoidService _voidService;
 
     public OrderController(IOrderService orderService,
         IWebHostEnvironment webHostEnvironment,
@@ -29,7 +31,8 @@ public class OrderController : BaseApiController
         IHubContext<DeliveryHub> deliveryHubContext,
         IDeliveryZoneServices deliveryZoneServices,
         IUnitOfWork unitOfWork,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IVoidService voidService)
     {
         _orderService = orderService;
         _webHostEnvironment = webHostEnvironment;
@@ -43,6 +46,7 @@ public class OrderController : BaseApiController
         _deliveryZoneServices = deliveryZoneServices;
         _unitOfWork = unitOfWork;
         _configuration = configuration;
+        _voidService = voidService;
         _reportsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Reports");
         Directory.CreateDirectory(_reportsFolder);
     }
@@ -761,7 +765,112 @@ public class OrderController : BaseApiController
         }
 
         bool wasAlreadyVoided = order.OrderState == OrderStates.Voided;
-        
+
+        // If this is a FULL VOID from Call Center:
+        if (orderDto.OrderState == OrderStates.Voided.ToString())
+        {
+            if (!wasAlreadyVoided)
+            {
+                await _voidService.VoidOrderAsync(
+                    order.Id,
+                    orderDto.VoidReason ?? "Ø¥Ù„ØºØ§Ø¡ Ù…Ù† Ø§Ù„ÙƒÙˆÙ„ Ø³Ù†ØªØ±",
+                    orderDto.VoidBy ?? "CC",
+                    orderDto.VoidByName ?? "Ø§Ù„ÙƒÙˆÙ„ Ø³Ù†ØªØ±",
+                    returnToStock: true);
+
+                order = await _orderService.GetOrderByIdAsync(order.Id) ?? order;
+            }
+
+            var resultDto = _mapper.Map<OrderDto>(order);
+            var orderSettings = await _orderService.GetOrderSettingsAsync(null);
+            resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
+
+            var settingForType = orderSettings?.FirstOrDefault(s =>
+                string.Equals(s.OrderType, order.OrderType.ToString(), StringComparison.OrdinalIgnoreCase));
+
+            try
+            {
+                // 1. Kitchen void ticket
+                await PrintVoidToKitchen(resultDto, order.OrderDetails?.ToList());
+
+                // 2. Backup void receipt
+                if (settingForType?.FullKitchenReceiptCount > 0)
+                {
+                    await PrintBackupReceipts(resultDto, order, isFollowUp: false);
+                }
+
+                // 3. Customer void receipt (shows big X Ù…Ù„ØºÙŠ X and voided items)
+                List<string> branchDetails = await GetBranchDetails(resultDto);
+                if (order.OrderType == OrderTypes.Delivery)
+                    await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                else if (order.OrderType == OrderTypes.TakeAway)
+                    await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "[CC Void Sync] Error printing void receipts for order {OrderId} at branch", order.OrderID);
+            }
+
+            // Notify branch UI
+            await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", resultDto);
+
+            return Ok(resultDto);
+        }
+
+        // If this is a PARTIAL item void from Call Center:
+        var ccVoidedItems = orderDto.OrderDetails?.Where(i => i.IsVoided == true || (i.VoidAmount.HasValue && i.VoidAmount > 0)).ToList();
+        if (ccVoidedItems != null && ccVoidedItems.Any())
+        {
+            var itemsToVoidAtBranch = new List<OrderItemVoidDto>();
+            foreach (var ccItem in ccVoidedItems)
+            {
+                var branchDetail = order.OrderDetails?.FirstOrDefault(d =>
+                    d.MenuSalesItemId.HasValue && d.MenuSalesItemId == ccItem.Id && d.IsVoided != true);
+
+                if (branchDetail != null)
+                {
+                    decimal qtyToVoid = (ccItem.VoidAmount.HasValue && ccItem.VoidAmount > 0)
+                        ? ccItem.VoidAmount.Value
+                        : (branchDetail.Quantity ?? 0);
+
+                    itemsToVoidAtBranch.Add(new OrderItemVoidDto(branchDetail.Id, qtyToVoid));
+                }
+            }
+
+            if (itemsToVoidAtBranch.Any())
+            {
+                await _voidService.VoidItemsAsync(
+                    order.Id,
+                    itemsToVoidAtBranch,
+                    orderDto.VoidReason ?? "Ø¥Ù„ØºØ§Ø¡ ØµÙ†Ù Ù…Ù† Ø§Ù„ÙƒÙˆÙ„ Ø³Ù†ØªØ±",
+                    orderDto.VoidBy ?? "CC",
+                    orderDto.VoidByName ?? "Ø§Ù„ÙƒÙˆÙ„ Ø³Ù†ØªØ±",
+                    returnToStock: true);
+
+                order = await _orderService.GetOrderByIdAsync(order.Id) ?? order;
+
+                try
+                {
+                    var resultDto = _mapper.Map<OrderDto>(order);
+                    var orderSettings = await _orderService.GetOrderSettingsAsync(null);
+                    resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
+
+                    var voidedDetails = order.OrderDetails?.Where(d => itemsToVoidAtBranch.Any(v => v.OrderItemDetailId == d.Id)).ToList();
+                    await PrintVoidToKitchen(resultDto, voidedDetails);
+
+                    List<string> branchDetails = await GetBranchDetails(resultDto);
+                    if (order.OrderType == OrderTypes.Delivery)
+                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                    else if (order.OrderType == OrderTypes.TakeAway)
+                        await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "[CC Item Void Sync] Error printing receipts for partial void of order {OrderId} at branch", order.OrderID);
+                }
+            }
+        }
+
         // Update basic tracking fields
         order.OrderState = Enum.TryParse<OrderStates>(orderDto.OrderState, out var state) ? state : order.OrderState;
         order.DriverID = orderDto.DriverID ?? order.DriverID;
@@ -769,37 +878,14 @@ public class OrderController : BaseApiController
         order.AssignTime = orderDto.AssignTime ?? order.AssignTime;
         order.DispatchID = orderDto.DispatchID ?? order.DispatchID;
         order.ClosingTime = orderDto.ClosingTime ?? order.ClosingTime;
-        
-        if (order.OrderState == OrderStates.Voided)
-        {
-            order.VoidBy = orderDto.VoidBy;
-            order.VoidByName = orderDto.VoidByName;
-            order.VoidReason = orderDto.VoidReason;
-            order.VoidTime = orderDto.VoidTime ?? DateTime.Now;
-            order.VoidAmount = orderDto.VoidAmount;
-            order.TotalVoid = orderDto.TotalVoid;
-            
-            // If it just became voided, trigger kitchen print
-            if (!wasAlreadyVoided)
-            {
-                var resultDto = _mapper.Map<OrderDto>(order);
-                var orderSettings = await _orderService.GetOrderSettingsAsync(null); // CC's MachineName not registered at branch
-                resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
-                
-                // Trigger kitchen void print locally at the branch
-                // We'll use a local helper to avoid circular dependency if possible, but actually we can just call it
-                await PrintVoidToKitchen(resultDto, order.OrderDetails?.ToList());
-            }
-        }
 
         if (orderDto.GrandTotal.HasValue && orderDto.GrandTotal > 0) order.GrandTotal = orderDto.GrandTotal.Value;
         if (orderDto.SubTotal.HasValue && orderDto.SubTotal > 0) order.Subtotal = orderDto.SubTotal.Value;
 
-        bool hasItemChanges = orderDto.OrderDetails != null && orderDto.OrderDetails.Any();
+        bool hasItemChanges = orderDto.OrderDetails != null && orderDto.OrderDetails.Any(d => d.IsVoided != true);
 
         if (hasItemChanges)
         {
-            // Capture existing items before update to compute only added/increased items for kitchen printing
             var existingItemMap = order.OrderDetails?
                 .GroupBy(d => d.MenuSalesItemId ?? 0)
                 .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity ?? 0))
@@ -812,7 +898,6 @@ public class OrderController : BaseApiController
             order.Discount = orderDto.DiscountPercentage ?? order.Discount;
             await _orderService.FullUpdateOrderAsync(order);
 
-            // Compute only the newly added / quantity-increased items for kitchen & backup printing
             var addedItems = new List<TableItem>();
             foreach (var item in orderDto.OrderDetails!)
             {
@@ -828,30 +913,25 @@ public class OrderController : BaseApiController
                 }
             }
 
-            // Print kitchen + delivery receipts for the updated items at the branch
             try
             {
                 var resultDto = _mapper.Map<OrderDto>(order);
-                resultDto.OrderDetails = orderDto.OrderDetails; // Full order for customer receipt (تابع)
+                resultDto.OrderDetails = orderDto.OrderDetails;
                 resultDto.CallCenterOrderId = order.CallCenterOrderId;
-                // Use null so we get ALL settings (CC's MachineName is not registered at the branch)
                 var orderSettings = await _orderService.GetOrderSettingsAsync(null);
                 resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
-                var settingForType = orderSettings.FirstOrDefault(s =>
+                var settingForType = orderSettings?.FirstOrDefault(s =>
                     string.Equals(s.OrderType, order.OrderType.ToString(), StringComparison.OrdinalIgnoreCase));
 
                 if (settingForType != null)
                 {
                     List<string> branchDetails = await GetBranchDetails(resultDto);
-
-                    // Customer receipt: full order, labelled تابع
                     if (order.OrderType == OrderTypes.Delivery)
                         await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: true);
                     else if (order.OrderType == OrderTypes.TakeAway)
                         await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: true);
 
-                    // Kitchen & backup: only the newly added items
                     if (addedItems.Count > 0)
                     {
                         var kitchenDto = _mapper.Map<OrderDto>(order);
@@ -871,15 +951,12 @@ public class OrderController : BaseApiController
             {
                 Log.Error(ex, "[CC Update] Error printing receipts for updated order {OrderId} at branch", order.OrderID);
             }
-            // NOTE: ReceiveOrderUpdated below handles the UI bell & order-list refresh.
-            // Do NOT send ReceiveNewDeliveryOrder here — it would cause a full COPY reprint on the Dispatcher.
         }
         else
         {
             await _orderService.UpdateOrderAsync(order);
         }
 
-        // Always notify UI for state/driver updates; include updated items so Dispatcher list stays current
         var updatedNotifyDto = _mapper.Map<OrderDto>(order);
         updatedNotifyDto.CallCenterOrderId = order.CallCenterOrderId;
         if (hasItemChanges)
@@ -905,7 +982,7 @@ public class OrderController : BaseApiController
                 {
                     var kitchen = kitchens.FirstOrDefault(k => k.Id == g.Key);
                     var printers = kitchen?.KitchenPrinters?
-                        .FirstOrDefault(p => p.DeviceName == (orderDto.MachineName ?? Environment.MachineName));
+                        .FirstOrDefault(p => p.DeviceName == Environment.MachineName) ?? kitchen?.KitchenPrinters?.FirstOrDefault();
                     
                     return new
                     {
@@ -1008,7 +1085,8 @@ public class OrderController : BaseApiController
             TableId = dineInOrder.TableId,
             TableName = dineInOrder.TableName,
             WaiterName = dineInOrder.WaiterName,
-            IsCopy = isCopy
+            IsCopy = isCopy,
+            IsVoid = dineInOrder.OrderState == OrderStates.Voided.ToString() || (dineInOrder.VoidAmount.HasValue && dineInOrder.VoidAmount > 0)
         };
 
         var outputPath = await CreateCashReceiptLayOut(receipt, receipt.Items);
@@ -1028,13 +1106,14 @@ public class OrderController : BaseApiController
         if (printer == null || receiptCount <= 0)
             return;
 
-        var printers = printer!.KitchenPrinters;
-        if (printers == null) return;
+        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == (dineInOrder.MachineName ?? Environment.MachineName))
+                         ?? printer?.KitchenPrinters?.FirstOrDefault();
+        if (targetPrinter == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1274,7 +1353,8 @@ public class OrderController : BaseApiController
             Services = takeawayOrder.Services,
             SubTotal = takeawayOrder.SubTotal,
             Items = takeawayOrder.OrderDetails!,
-            IsFollowUp = isFollowUp
+            IsFollowUp = isFollowUp,
+            IsVoid = takeawayOrder.OrderState == OrderStates.Voided.ToString() || (takeawayOrder.VoidAmount.HasValue && takeawayOrder.VoidAmount > 0)
         };
         var receiptItems = receipt.Items;
 
@@ -1306,13 +1386,14 @@ public class OrderController : BaseApiController
         if (printer == null || receiptCount <= 0)
             return;
 
-        var printers = printer!.KitchenPrinters;
-        if (printers == null) return;
+        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName))
+                         ?? printer?.KitchenPrinters?.FirstOrDefault();
+        if (targetPrinter == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1355,7 +1436,8 @@ public class OrderController : BaseApiController
             TableId = Order.TableId,
             TableName = Order.TableName,
             IsFollowUp = isFollowUp,
-            IsCopy = isCopy
+            IsCopy = isCopy,
+            IsVoid = Order.OrderState == OrderStates.Voided.ToString() || (Order.VoidAmount.HasValue && Order.VoidAmount > 0)
         };
 
         if (filteredItems.Count == 0)
@@ -1379,13 +1461,14 @@ public class OrderController : BaseApiController
         if (printer == null || receiptCount <= 0)
             return;
 
-        var printers = printer!.KitchenPrinters;
-        if (printers == null) return;
+        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName))
+                         ?? printer?.KitchenPrinters?.FirstOrDefault();
+        if (targetPrinter == null) return;
         var printerNamesToUse = new List<string>();
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1688,7 +1771,8 @@ public class OrderController : BaseApiController
             DeliveryName = deliveryOrder.DriverName,
             CustomerAddress = deliveryOrder.StreetName,
             IsFollowUp = isFollowUp,
-            IsCopy = isCopy
+            IsCopy = isCopy,
+            IsVoid = deliveryOrder.OrderState == OrderStates.Voided.ToString() || (deliveryOrder.VoidAmount.HasValue && deliveryOrder.VoidAmount > 0)
         };
 
         var deliveryItems = deliveryOrder.OrderDetails!;

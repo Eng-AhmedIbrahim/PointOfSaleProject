@@ -1,4 +1,4 @@
-﻿using BlazorBase.Components.Shared;
+using BlazorBase.Components.Shared;
 using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
@@ -291,7 +291,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                 try
                 {
                     var settings = await _systemSettingsServices.GetDispatcherSettingsAsync();
-                    if (settings != null && settings.IsDispatcher)
+                    if (!_isCallCenter && settings != null && settings.IsDispatcher)
                     {
                         Serilog.Log.Information($"[Distribution] IsDispatcher=true → Playing bell and starting PrintReceivedOrderAsync for Order #{orderDto.OrderId}");
                         PlayBellForOneSecond();
@@ -404,7 +404,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
                     try
                     {
                         var settings = await _systemSettingsServices.GetDispatcherSettingsAsync();
-                        if (settings != null && settings.IsDispatcher)
+                        if (!_isCallCenter && settings != null && settings.IsDispatcher)
                         {
                             PlayBellForOneSecond();
                             await _printOrderService.PrintVoidReceiptAsync(orderDto, orderDto.OrderDetails ?? new());

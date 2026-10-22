@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract;
+using POS.Core.Services.Contract;
 
 namespace POS.Desktop.Services;
 
@@ -1370,6 +1370,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
     private async Task PrintVoidReceiptInternal(int orderId, string? cashier, string orderType, DateTime? date, string? notice, string? tableName, List<TableItem> items)
     {
+        if (_commonProperties.IsFeatureEnabled("IsCallCenter")) return;
         // Similar to PrintKitchenReceiptsLocally but forced to VOID type
         var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
         if (kitchens == null || !kitchens.Any()) return;

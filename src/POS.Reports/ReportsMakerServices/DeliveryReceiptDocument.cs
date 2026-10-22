@@ -298,16 +298,21 @@ public class DeliveryReceiptDocument : IDocument
             .Select(g =>
             {
                 var first = g.First();
+                decimal totalQty = g.Sum(x => x.Quantity);
+                decimal totalVoidQty = g.Sum(x => x.VoidAmount ?? 0);
+                decimal displayQty = totalQty > 0 ? totalQty : (totalVoidQty > 0 ? totalVoidQty : totalQty);
                 return new TableItem
                 {
                     Id = first.Id,
                     Name = first.Name,
                     Price = first.Price,
-                    Quantity = g.Sum(x => x.Quantity),
-                    TotalAmount = g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0),
+                    Quantity = displayQty,
+                    TotalAmount = totalQty > 0 
+                        ? g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0)
+                        : (_receipt.IsVoid ? (displayQty * (first.Price ?? 0)) : 0m),
                     Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
-                    IsVoided = first.IsVoided,
-                    VoidAmount = g.Sum(x => x.VoidAmount ?? 0),
+                    IsVoided = first.IsVoided || _receipt.IsVoid,
+                    VoidAmount = totalVoidQty,
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
                     LineComment = g.Key.LineComment
@@ -359,7 +364,7 @@ public class DeliveryReceiptDocument : IDocument
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.Name);
-                        if (item.IsVoided == true && item.Quantity == 0) {
+                        if (_receipt.IsVoid || item.IsVoided == true) {
                             text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
                         }
                     });
