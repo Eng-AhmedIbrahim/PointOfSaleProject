@@ -1,4 +1,4 @@
-namespace ERPFront.Components.Pages;
+﻿namespace ERPFront.Components.Pages;
 
 public partial class POS
 {
@@ -76,6 +76,15 @@ public partial class POS
 
     private async Task AddItemToSection4(MenuSalesItemsToReturnDto selectedMenuItem)
     {
+        // If we are currently selecting attributes for a base item, this click is an attribute choice!
+        // We must NOT treat it as a standalone menu item (which would check inventory, cashed items, etc.)
+        if (_currentBaseItem != null && (selectedMenuItem.Attributes == null || !selectedMenuItem.Attributes.Any()))
+        {
+            await ProcessAttributeSelection(selectedMenuItem);
+            UpdateOrderTotals();
+            return;
+        }
+
         TableItem? existingCashedItem = GetItemFromTableById(selectedMenuItem);
 
         if (IsCashedItem(existingCashedItem))
@@ -84,7 +93,7 @@ public partial class POS
         }
         else
         {
-            HandleNewItemSelection(selectedMenuItem, existingCashedItem);
+            await HandleNewItemSelection(selectedMenuItem, existingCashedItem);
         }
 
         UpdateOrderTotals();
@@ -147,18 +156,18 @@ public partial class POS
     /// <summary>
     /// Handles adding a new item when the selected item is not a cashed order.
     /// </summary>
-    private async void HandleNewItemSelection(MenuSalesItemsToReturnDto selectedMenuItem, TableItem? existingItem)
+    private async Task HandleNewItemSelection(MenuSalesItemsToReturnDto selectedMenuItem, TableItem? existingItem)
     {
         if (!selectedMenuItem.Attributes.Any() && _itemClickCount.Count() == 0 && existingItem != null)
             IncrementExistingNewItem(existingItem);
         else
-            ProcessAttributeSelection(selectedMenuItem);
+            await ProcessAttributeSelection(selectedMenuItem);
     }
 
     /// <summary>
     /// Processes attribute selection logic for new items.
     /// </summary>
-    private async void ProcessAttributeSelection(MenuSalesItemsToReturnDto selectedMenuItem)
+    private async Task ProcessAttributeSelection(MenuSalesItemsToReturnDto selectedMenuItem)
     {
         if (_itemClickCount.Count == 0)
             InitializeBaseItem(selectedMenuItem);
