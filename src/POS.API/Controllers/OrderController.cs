@@ -445,12 +445,22 @@ public class OrderController : BaseApiController
             await SendUpdateToCallCenter(updatedDto);
         }
 
-        // Print receipts after update with "تابع" flag
-        if (orderDto.SkipPrintingOnServer != true)
+        // Print receipts after update with "تابع" flag (Branch only - CC does not print)
+        if (orderDto.SkipPrintingOnServer != true && !_callCenterSettings.IsCentralCallCenter)
         {
-            var orderSettings = orderDto.OrderSettings?.FirstOrDefault(o => o.OrderType == orderDto.OrderType);
+            var branchDevice = Environment.MachineName;
+            var orderSettingsList = await _orderService.GetOrderSettingsAsync(branchDevice);
+            if (orderSettingsList == null || !orderSettingsList.Any())
+                orderSettingsList = await _orderService.GetOrderSettingsAsync(null);
+
+            var orderSettings = orderSettingsList?.FirstOrDefault(o =>
+                string.Equals(o.OrderType, orderDto.OrderType, StringComparison.OrdinalIgnoreCase));
+
             if (orderSettings != null)
             {
+                orderDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettingsList);
+                orderDto.MachineName = branchDevice;
+
                 List<string> branchDetails = await GetBranchDetails(orderDto);
                 if (string.Equals(orderDto.OrderType, OrderTypes.Delivery.ToString(), StringComparison.OrdinalIgnoreCase))
                     await printDeliveryReceipts(orderDto, updatedOrder, branchDetails, isFollowUp: true);
@@ -915,10 +925,17 @@ public class OrderController : BaseApiController
 
             try
             {
+                var branchDevice = Environment.MachineName;
                 var resultDto = _mapper.Map<OrderDto>(order);
                 resultDto.OrderDetails = orderDto.OrderDetails;
                 resultDto.CallCenterOrderId = order.CallCenterOrderId;
-                var orderSettings = await _orderService.GetOrderSettingsAsync(null);
+                resultDto.MachineName = branchDevice;
+
+                // Fetch settings for the current BRANCH machine (ENGMAHMOUD)
+                var orderSettings = await _orderService.GetOrderSettingsAsync(branchDevice);
+                if (orderSettings == null || !orderSettings.Any())
+                    orderSettings = await _orderService.GetOrderSettingsAsync(null);
+
                 resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
                 var settingForType = orderSettings?.FirstOrDefault(s =>
@@ -932,12 +949,15 @@ public class OrderController : BaseApiController
                     else if (order.OrderType == OrderTypes.TakeAway)
                         await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: true);
 
-                    if (addedItems.Count > 0)
+                    // For kitchen and backup: print the newly added items if detected, otherwise the full updated items
+                    var itemsForKitchen = addedItems.Count > 0 ? addedItems : orderDto.OrderDetails;
+                    if (itemsForKitchen != null && itemsForKitchen.Any())
                     {
                         var kitchenDto = _mapper.Map<OrderDto>(order);
-                        kitchenDto.OrderDetails = addedItems;
+                        kitchenDto.OrderDetails = itemsForKitchen;
                         kitchenDto.CallCenterOrderId = order.CallCenterOrderId;
                         kitchenDto.OrderSettings = resultDto.OrderSettings;
+                        kitchenDto.MachineName = branchDevice;
 
                         if (settingForType.FullKitchenReceiptCount > 0)
                             await PrintBackupReceipts(kitchenDto, order, isFollowUp: true);
@@ -1018,7 +1038,7 @@ public class OrderController : BaseApiController
                 if (printers == null) continue;
                 for (int i = 1; i <= 3; i++)
                 {
-                    var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                    var printerName = printers.GetType().GetProperty($"Copy{i}")?.GetValue(printers) as string;
                     if (!string.IsNullOrEmpty(printerName))
                     {
                         await _printerServices.PrintPdfAsync(outputPath, printerName);
@@ -1113,7 +1133,7 @@ public class OrderController : BaseApiController
 
         for (int i = 1; i <= receiptCount; i++)
         {
-            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
+            var printerName = targetPrinter.GetType().GetProperty($"Copy{i}")?.GetValue(targetPrinter) as string;
             if (!string.IsNullOrEmpty(printerName))
             {
                 printerNamesToUse.Add(printerName);
@@ -1374,19 +1394,32 @@ public class OrderController : BaseApiController
     }
     private async Task PrintCashReceipt(OrderDto takeawayOrder, string reportPath)
     {
-
         var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
-        var printer = kitchens?.ElementAtOrDefault(0);
+        var printer = kitchens?.FirstOrDefault(k => string.Equals(k.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase))
+                   ?? kitchens?.ElementAtOrDefault(0);
 
-        var receiptCount = takeawayOrder.OrderSettings!
-                .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
+        var deviceName = Environment.MachineName;
+        var orderType = takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString();
+
+        var receiptCount = takeawayOrder.OrderSettings?
+                .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
                 .Select(o => o.CustomerReceiptCount)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? 0;
+
+        if (receiptCount <= 0)
+        {
+            var branchSettings = await _orderService.GetOrderSettingsAsync(deviceName);
+            receiptCount = branchSettings?
+                .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
+                .Select(o => o.CustomerReceiptCount)
+                .FirstOrDefault() ?? 1;
+        }
 
         if (printer == null || receiptCount <= 0)
             return;
 
-        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName))
+        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => string.Equals(p.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                         ?? (string.IsNullOrEmpty(takeawayOrder.MachineName) ? null : printer?.KitchenPrinters?.FirstOrDefault(p => string.Equals(p.DeviceName, takeawayOrder.MachineName, StringComparison.OrdinalIgnoreCase)))
                          ?? printer?.KitchenPrinters?.FirstOrDefault();
         if (targetPrinter == null) return;
         var printerNamesToUse = new List<string>();
@@ -1449,19 +1482,33 @@ public class OrderController : BaseApiController
     }
     private async Task PrintBackupReceipt(OrderDto takeawayOrder, string reportPath)
     {
-
         var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
-        var printer = kitchens?.ElementAtOrDefault(1);
+        var printer = kitchens?.FirstOrDefault(k => string.Equals(k.KitchenName, "Backup", StringComparison.OrdinalIgnoreCase) || string.Equals(k.KitchenName, "Packup", StringComparison.OrdinalIgnoreCase))
+                   ?? kitchens?.ElementAtOrDefault(1)
+                   ?? kitchens?.FirstOrDefault();
 
-        var receiptCount = takeawayOrder.OrderSettings!
-                .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
+        var deviceName = Environment.MachineName;
+        var orderType = takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString();
+
+        var receiptCount = takeawayOrder.OrderSettings?
+                .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
                 .Select(o => o.FullKitchenReceiptCount)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? 0;
+
+        if (receiptCount <= 0)
+        {
+            var branchSettings = await _orderService.GetOrderSettingsAsync(deviceName);
+            receiptCount = branchSettings?
+                .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
+                .Select(o => o.FullKitchenReceiptCount)
+                .FirstOrDefault() ?? 1;
+        }
 
         if (printer == null || receiptCount <= 0)
             return;
 
-        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName))
+        var targetPrinter = printer?.KitchenPrinters?.FirstOrDefault(p => string.Equals(p.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                         ?? (string.IsNullOrEmpty(takeawayOrder.MachineName) ? null : printer?.KitchenPrinters?.FirstOrDefault(p => string.Equals(p.DeviceName, takeawayOrder.MachineName, StringComparison.OrdinalIgnoreCase)))
                          ?? printer?.KitchenPrinters?.FirstOrDefault();
         if (targetPrinter == null) return;
         var printerNamesToUse = new List<string>();
@@ -1481,10 +1528,22 @@ public class OrderController : BaseApiController
 
     private async Task PrintKitchenReceipts( OrderDto takeawayOrder, Orders createdOrder, bool isFollowUp = false, bool isCopy = false)
     {
-        var receiptCount = takeawayOrder.OrderSettings!
-            .Where(o => o.OrderType == (takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString()))
+        var deviceName = Environment.MachineName;
+        var orderType = takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString();
+
+        var receiptCount = takeawayOrder.OrderSettings?
+            .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
             .Select(o => o.SeparateReceiptCount)
-            .FirstOrDefault();
+            .FirstOrDefault() ?? 0;
+
+        if (receiptCount <= 0)
+        {
+            var branchSettings = await _orderService.GetOrderSettingsAsync(deviceName);
+            receiptCount = branchSettings?
+                .Where(o => string.Equals(o.OrderType, orderType, StringComparison.OrdinalIgnoreCase))
+                .Select(o => o.SeparateReceiptCount)
+                .FirstOrDefault() ?? 0;
+        }
 
         if (receiptCount <= 0)
             return;
@@ -1503,7 +1562,9 @@ public class OrderController : BaseApiController
             {
                 var kitchen = kitchens.FirstOrDefault(k => k.Id == g.Key);
                 var printers = kitchen?.KitchenPrinters?
-                    .FirstOrDefault(p => p.DeviceName == (takeawayOrder.MachineName ?? Environment.MachineName));
+                    .FirstOrDefault(p => string.Equals(p.DeviceName, deviceName, StringComparison.OrdinalIgnoreCase))
+                    ?? (string.IsNullOrEmpty(takeawayOrder.MachineName) ? null : kitchen?.KitchenPrinters?.FirstOrDefault(p => string.Equals(p.DeviceName, takeawayOrder.MachineName, StringComparison.OrdinalIgnoreCase)))
+                    ?? kitchen?.KitchenPrinters?.FirstOrDefault();
                 
                 return new
                 {
@@ -1525,7 +1586,7 @@ public class OrderController : BaseApiController
             {
                 Id = createdOrder.OrderID,
                 CashierName = takeawayOrder.CashierName!,
-                OrderType = takeawayOrder.OrderType ?? OrderTypes.TakeAway.ToString(),
+                OrderType = orderType,
                 DateCreated = DateTimeOffset.Now,
                 Items = kitchenItems,
                 KitchenNote = takeawayOrder.OrderNotice!,
