@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract.VoidServices;
+﻿using POS.Core.Services.Contract.VoidServices;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace POS.API.Controllers;
@@ -530,10 +530,15 @@ public class OrderController : BaseApiController
                     if (itemInDb != null)
                     {
                         item.OrderType = OrderTypes.Delivery;
-                        if (!item.ItemKitchenTypeId.HasValue && itemInDb.KitchenTypeId.HasValue)
+                        // Always override kitchen assignment from branch local DB (CC may send wrong kitchen IDs)
+                        if (itemInDb.KitchenTypeId.HasValue)
                             item.ItemKitchenTypeId = itemInDb.KitchenTypeId;
-                        if (!item.CategoryKitchenTypeId.HasValue && itemInDb.Category?.KitchenTypeId.HasValue == true)
+                        else
+                            item.ItemKitchenTypeId = null; // clear CC's value if branch has no assignment
+                        if (itemInDb.Category?.KitchenTypeId.HasValue == true)
                             item.CategoryKitchenTypeId = itemInDb.Category.KitchenTypeId;
+                        else
+                            item.CategoryKitchenTypeId = null;
                         if (!item.PrintInBackupReceiptFromItem.HasValue)
                             item.PrintInBackupReceiptFromItem = itemInDb.PrintInBackupReceipt;
                         if (!item.PrintInBackupReceiptFromCategory.HasValue && itemInDb.Category != null)
@@ -688,17 +693,16 @@ public class OrderController : BaseApiController
             foreach (var oi in orderItems)
             {
                 oi.OrderType = effectiveOrderType;
-                if (oi.MenuSalesItemId.HasValue && (!oi.ItemKitchenTypeId.HasValue || !oi.CategoryKitchenTypeId.HasValue))
+                if (oi.MenuSalesItemId.HasValue)
                 {
                     try
                     {
                         var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(oi.MenuSalesItemId.Value);
                         if (localItem != null)
                         {
-                            if (!oi.ItemKitchenTypeId.HasValue && localItem.KitchenTypeId.HasValue)
-                                oi.ItemKitchenTypeId = localItem.KitchenTypeId;
-                            if (!oi.CategoryKitchenTypeId.HasValue && localItem.Category?.KitchenTypeId.HasValue == true)
-                                oi.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            // Always override kitchen assignment from branch local DB (CC may send wrong kitchen IDs)
+                            oi.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            oi.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
                             if (!oi.PrintInBackupReceiptFromItem.HasValue)
                                 oi.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
                             if (!oi.PrintInBackupReceiptFromCategory.HasValue && localItem.Category != null)
@@ -920,17 +924,16 @@ public class OrderController : BaseApiController
             foreach (var oi in orderItems)
             {
                 oi.OrderType = effectiveOrderType;
-                if (oi.MenuSalesItemId.HasValue && (!oi.ItemKitchenTypeId.HasValue || !oi.CategoryKitchenTypeId.HasValue))
+                if (oi.MenuSalesItemId.HasValue)
                 {
                     try
                     {
                         var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(oi.MenuSalesItemId.Value);
                         if (localItem != null)
                         {
-                            if (!oi.ItemKitchenTypeId.HasValue && localItem.KitchenTypeId.HasValue)
-                                oi.ItemKitchenTypeId = localItem.KitchenTypeId;
-                            if (!oi.CategoryKitchenTypeId.HasValue && localItem.Category?.KitchenTypeId.HasValue == true)
-                                oi.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            // Always override kitchen assignment from branch local DB (CC may send wrong kitchen IDs)
+                            oi.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            oi.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
                             if (!oi.PrintInBackupReceiptFromItem.HasValue)
                                 oi.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
                             if (!oi.PrintInBackupReceiptFromCategory.HasValue && localItem.Category != null)
@@ -1042,17 +1045,18 @@ public class OrderController : BaseApiController
             var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
             var kitchenItems = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(itemsToVoid);
 
+            // Always override kitchen assignment from branch local DB (CC may send wrong kitchen IDs)
             foreach (var item in kitchenItems)
             {
-                if (!item.ItemKitchenTypeId.HasValue && !item.CategoryKitchenTypeId.HasValue && item.Id > 0)
+                if (item.Id > 0)
                 {
                     try
                     {
                         var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.Id);
                         if (localItem != null)
                         {
-                            if (localItem.KitchenTypeId.HasValue) item.ItemKitchenTypeId = localItem.KitchenTypeId;
-                            if (localItem.Category?.KitchenTypeId.HasValue == true) item.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            item.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            item.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
                             if (localItem.PrintInBackupReceipt.HasValue) item.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
                         }
                     }
@@ -1672,19 +1676,21 @@ public class OrderController : BaseApiController
         if (items == null || items.Count == 0)
             return;
 
-        // --- Fallback: enrich items missing KitchenTypeId from branch local catalog ---
-        // When items come from Call Center they may have ItemKitchenTypeId = null
-        // because the CC doesn't manage kitchen assignments. We resolve the value
-        // from the branch's own MenuSalesItems record so nothing gets filtered out.
+        // --- Always override KitchenTypeId from branch local catalog ---
+        // CC may send wrong/different kitchen IDs that don't match the branch's printer assignments.
+        // We always resolve from the branch's own MenuSalesItems so printing uses branch config only.
         foreach (var item in items)
         {
-            if (!item.ItemKitchenTypeId.HasValue && !item.CategoryKitchenTypeId.HasValue && item.Id > 0)
+            if (item.Id > 0)
             {
                 try
                 {
                     var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.Id);
-                    if (localItem != null && localItem.KitchenTypeId.HasValue)
+                    if (localItem != null)
+                    {
                         item.ItemKitchenTypeId = localItem.KitchenTypeId;
+                        item.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
+                    }
                 }
                 catch (Exception ex)
                 {
