@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract.VoidServices;
+using POS.Core.Services.Contract.VoidServices;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace POS.API.Controllers;
@@ -798,30 +798,7 @@ public class OrderController : BaseApiController
             var settingForType = orderSettings?.FirstOrDefault(s =>
                 string.Equals(s.OrderType, order.OrderType.ToString(), StringComparison.OrdinalIgnoreCase));
 
-            try
-            {
-                // 1. Kitchen void ticket
-                await PrintVoidToKitchen(resultDto, order.OrderDetails?.ToList());
-
-                // 2. Backup void receipt
-                if (settingForType?.FullKitchenReceiptCount > 0)
-                {
-                    await PrintBackupReceipts(resultDto, order, isFollowUp: false);
-                }
-
-
-                // 3. Customer void receipt - only for TakeAway (Delivery does not print customer copy on void)
-                List<string> branchDetails = await GetBranchDetails(resultDto);
-                if (order.OrderType == OrderTypes.Delivery)
-                    await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                else if (order.OrderType == OrderTypes.TakeAway)
-                    await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                // Delivery: no customer-facing void receipt is printed
-            }  // end try
-            catch (Exception ex)
-            {
-                Log.Error(ex, "[CC Void Sync] Error printing void receipts for order {OrderId} at branch", order.OrderID);
-            }
+            // Void printing is handled by Desktop UI (DesktopPrintOrderService via ReceiveOrderUpdated)
 
             // Notify branch UI
             await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", resultDto);
@@ -867,16 +844,7 @@ public class OrderController : BaseApiController
                     var orderSettings = await _orderService.GetOrderSettingsAsync(null);
                     resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
-                    var voidedDetails = order.OrderDetails?.Where(d => itemsToVoidAtBranch.Any(v => v.OrderItemDetailId == d.Id)).ToList();
-                    await PrintVoidToKitchen(resultDto, voidedDetails);
-
-                    // Customer void receipt - only for TakeAway; Delivery does not print customer copy on void
-                    List<string> branchDetails = await GetBranchDetails(resultDto);
-                    if (order.OrderType == OrderTypes.Delivery)
-                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                    else if (order.OrderType == OrderTypes.TakeAway)
-                        await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
-                    // Delivery: no customer-facing void receipt is printed
+                    // Void printing is handled by Desktop UI (DesktopPrintOrderService via ReceiveOrderUpdated)
                 }
                 catch (Exception ex)
                 {
@@ -1319,39 +1287,90 @@ public class OrderController : BaseApiController
     private async Task<List<string>> GetLogoPath(int branchId)
     {
         List<string> branchDetails = new List<string>();
+        int logoWidth = 150;
+        int logoHeight = 150;
+        string logoPath = "";
+
         try 
         {
-            var branch = await _branchService.GetBranchByIdAsync(branchId);
+            Branch? branch = null;
+            if (branchId > 0)
+            {
+                branch = await _branchService.GetBranchByIdAsync(branchId);
+            }
+            if (branch == null)
+            {
+                var branches = await _branchService.GetBranchesAsync();
+                branch = branches?.FirstOrDefault(b => b.Id == branchId) ?? branches?.FirstOrDefault();
+            }
+
             if (branch != null)
             {
-                var logoFileName = branch.ImagePath ?? string.Empty;
-                var logoWidth = branch.LogoWidth != 0 ? branch.LogoWidth : 150;
-                var logoHeight = branch.LogoHeight != 0 ? branch.LogoHeight : 150;
+                if (branch.LogoWidth != 0) logoWidth = branch.LogoWidth;
+                if (branch.LogoHeight != 0) logoHeight = branch.LogoHeight;
 
-                string logoPath = !string.IsNullOrEmpty(logoFileName) 
-                    ? Path.Combine(_webHostEnvironment.WebRootPath, "Files", "images", logoFileName)
-                    : "";
+                if (!string.IsNullOrEmpty(branch.ImagePath))
+                {
+                    var webRoot = _webHostEnvironment?.WebRootPath ?? "";
+                    var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                    var possiblePaths = new[]
+                    {
+                        Path.Combine(webRoot, "Files", "images", branch.ImagePath),
+                        Path.Combine(webRoot, "images", branch.ImagePath),
+                        Path.Combine(webRoot, "images", "ReceiptLogo", branch.ImagePath),
+                        Path.Combine(baseDir, "wwwroot", "Files", "images", branch.ImagePath),
+                        Path.Combine(baseDir, "wwwroot", "images", "ReceiptLogo", branch.ImagePath),
+                        Path.Combine(baseDir, "images", "ReceiptLogo", branch.ImagePath)
+                    };
 
-                branchDetails.Add(logoPath);
-                branchDetails.Add(logoWidth.ToString());
-                branchDetails.Add(logoHeight.ToString());
-            }
-            else 
-            {
-                // Fallback for missing branch record
-                branchDetails.Add("");
-                branchDetails.Add("150");
-                branchDetails.Add("150");
+                    logoPath = possiblePaths.FirstOrDefault(p => !string.IsNullOrEmpty(p) && System.IO.File.Exists(p)) ?? "";
+                }
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error in GetLogoPath for branch {BranchId}", branchId);
-            branchDetails.Add("");
-            branchDetails.Add("150");
-            branchDetails.Add("150");
         }
 
+        // Fallback: search standard logo folders if no path found yet
+        if (string.IsNullOrEmpty(logoPath) || !System.IO.File.Exists(logoPath))
+        {
+            try
+            {
+                var webRoot = _webHostEnvironment?.WebRootPath ?? "";
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var candidateDirs = new[]
+                {
+                    Path.Combine(baseDir, "images", "ReceiptLogo"),
+                    Path.Combine(baseDir, "wwwroot", "images", "ReceiptLogo"),
+                    Path.Combine(baseDir, "wwwroot", "Files", "images"),
+                    Path.Combine(webRoot, "images", "ReceiptLogo"),
+                    Path.Combine(webRoot, "Files", "images"),
+                    Path.Combine(webRoot, "images")
+                };
+
+                foreach (var dir in candidateDirs)
+                {
+                    if (Directory.Exists(dir))
+                    {
+                        var file = Directory.GetFiles(dir, "*.*")
+                            .FirstOrDefault(f => f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                                f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                                f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase));
+                        if (file != null)
+                        {
+                            logoPath = file;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        branchDetails.Add(logoPath);
+        branchDetails.Add(logoWidth.ToString());
+        branchDetails.Add(logoHeight.ToString());
         return branchDetails;
     }
     private async Task printTakeAwayReceipts(OrderDto takeawayOrder, Orders createdOrder, List<string> branchDetails, bool isFollowUp = false)
