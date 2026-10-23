@@ -568,42 +568,13 @@ public class OrderController : BaseApiController
             branchOrderDto.CallCenterOrderId = orderDto.Id;
             branchOrderDto.CallCenterApiUrl = orderDto.CallCenterApiUrl;
             branchOrderDto.DeliveryBranchUrl = orderDto.DeliveryBranchUrl;
-            branchOrderDto.OrderDetails = orderDto.OrderDetails;
+            // Map OrderDetails from createdOrder so it carries branch enriched kitchen types & backup flags
+            branchOrderDto.OrderDetails = _mapper.Map<List<TableItem>>(createdOrder.OrderDetails);
 
             await _deliveryHubContext.Clients.All.SendAsync("ReceiveNewDeliveryOrder", branchOrderDto);
 
             Log.Information("[Branch Receive] Completed processing for Order {OrderId}. Order broadcasted to Dispatcher via SignalR.", orderDto.OrderId);
 
-            // Print kitchen receipts at branch using branch local settings (not CC settings)
-            if (orderDto.SkipPrintingOnServer != true)
-            {
-                try
-                {
-                    var branchDevice = Environment.MachineName;
-                    var orderSettingsList = await _orderService.GetOrderSettingsAsync(branchDevice);
-                    if (orderSettingsList == null || !orderSettingsList.Any())
-                        orderSettingsList = await _orderService.GetOrderSettingsAsync(null);
-
-                    var orderSettings = orderSettingsList?.FirstOrDefault(o =>
-                        string.Equals(o.OrderType, OrderTypes.Delivery.ToString(), StringComparison.OrdinalIgnoreCase));
-
-                    if (orderSettings != null)
-                    {
-                        branchOrderDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettingsList!);
-                        branchOrderDto.MachineName = branchDevice;
-
-                        if (orderSettings.FullKitchenReceiptCount > 0)
-                            await PrintBackupReceipts(branchOrderDto, createdOrder);
-
-                        if (orderSettings.SeparateReceiptCount > 0)
-                            await PrintKitchenReceipts(branchOrderDto, createdOrder);
-                    }
-                }
-                catch (Exception printEx)
-                {
-                    Log.Warning(printEx, "[Branch Receive] Kitchen print failed for Order {OrderId} — order was saved successfully.", orderDto.OrderId);
-                }
-            }
 
             return Ok(branchOrderDto);
         }

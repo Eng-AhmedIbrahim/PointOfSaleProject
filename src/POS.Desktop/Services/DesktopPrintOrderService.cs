@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract;
+﻿using POS.Core.Services.Contract;
 using BlazorBase.ERPFrontServices.ItemServices;
 
 namespace POS.Desktop.Services;
@@ -1416,7 +1416,6 @@ public class DesktopPrintOrderService : IPrintOrderService
         foreach (var item in items)
         {
             if (item.Id <= 0) continue;
-            if (item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue) continue;
 
             try
             {
