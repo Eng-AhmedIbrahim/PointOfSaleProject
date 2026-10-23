@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract;
+using POS.Core.Services.Contract;
 
 namespace POS.Desktop.Services;
 
@@ -1031,7 +1031,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
 
     private async Task PrintDeliveryLocally(OrderDto orderDto,
-        OrderDto createdOrder, bool isFollowUp = false, decimal? parentDeliveryFees = null, bool isCopy = false, string? printerName = null)
+        OrderDto createdOrder, bool isFollowUp = false, decimal? parentDeliveryFees = null, bool isCopy = false, string? printerName = null, bool neverCopy = false)
     {
         try
         {
@@ -1088,7 +1088,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             int currentPrintCount = 0;
             try
             {
-                if (!isCopy)
+                if (!isCopy && !neverCopy)
                 {
                     currentPrintCount = await _orderSettingsService.IncrementPrintCountAsync(createdOrder.Id);
                 }
@@ -1125,7 +1125,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                             var targetPrinter = printerName ?? (typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string);
                             if (string.IsNullOrEmpty(targetPrinter)) continue;
 
-                            bool isActuallyCopy = !isFollowUp && (isCopy || (currentPrintCount > 1) || (i > 1));
+                            bool isActuallyCopy = !isFollowUp && !neverCopy && (isCopy || (currentPrintCount > 1) || (i > 1));
 
                             string pathToPrint;
                             if (isActuallyCopy)
@@ -1378,7 +1378,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             {
                 if (string.Equals(order.OrderType, "Delivery", StringComparison.OrdinalIgnoreCase))
                 {
-                    await PrintDeliveryLocally(order, order);
+                    await PrintDeliveryLocally(order, order, neverCopy: true);
                 }
                 else if (string.Equals(order.OrderType, "TakeAway", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1424,7 +1424,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             if (kitchen == null) continue;
             // Do not print void receipt to the Customer kitchen (index 0) — only production/backup kitchens get void tickets
             // Skip Customer AND Backup kitchens in the group loop — Backup has its own dedicated block below
-            if (string.Equals(kitchen.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Backup", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Packup", StringComparison.OrdinalIgnoreCase) || kitchens.IndexOf(kitchen) == 0 || kitchens.IndexOf(kitchen) == 1) continue;
+            if (string.Equals(kitchen.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Backup", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Packup", StringComparison.OrdinalIgnoreCase)) continue;
             var printers = kitchen.KitchenPrinters?.FirstOrDefault();
             if (printers == null) continue;
 
