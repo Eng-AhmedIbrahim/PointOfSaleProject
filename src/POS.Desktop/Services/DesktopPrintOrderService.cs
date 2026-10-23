@@ -1,16 +1,19 @@
 using POS.Core.Services.Contract;
+using BlazorBase.ERPFrontServices.ItemServices;
 
 namespace POS.Desktop.Services;
 
 public class DesktopPrintOrderService : IPrintOrderService
 {
     private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> _lastVoidPrints = new();
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<int, (int? kitchenTypeId, int? catKitchenTypeId, bool? backupItem, bool? backupCat)> _itemKitchenCache = new();
     private readonly CommonProperties _commonProperties;
     private readonly IOrderSettingsService _orderSettingsService;
     private readonly IPrinterServices _printerServices;
     private readonly IBranchService _branchService;
     private readonly IStaffMealService _staffMealService;
     private readonly ILocalStorageService _localStorage;
+    private readonly IItemService? _itemService;
 
     private string LogoPath
     {
@@ -43,7 +46,8 @@ public class DesktopPrintOrderService : IPrintOrderService
         IBranchService branchService,
         IStaffMealService staffMealService,
         IConfiguration configuration,
-        Blazored.LocalStorage.ILocalStorageService localStorage)
+        Blazored.LocalStorage.ILocalStorageService localStorage,
+        IItemService? itemService = null)
     {
         _commonProperties = commonProperties;
         _orderSettingsService = orderSettingsService;
@@ -51,6 +55,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         _branchService = branchService;
         _staffMealService = staffMealService;
         _localStorage = localStorage;
+        _itemService = itemService;
     }
 
     public async Task PrintDineInClosingReceipt(DineInOrderDetails order)
@@ -780,6 +785,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             return;
         }
 
+        await EnrichItemsWithKitchenTypesAsync(itemsToProcess);
+
         // Group by Kitchen ID
         var groups = itemsToProcess
             .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
@@ -1403,9 +1410,48 @@ public class DesktopPrintOrderService : IPrintOrderService
         await PrintVoidReceiptInternal(order.Id, order.CashierName, "DineIn", order.OrderDateTime, order.OrderNotice, order.TableName, voidedItems);
     }
 
+    private async Task EnrichItemsWithKitchenTypesAsync(IEnumerable<TableItem>? items)
+    {
+        if (items == null || _itemService == null) return;
+        foreach (var item in items)
+        {
+            if (item.Id <= 0) continue;
+            if (item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue) continue;
+
+            try
+            {
+                if (_itemKitchenCache.TryGetValue(item.Id, out var cached))
+                {
+                    item.ItemKitchenTypeId = cached.kitchenTypeId;
+                    item.CategoryKitchenTypeId = cached.catKitchenTypeId;
+                    if (cached.backupItem.HasValue) item.PrintInBackupReceiptFromItem = cached.backupItem;
+                    if (cached.backupCat.HasValue) item.PrintInBackupReceiptFromCategory = cached.backupCat;
+                }
+                else
+                {
+                    var itemResp = await _itemService.GetItemByIdAsync(item.Id);
+                    if (itemResp?.Success == true && itemResp.Data != null)
+                    {
+                        item.ItemKitchenTypeId = itemResp.Data.KitchenTypeId;
+                        item.CategoryKitchenTypeId = itemResp.Data.CategoryKitchenTypeId;
+                        item.PrintInBackupReceiptFromItem = itemResp.Data.PrintInBackupReceipt;
+                        item.PrintInBackupReceiptFromCategory = itemResp.Data.PrintInBackupReceiptFromCategory;
+
+                        _itemKitchenCache[item.Id] = (itemResp.Data.KitchenTypeId, itemResp.Data.CategoryKitchenTypeId, itemResp.Data.PrintInBackupReceipt, itemResp.Data.PrintInBackupReceiptFromCategory);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[DesktopPrintOrderService] Failed to enrich kitchen type for item {ItemId}", item.Id);
+            }
+        }
+    }
+
     private async Task PrintVoidReceiptInternal(int orderId, string? cashier, string orderType, DateTime? date, string? notice, string? tableName, List<TableItem> items)
     {
         if (_commonProperties.IsFeatureEnabled("IsCallCenter")) return;
+        await EnrichItemsWithKitchenTypesAsync(items);
         // Similar to PrintKitchenReceiptsLocally but forced to VOID type
         var kitchens = await _printerServices.GetKitchenTypesAsync(Environment.MachineName);
         if (kitchens == null || !kitchens.Any()) return;

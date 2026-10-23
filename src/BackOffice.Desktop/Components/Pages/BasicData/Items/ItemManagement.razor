@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @inject LocalizationService LocalizerService
 @inject NavigationManager NavigationManager
+@inject POS.Core.Services.Contract.PosFeatureServices.IPosFeatureSettingsService FeatureSettingsService
 
 <link href="basicdata/itemmanagement.css" rel="stylesheet" />
 
@@ -95,7 +96,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="MenuSalesItemsToReturnDto" Property="IsInventory" Title="@(IsArabic ? "تتبع المخزن" : "Inventory Tracking")" Width="140px" TextAlign="Radzen.TextAlign.Center">
+                    <RadzenDataGridColumn TItem="MenuSalesItemsToReturnDto" Property="IsInventory" Title="@(IsArabic ? "تتبع المخزن" : "Inventory Tracking")" Width="140px" TextAlign="Radzen.TextAlign.Center" Visible="@_isInventoryEnabled">
                         <Template Context="item">
                             @if (item.IsInventory)
                             {
@@ -137,8 +138,10 @@
 
     private bool IsArabic => LocalizerService.GetCurrentLanguage() == "ar";
 
+    private bool _isInventoryEnabled;
     protected override async Task OnInitializedAsync()
     {
+        _isInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
         await LoadData();
     }
 
@@ -202,6 +205,7 @@
 
         if (!result.Canceled)
         {
+            _isInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
             await LoadData();
         }
     }
@@ -220,6 +224,7 @@
 
         if (!result.Canceled)
         {
+            _isInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
             await LoadData();
         }
     }
@@ -244,7 +249,8 @@
             if (response != null && response.Success)
             {
                 Snackbar.Add(IsArabic ? "تم الحذف بنجاح" : "Deleted successfully", Severity.Success);
-                await LoadData();
+                _isInventoryEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableInventoryTracking");
+            await LoadData();
             }
             else
             {

@@ -85,6 +85,10 @@ public class OrderService : IOrderService
                     {
                         item.Id = 0;
                         item.OrderId = 0; // Let EF handle the relationship
+                        if (item.OrderType == 0 || (byte)item.OrderType == 0)
+                        {
+                            item.OrderType = order.OrderType ?? OrderTypes.Delivery;
+                        }
                         
                         if (item.OrderItemAttributes != null)
                         {
@@ -435,6 +439,10 @@ public class OrderService : IOrderService
                     foreach (var item in mergedItems)
                     {
                         item.OrderId = existingOrder.Id;
+                        if (item.OrderType == 0 || (byte)item.OrderType == 0)
+                        {
+                            item.OrderType = existingOrder.OrderType ?? order.OrderType ?? OrderTypes.Delivery;
+                        }
                         item.Id = 0; 
                         if (item.OrderItemAttributes != null)
                         {

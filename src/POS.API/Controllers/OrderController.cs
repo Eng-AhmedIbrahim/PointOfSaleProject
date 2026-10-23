@@ -527,6 +527,18 @@ public class OrderController : BaseApiController
                     if (!item.MenuSalesItemId.HasValue) continue;
 
                     var itemInDb = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.MenuSalesItemId.Value);
+                    if (itemInDb != null)
+                    {
+                        item.OrderType = OrderTypes.Delivery;
+                        if (!item.ItemKitchenTypeId.HasValue && itemInDb.KitchenTypeId.HasValue)
+                            item.ItemKitchenTypeId = itemInDb.KitchenTypeId;
+                        if (!item.CategoryKitchenTypeId.HasValue && itemInDb.Category?.KitchenTypeId.HasValue == true)
+                            item.CategoryKitchenTypeId = itemInDb.Category.KitchenTypeId;
+                        if (!item.PrintInBackupReceiptFromItem.HasValue)
+                            item.PrintInBackupReceiptFromItem = itemInDb.PrintInBackupReceipt;
+                        if (!item.PrintInBackupReceiptFromCategory.HasValue && itemInDb.Category != null)
+                            item.PrintInBackupReceiptFromCategory = itemInDb.Category.PrintInBackupReceipt;
+                    }
                     if (itemInDb == null)
                     {
                         var itemName = orderDto.OrderDetails.FirstOrDefault(d => d.Id == item.MenuSalesItemId.Value)?.Name ?? "Unknown Item";
@@ -671,7 +683,36 @@ public class OrderController : BaseApiController
             if (orderDto.OrderDetails != null && orderDto.OrderDetails.Any())
             {
                 var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails);
-                order.OrderDetails = orderItems;
+                var effectiveOrderType = order.OrderType ?? (Enum.TryParse<OrderTypes>(orderDto.OrderType, out var pt1) ? pt1 : OrderTypes.Delivery);
+
+            foreach (var oi in orderItems)
+            {
+                oi.OrderType = effectiveOrderType;
+                if (oi.MenuSalesItemId.HasValue && (!oi.ItemKitchenTypeId.HasValue || !oi.CategoryKitchenTypeId.HasValue))
+                {
+                    try
+                    {
+                        var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(oi.MenuSalesItemId.Value);
+                        if (localItem != null)
+                        {
+                            if (!oi.ItemKitchenTypeId.HasValue && localItem.KitchenTypeId.HasValue)
+                                oi.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            if (!oi.CategoryKitchenTypeId.HasValue && localItem.Category?.KitchenTypeId.HasValue == true)
+                                oi.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            if (!oi.PrintInBackupReceiptFromItem.HasValue)
+                                oi.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
+                            if (!oi.PrintInBackupReceiptFromCategory.HasValue && localItem.Category != null)
+                                oi.PrintInBackupReceiptFromCategory = localItem.Category.PrintInBackupReceipt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, "[ReceiveUpdateFromCallCenter] Could not enrich item {Id}", oi.MenuSalesItemId);
+                    }
+                }
+            }
+
+            order.OrderDetails = orderItems;
                 order.Tax = orderDto.Tax ?? order.Tax;
                 order.TotalDiscount = orderDto.TotalOrderDiscount ?? order.TotalDiscount;
                 order.Discount = orderDto.DiscountPercentage ?? order.Discount;
@@ -874,6 +915,35 @@ public class OrderController : BaseApiController
                 ?? new Dictionary<int, decimal>();
 
             var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails!);
+            var effectiveOrderType = order.OrderType ?? (Enum.TryParse<OrderTypes>(orderDto.OrderType, out var pt2) ? pt2 : OrderTypes.Delivery);
+
+            foreach (var oi in orderItems)
+            {
+                oi.OrderType = effectiveOrderType;
+                if (oi.MenuSalesItemId.HasValue && (!oi.ItemKitchenTypeId.HasValue || !oi.CategoryKitchenTypeId.HasValue))
+                {
+                    try
+                    {
+                        var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(oi.MenuSalesItemId.Value);
+                        if (localItem != null)
+                        {
+                            if (!oi.ItemKitchenTypeId.HasValue && localItem.KitchenTypeId.HasValue)
+                                oi.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            if (!oi.CategoryKitchenTypeId.HasValue && localItem.Category?.KitchenTypeId.HasValue == true)
+                                oi.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            if (!oi.PrintInBackupReceiptFromItem.HasValue)
+                                oi.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
+                            if (!oi.PrintInBackupReceiptFromCategory.HasValue && localItem.Category != null)
+                                oi.PrintInBackupReceiptFromCategory = localItem.Category.PrintInBackupReceipt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, "[ReceiveUpdateFromCallCenter] Could not enrich item {Id}", oi.MenuSalesItemId);
+                    }
+                }
+            }
+
             order.OrderDetails = orderItems;
             order.Tax = orderDto.Tax ?? order.Tax;
             order.TotalDiscount = orderDto.TotalOrderDiscount ?? order.TotalDiscount;
@@ -951,8 +1021,13 @@ public class OrderController : BaseApiController
 
         var updatedNotifyDto = _mapper.Map<OrderDto>(order);
         updatedNotifyDto.CallCenterOrderId = order.CallCenterOrderId;
+        if (order.OrderDetails != null && order.OrderDetails.Any())
+        {
+            updatedNotifyDto.OrderDetails = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(order.OrderDetails.ToList());
+        }
         if (hasItemChanges)
-            updatedNotifyDto.OrderDetails = orderDto.OrderDetails;
+            if (updatedNotifyDto.OrderDetails == null || !updatedNotifyDto.OrderDetails.Any())
+                updatedNotifyDto.OrderDetails = orderDto.OrderDetails;
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", updatedNotifyDto);
 
         return Ok(true);
@@ -966,6 +1041,27 @@ public class OrderController : BaseApiController
 
             var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
             var kitchenItems = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(itemsToVoid);
+
+            foreach (var item in kitchenItems)
+            {
+                if (!item.ItemKitchenTypeId.HasValue && !item.CategoryKitchenTypeId.HasValue && item.Id > 0)
+                {
+                    try
+                    {
+                        var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.Id);
+                        if (localItem != null)
+                        {
+                            if (localItem.KitchenTypeId.HasValue) item.ItemKitchenTypeId = localItem.KitchenTypeId;
+                            if (localItem.Category?.KitchenTypeId.HasValue == true) item.CategoryKitchenTypeId = localItem.Category.KitchenTypeId;
+                            if (localItem.PrintInBackupReceipt.HasValue) item.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, "[PrintVoidToKitchen] Could not fetch local KitchenTypeId for MenuSalesItemId={Id}", item.Id);
+                    }
+                }
+            }
 
             var groupedItems = kitchenItems
                 .Where(item => item.ItemKitchenTypeId.HasValue || item.CategoryKitchenTypeId.HasValue)
@@ -1691,6 +1787,10 @@ public class OrderController : BaseApiController
 
         // Create the addition as a new linked order
         var orderItems = _mapper.Map<List<TableItem>, List<OrderItemsDetails>>(orderDto.OrderDetails!);
+        foreach (var oi in orderItems)
+        {
+            oi.OrderType = OrderTypes.Delivery;
+        }
         var order = _mapper.Map<OrderDto, Orders>(orderDto);
         order.OrderDetails = orderItems;
         order.OrderType = OrderTypes.Delivery;
