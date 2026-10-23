@@ -812,7 +812,9 @@ public class OrderController : BaseApiController
 
                 // 3. Customer void receipt - only for TakeAway (Delivery does not print customer copy on void)
                 List<string> branchDetails = await GetBranchDetails(resultDto);
-                if (order.OrderType == OrderTypes.TakeAway)
+                if (order.OrderType == OrderTypes.Delivery)
+                    await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                else if (order.OrderType == OrderTypes.TakeAway)
                     await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
                 // Delivery: no customer-facing void receipt is printed
             }  // end try
@@ -870,7 +872,9 @@ public class OrderController : BaseApiController
 
                     // Customer void receipt - only for TakeAway; Delivery does not print customer copy on void
                     List<string> branchDetails = await GetBranchDetails(resultDto);
-                    if (order.OrderType == OrderTypes.TakeAway)
+                    if (order.OrderType == OrderTypes.Delivery)
+                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: false);
+                    else if (order.OrderType == OrderTypes.TakeAway)
                         await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: false);
                     // Delivery: no customer-facing void receipt is printed
                 }

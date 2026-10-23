@@ -4,6 +4,7 @@ namespace POS.Desktop.Services;
 
 public class DesktopPrintOrderService : IPrintOrderService
 {
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> _lastVoidPrints = new();
     private readonly CommonProperties _commonProperties;
     private readonly IOrderSettingsService _orderSettingsService;
     private readonly IPrinterServices _printerServices;
@@ -1357,8 +1358,42 @@ public class DesktopPrintOrderService : IPrintOrderService
     {
         if (voidedItems == null || !voidedItems.Any()) return;
 
-        // Use KitchenReceipt but set Type to VOID
+        var voidKey = $"{order.OrderId}_{order.Id}";
+        if (_lastVoidPrints.TryGetValue(voidKey, out var lastTime) && (DateTime.Now - lastTime).TotalSeconds < 5)
+        {
+            Log.Information("Suppressing duplicate void print for order {OrderId}", order.OrderId);
+            return;
+        }
+        _lastVoidPrints[voidKey] = DateTime.Now;
+
+        // 1. Kitchen and Backup VOID tickets
         await PrintVoidReceiptInternal(order.OrderId, order.CashierName, order.OrderType ?? "Order", order.OrderDate, order.OrderNotice, order.TableName, voidedItems);
+
+        // 2. Customer VOID receipt (Delivery / TakeAway)
+        try
+        {
+            var previousState = order.OrderState;
+            order.OrderState = "Voided";
+            try
+            {
+                if (string.Equals(order.OrderType, "Delivery", StringComparison.OrdinalIgnoreCase))
+                {
+                    await PrintDeliveryLocally(order, order);
+                }
+                else if (string.Equals(order.OrderType, "TakeAway", StringComparison.OrdinalIgnoreCase))
+                {
+                    await PrintTakeAwayLocally(order, order);
+                }
+            }
+            finally
+            {
+                order.OrderState = previousState ?? "Voided";
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error printing customer void receipt for order {OrderId}", order.OrderId);
+        }
     }
 
     public async Task PrintDineInVoidReceiptAsync(DineInOrderDto order, List<TableItem> voidedItems)
@@ -1388,7 +1423,8 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             if (kitchen == null) continue;
             // Do not print void receipt to the Customer kitchen (index 0) — only production/backup kitchens get void tickets
-            if (string.Equals(kitchen.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase) || kitchens.IndexOf(kitchen) == 0) continue;
+            // Skip Customer AND Backup kitchens in the group loop — Backup has its own dedicated block below
+            if (string.Equals(kitchen.KitchenName, "Customer", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Backup", StringComparison.OrdinalIgnoreCase) || string.Equals(kitchen.KitchenName, "Packup", StringComparison.OrdinalIgnoreCase) || kitchens.IndexOf(kitchen) == 0 || kitchens.IndexOf(kitchen) == 1) continue;
             var printers = kitchen.KitchenPrinters?.FirstOrDefault();
             if (printers == null) continue;
 
@@ -1473,7 +1509,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                     if (backupPrinters != null)
                     {
                         var settingsOrderType = (orderType == "Staff" || orderType == "Hospitality") ? "TakeAway" : orderType;
-                        var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType);
+                        var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => string.Equals(o.OrderType, settingsOrderType, StringComparison.OrdinalIgnoreCase));
                         var receiptCount = orderSettings?.FullKitchenReceiptCount ?? 1;
 
                         for (int idx = 1; idx <= receiptCount; idx++)

@@ -53,11 +53,11 @@ public class VoidController : BaseApiController
                 
                 // 1. Kitchen Printing - ONLY if NOT in Central Call Center
                 // If in CC, the branch will handle the printing when it receives the sync
-                if (!_callCenterSettings.IsCentralCallCenter)
-                {
-                    await PrintVoidToKitchen(orderDto, order.OrderDetails?.ToList());
-                }
-
+                // Handled by Desktop UI / DesktopPrintOrderService to avoid double printing
+                // if (!_callCenterSettings.IsCentralCallCenter)
+                // {
+                //     await PrintVoidToKitchen(orderDto, order.OrderDetails?.ToList());
+                // }
                 // 2. Broadcast void on local hub so ALL connected clients on this machine
                 //    (other CC/branch screens) update their distribution list immediately
                 await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", orderDto);
@@ -93,11 +93,11 @@ public class VoidController : BaseApiController
                     .Where(d => voidedDetailIds.Contains(d.Id))
                     .ToList();
 
-                // 1. Kitchen Printing - ONLY if NOT in Central Call Center
-                if (!_callCenterSettings.IsCentralCallCenter && itemsForKitchen != null && itemsForKitchen.Any())
-                {
-                    await PrintVoidToKitchen(orderDto, itemsForKitchen);
-                }
+                // Handled by Desktop UI / DesktopPrintOrderService to avoid double printing
+                // if (!_callCenterSettings.IsCentralCallCenter && itemsForKitchen != null && itemsForKitchen.Any())
+                // {
+                //     await PrintVoidToKitchen(orderDto, itemsForKitchen);
+                // }
 
                 // 2. Broadcast void on local hub so ALL connected clients on this machine
                 //    (other CC/branch screens) update their distribution list immediately
