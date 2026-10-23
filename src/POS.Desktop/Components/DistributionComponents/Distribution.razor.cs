@@ -1,4 +1,4 @@
-using BlazorBase.Components.Shared;
+﻿using BlazorBase.Components.Shared;
 using BlazorBase.ERPFrontServices.BranchServices;
 using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
@@ -92,6 +92,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     // Branch filter (null = all branches)
     private int? _selectedBranchId = null;
+    private string _searchQuery = "";
 
     private List<(int Id, string Name)> _allBranchesList = new();
 
@@ -125,9 +126,27 @@ public partial class Distribution : IDisposable, IAsyncDisposable
     {
         get
         {
-            var q = showAssigned
-                ? Orders.Where(IsOrderAssigned)
-                : Orders.Where(o => !IsOrderAssigned(o));
+            IEnumerable<OrderDto> q;
+
+            if (!string.IsNullOrWhiteSpace(_searchQuery))
+            {
+                var term = _searchQuery.Trim();
+                // Search across ALL delivery orders (both assigned to driver or unassigned)
+                q = Orders.Where(o =>
+                    (!string.IsNullOrEmpty(o.Phone1) && o.Phone1.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(o.Phone2) && o.Phone2.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(o.CustomerPhone) && o.CustomerPhone.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(o.TakeawayCustomerPhone) && o.TakeawayCustomerPhone.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(o.CustomerName) && o.CustomerName.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrEmpty(o.TakeAwayCustomerName) && o.TakeAwayCustomerName.Contains(term, StringComparison.OrdinalIgnoreCase))
+                );
+            }
+            else
+            {
+                q = showAssigned
+                    ? Orders.Where(IsOrderAssigned)
+                    : Orders.Where(o => !IsOrderAssigned(o));
+            }
 
             if (_selectedBranchId.HasValue)
                 q = q.Where(o => o.BranchId == _selectedBranchId.Value);
@@ -724,6 +743,7 @@ public partial class Distribution : IDisposable, IAsyncDisposable
 
     private void ToggleAssigned(bool assigned)
     {
+        _searchQuery = string.Empty;
         showAssigned = assigned;
         SelectedOrderIds.Clear();
         SelectAllOrders = false;
