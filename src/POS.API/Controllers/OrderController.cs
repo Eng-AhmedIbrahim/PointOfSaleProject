@@ -1576,6 +1576,28 @@ public class OrderController : BaseApiController
         if (items == null || items.Count == 0)
             return;
 
+        // --- Fallback: enrich items missing KitchenTypeId from branch local catalog ---
+        // When items come from Call Center they may have ItemKitchenTypeId = null
+        // because the CC doesn't manage kitchen assignments. We resolve the value
+        // from the branch's own MenuSalesItems record so nothing gets filtered out.
+        foreach (var item in items)
+        {
+            if (!item.ItemKitchenTypeId.HasValue && !item.CategoryKitchenTypeId.HasValue && item.Id > 0)
+            {
+                try
+                {
+                    var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(item.Id);
+                    if (localItem != null && localItem.KitchenTypeId.HasValue)
+                        item.ItemKitchenTypeId = localItem.KitchenTypeId;
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "[PrintKitchenReceipts] Could not fetch local KitchenTypeId for MenuSalesItemId={Id}", item.Id);
+                }
+            }
+        }
+        // -------------------------------------------------------------------------
+
         var kitchens = await _kitchenServices.GetAllKitchenTypesAsync();
 
         var groupedItemsWithKitchenNameAndId = items

@@ -1,4 +1,4 @@
-using POS.Contract.Models.ReceiptModels;
+﻿using POS.Contract.Models.ReceiptModels;
 using POS.Contract.Models.ReceiptModels.Delivery;
 
 namespace POS.Reports.ReportsMakerServices;
@@ -99,25 +99,41 @@ public class DeliveryReceiptDocument : IDocument
             .PaddingTop(2)
             .Text(text =>
             {
-                text.Span(_receipt.Id.ToString("0.##")).Bold().FontSize(18);
-                
-                if (_receipt.RemoteOrderId.HasValue && _receipt.RemoteOrderId != 0)
-                {
-                    // Show destination branch name and its local order number
-                    text.Span(" (" + _receipt.StoreName + " #" + _receipt.RemoteOrderId + " :فرع)")
-                        .Bold()
-                        .FontSize(13)
-                        .FontColor(Colors.Blue.Medium);
-                }
-
-                if (_receipt.IsFollowUp)
-                {
-                    text.Span(" - تابع")
-                        .Bold()
-                        .FontSize(13)
-                        .FontColor(Colors.Red.Medium);
-                }
+                text.Span(_receipt.Id.ToString("0.##")).Bold().FontSize(20);
+                text.AlignCenter();
             });
+
+        // Follow-up badge � separate row to avoid BiDi scramble
+        if (_receipt.IsFollowUp)
+        {
+            column.Item()
+                .AlignCenter()
+                .PaddingTop(1)
+                .Text(text =>
+                {
+                    text.Span("◄ تـابـع ►")
+                        .Bold()
+                        .FontSize(16)
+                        .FontColor(Colors.Red.Medium);
+                    text.AlignCenter();
+                });
+        }
+
+        // Remote branch info � separate row to avoid BiDi scramble
+        if (_receipt.RemoteOrderId.HasValue && _receipt.RemoteOrderId != 0)
+        {
+            column.Item()
+                .AlignCenter()
+                .PaddingTop(1)
+                .Text(text =>
+                {
+                    text.Span("فرع: " + _receipt.StoreName + "  |  رقم: " + _receipt.RemoteOrderId)
+                        .Bold()
+                        .FontSize(12)
+                        .FontColor(Colors.Blue.Medium);
+                    text.AlignCenter();
+                });
+        }
 
         if (_receipt.IsHospitality)
         {
