@@ -1,4 +1,4 @@
-using POS.Contract.Models.ReceiptModels;
+﻿using POS.Contract.Models.ReceiptModels;
 using POS.Contract.Models.ReceiptModels.DineIn;
 
 namespace POS.Reports.ReportsMakerServices;
@@ -84,7 +84,7 @@ public class DineInReceiptDocument : IDocument
                 
                 if (receipt.IsFollowUp)
                 {
-                    text.Span(" - تابع")
+                    text.Span(" - ØªØ§Ø¨Ø¹")
                         .Bold()
                         .FontSize(18)
                         .FontColor(Colors.Red.Medium);
@@ -96,7 +96,7 @@ public class DineInReceiptDocument : IDocument
         if (receipt.IsHospitality)
         {
             column.Item().PaddingTop(2).Text(text => {
-                text.Span("ضـيـافـة")
+                text.Span("Ø¶Ù€ÙŠÙ€Ø§ÙÙ€Ø©")
                     .Bold()
                     .FontSize(22)
                     .FontColor(Colors.Red.Medium);
@@ -108,7 +108,7 @@ public class DineInReceiptDocument : IDocument
                 column.Item().PaddingRight(5).Text(text => {
                     text.Span(receipt.HospitalityResponsibleName)
                         .FontSize(14);
-                    text.Span(" :المسؤول")
+                    text.Span(" :Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„")
                         .Bold()
                         .FontSize(14);
                     text.AlignRight();
@@ -120,7 +120,7 @@ public class DineInReceiptDocument : IDocument
                 column.Item().PaddingRight(5).Text(text => {
                     text.Span(receipt.HospitalityReason)
                         .FontSize(12);
-                    text.Span(" :السبب")
+                    text.Span(" :Ø§Ù„Ø³Ø¨Ø¨")
                         .Bold()
                         .FontSize(12);
                     text.AlignRight();
@@ -131,7 +131,7 @@ public class DineInReceiptDocument : IDocument
         if (receipt.IsStaffMeal)
         {
             column.Item().PaddingTop(2).Text(text => {
-                text.Span("وجبة موظف")
+                text.Span("ÙˆØ¬Ø¨Ø© Ù…ÙˆØ¸Ù")
                     .Bold()
                     .FontSize(20);
                 text.AlignCenter();
@@ -140,7 +140,7 @@ public class DineInReceiptDocument : IDocument
             if (!string.IsNullOrEmpty(receipt.StaffMealEmployeeName))
             {
                 column.Item().Text(text => {
-                    text.Span("الموظف: ")
+                    text.Span("Ø§Ù„Ù…ÙˆØ¸Ù: ")
                         .Bold()
                         .FontSize(14);
                     text.Span(receipt.StaffMealEmployeeName)
@@ -191,7 +191,7 @@ public class DineInReceiptDocument : IDocument
                 .AlignCenter()
                 .Text(text =>
                 {
-                    text.Span("X  ملغي  X")
+                    text.Span("X  Ù…Ù„ØºÙŠ  X")
                         .Bold()
                         .FontSize(40)
                         .FontColor(Colors.Red.Medium);
@@ -238,7 +238,7 @@ public class DineInReceiptDocument : IDocument
 
                 table.Cell()
                     .Element(CellStyle)
-                    .Text("كابتن الصالة")
+                    .Text("ÙƒØ§Ø¨ØªÙ† Ø§Ù„ØµØ§Ù„Ø©")
                     .AlignCenter();
 
 
@@ -284,10 +284,10 @@ public class DineInReceiptDocument : IDocument
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(2.5f);  // اجمالي
-                    columns.RelativeColumn(2.5f);  // السعر
-                    columns.RelativeColumn(3.5f);  // الصنف
-                    columns.RelativeColumn(1.5f);  // كمية
+                    columns.RelativeColumn(2.5f);  // Ø§Ø¬Ù…Ø§Ù„ÙŠ
+                    columns.RelativeColumn(2.5f);  // Ø§Ù„Ø³Ø¹Ø±
+                    columns.RelativeColumn(3.5f);  // Ø§Ù„ØµÙ†Ù
+                    columns.RelativeColumn(1.5f);  // ÙƒÙ…ÙŠØ©
                 });
 
                 table.Header(header =>
@@ -324,7 +324,7 @@ public class DineInReceiptDocument : IDocument
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.Name);
                         if (item.IsVoided == true && item.Quantity == 0) {
-                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
+                            text.Span(" (Ù…Ù„ØºÙŠ)").FontColor(Colors.Red.Medium);
                         }
                     });
                     table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
@@ -335,7 +335,7 @@ public class DineInReceiptDocument : IDocument
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(45)
-                            .Text($"✖ ملغي: {item.VoidAmount.Value.ToString("0.##")}")
+                            .Text($"âœ– Ù…Ù„ØºÙŠ: {item.VoidAmount.Value.ToString("0.##")}")
                             .FontSize(10)
                             .FontColor(Colors.Red.Medium)
                             .AlignRight();
@@ -351,7 +351,7 @@ public class DineInReceiptDocument : IDocument
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(45)
-                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
+                            .Text($"âž¤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
                             .FontSize(10)
                             .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
                             .AlignEnd();
