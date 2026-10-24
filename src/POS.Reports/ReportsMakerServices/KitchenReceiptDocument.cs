@@ -201,14 +201,21 @@ public class KitchenReceiptDocument : IDocument
                 };
             }).ToList();
 
+        bool hasWeight = groupedItems.Any(i => i.ByWeight);
+        bool hasLongWeight = groupedItems.Any(i =>
+            i.ByWeight && (FormatWeightFraction(i.Quantity, receipt.IsArabic)?.Length ?? 0) > 4);
+
+        float nameColRatio = !hasWeight ? 8.5f : (hasLongWeight ? 6.2f : 7.2f);
+        float qtyColRatio = !hasWeight ? 1.5f : (hasLongWeight ? 3.8f : 2.8f);
+
         column.Item()
             .PaddingTop(3)
             .Table(table =>
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(5.8f);
-                    columns.RelativeColumn(4.2f);
+                    columns.RelativeColumn(nameColRatio);
+                    columns.RelativeColumn(qtyColRatio);
                 });
 
                 table.Header(header =>
@@ -255,12 +262,12 @@ public class KitchenReceiptDocument : IDocument
                                 var fraction = FormatWeightFraction(item.Quantity, receipt.IsArabic);
                                 if (!string.IsNullOrEmpty(fraction))
                                 {
-                                    text.Span(fraction).Bold().FontSize(11);
-                                    text.Span($" ({item.Quantity:0.##})").FontSize(9).FontColor(Colors.Grey.Darken2);
+                                    text.Span(fraction).Bold().FontSize(10.5f);
+                                    text.Span($" ({item.Quantity:0.##})").FontSize(8.5f).FontColor(Colors.Grey.Darken2);
                                 }
                                 else
                                 {
-                                    text.Span($"{item.Quantity:0.##} {(receipt.IsArabic ? "كجم" : "kg")}").Bold().FontSize(11);
+                                    text.Span($"{item.Quantity:0.##} {(receipt.IsArabic ? "كجم" : "kg")}").Bold().FontSize(10.5f);
                                 }
                             }
                             else
@@ -398,4 +405,5 @@ public class KitchenReceiptDocument : IDocument
         => container.Border(1)
             .Padding(2);
 }
+
 
