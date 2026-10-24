@@ -1,4 +1,4 @@
-using BlazorBase.ERPFrontServices.SettingsServices;
+﻿using BlazorBase.ERPFrontServices.SettingsServices;
 using Serilog;
 
 namespace POS.Desktop.Services;
@@ -199,7 +199,7 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                 _deliveryInvocation.TriggerNewOrderReceived();
             });
 
-            connection.On<OrderDto>("ReceiveOrderUpdated", (order) =>
+            connection.On<OrderDto>("ReceiveOrderUpdated", async (order) =>
             {
                 Log.Information("[CCHub][MSG] ReceiveOrderUpdated → OrderId={Id}, State={State}",
                     order.OrderId, order.OrderState);
@@ -229,6 +229,37 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                     System.Media.SystemSounds.Exclamation.Play();
                 else if (_dispatcherSettings.SoundEnableCallCenter)
                     PlayBellForOneSecond();
+
+                // If this machine is the Dispatcher, print follow-up or void locally on Desktop
+                try
+                {
+                    using var scope = _scopeFactory.CreateScope();
+                    var settingsService = scope.ServiceProvider.GetRequiredService<ISystemSettingsServices>();
+                    var settings = await settingsService.GetDispatcherSettingsAsync();
+                    if (settings.IsDispatcher)
+                    {
+                        var printService = scope.ServiceProvider.GetRequiredService<IPrintOrderService>();
+
+                        if (order.OrderState == "Voided")
+                        {
+                            var voidedItems = order.OrderDetails?.Where(item => item.IsVoided == true || (item.VoidAmount.HasValue && item.VoidAmount > 0)).ToList();
+                            if (voidedItems == null || !voidedItems.Any()) voidedItems = order.OrderDetails;
+                            if (voidedItems != null && voidedItems.Any())
+                            {
+                                await printService.PrintVoidReceiptAsync(order, voidedItems);
+                            }
+                        }
+                        else if (order.IsFollowUp == true || (order.AddedItems != null && order.AddedItems.Any()))
+                        {
+                            PlayBellForOneSecond();
+                            await printService.PrintFollowUpOrderAsync(order, order.AddedItems);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "[CCHub] Error checking dispatcher settings or printing follow-up order locally");
+                }
 
                 _deliveryInvocation.TriggerShowNotification(message, severity);
                 _deliveryInvocation.TriggerNewOrderReceived();

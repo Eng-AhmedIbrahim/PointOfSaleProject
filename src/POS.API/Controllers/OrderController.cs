@@ -913,6 +913,7 @@ public class OrderController : BaseApiController
         if (orderDto.SubTotal.HasValue && orderDto.SubTotal > 0) order.Subtotal = orderDto.SubTotal.Value;
 
         bool hasItemChanges = orderDto.OrderDetails != null && orderDto.OrderDetails.Any(d => d.IsVoided != true);
+        var addedItems = new List<TableItem>();
 
         if (hasItemChanges)
         {
@@ -956,7 +957,7 @@ public class OrderController : BaseApiController
             order.Discount = orderDto.DiscountPercentage ?? order.Discount;
             await _orderService.FullUpdateOrderAsync(order);
 
-            var addedItems = new List<TableItem>();
+            addedItems = new List<TableItem>();
             foreach (var item in orderDto.OrderDetails!)
             {
                 var existingQty = existingItemMap.TryGetValue(item.Id, out var eq) ? eq : 0m;
@@ -971,54 +972,26 @@ public class OrderController : BaseApiController
                 }
             }
 
-            try
+            foreach (var ai in addedItems)
             {
-                var branchDevice = Environment.MachineName;
-                var resultDto = _mapper.Map<OrderDto>(order);
-                resultDto.OrderDetails = orderDto.OrderDetails;
-                resultDto.CallCenterOrderId = order.CallCenterOrderId;
-                resultDto.MachineName = branchDevice;
-
-                // Fetch settings for the current BRANCH machine (ENGMAHMOUD)
-                var orderSettings = await _orderService.GetOrderSettingsAsync(branchDevice);
-                if (orderSettings == null || !orderSettings.Any())
-                    orderSettings = await _orderService.GetOrderSettingsAsync(null);
-
-                resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
-
-                var settingForType = orderSettings?.FirstOrDefault(s =>
-                    string.Equals(s.OrderType, order.OrderType.ToString(), StringComparison.OrdinalIgnoreCase));
-
-                if (settingForType != null)
+                try
                 {
-                    List<string> branchDetails = await GetBranchDetails(resultDto);
-                    if (order.OrderType == OrderTypes.Delivery)
-                        await printDeliveryReceipts(resultDto, order, branchDetails, isFollowUp: true);
-                    else if (order.OrderType == OrderTypes.TakeAway)
-                        await printTakeAwayReceipts(resultDto, order, branchDetails, isFollowUp: true);
-
-                    // For kitchen and backup: print the newly added items if detected, otherwise the full updated items
-                    var itemsForKitchen = addedItems.Count > 0 ? addedItems : orderDto.OrderDetails;
-                    if (itemsForKitchen != null && itemsForKitchen.Any())
+                    var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(ai.Id);
+                    if (localItem != null)
                     {
-                        var kitchenDto = _mapper.Map<OrderDto>(order);
-                        kitchenDto.OrderDetails = itemsForKitchen;
-                        kitchenDto.CallCenterOrderId = order.CallCenterOrderId;
-                        kitchenDto.OrderSettings = resultDto.OrderSettings;
-                        kitchenDto.MachineName = branchDevice;
-
-                        if (settingForType.FullKitchenReceiptCount > 0)
-                            await PrintBackupReceipts(kitchenDto, order, isFollowUp: true);
-
-                        if (settingForType.SeparateReceiptCount > 0)
-                            await PrintKitchenReceipts(kitchenDto, order, isFollowUp: true);
+                        ai.ItemKitchenTypeId = localItem.KitchenTypeId;
+                        ai.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
+                        ai.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
+                        if (localItem.Category != null)
+                            ai.PrintInBackupReceiptFromCategory = localItem.Category.PrintInBackupReceipt;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "[ReceiveUpdateFromCallCenter] Could not enrich added item {Id}", ai.Id);
+                }
             }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "[CC Update] Error printing receipts for updated order {OrderId} at branch", order.OrderID);
-            }
+            // Printing is handled by POS.Desktop locally via ReceiveOrderUpdated SignalR event
         }
         else
         {
@@ -1032,8 +1005,16 @@ public class OrderController : BaseApiController
             updatedNotifyDto.OrderDetails = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(order.OrderDetails.ToList());
         }
         if (hasItemChanges)
+        {
             if (updatedNotifyDto.OrderDetails == null || !updatedNotifyDto.OrderDetails.Any())
                 updatedNotifyDto.OrderDetails = orderDto.OrderDetails;
+
+            updatedNotifyDto.IsFollowUp = true;
+            if (addedItems.Count > 0)
+            {
+                updatedNotifyDto.AddedItems = addedItems;
+            }
+        }
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", updatedNotifyDto);
 
         return Ok(true);
@@ -1836,12 +1817,12 @@ public class OrderController : BaseApiController
             var orderSettings = await _orderService.GetOrderSettingsAsync(orderDto.MachineName);
             resultDto.OrderSettings = _mapper.Map<IReadOnlyList<OrderSetting>, ICollection<OrderSettingToReturnDto>>(orderSettings);
 
-            if (resultDto.OrderSettings.Any(s => s.SeparateReceiptCount > 0))
-                await PrintKitchenReceipts(resultDto, createdOrder, isFollowUp: true);
 
             // Also print Customer and Backup receipts for the added items
             if (orderDto.SkipPrintingOnServer != true)
             {
+                if (resultDto.OrderSettings.Any(s => s.SeparateReceiptCount > 0))
+                    await PrintKitchenReceipts(resultDto, createdOrder, isFollowUp: true);
                 List<string> branchDetails = await GetBranchDetails(orderDto);
 
                 if (parentOrder.OrderType == OrderTypes.Delivery)

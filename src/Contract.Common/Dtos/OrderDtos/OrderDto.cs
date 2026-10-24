@@ -1,4 +1,4 @@
-using POS.Contract.Dtos.OrderDto;
+﻿using POS.Contract.Dtos.OrderDto;
 
 namespace POS.Contract.Dtos.OrderDtos;
 
@@ -125,4 +125,7 @@ public class OrderDto
     public bool? IsStaffMeal { get; set; }
     public string? StaffMealEmployeeId { get; set; }
     public string? StaffMealEmployeeName { get; set; }
+    // Follow-up / Added items for Desktop printing
+    public List<TableItem>? AddedItems { get; set; }
+    public bool? IsFollowUp { get; set; }
 }

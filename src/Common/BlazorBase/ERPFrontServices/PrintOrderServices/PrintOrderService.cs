@@ -1,4 +1,4 @@
-using POS.Contract.Dtos.DineIn;
+﻿using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.ReportingDtos;
 using Serilog;
 
@@ -170,6 +170,11 @@ public class PrintOrderService : IPrintOrderService
     }
 
     public Task PrintReceivedOrderAsync(OrderDto order)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task PrintFollowUpOrderAsync(OrderDto order, List<TableItem>? addedItems = null)
     {
         return Task.CompletedTask;
     }

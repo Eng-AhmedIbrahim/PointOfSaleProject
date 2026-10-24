@@ -1,4 +1,4 @@
-using POS.Contract.Dtos.DineIn;
+﻿using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.OrderDtos;
 using POS.Contract.Dtos.ReportingDtos;
 using POS.Contract.Models;
@@ -27,6 +27,7 @@ public interface IPrintOrderService
     public Task<bool> PrintDeliveryOrder(decimal paid = 0);
     public Task<bool> ReprintOrderAsync(int orderId, bool isCopy = false, bool printCustomer = true, bool printKitchen = true, string? printerName = null);
     public Task PrintReceivedOrderAsync(OrderDto order);
+    public Task PrintFollowUpOrderAsync(OrderDto order, List<TableItem>? addedItems = null);
     public Task PrintDispatchOrderAsync(OrderDto order);
     public Task PrintVoidReceiptAsync(OrderDto order, List<TableItem> voidedItems);
     public Task PrintDineInVoidReceiptAsync(DineInOrderDto order, List<TableItem> voidedItems);

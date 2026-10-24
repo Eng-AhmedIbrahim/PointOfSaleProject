@@ -1233,6 +1233,75 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
+    public async Task PrintFollowUpOrderAsync(OrderDto order, List<TableItem>? addedItems = null)
+    {
+        try
+        {
+            var itemsCount = addedItems?.Count ?? order.OrderDetails?.Count ?? 0;
+            var orderKey = $"followup_{order.Id}_{order.OrderId}_{itemsCount}";
+            if (_recentlyPrintedOrders.TryGetValue(orderKey, out var lastPrintTime) && (DateTime.UtcNow - lastPrintTime).TotalSeconds < 10)
+            {
+                Log.Warning("[Print Guard] Follow-up order {Key} was already printed {Seconds:F1}s ago. Skipping duplicate print.", orderKey, (DateTime.UtcNow - lastPrintTime).TotalSeconds);
+                return;
+            }
+            _recentlyPrintedOrders[orderKey] = DateTime.UtcNow;
+
+            // Always fetch fresh settings for this machine to respect any BackOffice updates at branch
+            try
+            {
+                var freshSettings = await _orderSettingsService.GetOrderSettingsAsync(Environment.MachineName);
+                if (freshSettings != null && freshSettings.Any())
+                {
+                    _commonProperties.OrderSettings = freshSettings;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[PrintFollowUpOrderAsync] Failed to fetch fresh order settings, falling back to cached settings.");
+            }
+
+            order.OrderSettings = _commonProperties.OrderSettings;
+
+            // 1. Print Customer Delivery receipt marked as Follow-Up
+            await PrintDeliveryLocally(order, order, isFollowUp: true);
+
+            var orderSettings = _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == "Delivery");
+
+            if (orderSettings != null)
+            {
+                // For kitchen and backup: if specific added items were provided, print only those! Otherwise print all items.
+                var itemsToPrint = (addedItems != null && addedItems.Any()) ? addedItems : order.OrderDetails;
+
+                if (itemsToPrint != null && itemsToPrint.Any())
+                {
+                    await EnrichItemsWithKitchenTypesAsync(itemsToPrint);
+
+                    var itemsDto = new OrderDto
+                    {
+                        Id = order.Id,
+                        OrderId = order.OrderId,
+                        OrderType = order.OrderType ?? "Delivery",
+                        CashierName = order.CashierName,
+                        TableName = order.TableName,
+                        OrderNotice = order.OrderNotice,
+                        OrderDate = order.OrderDate,
+                        OrderSettings = order.OrderSettings,
+                        OrderDetails = itemsToPrint
+                    };
+
+                    if (orderSettings.FullKitchenReceiptCount > 0)
+                        await PrintBackupReceiptsLocally(itemsDto, itemsDto, isReprint: true, isFollowUp: true);
+
+                    if (orderSettings.SeparateReceiptCount > 0)
+                        await PrintKitchenReceiptsLocally(itemsDto, itemsDto, isReprint: true, isFollowUp: true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to print follow-up order locally");
+        }
+    }
     public async Task PrintDispatchOrderAsync(OrderDto order)
     {
         try
