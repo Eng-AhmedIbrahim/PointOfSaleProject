@@ -327,7 +327,9 @@ public class DineInReceiptDocument : IDocument
                             text.Span(" (Ù…Ù„ØºÙŠ)").FontColor(Colors.Red.Medium);
                         }
                     });
-                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString("N0")).AlignCenter();
+                    var qtyText = item.Quantity.ToString("0.##");
+if (item.ByWeight) qtyText += " كجم";
+table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
 
                     // Add Voided hint if available and item still has active quantity
                     if (item.VoidAmount > 0 && item.Quantity > 0)
@@ -362,14 +364,14 @@ public class DineInReceiptDocument : IDocument
                     {
                         var groupedAttrs = item.Attributes
                             .GroupBy(a => a.Name)
-                            .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
+                            .Select(g => new { Name = g.Key, Count = item.ByWeight ? g.Count() : g.Count() * item.Quantity });
 
                         foreach (var attr in groupedAttrs)
                         {
                             table.Cell().ColumnSpan(4)
                                 .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text($"{attr.Name} {(attr.Count > 1 ? $"({attr.Count:N0})" : "")}")
+                                .Text($"{attr.Name} {(attr.Count > 1 && !item.ByWeight ? $"({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }
@@ -451,3 +453,4 @@ public class DineInReceiptDocument : IDocument
         => container.Border(1)
             .Padding(2);
 }
+

@@ -1,4 +1,4 @@
-namespace POS.Contract.Models;
+﻿namespace POS.Contract.Models;
 
 public class TableItem
 {
@@ -91,7 +91,7 @@ public class TableItem
             OriginalPrice = this.OriginalPrice,
             ExtraPrice = this.ExtraPrice,
             ByWeight = this.ByWeight,
-            WeightQty = this.WeightQty,
+            WeightQty = this.WeightQty ?? (this.ByWeight ? this.Quantity : null),
             ItemTax = this.ItemTax,
             ItemTaxAmount = this.ItemTaxAmount,
             IsHospitality = this.IsHospitality,
@@ -132,3 +132,4 @@ public class AttributeDtoComparer : IEqualityComparer<AttributeDto>
         return HashCode.Combine(obj.Id, obj.Name);
     }
 }
+

@@ -41,7 +41,7 @@
             else if (context.ByWeight)
             {
                 <div class="weight-qty-cell">
-                    <MudNumericField T="decimal" Value="@((context.WeightQty ?? 0) - (context.VoidAmount ?? 0))"
+                    <MudNumericField T="decimal" Value="@(((context.WeightQty ?? context.Quantity)) - (context.VoidAmount ?? 0))"
                                      Min="0.001m" Max="999m" Step="0.125m"
                                      Format="0.###"
                                      Style="width: 80px;" Immediate="false"

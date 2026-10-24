@@ -151,7 +151,7 @@ public partial class Section4Table
     {
         if (newWeightKg <= 0) return;
 
-        if (newWeightKg > (item.WeightQty ?? 0))
+        if (newWeightKg > (item.WeightQty ?? item.Quantity))
         {
              // Check inventory if increasing weight
              bool isStopEnabled = await FeatureSettingsService.IsFeatureEnabledAsync("EnableMinQuantityStop", Environment.MachineName);
