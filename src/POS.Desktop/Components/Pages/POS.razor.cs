@@ -513,14 +513,11 @@ public partial class POS
         currentSelectedAttribute?.Add(newAttribute);
         decimal extraPrice = selectedMenuItem.ExtraPrice ?? 0;
         decimal modifierPrice = selectedMenuItem.Price ?? 0;
+        decimal priceToAdd = extraPrice > 0 ? extraPrice : modifierPrice;
 
-        if (extraPrice > 0)
+        if (priceToAdd > 0)
         {
-            _currentBaseItem!.Price = (_currentBaseItem.Price ?? 0) + extraPrice;
-        }
-        else if ((_currentBaseItem!.Price ?? 0) == 0 && modifierPrice > 0)
-        {
-            _currentBaseItem.Price = modifierPrice;
+            _currentBaseItem!.Price = (_currentBaseItem.Price ?? 0) + priceToAdd;
         }
 
         if (selectedMenuItem.ByWeight)
