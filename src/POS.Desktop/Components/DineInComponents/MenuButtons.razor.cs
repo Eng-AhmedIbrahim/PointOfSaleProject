@@ -1,4 +1,4 @@
-using BlazorBase.Components.Shared;
+﻿using BlazorBase.Components.Shared;
 
 namespace POS.Desktop.Components.DineInComponents;
 
@@ -191,9 +191,13 @@ public partial class MenuButtons : IDisposable
         var orderDetails = _commonProperties.GetActiveOrder();
         if (orderDetails != null)
         {
-            var parameters = new DialogParameters { ["OrderId"] = orderDetails.DatabaseId };
-            var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Medium, FullWidth = true }; // Increased size slightly
-            var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidOrder"], parameters, options);
+            var parameters = new DialogParameters<VoidOrderDialog>();
+            parameters.Add(x => x.OrderId, orderDetails.DatabaseId);
+            parameters.Add(x => x.IsDistribution, true);
+            parameters.Add(x => x.IsDineIn, false);
+
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false };
+            var dialog = await _dialogService.ShowAsync<VoidOrderDialog>(Localizer["Distribution_VoidOrderTitle"], parameters, options);
             var result = await dialog.Result;
 
             if (result != null && !result.Canceled)

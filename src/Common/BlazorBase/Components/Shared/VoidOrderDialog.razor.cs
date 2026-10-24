@@ -1,4 +1,4 @@
-using BlazorBase.ERPFrontServices.DineInOrderServices;
+﻿using BlazorBase.ERPFrontServices.DineInOrderServices;
 using BlazorBase.ERPFrontServices.DistributionServices;
 using BlazorBase.ERPFrontServices.OrderServices;
 using BlazorBase.ERPFrontServices.PrintOrderServices;
@@ -126,8 +126,8 @@ public partial class VoidOrderDialog
                     QuantityToVoid = 0,
                     UnitPrice = x.Price ?? 0,
                     ItemName = _commonProperties?.Language == "ar" 
-                    ? x.NameAr ?? x.Name ?? "" 
-                    : x.Name ?? x.NameAr ?? ""
+                    ? (!string.IsNullOrWhiteSpace(x.NameAr) ? x.NameAr : (!string.IsNullOrWhiteSpace(x.Name) ? x.Name : ""))
+                    : (!string.IsNullOrWhiteSpace(x.Name) ? x.Name : (!string.IsNullOrWhiteSpace(x.NameAr) ? x.NameAr : ""))
                 }).ToList();
         }
     }

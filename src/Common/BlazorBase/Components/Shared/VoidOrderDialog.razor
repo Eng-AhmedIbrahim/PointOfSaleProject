@@ -29,7 +29,7 @@
                                @bind-SelectedItem="SelectedItem" OnRowClick="OnRowClick"
                                Class="void-mud-table flex-grow-1 overflow-auto" Height="100%">
                         <HeaderContent>
-                            <MudTh>@_localizer["ItemName"]</MudTh>
+                            <MudTh Style="min-width: 150px;">@_localizer["ItemName"]</MudTh>
                             <MudTh Style="text-align: center;">@_localizer["Price"]</MudTh>
                             <MudTh Style="text-align: center;">@_localizer["QtyBefore"]</MudTh>
                             <MudTh Style="text-align: center; color: #ef4444;">@_localizer["QtyToVoid"]</MudTh>
@@ -151,7 +151,11 @@
 </MudDialog>
 
 <style>
-    .void-dialog-custom .mud-dialog-width-sm {
+    .void-dialog-custom.mud-dialog,
+    .void-dialog-custom .mud-dialog,
+    .void-dialog-custom .mud-dialog-width-sm,
+    .void-dialog-custom .mud-dialog-width-md,
+    .void-dialog-custom .mud-dialog-width-lg {
         max-width: 1100px !important; 
         width: 95%;
         height: auto;
