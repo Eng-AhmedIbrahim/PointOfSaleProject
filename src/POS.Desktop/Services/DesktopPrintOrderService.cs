@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract;
+using POS.Core.Services.Contract;
 using BlazorBase.ERPFrontServices.ItemServices;
 
 namespace POS.Desktop.Services;
@@ -690,7 +690,8 @@ public class DesktopPrintOrderService : IPrintOrderService
             KitchenNote = order.OrderNotice!,
             KitchenType = "Packup",
             TableName = order.TableName,
-            IsFollowUp = isFollowUp
+            IsFollowUp = isFollowUp,
+            IsArabic = _commonProperties.Language == "ar"
         };
 
         var document = new KitchenReceiptDocument(receipt, filteredItems);
@@ -836,7 +837,8 @@ public class DesktopPrintOrderService : IPrintOrderService
                 KitchenNote = order.OrderNotice!,
                 KitchenType = kitchen.KitchenName ?? $"Kitchen_{kitchen.Id}",
                 TableName = order.TableName,
-                IsFollowUp = isFollowUp
+                IsFollowUp = isFollowUp,
+                IsArabic = _commonProperties.Language == "ar"
             };
 
             var document = new KitchenReceiptDocument(receipt, kitchenItems);
@@ -1558,7 +1560,8 @@ public class DesktopPrintOrderService : IPrintOrderService
                 KitchenNote = notice ?? "",
                 KitchenType = $"{kitchen.KitchenName ?? "Kitchen"} - ملغي",
                 TableName = tableName,
-                IsVoid = true
+                IsVoid = true,
+                IsArabic = _commonProperties.Language == "ar"
             };
 
             // Add a special flag or handle in PDF generation for RED VOID text if possible, 
@@ -1606,7 +1609,8 @@ public class DesktopPrintOrderService : IPrintOrderService
                     KitchenNote = notice ?? "",
                     KitchenType = "Packup",
                     TableName = tableName,
-                    IsVoid = true
+                    IsVoid = true,
+                    IsArabic = _commonProperties.Language == "ar"
                 };
 
                 var backupDocument = new KitchenReceiptDocument(backupReceipt, backupItems);
@@ -2097,3 +2101,4 @@ public class DesktopPrintOrderService : IPrintOrderService
         return true;
     }
 }
+

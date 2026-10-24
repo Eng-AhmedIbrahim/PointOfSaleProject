@@ -1,4 +1,4 @@
-namespace POS.Contract.Models.ReceiptModels.Kitchen;
+﻿namespace POS.Contract.Models.ReceiptModels.Kitchen;
 
 public class KitchenReceipt
 {
@@ -15,8 +15,10 @@ public class KitchenReceipt
     public bool IsVoid { get; set; }
     public bool IsCopy { get; set; }
     public int? ParentOrderId { get; set; }
+    public bool IsArabic { get; set; } = true;
 
     private List<ReceiptItem> _items = [];
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);
 }
+
