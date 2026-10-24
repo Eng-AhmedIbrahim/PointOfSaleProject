@@ -1609,7 +1609,55 @@
     <value>ضيافة</value>
   </data>
   <data name="ConfirmHospitality" xml:space="preserve">
-    <value>هل تريد تأكيد أوردر الضيافة؟</value>
+    <value>تأكيد طلب الضيافة</value>
+  </data>
+  <data name="HospitalityInstructions" xml:space="preserve">
+    <value>يرجى تحديد الشخص المسؤول وسبب الضيافة للمتابعة</value>
+  </data>
+  <data name="ResponsiblePerson" xml:space="preserve">
+    <value>الشخص المسؤول</value>
+  </data>
+  <data name="ResponsiblePersonPlaceholder" xml:space="preserve">
+    <value>اختر أو ابحث عن الشخص المسؤول بالاسم...</value>
+  </data>
+  <data name="ResponsibleRequired" xml:space="preserve">
+    <value>يرجى اختيار الشخص المسؤول</value>
+  </data>
+  <data name="HospitalityReason" xml:space="preserve">
+    <value>سبب الضيافة</value>
+  </data>
+  <data name="EnterReasonPlaceholder" xml:space="preserve">
+    <value>اكتب سبب الضيافة بالتفصيل هنا...</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>يرجى كتابة سبب الضيافة</value>
+  </data>
+  <data name="PleaseCheckInputData" xml:space="preserve">
+    <value>يرجى استكمال جميع البيانات المطلوبة</value>
+  </data>
+  <data name="HospitalityBadge" xml:space="preserve">
+    <value>طلب ضيافة (خصم 100%)</value>
+  </data>
+  <data name="HospitalityBannerHint" xml:space="preserve">
+    <value>سيتم تطبيق خصم 100% وتحميل المسؤولية على الشخص المختار فور التأكيد.</value>
+  </data>
+  <data name="QuickReasons" xml:space="preserve">
+    <value>أسباب شائعة سريعة</value>
+  </data>
+  <data name="Reason_VIP" xml:space="preserve">
+    <value>عميل VIP / ضيف خاص</value>
+  </data>
+  <data name="Reason_Management" xml:space="preserve">
+    <value>ضيافة إدارة</value>
+  </data>
+  <data name="Reason_PR" xml:space="preserve">
+    <value>علاقات عامة وترويج</value>
+  </data>
+  <data name="Reason_QualityCheck" xml:space="preserve">
+    <value>فحص جودة وتجربة</value>
+  </data>
+  <data name="Reason_Courtesy" xml:space="preserve">
+    <value>مجاملة / إرضاء عميل</value>
   </data>
   <data name="HospitalityOrderConfirmed" xml:space="preserve">
     <value>تم تنفيذ أوردر الضيافة بنجاح</value>

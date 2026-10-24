@@ -219,7 +219,7 @@ public partial class POSFooterCommponent : IDisposable
     private async Task OpenHospitalityDialog()
     {
         _drawerOpen = false;
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Small, FullWidth = true };
         var dialog = await DialogService.ShowAsync<HospitalityDialog>(LocalizationService["Hospitality"], options);
         var result = await dialog.Result;
 

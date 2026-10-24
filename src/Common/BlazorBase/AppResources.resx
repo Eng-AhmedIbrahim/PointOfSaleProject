@@ -1579,7 +1579,55 @@
     <value>Hospitality</value>
   </data>
   <data name="ConfirmHospitality" xml:space="preserve">
-    <value>Do you want to confirm the hospitality order?</value>
+    <value>Confirm Hospitality Order</value>
+  </data>
+  <data name="HospitalityInstructions" xml:space="preserve">
+    <value>Please specify the responsible person and reason for hospitality</value>
+  </data>
+  <data name="ResponsiblePerson" xml:space="preserve">
+    <value>Responsible Person</value>
+  </data>
+  <data name="ResponsiblePersonPlaceholder" xml:space="preserve">
+    <value>Select or search for responsible person by name...</value>
+  </data>
+  <data name="ResponsibleRequired" xml:space="preserve">
+    <value>Please select a responsible person</value>
+  </data>
+  <data name="HospitalityReason" xml:space="preserve">
+    <value>Hospitality Reason</value>
+  </data>
+  <data name="EnterReasonPlaceholder" xml:space="preserve">
+    <value>Enter hospitality reason details here...</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>Please enter the hospitality reason</value>
+  </data>
+  <data name="PleaseCheckInputData" xml:space="preserve">
+    <value>Please verify and complete all required fields</value>
+  </data>
+  <data name="HospitalityBadge" xml:space="preserve">
+    <value>Hospitality Order (100% Discount)</value>
+  </data>
+  <data name="HospitalityBannerHint" xml:space="preserve">
+    <value>POS will switch to Hospitality mode with 100% discount assigned to the selected person.</value>
+  </data>
+  <data name="QuickReasons" xml:space="preserve">
+    <value>Quick Reasons</value>
+  </data>
+  <data name="Reason_VIP" xml:space="preserve">
+    <value>VIP Client / Special Guest</value>
+  </data>
+  <data name="Reason_Management" xml:space="preserve">
+    <value>Management Hospitality</value>
+  </data>
+  <data name="Reason_PR" xml:space="preserve">
+    <value>PR &amp; Promotion</value>
+  </data>
+  <data name="Reason_QualityCheck" xml:space="preserve">
+    <value>Quality Check &amp; Tasting</value>
+  </data>
+  <data name="Reason_Courtesy" xml:space="preserve">
+    <value>Courtesy / Customer Care</value>
   </data>
   <data name="HospitalityOrderConfirmed" xml:space="preserve">
     <value>Hospitality order executed successfully</value>
