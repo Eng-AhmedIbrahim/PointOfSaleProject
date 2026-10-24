@@ -333,7 +333,7 @@ public class KitchenReceiptDocument : IDocument
             if (IsNear(frac, 0.375m)) return isArabic ? "ثمن وربع" : "3/8";
             if (IsNear(frac, 0.500m)) return isArabic ? "نصف" : "1/2";
             if (IsNear(frac, 0.625m)) return isArabic ? "نصف وثمن" : "5/8";
-            if (IsNear(frac, 0.750m)) return isArabic ? "إلا ربع" : "3/4";
+            if (IsNear(frac, 0.750m)) return isArabic ? "كيلو إلا ربع" : "3/4";
             if (IsNear(frac, 0.875m)) return isArabic ? "كيلو إلا ثمن" : "7/8";
             return null;
         }
@@ -405,5 +405,6 @@ public class KitchenReceiptDocument : IDocument
         => container.Border(1)
             .Padding(2);
 }
+
 
 
