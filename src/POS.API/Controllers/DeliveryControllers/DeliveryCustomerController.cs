@@ -62,7 +62,10 @@ public class DeliveryCustomerController : BaseApiController
             // Orders are already sorted DESC, so first = latest, last = oldest
             customerDto.LastOrderDate = orders.First().OrderDate;
             var lastOrder = orders.First();
-            customerDto.LastReceiverName = lastOrder?.CustomerName ?? lastOrder?.TakeawayCustomerName;
+            // TakerName = the cashier/taker who took the last order
+            customerDto.LastReceiverName = !string.IsNullOrWhiteSpace(lastOrder?.TakerName)
+                ? lastOrder!.TakerName
+                : (lastOrder?.CashierName ?? lastOrder?.CustomerName ?? lastOrder?.TakeawayCustomerName);
             
             customerDto.FirstOrderDate = orders.Last().OrderDate;
 
