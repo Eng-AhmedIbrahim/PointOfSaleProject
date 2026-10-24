@@ -1,4 +1,4 @@
-namespace POS.Desktop.Components.PosComponent;
+﻿namespace POS.Desktop.Components.PosComponent;
 
 public partial class Section4Table
 {
@@ -74,6 +74,7 @@ public partial class Section4Table
 
     private async void UpdateQuantity(TableItem item, decimal newQuantity)
     {
+        if (newQuantity < 0) newQuantity = 0;
         if (newQuantity > item.Quantity)
         {
             // Check inventory if increasing

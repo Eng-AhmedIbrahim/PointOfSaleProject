@@ -1,4 +1,4 @@
-﻿using POS.Contract.Models.ReceiptModels;
+using POS.Contract.Models.ReceiptModels;
 using POS.Contract.Models.ReceiptModels.DineIn;
 
 namespace POS.Reports.ReportsMakerServices;
@@ -84,7 +84,7 @@ public class DineInReceiptDocument : IDocument
                 
                 if (receipt.IsFollowUp)
                 {
-                    text.Span(" - ØªØ§Ø¨Ø¹")
+                    text.Span(" - تابع")
                         .Bold()
                         .FontSize(18)
                         .FontColor(Colors.Red.Medium);
@@ -108,7 +108,7 @@ public class DineInReceiptDocument : IDocument
                 column.Item().PaddingRight(5).Text(text => {
                     text.Span(receipt.HospitalityResponsibleName)
                         .FontSize(14);
-                    text.Span(" :Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„")
+                    text.Span(" :المسؤول")
                         .Bold()
                         .FontSize(14);
                     text.AlignRight();
@@ -120,7 +120,7 @@ public class DineInReceiptDocument : IDocument
                 column.Item().PaddingRight(5).Text(text => {
                     text.Span(receipt.HospitalityReason)
                         .FontSize(12);
-                    text.Span(" :Ø§Ù„Ø³Ø¨Ø¨")
+                    text.Span(" :السبب")
                         .Bold()
                         .FontSize(12);
                     text.AlignRight();
@@ -155,7 +155,15 @@ public class DineInReceiptDocument : IDocument
             .PaddingTop(1)
             .Text(text =>
             {
-                if (receipt.IsCopy)
+                if (receipt.IsClosing)
+                {
+                    text.Span("END")
+                        .Bold()
+                        .FontSize(20)
+                        .FontColor(Colors.Red.Medium);
+                    text.EmptyLine();
+                }
+                else if (receipt.IsCopy)
                 {
                     text.Span("*********COPY**********")
                         .Bold()
@@ -171,7 +179,7 @@ public class DineInReceiptDocument : IDocument
                         .FontSize(18);
                 }
 
-                if (receipt.IsCopy)
+                if (!receipt.IsClosing && receipt.IsCopy)
                 {
                     text.EmptyLine();
                     text.Span("*********COPY**********")
@@ -191,7 +199,7 @@ public class DineInReceiptDocument : IDocument
                 .AlignCenter()
                 .Text(text =>
                 {
-                    text.Span("X  Ù…Ù„ØºÙŠ  X")
+                    text.Span("X  ملغي  X")
                         .Bold()
                         .FontSize(40)
                         .FontColor(Colors.Red.Medium);
@@ -238,7 +246,7 @@ public class DineInReceiptDocument : IDocument
 
                 table.Cell()
                     .Element(CellStyle)
-                    .Text("ÙƒØ§Ø¨ØªÙ† Ø§Ù„ØµØ§Ù„Ø©")
+                    .Text("كابتن الصالة")
                     .AlignCenter();
 
 
@@ -324,7 +332,7 @@ public class DineInReceiptDocument : IDocument
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.Name);
                         if (item.IsVoided == true && item.Quantity == 0) {
-                            text.Span(" (Ù…Ù„ØºÙŠ)").FontColor(Colors.Red.Medium);
+                            text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
                         }
                     });
                     var qtyText = item.Quantity.ToString("0.##");
@@ -337,7 +345,7 @@ table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(45)
-                            .Text($"âœ– Ù…Ù„ØºÙŠ: {item.VoidAmount.Value.ToString("0.##")}")
+                            .Text($"✖ ملغي: {item.VoidAmount.Value.ToString("0.##")}")
                             .FontSize(10)
                             .FontColor(Colors.Red.Medium)
                             .AlignRight();
@@ -353,7 +361,7 @@ table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
                         table.Cell().ColumnSpan(4)
                             .Element(CellStyle)
                             .PaddingRight(45)
-                            .Text($"âž¤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
+                            .Text($"➤ {ArabicConstStrings.Discount}: {discountText} (-{item.TotalDiscountPrice?.ToString("0.##")})")
                             .FontSize(10)
                             .FontColor(QuestPDF.Helpers.Colors.Red.Medium)
                             .AlignEnd();
@@ -371,7 +379,7 @@ table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
                             table.Cell().ColumnSpan(4)
                                 .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text($"{attr.Name} {(attr.Count > 1 && !item.ByWeight ? $"({attr.Count:N0})" : "")}")
+                                .Text($"{attr.Name} ⟵{(attr.Count > 1 && !item.ByWeight ? $" ({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }

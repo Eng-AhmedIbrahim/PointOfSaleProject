@@ -414,7 +414,7 @@ table.Cell().Element(CellStyle).Text(qtyText).AlignCenter();
                             table.Cell().ColumnSpan(4)
                                 .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text($"{attr.Name} {(attr.Count > 1 && !item.ByWeight ? $"({attr.Count:N0})" : "")}")
+                                .Text($"{attr.Name} ⟵{(attr.Count > 1 && !item.ByWeight ? $" ({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }

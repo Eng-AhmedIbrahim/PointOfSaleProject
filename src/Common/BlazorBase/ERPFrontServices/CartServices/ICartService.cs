@@ -18,8 +18,9 @@ public interface ICartService
     public string? AddItemComment(string comment);
     public string? EditItemComment(string oldComment, string newComment);
     public string? DeleteItemComment(string comment);
-    public void AddItemDiscount(string discountType, decimal discountValue);
+    public void AddItemDiscount(string discountType, decimal discountValue, string? discountReason = null);
     public void ApplyOrderDiscount(decimal discountValue, bool isPercentage, DiscountReason reason);
    
     //public void AppendSpecialNumberToQuantity(string number);
 }
+

@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using POS.Core.Entities;
 using POS.Core.Entities.DineIn;
@@ -254,6 +254,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ItemName))
             .ForMember(dest => dest.NameAr, opt => opt.MapFrom(src => src.ItemNameAr))
             .ForMember(dest => dest.DiscountPercentage, opt => opt.MapFrom(src => src.TotalDiscountPercentage))
+            .ForMember(dest => dest.DiscountReason, opt => opt.MapFrom(src => src.DiscountReason))
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.UnitPrice))
             .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.TotalAmount))
             .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
@@ -280,6 +281,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.Total))
             .ForMember(dest => dest.TotalDiscountPercentage, opt => opt.MapFrom(src => src.DiscountPercentage))
+            .ForMember(dest => dest.DiscountReason, opt => opt.MapFrom(src => src.DiscountReason))
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.CategoryName))
             .ForMember(dest => dest.ItemKitchenTypeId, opt => opt.MapFrom(src => src.ItemKitchenTypeId))
             .ForMember(dest => dest.CategoryKitchenTypeId, opt => opt.MapFrom(src => src.CategoryKitchenTypeId))
@@ -404,3 +406,4 @@ public class MappingProfiles : Profile
         CreateMap<OrderSetting, POS.Contract.Dtos.OrderDto.OrderSettingToReturnDto>().ReverseMap();
     }
 }
+

@@ -25,6 +25,7 @@ public class TableItem
     public decimal? DiscountAmount { get; set; } = null;
     public decimal? TotalDiscountPrice { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
+    public string? DiscountReason { get; set; }
 
     public bool HasTax { get; set; } = false;
     public decimal TaxAmount { get; set; }
@@ -80,6 +81,7 @@ public class TableItem
             IsReadOnly = this.IsReadOnly,
             TotalDiscountPrice = this.TotalDiscountPrice,
             TotalAfterDiscount = this.TotalAfterDiscount,
+            DiscountReason = this.DiscountReason,
             IsVoided = this.IsVoided,
             TotalVoidAmount = this.TotalVoidAmount,
             IsStaffMeal = this.IsStaffMeal,
@@ -132,4 +134,5 @@ public class AttributeDtoComparer : IEqualityComparer<AttributeDto>
         return HashCode.Combine(obj.Id, obj.Name);
     }
 }
+
 

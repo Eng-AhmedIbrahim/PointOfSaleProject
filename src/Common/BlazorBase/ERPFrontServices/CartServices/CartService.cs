@@ -1,4 +1,4 @@
-namespace BlazorBase.ERPFrontServices.CartServices;
+﻿namespace BlazorBase.ERPFrontServices.CartServices;
 
 public class CartService : ICartService
 {
@@ -403,6 +403,7 @@ public class CartService : ICartService
         SelectedItem.HasDiscount = false;
         SelectedItem.DiscountPercentage = null;
         SelectedItem.DiscountAmount = null;
+        SelectedItem.DiscountReason = null;
         SelectedItem.TotalDiscountPrice = 0;
         RecalculateItemTotals(SelectedItem);
         UpdateAmount();
@@ -499,12 +500,13 @@ public class CartService : ICartService
             : null;
     }
 
-    public void AddItemDiscount(string discountType, decimal discountValue)
+    public void AddItemDiscount(string discountType, decimal discountValue, string? discountReason = null)
     {
         if (SelectedItem == null || SelectedItem.Id == 0)
             return;
 
         SelectedItem.HasDiscount = true;
+        SelectedItem.DiscountReason = discountReason;
         if (discountType == "Percentage")
         {
             SelectedItem.DiscountPercentage = discountValue;

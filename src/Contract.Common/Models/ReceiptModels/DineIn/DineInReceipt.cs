@@ -1,4 +1,4 @@
-namespace POS.Contract.Models.ReceiptModels.DineIn;
+﻿namespace POS.Contract.Models.ReceiptModels.DineIn;
 
 public class DineInReceipt
 {
@@ -24,6 +24,7 @@ public class DineInReceipt
     public bool IsCopy { get; set; }
     public int PrintCount { get; set; }
     public bool IsVoid { get; set; }
+    public bool IsClosing { get; set; }
 
     // Hospitality & Staff Meals
     public bool IsHospitality { get; set; }
@@ -35,3 +36,4 @@ public class DineInReceipt
     public void AddItem(ReceiptItem item) => _items.Add(item);
     public void AddItems(IEnumerable<ReceiptItem> items) => _items.AddRange(items);
 }
+

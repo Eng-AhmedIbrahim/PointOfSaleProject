@@ -158,6 +158,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                            (order.BasicOrderDetails.OrderDiscount?.Value ?? 0),
                 TotalOrder = order.BasicOrderDetails.Total?.ToString("0.##") ?? "0.00",
                 IsVoid = order.BasicOrderDetails.IsVoided ?? false,
+                IsClosing = isClosing,
                 IsHospitality = order.BasicOrderDetails.IsHospitality,
                 HospitalityResponsibleName = order.BasicOrderDetails.HospitalityResponsibleName,
                 HospitalityReason = order.BasicOrderDetails.HospitalityReason,
@@ -237,7 +238,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
                             if (string.IsNullOrEmpty(currentPrinterName)) continue;
 
-                            bool isActuallyCopy = (currentPrintCount > 1) || (i > 1);
+                            bool isActuallyCopy = !isClosing && ((currentPrintCount > 1) || (i > 1));
 
                             string pathToPrint;
                             if (isActuallyCopy)
@@ -2112,5 +2113,6 @@ public class DesktopPrintOrderService : IPrintOrderService
         return true;
     }
 }
+
 
 

@@ -1306,6 +1306,7 @@ public class OrderController : BaseApiController
                 ByWeight = detail.ByWeight,
                 TotalDiscountPrice = detail.TotalDiscountPrice ?? 0M,
                 TotalAfterDiscount = detail.TotalAfterDiscount,
+                DiscountReason = detail.DiscountReason,
                 IsVoided = detail.IsVoided,
                 VoidAmount = detail.VoidAmount ?? 0,
                 TotalVoidAmount = detail.TotalVoidAmount ?? 0,
@@ -2054,3 +2055,4 @@ public class OrderController : BaseApiController
         }
     }
 }
+

@@ -1,4 +1,4 @@
-@inject LocalizationService Localizer
+﻿@inject LocalizationService Localizer
 @inject IJSRuntime Js
 @inject ISnackbar Snackbar
 @inject CommonProperties CommonProperties
@@ -52,7 +52,7 @@
             }
             else
             {
-                <MudNumericField T="decimal" Value="remainingQty" Min="0.1m"
+                <MudNumericField T="decimal" Value="remainingQty" Min="0" Step="1" Format="0"
                                  Style="width: 60px;" Immediate="true"
                                  ValueChanged="@((val) => UpdateQuantity(context, val))"
                                  Disabled="context.IsReadOnly" />

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using POS.Core.Entities.DineIn;
 
@@ -17,6 +17,7 @@ public class OrderItemsDetails:BaseEntity
     public decimal? TotalDiscountPercentage { get; set; }
     public decimal? TotalDiscountAmount { get; set; }
     public decimal? TotalAfterDiscount { get; set; }
+    public string? DiscountReason { get; set; }
     public bool? IsVoided { get; set; }
     public decimal? VoidAmount { get; set; } // This is VoidQuantity
     public decimal? TotalVoidAmount { get; set; }

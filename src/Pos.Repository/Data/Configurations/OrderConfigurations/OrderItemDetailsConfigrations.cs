@@ -16,6 +16,7 @@
             builder.Property(o => o.TotalDiscountPercentage).HasColumnType("decimal(18,2)");
             builder.Property(o => o.TotalDiscountAmount).HasColumnType("decimal(18,2)");
             builder.Property(o => o.TotalAfterDiscount).HasColumnType("decimal(18,2)");
+            builder.Property(o => o.DiscountReason).HasMaxLength(250);
             builder.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
             builder.Property(o => o.MenuSalesItemId).HasColumnType("int");
             builder.Property(o => o.VoidAmount).HasColumnType("decimal(18,2)");
@@ -48,3 +49,4 @@
         }
     }
 }
+

@@ -49,6 +49,15 @@
                     <MudSlider Value="@DiscountAmount" ValueChanged="@((decimal v) => DiscountAmount = v)" Min="0" Max="100" Color="Color.Primary" Class="mt-4" />
                 }
             </MudCard>
+
+            <div class="reason-selector">
+                <MudText Typo="Typo.subtitle2" Class="mb-2 grey-text" Style="font-weight: 700;">@Localizer["DiscountReason"]</MudText>
+                <MudTextField T="string" @bind-Value="DiscountReasonText"
+                              Label="@Localizer["DiscountReason"]"
+                              Variant="Variant.Outlined"
+                              FullWidth="true"
+                              Class="premium-field-input" />
+            </div>
         </MudStack>
     </DialogContent>
 

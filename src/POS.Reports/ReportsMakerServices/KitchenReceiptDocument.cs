@@ -288,7 +288,7 @@ public class KitchenReceiptDocument : IDocument
                             table.Cell().ColumnSpan(2)
                                 .Element(CellStyle)
                                 .PaddingRight(25)
-                                .Text($"{attr.Name} {(attr.Count > 1 && !item.ByWeight ? $"({attr.Count:N0})" : "")}")
+                                .Text($"{attr.Name} ⟵{(attr.Count > 1 && !item.ByWeight ? $" ({attr.Count:N0})" : "")}")
                                 .FontSize(11)
                                 .Bold()
                                 .AlignEnd();

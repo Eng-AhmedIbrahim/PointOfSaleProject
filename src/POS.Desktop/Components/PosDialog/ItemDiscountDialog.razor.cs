@@ -6,11 +6,13 @@ public partial class ItemDiscountDialog
     private string DiscountPercentage = "Percentage";
     private string DiscountValue = "Value";
     public decimal DiscountAmount { get; set; } = 0;
+    public string DiscountReasonText { get; set; } = string.Empty;
     
     protected override void OnInitialized()
     {
         if (_cartService.SelectedItem != null && _cartService.SelectedItem.HasDiscount)
         {
+            DiscountReasonText = _cartService.SelectedItem.DiscountReason ?? string.Empty;
             if (_cartService.SelectedItem.DiscountPercentage.HasValue)
             {
                 DiscountType = "Percentage";
@@ -35,7 +37,7 @@ public partial class ItemDiscountDialog
 
     private void ApplyDiscount()
     {
-        _cartService.AddItemDiscount(DiscountType, DiscountAmount);
+        _cartService.AddItemDiscount(DiscountType, DiscountAmount, DiscountReasonText);
         CloseDialog();
     }
 
@@ -47,3 +49,4 @@ public partial class ItemDiscountDialog
 
     private void CloseDialog() => _commonProperties.ItemDiscountDialogReference?.Close();
 }
+
