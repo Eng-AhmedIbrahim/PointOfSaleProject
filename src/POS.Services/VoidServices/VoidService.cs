@@ -1,4 +1,4 @@
-using POS.Contract.Dtos.DineIn;
+﻿using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.VoidDtos;
 using POS.Core.Entities.DineIn;
 using POS.Core.Entities.OrderEntity;
@@ -390,6 +390,10 @@ public class VoidService : IVoidService
             order.TotalVoid = (order.TotalVoid ?? 0) + voidedTotalValue;
             order.VoidCount = (order.VoidCount ?? 0) + voidedTotalCount;
             order.VoidAmount = (order.VoidAmount ?? 0) + voidedTotalValue;
+            order.VoidTime = voidTime;
+            order.VoidByName = voidByName;
+            order.VoidBy = voidBy;
+            order.VoidReason = reason;
 
             // Recalculate
             var activeItems = order.OrderDetails?.Where(i => (i.Quantity ?? 0) > 0).ToList() ?? new();

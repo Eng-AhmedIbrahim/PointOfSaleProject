@@ -1445,11 +1445,17 @@ public class DesktopPrintOrderService : IPrintOrderService
         // 1. Kitchen and Backup VOID tickets
         await PrintVoidReceiptInternal(order.OrderId, order.CashierName, order.OrderType ?? "Order", order.OrderDate, order.OrderNotice, order.TableName, voidedItems);
 
-        // 2. Customer VOID receipt (Delivery / TakeAway)
+        // 2. Customer VOID / Updated receipt (Delivery / TakeAway)
         try
         {
             var previousState = order.OrderState;
-            order.OrderState = "Voided";
+            bool isFullVoid = string.Equals(order.OrderState, "Voided", StringComparison.OrdinalIgnoreCase)
+                || (order.OrderDetails != null && order.OrderDetails.All(i => i.Quantity == 0 || i.IsVoided == true));
+
+            if (isFullVoid)
+            {
+                order.OrderState = "Voided";
+            }
             try
             {
                 if (string.Equals(order.OrderType, "Delivery", StringComparison.OrdinalIgnoreCase))
@@ -1463,7 +1469,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             }
             finally
             {
-                order.OrderState = previousState ?? "Voided";
+                order.OrderState = previousState;
             }
         }
         catch (Exception ex)

@@ -1,4 +1,4 @@
-@using POS.Contract.Dtos.OrderDtos
+﻿@using POS.Contract.Dtos.OrderDtos
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject CommonProperties _commonProperties
@@ -105,21 +105,37 @@
                             {
                                 @foreach (var item in Order.OrderDetails)
                                 {
-                                    <tr>
+                                    decimal voidQty = item.VoidAmount ?? 0m;
+                                    decimal remQty = item.Quantity;
+                                    decimal origQty = remQty + voidQty;
+                                    bool isFullyVoided = (remQty == 0) || (item.IsVoided == true && voidQty >= origQty && origQty > 0);
+                                    bool isPartialVoid = !isFullyVoided && voidQty > 0;
+                                    decimal unitPrice = item.Price ?? 0m;
+                                    decimal remTotal = (item.TotalAfterDiscount > 0 ? item.TotalAfterDiscount.Value : (unitPrice * remQty));
+                                    decimal voidTotal = item.TotalVoidAmount ?? (unitPrice * voidQty);
+                                    decimal origTotal = remTotal + voidTotal;
+
+                                    <tr class="@(isFullyVoided ? "row-fully-voided" : isPartialVoid ? "row-partial-voided" : "")">
                                         <td>
                                             <div class="item-name-cell">
-                                                <span class="main-name @(item.IsVoided == true ? "text-slate-400" : "")" style="@(item.IsVoided == true ? "text-decoration: line-through;" : "")">
-                                                    @(string.IsNullOrEmpty(item.NameAr) ? item.Name : item.NameAr)
-                                                </span>
-                                                @if (item.IsVoided == true)
-                                                {
-                                                    <span style="background: #fee2e2; color: #ef4444; font-size: 0.72rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-right: 6px;">ملغي</span>
-                                                }
+                                                <div class="d-flex align-center gap-2">
+                                                    <span class="main-name @(isFullyVoided ? "text-slate-400" : "")" style="@(isFullyVoided ? "text-decoration: line-through;" : "")">
+                                                        @(string.IsNullOrEmpty(item.NameAr) ? item.Name : item.NameAr)
+                                                    </span>
+                                                    @if (isFullyVoided)
+                                                    {
+                                                        <span class="void-badge-full">ملغي بالكامل</span>
+                                                    }
+                                                    else if (isPartialVoid)
+                                                    {
+                                                        <span class="void-badge-partial">إلغاء جزئي</span>
+                                                    }
+                                                </div>
                                                 @if (item.Attributes != null && item.Attributes.Any())
                                                 {
                                                     var groupedAttributes = item.Attributes
                                                         .GroupBy(a => a.Name)
-                                                        .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
+                                                        .Select(g => new { Name = g.Key, Count = g.Count() * (isFullyVoided ? (int)(voidQty > 0 ? voidQty : 1) : (int)remQty) });
 
                                                     <div class="item-attributes mt-1">
                                                         @foreach (var attr in groupedAttributes)
@@ -135,23 +151,29 @@
                                                 {
                                                     <span class="item-note">📝 @item.LineComment</span>
                                                 }
-                                                @if (item.IsVoided == true && !string.IsNullOrEmpty(item.VoidReason))
+                                                @if ((isFullyVoided || isPartialVoid) && !string.IsNullOrEmpty(item.VoidReason))
                                                 {
                                                     <span class="item-note" style="color: #ef4444;">← سبب الإلغاء: @item.VoidReason</span>
                                                 }
                                             </div>
                                         </td>
                                         <td class="text-center">
-                                            @if (item.IsVoided == true && ((item.VoidAmount ?? 0) > 0 || item.Quantity == 0))
+                                            @if (isFullyVoided)
                                             {
-                                                <span class="qty-badge" style="background: #fee2e2; color: #ef4444;" title="الكمية الملغاة">@((item.VoidAmount ?? 0) > 0 ? item.VoidAmount : 1m) (ملغي)</span>
+                                                <span class="qty-badge-voided" title="تم إلغاء الصنف بالكامل">0</span>
+                                                <div class="qty-subtext text-danger">(ملغي @voidQty)</div>
+                                            }
+                                            else if (isPartialVoid)
+                                            {
+                                                <span class="qty-badge-active" title="الكمية المتبقية">@remQty متبقي</span>
+                                                <div class="qty-subtext text-muted">(ملغي @voidQty من @origQty)</div>
                                             }
                                             else
                                             {
-                                                <span class="qty-badge">@item.Quantity</span>
+                                                <span class="qty-badge">@remQty</span>
                                             }
                                         </td>
-                                        <td class="text-center">@((item.Price ?? 0).ToString("N2"))</td>
+                                        <td class="text-center">@unitPrice.ToString("N2")</td>
                                         <td class="text-center">
                                             @if (item.HasDiscount && item.DiscountPercentage.HasValue)
                                             {
@@ -163,13 +185,20 @@
                                             }
                                         </td>
                                         <td class="text-end fw-bold">
-                                            @if (item.IsVoided == true)
+                                            @if (isFullyVoided)
                                             {
-                                                <span style="color: #ef4444; text-decoration: line-through;">@((item.TotalVoidAmount ?? (item.Price * ((item.VoidAmount ?? 0) > 0 ? item.VoidAmount : 1m)))?.ToString("N2"))</span>
+                                                <div style="color: #94a3b8; text-decoration: line-through; font-size: 0.95rem;">0.00</div>
+                                                <div style="font-size: 0.72rem; color: #ef4444;">(ملغي: @voidTotal.ToString("N2"))</div>
+                                            }
+                                            else if (isPartialVoid)
+                                            {
+                                                <div class="fw-bold text-success" style="font-size: 0.98rem;">@remTotal.ToString("N2")</div>
+                                                <div style="font-size: 0.72rem; color: #94a3b8; text-decoration: line-through;">الأصلي: @origTotal.ToString("N2")</div>
+                                                <div style="font-size: 0.72rem; color: #ef4444;">-(ملغي: @voidTotal.ToString("N2"))</div>
                                             }
                                             else
                                             {
-                                                <span>@(((item.TotalAfterDiscount > 0 ? item.TotalAfterDiscount : (item.Price * item.Quantity)) ?? 0).ToString("N2"))</span>
+                                                <span style="font-size: 0.98rem;">@remTotal.ToString("N2")</span>
                                             }
                                         </td>
                                     </tr>
@@ -190,24 +219,57 @@
 
             <!-- Order Summary Section -->
             <div class="summary-wrapper">
+                @{
+                    bool isOrderFullyVoided = string.Equals(Order?.OrderState, "Voided", StringComparison.OrdinalIgnoreCase);
+                    decimal activeItemsSubtotal = 0m;
+                    decimal totalItemsVoidedAmount = 0m;
+
+                    if (Order?.OrderDetails != null)
+                    {
+                        foreach (var itm in Order.OrderDetails)
+                        {
+                            decimal vQty = itm.VoidAmount ?? 0m;
+                            decimal rQty = itm.Quantity;
+                            decimal oQty = rQty + vQty;
+                            bool isFull = (rQty == 0) || (itm.IsVoided == true && vQty >= oQty && oQty > 0);
+
+                            if (!isFull && rQty > 0)
+                            {
+                                activeItemsSubtotal += (itm.TotalAfterDiscount > 0 ? itm.TotalAfterDiscount.Value : ((itm.Price ?? 0m) * rQty));
+                            }
+                            if (vQty > 0 || (isFull && (itm.TotalVoidAmount > 0 || ((itm.Price ?? 0m) * vQty) > 0)))
+                            {
+                                totalItemsVoidedAmount += (itm.TotalVoidAmount ?? ((itm.Price ?? 0m) * vQty));
+                            }
+                        }
+                    }
+
+                    if (totalItemsVoidedAmount == 0 && (Order?.TotalVoid > 0 || Order?.VoidAmount > 0))
+                    {
+                        totalItemsVoidedAmount = (Order?.TotalVoid > 0 ? Order.TotalVoid : Order.VoidAmount) ?? 0m;
+                    }
+
+                    decimal effectiveDiscount = (Order?.TotalDiscount > 0 ? Order.TotalDiscount : (Order?.TotalOrderDiscount > 0 ? Order.TotalOrderDiscount : (Order?.DiscountedItems > 0 ? Order.DiscountedItems : 0))) ?? 0;
+                    if (effectiveDiscount == 0 && Order?.OrderDetails != null)
+                    {
+                        effectiveDiscount = Order.OrderDetails.Where(i => i.Quantity > 0).Sum(i => ((i.DiscountAmount ?? 0m) * i.Quantity));
+                    }
+
+                    decimal deliveryFees = Order?.DeliveryFees ?? 0m;
+                    decimal finalGrandTotal = isOrderFullyVoided ? 0m : Math.Max(0m, activeItemsSubtotal + deliveryFees - effectiveDiscount);
+                }
+
                 <div class="summary-total-card">
                     <div class="summary-row">
-                        <span>@Localizer["Subtotal"]</span>
-                        <span class="value">@Order?.SubTotal?.ToString("N2")</span>
+                        <span>@(totalItemsVoidedAmount > 0 && !isOrderFullyVoided ? "المجموع الفرعي (الأصناف المتبقية)" : Localizer["Subtotal"])</span>
+                        <span class="value">@((totalItemsVoidedAmount > 0 && !isOrderFullyVoided ? activeItemsSubtotal : (Order?.SubTotal ?? 0m)).ToString("N2"))</span>
                     </div>
-                    @if (Order?.DeliveryFees > 0)
+                    @if (deliveryFees > 0)
                     {
                         <div class="summary-row">
                             <span>@Localizer["DeliveryFees"]</span>
-                            <span class="value">@Order?.DeliveryFees?.ToString("N2")</span>
+                            <span class="value">@deliveryFees.ToString("N2")</span>
                         </div>
-                    }
-                    @{
-                        decimal effectiveDiscount = (Order?.TotalDiscount > 0 ? Order.TotalDiscount : (Order?.TotalOrderDiscount > 0 ? Order.TotalOrderDiscount : (Order?.DiscountedItems > 0 ? Order.DiscountedItems : 0))) ?? 0;
-                        if (effectiveDiscount == 0 && Order?.OrderDetails != null)
-                        {
-                            effectiveDiscount = Order.OrderDetails.Sum(i => ((i.DiscountAmount ?? 0m) * i.Quantity));
-                        }
                     }
                     @if (effectiveDiscount > 0)
                     {
@@ -231,21 +293,21 @@
                         </div>
                         <div class="summary-row" style="color: #cbd5e1; font-size: 0.9rem;">
                             <span>الإجمالي بعد الخصم</span>
-                            <span class="value">@(((Order?.SubTotal ?? 0) - effectiveDiscount).ToString("N2"))</span>
+                            <span class="value">@((Math.Max(0m, (totalItemsVoidedAmount > 0 && !isOrderFullyVoided ? activeItemsSubtotal : (Order?.SubTotal ?? 0m)) - effectiveDiscount)).ToString("N2"))</span>
                         </div>
                     }
 
-                    @if (Order?.OrderState == "Voided" || (Order?.TotalVoid > 0) || (Order?.VoidAmount > 0))
+                    @if (isOrderFullyVoided)
                     {
                         <div class="summary-row void-summary" style="background: rgba(239, 68, 68, 0.15); border: 1px dashed #ef4444; border-radius: 8px; padding: 8px 10px; margin: 8px 0; color: #ef4444; flex-direction: column; align-items: flex-start; gap: 4px;">
                             <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 0.95rem;">
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     <MudIcon Icon="@Icons.Material.Filled.Cancel" Size="Size.Small" Style="font-size: 16px;" />
-                                    <span>طلب ملغي</span>
+                                    <span>طلب ملغي بالكامل</span>
                                 </div>
-                                @if (Order?.VoidAmount > 0 || Order?.TotalVoid > 0)
+                                @if (totalItemsVoidedAmount > 0)
                                 {
-                                    <span style="font-weight: 900;">@((Order?.VoidAmount > 0 ? Order.VoidAmount : Order.TotalVoid)?.ToString("N2"))</span>
+                                    <span style="font-weight: 900;">@totalItemsVoidedAmount.ToString("N2")</span>
                                 }
                             </div>
                             @if (!string.IsNullOrEmpty(Order?.VoidByName))
@@ -262,13 +324,33 @@
                             }
                         </div>
                     }
+                    else if (totalItemsVoidedAmount > 0)
+                    {
+                        <div class="summary-row void-summary" style="background: rgba(245, 158, 11, 0.12); border: 1px dashed #f59e0b; border-radius: 8px; padding: 8px 10px; margin: 8px 0; color: #f59e0b; flex-direction: column; align-items: flex-start; gap: 4px;">
+                            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 0.9rem;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <MudIcon Icon="@Icons.Material.Filled.RemoveCircleOutline" Size="Size.Small" Style="font-size: 16px;" />
+                                    <span>إجمالي الأصناف الملغاة</span>
+                                </div>
+                                <span style="font-weight: 900; color: #ef4444;">- @totalItemsVoidedAmount.ToString("N2")</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Order?.VoidByName))
+                            {
+                                <div style="font-size: 0.75rem; color: #cbd5e1;">بواسطة: <b>@Order.VoidByName</b></div>
+                            }
+                            @if (!string.IsNullOrEmpty(Order?.VoidReason))
+                            {
+                                <div style="font-size: 0.75rem; color: #fcd34d;">← سبب الإلغاء: <b>@Order.VoidReason</b></div>
+                            }
+                        </div>
+                    }
 
                     <div class="divider my-2"></div>
                     <div class="summary-row grand-total">
                         <span>@Localizer["GrandTotal"]</span>
                         <div class="total-value">
                             <span class="currency">@Localizer["Currency"]</span>
-                            <span class="amount">@Order?.GrandTotal?.ToString("N2")</span>
+                            <span class="amount">@finalGrandTotal.ToString("N2")</span>
                         </div>
                     </div>
                 </div>
@@ -309,6 +391,58 @@
 </MudDialog>
 
 <style>
+    .void-badge-full {
+        background: #fee2e2;
+        color: #ef4444;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .void-badge-partial {
+        background: #fef3c7;
+        color: #d97706;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+
+    .qty-badge-active {
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .qty-badge-voided {
+        background: #fee2e2;
+        color: #ef4444;
+        font-size: 0.78rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .qty-subtext {
+        font-size: 0.72rem;
+        margin-top: 2px;
+    }
+
+    .row-fully-voided {
+        background-color: rgba(239, 68, 68, 0.04);
+    }
+
+    .row-partial-voided {
+        background-color: rgba(245, 158, 11, 0.03);
+    }
     .modern-dialog {
         border-radius: 20px !important;
         overflow: hidden;

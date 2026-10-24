@@ -325,9 +325,9 @@ public class DeliveryReceiptDocument : IDocument
                     Quantity = displayQty,
                     TotalAmount = totalQty > 0 
                         ? g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0)
-                        : (_receipt.IsVoid ? (displayQty * (first.Price ?? 0)) : 0m),
+                        : (displayQty * (first.Price ?? 0)),
                     Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
-                    IsVoided = first.IsVoided || _receipt.IsVoid,
+                    IsVoided = _receipt.IsVoid || (totalQty == 0 && (first.IsVoided || totalVoidQty > 0)),
                     VoidAmount = totalVoidQty,
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
@@ -380,7 +380,7 @@ public class DeliveryReceiptDocument : IDocument
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.Name);
-                        if (_receipt.IsVoid || item.IsVoided == true) {
+                        if (_receipt.IsVoid || (item.IsVoided == true && item.Quantity == 0) || (item.Quantity > 0 && item.VoidAmount > 0 && item.TotalAmount == 0)) {
                             text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
                         }
                     });

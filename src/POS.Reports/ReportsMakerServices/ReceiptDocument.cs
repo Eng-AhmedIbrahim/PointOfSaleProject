@@ -1,4 +1,4 @@
-using POS.Contract.Models.ReceiptModels;
+﻿using POS.Contract.Models.ReceiptModels;
 
 namespace POS.Reports.ReportsMakerServices;
 
@@ -260,9 +260,9 @@ public class ReceiptDocument : IDocument
                     Quantity = displayQty,
                     TotalAmount = totalQty > 0 
                         ? g.Sum(x => x.TotalAmount ?? (x.Price * x.Quantity) ?? 0)
-                        : (receipt.IsVoid ? (displayQty * (first.Price ?? 0)) : 0m),
+                        : (displayQty * (first.Price ?? 0)),
                     Attributes = first.Attributes?.Where(a => a.Id < 5000).ToList(),
-                    IsVoided = first.IsVoided || receipt.IsVoid,
+                    IsVoided = receipt.IsVoid || (totalQty == 0 && (first.IsVoided || totalVoidQty > 0)),
                     VoidAmount = totalVoidQty,
                     HasDiscount = first.HasDiscount,
                     DiscountPercentage = first.DiscountPercentage,
@@ -316,7 +316,7 @@ public class ReceiptDocument : IDocument
                     table.Cell().Element(CellStyle).Text(item.Price?.ToString("0.##")).AlignCenter();
                     table.Cell().Element(CellStyle).AlignRight().Text(text => {
                         text.Span(item.NameAr ?? item.Name);
-                        if (receipt.IsVoid || item.IsVoided == true) {
+                        if (receipt.IsVoid || (item.IsVoided == true && item.Quantity == 0) || (item.Quantity > 0 && item.VoidAmount > 0 && item.TotalAmount == 0)) {
                             text.Span(" (ملغي)").FontColor(Colors.Red.Medium);
                         }
                     });
