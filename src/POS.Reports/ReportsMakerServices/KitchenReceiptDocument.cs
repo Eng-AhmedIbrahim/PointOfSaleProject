@@ -207,8 +207,8 @@ public class KitchenReceiptDocument : IDocument
             {
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(7);
-                    columns.RelativeColumn(3);
+                    columns.RelativeColumn(5.8f);
+                    columns.RelativeColumn(4.2f);
                 });
 
                 table.Header(header =>
@@ -232,10 +232,10 @@ public class KitchenReceiptDocument : IDocument
                         .Element(CellStyle)
                         .AlignMiddle()
                         .AlignRight()
-                        .PaddingVertical(3)
+                        .PaddingVertical(1)
                         .Text(text =>
                         {
-                            text.Span(item.Name).Bold().FontSize(13);
+                            text.Span(item.Name).Bold().FontSize(12);
                             // Only show (ملغي) if the entire receipt is a void receipt OR the item record is explicitly fully voided
                             if (receipt.IsVoid || (item.IsVoided == true && item.Quantity == 0))
                             {
@@ -247,7 +247,7 @@ public class KitchenReceiptDocument : IDocument
                         .Element(CellStyle)
                         .AlignMiddle()
                         .AlignCenter()
-                        .PaddingVertical(3)
+                        .PaddingVertical(1)
                         .Text(text =>
                         {
                             if (item.ByWeight)
@@ -255,18 +255,17 @@ public class KitchenReceiptDocument : IDocument
                                 var fraction = FormatWeightFraction(item.Quantity, receipt.IsArabic);
                                 if (!string.IsNullOrEmpty(fraction))
                                 {
-                                    text.Span(fraction).Bold().FontSize(12);
-                                    text.EmptyLine();
-                                    text.Span($"({item.Quantity:0.##} {(receipt.IsArabic ? "كجم" : "kg")})").FontSize(9).FontColor(Colors.Grey.Darken2);
+                                    text.Span(fraction).Bold().FontSize(11);
+                                    text.Span($" ({item.Quantity:0.##})").FontSize(9).FontColor(Colors.Grey.Darken2);
                                 }
                                 else
                                 {
-                                    text.Span($"{item.Quantity:0.##} {(receipt.IsArabic ? "كجم" : "kg")}").Bold().FontSize(12);
+                                    text.Span($"{item.Quantity:0.##} {(receipt.IsArabic ? "كجم" : "kg")}").Bold().FontSize(11);
                                 }
                             }
                             else
                             {
-                                text.Span(item.Quantity.ToString("0.##")).Bold().FontSize(13);
+                                text.Span(item.Quantity.ToString("0.##")).Bold().FontSize(12);
                             }
                         });
 
@@ -399,3 +398,4 @@ public class KitchenReceiptDocument : IDocument
         => container.Border(1)
             .Padding(2);
 }
+
