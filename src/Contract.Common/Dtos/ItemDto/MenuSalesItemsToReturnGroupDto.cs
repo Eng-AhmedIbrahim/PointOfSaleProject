@@ -1,4 +1,4 @@
-﻿namespace POS.Contract.Dtos.ItemDto;
+namespace POS.Contract.Dtos.ItemDto;
 
 public class MenuSalesItemsGroupDto
 {
@@ -7,6 +7,8 @@ public class MenuSalesItemsGroupDto
     public string? EnglishName { get; set; }
     public decimal? ExtraPrice { get; set; }
     public decimal? Price { get; set; }
+    public bool ByWeight { get; set; } = false;
+    public int? RelatedMenuItemId { get; set; }
 
     public MenuSalesItemsGroupDto Clone()
     {
@@ -16,7 +18,9 @@ public class MenuSalesItemsGroupDto
             ArabicName = this.ArabicName,
             EnglishName = this.EnglishName,
             ExtraPrice = this.ExtraPrice,
-            Price = this.Price
+            Price = this.Price,
+            ByWeight = this.ByWeight,
+            RelatedMenuItemId = this.RelatedMenuItemId
         };
     }
 }

@@ -1,4 +1,4 @@
-﻿using BlazorBase.ERPFrontServices.SettingsServices;
+using BlazorBase.ERPFrontServices.SettingsServices;
 using POS.Contract.Dtos.SettingsDtos;
 using POS.Desktop.Components.PosComponent;
 
@@ -212,7 +212,10 @@ public partial class POS
         }
 
         // If item is sold by weight, show weight selection dialog first
-        if (selectedMenuItem.ByWeight)
+        bool isAttributeSelectionActive = _itemClickCount.Count > 0;
+        bool hasAttributesToSelect = selectedMenuItem.Attributes != null && selectedMenuItem.Attributes.Any();
+
+        if (selectedMenuItem.ByWeight && !hasAttributesToSelect && !isAttributeSelectionActive)
         {
             ResetClickCountAndBaseItem();
             await ShowWeightSelector(selectedMenuItem);
@@ -416,12 +419,52 @@ public partial class POS
             AddAttributeNameToSection4Item(selectedMenuItem, GetCurrentClickCount());
 
         var itemToAdd = _currentBaseItem;
+        var attributesForTable = currentSelectedAttribute?.ToList() ?? new List<AttributeDto>();
 
         ResetClickCountAndBaseItem();
 
         if (itemToAdd != null)
         {
-            await AddItemToTable(itemToAdd);
+            if (itemToAdd.ByWeight)
+            {
+                string displayName = itemToAdd.ArabicName ?? itemToAdd.EnglishName ?? "";
+                if (attributesForTable.Any())
+                {
+                    var attrNames = string.Join(", ", attributesForTable.Select(a => a.Name).Where(n => !string.IsNullOrEmpty(n)));
+                    if (!string.IsNullOrEmpty(attrNames))
+                        displayName = $"{displayName} ({attrNames})";
+                }
+
+                var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = true,
+                    MaxWidth = MaxWidth.ExtraSmall,
+                    FullWidth = true,
+                    NoHeader = true
+                };
+                var parameters = new DialogParameters
+                {
+                    ["ItemName"] = displayName,
+                    ["PricePerKilo"] = itemToAdd.Price ?? 0,
+                    ["IsArabic"] = Localizer.GetCurrentLanguage() == "ar"
+                };
+
+                var dialog = await DialogService.ShowAsync<WeightSelectorDialog>("", parameters, options);
+                var result = await dialog.Result;
+
+                if (!result!.Canceled && result.Data is (decimal weightMultiplier, string weightLabel))
+                {
+                    currentSelectedAttribute = attributesForTable;
+                    await AddItemToTable(itemToAdd, weightMultiplier);
+                    UpdateOrderTotals();
+                }
+            }
+            else
+            {
+                currentSelectedAttribute = attributesForTable;
+                await AddItemToTable(itemToAdd);
+                UpdateOrderTotals();
+            }
             await UpdateSectionWithInitialItems();
         }
     }
@@ -468,7 +511,22 @@ public partial class POS
         };
 
         currentSelectedAttribute?.Add(newAttribute);
-        _currentBaseItem!.Price += selectedMenuItem.ExtraPrice ?? 0;
+        decimal extraPrice = selectedMenuItem.ExtraPrice ?? 0;
+        decimal modifierPrice = selectedMenuItem.Price ?? 0;
+
+        if (extraPrice > 0)
+        {
+            _currentBaseItem!.Price = (_currentBaseItem.Price ?? 0) + extraPrice;
+        }
+        else if ((_currentBaseItem!.Price ?? 0) == 0 && modifierPrice > 0)
+        {
+            _currentBaseItem.Price = modifierPrice;
+        }
+
+        if (selectedMenuItem.ByWeight)
+        {
+            _currentBaseItem!.ByWeight = true;
+        }
     }
 
     private void InitializeBaseItem(MenuSalesItemsToReturnDto menuItem)
@@ -498,7 +556,8 @@ public partial class POS
                     ArabicName = item.ArabicName,
                     EnglishName = item.EnglishName,
                     Price = item.Price,
-                    ExtraPrice = item.ExtraPrice ?? 0
+                    ExtraPrice = item.ExtraPrice ?? 0,
+                    ByWeight = item.ByWeight
                 };
 
                 _itemByCatId.Add(newMenuItem);

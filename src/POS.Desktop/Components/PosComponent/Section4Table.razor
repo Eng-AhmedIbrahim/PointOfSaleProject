@@ -115,7 +115,7 @@
                         @foreach (var attr in groupedAttrs)
                         {
                             <p class="attribute-name" style="margin-right: 0px; margin-bottom: 5px;font-weight:bold">
-                                ➤ @attr.Name @(attr.Count > 1 ? $"({attr.Count})" : "")
+                                ➤ @attr.Name @(attr.Count > 1 && !context.ByWeight ? $"({attr.Count})" : "")
                             </p>
                         }
                     </div>

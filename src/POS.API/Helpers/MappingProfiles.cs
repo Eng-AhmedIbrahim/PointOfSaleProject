@@ -118,8 +118,11 @@ public class MappingProfiles : Profile
                             Id = ai.Id,
                             ArabicName = ai.RelatedMenuItem!.ArabicName,
                             EnglishName = ai.RelatedMenuItem.EnglishName,
-                            Price = ai.RelatedMenuItem.Price,
-                            ExtraPrice = ai.ExtraPrice
+
+                            Price = ai.RelatedMenuItem != null ? ai.RelatedMenuItem.Price : 0,
+                            ExtraPrice = ai.ExtraPrice,
+                            ByWeight = ai.RelatedMenuItem != null && ai.RelatedMenuItem.ByWeight,
+                            RelatedMenuItemId = ai.RelatedMenuItemId
                         }
                     }
                 }).ToList()
