@@ -359,14 +359,14 @@ public class ReceiptDocument : IDocument
                         var groupedAttrs = item.Attributes
                             .Where(a => a.Id < 5000)
                             .GroupBy(a => a.Name)
-                            .Select(g => new { Name = g.Key, Count = g.Count() * item.Quantity });
+                            .Select(g => new { Name = g.Key, Count = item.ByWeight ? g.Count() : g.Count() * item.Quantity });
 
                         foreach (var attr in groupedAttrs)
                         {
                             table.Cell().ColumnSpan(4)
                                 .Element(CellStyle)
                                 .PaddingRight(45)
-                                .Text($"{attr.Name} {(attr.Count > 1 ? $"({attr.Count:N0})" : "")}")
+                                .Text($"{attr.Name} {(attr.Count > 1 && !item.ByWeight ? $"({attr.Count:N0})" : "")}")
                                 .FontSize(10)
                                 .AlignEnd();
                         }
@@ -470,3 +470,5 @@ public class ReceiptDocument : IDocument
         => container.Border(1)
             .Padding(2);
 }
+
+
