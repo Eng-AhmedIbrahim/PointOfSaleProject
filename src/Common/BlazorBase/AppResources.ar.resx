@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1085,6 +1085,9 @@
   </data>
   <data name="View" xml:space="preserve">
     <value>عرض</value>
+  </data>
+  <data name="VoidItems" xml:space="preserve">
+    <value>Ø¥Ù„ØºØ§Ø¡ Ø§Ù„Ø·Ù„Ø¨</value>
   </data>
   <data name="VoidOrder" xml:space="preserve">
     <value>إلغاء الطلب</value>

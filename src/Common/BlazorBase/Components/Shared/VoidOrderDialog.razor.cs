@@ -1,5 +1,6 @@
 using BlazorBase.ERPFrontServices.DineInOrderServices;
 using BlazorBase.ERPFrontServices.DistributionServices;
+using BlazorBase.ERPFrontServices.OrderServices;
 using BlazorBase.ERPFrontServices.PrintOrderServices;
 using BlazorBase.ERPFrontServices.VoidServices;
 using BlazorBase.Models;
@@ -31,6 +32,7 @@ public partial class VoidOrderDialog
     [Inject] public CommonProperties _commonProperties { get; set; } = default!;
     [Inject] public IPrintOrderService _printOrderService { get; set; } = default!;
     [Inject] public IDialogService _dialogService { get; set; } = default!;
+    [Inject] public IOrderSettingsService _orderSettingsService { get; set; } = default!;
     
     public OrderDto? DistributionOrder { get; set; }
     public DineInOrderDto? Order { get; set; }
@@ -76,7 +78,11 @@ public partial class VoidOrderDialog
             else
             {
                 var orders = await _distributionErpService.GetUnCompletedDeliveryOrders();
-                DistributionOrder = orders.FirstOrDefault(o => o.Id == OrderId);
+                DistributionOrder = orders?.FirstOrDefault(o => o.Id == OrderId);
+                if (DistributionOrder == null && _orderSettingsService != null)
+                {
+                    DistributionOrder = await _orderSettingsService.GetOrderByIdAsync(OrderId);
+                }
                 PopulateFromDistribution();
             }
         }

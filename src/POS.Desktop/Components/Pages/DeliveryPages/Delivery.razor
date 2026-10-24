@@ -1,4 +1,4 @@
-@page "/delivery"
+﻿@page "/delivery"
 @layout MainLayout
 @inject CommonProperties _commonProperties
 @inject IHttpClientFactory _httpClientFactory
@@ -205,38 +205,65 @@
             </MudGrid>
         </MudPaper>
 
-        <!-- Stats Footer Section - Moved below fields -->
         <!-- Stats Footer Section -->
-        <div class="delivery-stats-footer" dir="rtl">
-            <!-- Right Column (Dates & Receiver) -->
-            <div class="stats-column">
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["FirstOrderDate"]</span>
-                    <span class="stat-value">@(ToArabicNumerals(CustomerStats?.FirstOrderDate?.ToString("dd/MM/yyyy") ?? "-"))</span>
+        <div class="delivery-stats-panel" dir="rtl">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-blue"><MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["FirstOrderDate"]</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["LastOrderDate"]</span>
-                    <span class="stat-value">@(ToArabicNumerals(CustomerStats?.LastOrderDate?.ToString("dd/MM/yyyy") ?? "-"))</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["LastReceiverName"]</span>
-                    <span class="stat-value">@(CustomerStats?.LastReceiverName ?? "-")</span>
+                <div class="stat-card-body">
+                    <span class="stat-card-val">@(CustomerStats?.FirstOrderDate?.ToString("dd/MM/yyyy") ?? "-")</span>
                 </div>
             </div>
-            
-            <!-- Left Column (Counts & Averages) -->
-            <div class="stats-column">
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["OrderCount"]</span>
-                    <span class="stat-value">@(ToArabicNumerals((CustomerStats?.OrderCount ?? 0).ToString()))</span>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-purple"><MudIcon Icon="@Icons.Material.Filled.ShoppingBag" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["OrderCount"]</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["OrderAverage"]</span>
-                    <span class="stat-value">@(ToArabicNumerals((CustomerStats?.AverageOrderValue ?? 0).ToString("0.00")))</span>
+                <div class="stat-card-body">
+                    <span class="stat-card-val highlight-purple">@((CustomerStats?.OrderCount ?? 0).ToString("N0"))</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">@Localizer["TotalOrdersAmount"]</span>
-                    <span class="stat-value">@(ToArabicNumerals((CustomerStats?.TotalOrdersAmount ?? 0).ToString("0.00")))</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-cyan"><MudIcon Icon="@Icons.Material.Filled.EventAvailable" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["LastOrderDate"]</span>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-card-val">@(CustomerStats?.LastOrderDate?.ToString("dd/MM/yyyy") ?? "-")</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-amber"><MudIcon Icon="@Icons.Material.Filled.Analytics" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["OrderAverage"]</span>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-card-val">@((CustomerStats?.AverageOrderValue ?? 0).ToString("N2")) <small class="currency-tag">ج.م</small></span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-emerald"><MudIcon Icon="@Icons.Material.Filled.PersonPin" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["LastReceiverName"]</span>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-card-val receiver-name" title="@(CustomerStats?.LastReceiverName ?? "-")">@(CustomerStats?.LastReceiverName ?? "-")</span>
+                </div>
+            </div>
+
+            <div class="stat-card highlight-total-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-icon icon-green"><MudIcon Icon="@Icons.Material.Filled.AccountBalanceWallet" Size="Size.Small" /></span>
+                    <span class="stat-card-title">@Localizer["TotalOrdersAmount"]</span>
+                </div>
+                <div class="stat-card-body">
+                    <span class="stat-card-val highlight-green">@((CustomerStats?.TotalOrdersAmount ?? 0).ToString("N2")) <small class="currency-tag">ج.م</small></span>
                 </div>
             </div>
         </div>
@@ -263,6 +290,7 @@
                         <MudTh>@Localizer["Date"]</MudTh>
                         <MudTh>@Localizer["Total"]</MudTh>
                         <MudTh>@Localizer["Status"]</MudTh>
+                        <MudTh Style="text-align: center;">@Localizer["Actions"]</MudTh>
                     </HeaderContent>
 
                     <RowTemplate Context="order">
@@ -279,6 +307,17 @@
                             <span class="status-badge @GetStatusClass(order.Status)">
                                 @Localizer[order.Status]
                             </span>
+                        </MudTd>
+                        <MudTd DataLabel="@Localizer["Actions"]" Style="text-align: center;">
+                            @if (order.Status != "Voided" && order.Status != "Cancelled" && order.Status != "Completed" && order.Status != "Dispatched" && order.Status != "Delivered")
+                            {
+                                <MudTooltip Text="@Localizer["VoidOrder"]">
+                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteForever"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   OnClick="@(() => OpenVoidForCustomerOrder(order))" />
+                                </MudTooltip>
+                            }
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
@@ -521,6 +560,12 @@
 
                     if (result != null && !result.Canceled)
                     {
+                        if (result.Data is string str && str == "Voided")
+                        {
+                            _snackbar.Add(Localizer["VoidOperationSuccessful"], Severity.Success);
+                            await HandleKeyDown(new KeyboardEventArgs { Key = "Enter" });
+                            return;
+                        }
                         if (result.Data is OrderDto selectedOrderToEdit)
                         {
                             if (selectedOrderToEdit.OrderState == "Dispatched" || selectedOrderToEdit.OrderState == "Delivered")
@@ -670,6 +715,29 @@
         }
 
         SafeAddressSelected();
+    }
+
+    private async Task OpenVoidForCustomerOrder(CustomerOrder order)
+    {
+        var parameters = new DialogParameters
+        {
+            ["OrderId"] = order.Id,
+            ["IsDineIn"] = false,
+            ["IsDistribution"] = true
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false };
+        var dialog = await _dialogService.ShowAsync<BlazorBase.Components.Shared.VoidOrderDialog>(Localizer["VoidOrder"], parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            _snackbar.Add(Localizer["VoidOperationSuccessful"], Severity.Success);
+            if (!string.IsNullOrWhiteSpace(_commonProperties.CustomerDetails?.FirstPhoneNumber))
+            {
+                await HandleKeyDown(new KeyboardEventArgs { Key = "Enter" });
+            }
+        }
     }
 
     private string ToArabicNumerals(string input)

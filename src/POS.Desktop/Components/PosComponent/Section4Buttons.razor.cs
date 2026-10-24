@@ -651,7 +651,7 @@ public partial class Section4Buttons
         };
         var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Large, FullWidth = true };
         
-        var dialog = await _dialogService.ShowAsync<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+        var dialog = await _dialogService.ShowAsync<VoidOrderDialog>(Localizer["VoidOrder"], parameters, options);
         var result = await dialog.Result;
 
         if (result != null && !result.Canceled && result.Data != null)

@@ -193,7 +193,7 @@ public partial class MenuButtons : IDisposable
         {
             var parameters = new DialogParameters { ["OrderId"] = orderDetails.DatabaseId };
             var options = new DialogOptions { CloseButton = false, MaxWidth = MaxWidth.Medium, FullWidth = true }; // Increased size slightly
-            var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidItems"], parameters, options);
+            var dialog = _dialogService.Show<VoidOrderDialog>(Localizer["VoidOrder"], parameters, options);
             var result = await dialog.Result;
 
             if (result != null && !result.Canceled)
