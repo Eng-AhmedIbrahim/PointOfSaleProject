@@ -240,16 +240,25 @@ public class CallCenterNotificationService : IDisposable, IAsyncDisposable
                     {
                         var printService = scope.ServiceProvider.GetRequiredService<IPrintOrderService>();
 
-                        if (order.OrderState == "Voided")
+                        // Detect item-level voids (partial void from Call Center)
+                        var hasVoidedItems = (order.VoidedItems != null && order.VoidedItems.Any()) ||
+                                             (order.OrderDetails != null && order.OrderDetails.Any(item => item.IsVoided == true || (item.VoidAmount.HasValue && item.VoidAmount > 0)));
+
+                        if (order.OrderState == "Voided" || hasVoidedItems)
                         {
-                            var voidedItems = order.OrderDetails?.Where(item => item.IsVoided == true || (item.VoidAmount.HasValue && item.VoidAmount > 0)).ToList();
-                            if (voidedItems == null || !voidedItems.Any()) voidedItems = order.OrderDetails;
-                            if (voidedItems != null && voidedItems.Any())
+                            var voidedList = (order.VoidedItems != null && order.VoidedItems.Any())
+                                ? order.VoidedItems
+                                : order.OrderDetails?.Where(item => item.IsVoided == true || (item.VoidAmount.HasValue && item.VoidAmount > 0)).ToList();
+                            if (voidedList == null || !voidedList.Any()) voidedList = order.OrderDetails;
+
+                            if (voidedList != null && voidedList.Any())
                             {
-                                await printService.PrintVoidReceiptAsync(order, voidedItems);
+                                Log.Information("[CCHub] Void detected for Order #{Id} ({Count} items) -> printing VOID tickets locally", order.OrderId, voidedList.Count);
+                                PlayBellForOneSecond();
+                                await printService.PrintVoidReceiptAsync(order, voidedList);
                             }
                         }
-                        else if (order.IsFollowUp == true || (order.AddedItems != null && order.AddedItems.Any()))
+                        else if (order.IsFollowUp == true && (order.AddedItems != null && order.AddedItems.Any()))
                         {
                             PlayBellForOneSecond();
                             await printService.PrintFollowUpOrderAsync(order, order.AddedItems);

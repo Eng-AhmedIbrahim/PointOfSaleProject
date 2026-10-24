@@ -1004,15 +1004,44 @@ public class OrderController : BaseApiController
         {
             updatedNotifyDto.OrderDetails = _mapper.Map<List<OrderItemsDetails>, List<TableItem>>(order.OrderDetails.ToList());
         }
+
+        if (ccVoidedItems != null && ccVoidedItems.Any())
+        {
+            updatedNotifyDto.VoidedItems = ccVoidedItems;
+            foreach (var vi in updatedNotifyDto.VoidedItems)
+            {
+                try
+                {
+                    var localItem = await _unitOfWork.Repository<MenuSalesItems>().GetByIdAsync(vi.Id);
+                    if (localItem != null)
+                    {
+                        vi.ItemKitchenTypeId = localItem.KitchenTypeId;
+                        vi.CategoryKitchenTypeId = localItem.Category?.KitchenTypeId;
+                        vi.PrintInBackupReceiptFromItem = localItem.PrintInBackupReceipt;
+                        if (localItem.Category != null)
+                            vi.PrintInBackupReceiptFromCategory = localItem.Category.PrintInBackupReceipt;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "[ReceiveUpdateFromCallCenter] Could not enrich voided item {Id}", vi.Id);
+                }
+            }
+        }
+
         if (hasItemChanges)
         {
             if (updatedNotifyDto.OrderDetails == null || !updatedNotifyDto.OrderDetails.Any())
                 updatedNotifyDto.OrderDetails = orderDto.OrderDetails;
 
-            updatedNotifyDto.IsFollowUp = true;
             if (addedItems.Count > 0)
             {
+                updatedNotifyDto.IsFollowUp = true;
                 updatedNotifyDto.AddedItems = addedItems;
+            }
+            else
+            {
+                updatedNotifyDto.IsFollowUp = false;
             }
         }
         await _deliveryHubContext.Clients.All.SendAsync("ReceiveOrderUpdated", updatedNotifyDto);

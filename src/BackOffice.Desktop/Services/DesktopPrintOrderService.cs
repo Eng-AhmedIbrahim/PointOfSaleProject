@@ -1368,4 +1368,9 @@ public class DesktopPrintOrderService : IPrintOrderService
         Log.Warning("PrintHospitalityOrder is not implemented for BackOffice desktop.");
         return Task.FromResult(false);
     }
+
+    public Task PrintFollowUpOrderAsync(OrderDto order, List<TableItem>? addedItems = null)
+    {
+        throw new NotImplementedException();
+    }
 }

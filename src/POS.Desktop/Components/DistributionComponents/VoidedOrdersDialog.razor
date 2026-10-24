@@ -1,10 +1,11 @@
-@using POS.Contract.Dtos.VoidDtos
+﻿@using POS.Contract.Dtos.VoidDtos
 @inject LocalizationService Localizer
 @inject CommonProperties _commonProperties
 @inject ISnackbar Snackbar
 
 <MudDialog DisableSidePadding="true" Style="min-width: 90vw;">
-    <TitleContent>
+
+    <DialogContent>
         <div class="void-report-header">
             <div class="void-report-title-left">
                 <MudIcon Icon="@Icons.Material.Filled.EventBusy" Style="font-size: 1.8rem;" />
@@ -51,14 +52,12 @@
                     </div>
                 </div>
             </div>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" OnClick="Close" Class="mr-2" />
         </div>
-    </TitleContent>
-
-    <DialogContent>
         <div class="void-report-container">
             <!-- Filter Bar -->
             <div class="void-filter-bar">
-                <MudDatePicker @bind-Date="_selectedDateNullable"
+                <MudDatePicker Date="_selectedDateNullable" DateChanged="@(async (DateTime? newDate) => { _selectedDateNullable = newDate; await LoadReport(); })"
                                Placeholder="@Localizer["SelectDate"]"
                                DateFormat="dd/MM/yyyy"
                                PickerVariant="PickerVariant.Dialog"

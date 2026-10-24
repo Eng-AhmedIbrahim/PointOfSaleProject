@@ -128,4 +128,5 @@ public class OrderDto
     // Follow-up / Added items for Desktop printing
     public List<TableItem>? AddedItems { get; set; }
     public bool? IsFollowUp { get; set; }
+    public List<TableItem>? VoidedItems { get; set; }
 }
