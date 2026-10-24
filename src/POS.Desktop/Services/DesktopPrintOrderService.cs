@@ -1,4 +1,4 @@
-using POS.Core.Services.Contract;
+﻿using POS.Core.Services.Contract;
 using BlazorBase.ERPFrontServices.ItemServices;
 
 namespace POS.Desktop.Services;
@@ -1484,7 +1484,18 @@ public class DesktopPrintOrderService : IPrintOrderService
     {
         if (voidedItems == null || !voidedItems.Any()) return;
 
-        await PrintVoidReceiptInternal(order.Id, order.CashierName, "DineIn", order.OrderDateTime, order.OrderNotice, order.TableName, voidedItems);
+        // Dedup: same key as PrintVoidReceiptAsync - suppress double-printing when
+        // VoidOrderDialog AND SignalR notification both trigger void printing
+        var voidKey = $"{order.OrderId}_{order.Id}";
+        if (_lastVoidPrints.TryGetValue(voidKey, out var lastTime) && (DateTime.Now - lastTime).TotalSeconds < 5)
+        {
+            Log.Information("Suppressing duplicate DineIn void print for order {OrderId}", order.OrderId);
+            return;
+        }
+        _lastVoidPrints[voidKey] = DateTime.Now;
+
+        // Use OrderId (display number) not Id (database key)
+        await PrintVoidReceiptInternal(order.OrderId, order.CashierName, "DineIn", order.OrderDateTime, order.OrderNotice, order.TableName, voidedItems);
     }
 
     private async Task EnrichItemsWithKitchenTypesAsync(IEnumerable<TableItem>? items)
@@ -2101,4 +2112,5 @@ public class DesktopPrintOrderService : IPrintOrderService
         return true;
     }
 }
+
 
