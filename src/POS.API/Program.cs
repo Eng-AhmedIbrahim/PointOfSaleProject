@@ -1,4 +1,4 @@
-using POS.API.Hubs;
+﻿using POS.API.Hubs;
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -109,6 +109,19 @@ try
         -- 7. Fallback: Add ScreenEnglishName if still missing after rename
         IF COL_LENGTH('Permissions', 'ScreenEnglishName') IS NULL
             ALTER TABLE Permissions ADD ScreenEnglishName nvarchar(max) NOT NULL DEFAULT '';
+
+        -- Ensure new void & edit permissions are in Permissions table
+        IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanAccessDeliveryVoidBtn')
+            INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
+            VALUES ('CanAccessDeliveryVoidBtn', N'Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ', 'Void Delivery Order', N'Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„', 'Delivery Screen', 0);
+
+        IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanAccessDeliveryEditBtn')
+            INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
+            VALUES ('CanAccessDeliveryEditBtn', N'ØªØ¹Ø¯ÙŠÙ„ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ', 'Edit Delivery Order', N'Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„', 'Delivery Screen', 0);
+
+        IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanVoidBranchDeliveryOrder')
+            INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
+            VALUES ('CanVoidBranchDeliveryOrder', N'Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø§Ù„ÙØ±ÙˆØ¹', 'Void Branch Order', N'Ø£ÙˆØ±Ø¯Ø±Ø§Øª Ø§Ù„ÙØ±ÙˆØ¹', 'Branch Orders', 0);
     ");
 
     // Hotfix: Remove IDENTITY from Items, Categories, Attributes, and AttributeItems (Development Only - Tables are empty)
