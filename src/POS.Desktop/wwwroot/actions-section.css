@@ -48,8 +48,8 @@
     background-color: #f8f9fa !important;
 }
 
-.keypad-btn {
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem) !important;
+.keypad-btn, .special-keypad-button {
+    font-size: var(--dynamic-keypad-btn-size, 1.4rem) !important;
     font-weight: 800 !important;
 }
 
@@ -60,6 +60,7 @@
 
 .customer-data-btn .mud-icon-root {
     color: #16a34a !important;
+    font-size: var(--dynamic-icon-size, 1.8rem) !important;
 }
 
 .customer-data-btn:hover:not(:disabled) {
@@ -70,8 +71,11 @@
     grid-column: span 1;
 }
 
-.icon-btn .mud-icon-root {
-    font-size: clamp(1.5rem, 2.2vw, 2.4rem) !important;
+.icon-btn .mud-icon-root,
+.icon-btn svg,
+.special-icon-btn svg,
+.special-icon-btn .mud-icon-root {
+    font-size: var(--dynamic-icon-size, 2rem) !important;
 }
 
 .full-width {
@@ -82,8 +86,9 @@
     grid-column: span 2 !important;
 }
 
-.full-width .mud-icon-root {
-    font-size: 2.2rem !important;
+.full-width .mud-icon-root,
+.full-width svg {
+    font-size: var(--dynamic-icon-size, 2rem) !important;
 }
 
 /* Plus button - Green with filled icon */
@@ -92,9 +97,10 @@
     border-color: #4caf50 !important;
 }
 
-.plus-btn .mud-icon-root {
+.plus-btn .mud-icon-root,
+.plus-btn svg {
     color: #2e7d32 !important;
-    font-size: clamp(2rem, 3vw, 2.8rem) !important;
+    font-size: var(--dynamic-icon-size, 2rem) !important;
 }
 
 .plus-btn:hover:not(:disabled) {
@@ -107,9 +113,10 @@
     border-color: #ef5350 !important;
 }
 
-.minus-btn .mud-icon-root {
+.minus-btn .mud-icon-root,
+.minus-btn svg {
     color: #c62828 !important;
-    font-size: clamp(2rem, 3vw, 2.8rem) !important;
+    font-size: var(--dynamic-icon-size, 2rem) !important;
 }
 
 .minus-btn:hover:not(:disabled) {
@@ -117,20 +124,19 @@
 }
 
 /* Delete button - Red */
-.delete-btn .mud-icon-root {
+.delete-btn .mud-icon-root,
+.delete-btn svg {
     color: #e53935 !important;
 }
 
 /* Discount button - Orange */
-.discount-btn .mud-icon-root {
+.discount-btn .mud-icon-root,
+.discount-btn svg {
     color: #f57c00 !important;
 }
 
 /* Edit button - Blue */
-.edit-btn .mud-icon-root {
+.edit-btn .mud-icon-root,
+.edit-btn svg {
     color: #1976d2 !important;
-}
-
-.full-width .mud-icon-root {
-    font-size: 2.2rem !important;
 }

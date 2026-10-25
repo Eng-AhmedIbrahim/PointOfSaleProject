@@ -27,7 +27,7 @@
 .action-btn {
     font-family: 'Cairo', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 0.95rem !important;
+    font-size: var(--dynamic-sec4-btn-size, 0.95rem) !important;
     color: #ffffff !important;
     border-radius: 0 !important;
     border: none !important;
@@ -64,6 +64,7 @@
 .action-btn .mud-button-label {
     font-family: 'Cairo', sans-serif !important;
     font-weight: 700 !important;
+    font-size: inherit !important;
 }
 
 /* Finance Section Styling - Vertical Layout */
@@ -81,7 +82,6 @@
 .finance-row {
     padding: 0 !important;
     border-bottom: 1px solid #f8f9fa;
-    /* Lighter separator */
 }
 
 .finance-row-content {
@@ -90,13 +90,13 @@
     justify-content: space-between !important;
     width: 100% !important;
     padding: 1px 8px !important;
-    /* Reduced from 2px */
 }
 
-.finance-label-vertical {
+.finance-label-vertical,
+.finance-label-text-size {
     font-family: 'Cairo', sans-serif !important;
     font-weight: 800 !important;
-    font-size: clamp(0.75rem, 1vw, 1rem) !important;
+    font-size: var(--dynamic-finance-label-text-size, 0.95rem) !important;
     color: #0f171f !important;
     white-space: nowrap;
     width: 35%;
@@ -106,10 +106,11 @@
     width: 65% !important;
 }
 
-.finance-input-vertical input {
+.finance-input-vertical input,
+.finance-input-text-size input {
     font-family: 'Cairo', sans-serif !important;
     font-weight: 800 !important;
-    font-size: clamp(0.9rem, 1.25vw, 1.2rem) !important;
+    font-size: var(--dynamic-finance-input-text-size, 1.15rem) !important;
     color: #0f171f !important;
     text-align: center !important;
     padding: clamp(2px, 0.4vh, 6px) 8px !important;
@@ -117,7 +118,7 @@
 
 .finance-total input {
     color: #d32f2f !important;
-    font-size: clamp(1.1rem, 1.5vw, 1.4rem) !important;
+    font-size: calc(var(--dynamic-finance-input-text-size, 1.15rem) * 1.15) !important;
 }
 
 /* Branch Selector in Header */
@@ -144,7 +145,6 @@
 
 .finance-input-vertical .mud-input-root {
     min-height: 34px !important;
-    /* Reduced from 42px */
     border: 1px solid #dee2e6 !important;
     background: #ffffff !important;
     border-radius: 4px !important;

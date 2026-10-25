@@ -10,7 +10,8 @@
 @inject NavigationManager _navigationManager
 @attribute [Authorize(Policy = "CanAccessDeliveryBranchManagementBtn")]
 
-<div class="branch-orders-container fade-in">
+<MudRTLProvider RightToLeft="@_isArabic" Style="width: 100%; height: 100%;">
+<div class="branch-orders-container fade-in" dir="@(_isArabic ? "rtl" : "ltr")">
 
     @* ═══════════════════════ HEADER BAR ═══════════════════════ *@
     <div class="branch-orders-header">
@@ -260,10 +261,10 @@
         </MudTable>
     </div>
 </div>
+</MudRTLProvider>
 
 <style>
     .branch-orders-container {
-        direction: rtl;
         height: 100%;
         width: 100%;
         display: flex;
@@ -298,6 +299,14 @@
 
     .header-controls { flex-wrap: wrap; }
     .search-field    { width: 200px; }
+
+    ::deep .branch-select, ::deep .date-picker {
+        background: white !important;
+        border-radius: 8px;
+    }
+    ::deep .mud-input-label-outlined {
+        font-weight: 700 !important;
+    }
 
     .summary-bar {
         flex-shrink: 0;

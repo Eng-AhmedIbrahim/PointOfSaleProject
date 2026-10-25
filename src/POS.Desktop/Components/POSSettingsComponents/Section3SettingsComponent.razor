@@ -9,6 +9,22 @@
     <MudStack Spacing="3">
         <div>
             <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-1">
+                <MudIcon Icon="@Icons.Material.Filled.SmartButton" Size="Size.Small" Color="Color.Primary" />
+                <MudText Class="settings-group-title">@(Localizer.GetCurrentLanguage() == "ar" ? "تغيير حجم زراير الشاشة" : "Resize Screen Buttons")</MudText>
+            </MudStack>
+            <div class="settings-button-group">
+                <MudIconButton Icon="@Icons.Material.Filled.Add"
+                               OnClick="async () => await IncreaseSize(ScreenButtons)"
+                               Class="settings-control-btn" />
+                <MudDivider Vertical="true" FlexItem="true" />
+                <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                               OnClick="async () => await DecreaseSize(ScreenButtons)"
+                               Class="settings-control-btn" />
+            </div>
+        </div>
+
+        <div>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-1">
                 <MudIcon Icon="@Icons.Material.Filled.GridOn" Size="Size.Small" Color="Color.Primary" />
                 <MudText Class="settings-group-title">@Localizer["ResizeKeypad"]</MudText>
             </MudStack>
@@ -48,7 +64,6 @@
     </MudStack>
 </MudCollapse>
 
-
 @code {
     bool _expanded = false;
 
@@ -56,7 +71,4 @@
     {
         _expanded = !_expanded;
     }
-
 }
-
-

@@ -35,10 +35,14 @@
 }
 
 :root {
-    --dynamic-keypad-btn-size: 1.15rem;
-    --dynamic-icon-size: 1.6rem;
+    --dynamic-screen-btn-size: 1rem;
+    --dynamic-item-btn-size: 1rem;
+    --dynamic-category-btn-size: 1.05rem;
+    --dynamic-category-btn-height: 4.2rem;
+    --dynamic-keypad-btn-size: 1.4rem;
+    --dynamic-icon-size: 2rem;
     --dynamic-quantity-btn-size: 1rem;
-    --dynamic-finance-label-text-size: 1rem;
+    --dynamic-finance-label-text-size: 0.95rem;
     --dynamic-finance-input-text-size: 1.15rem;
     --dynamic-sec4-btn-size: 0.95rem;
 }

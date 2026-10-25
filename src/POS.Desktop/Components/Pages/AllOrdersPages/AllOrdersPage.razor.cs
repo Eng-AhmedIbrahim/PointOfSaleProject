@@ -1,4 +1,4 @@
-using BlazorBase.Components.Shared;
+﻿using BlazorBase.Components.Shared;
 
 namespace POS.Desktop.Components.Pages.AllOrdersPages;
 
@@ -38,7 +38,7 @@ public partial class AllOrdersPage
                 );
             }
 
-            return filtered;
+            return filtered.OrderByDescending(o => o.OrderId);
         }
     }
 
@@ -65,7 +65,8 @@ public partial class AllOrdersPage
         _isLoading = true;
         try
         {
-            Orders = await ReportingService.GetTodayOrders(SelectedDate);
+            var rawOrders = await ReportingService.GetTodayOrders(SelectedDate);
+            Orders = rawOrders != null ? rawOrders.OrderByDescending(o => o.OrderId).ToList() : new();
         }
         catch (Exception ex)
         {

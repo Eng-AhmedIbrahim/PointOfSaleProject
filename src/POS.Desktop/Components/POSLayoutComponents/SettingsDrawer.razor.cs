@@ -24,7 +24,6 @@ public partial class SettingsDrawer
     {
         Anchor = anchor;
         _buttonText = anchor.ToString();
-        // Since anchor change doesn't necessarily close the drawer, no need to notify Open changed here
     }
 
     private async Task CloseDrawer()
@@ -53,7 +52,6 @@ public partial class SettingsDrawer
         {
             try
             {
-                // Accessing Navigation.Uri too early in Blazor Hybrid can throw
                 if (Navigation != null && !string.IsNullOrEmpty(Navigation.Uri))
                 {
                     _currentPageName = GetCurrentPageName();
@@ -70,7 +68,7 @@ public partial class SettingsDrawer
                 currentRetry++;
                 if (currentRetry >= maxRetries)
                 {
-                    _currentPageName = "Unknown";
+                    _currentPageName = PagesNames.POS;
                     StateHasChanged();
                     return;
                 }
@@ -86,23 +84,24 @@ public partial class SettingsDrawer
         try
         {
             if (Navigation == null || string.IsNullOrEmpty(Navigation.Uri) || string.IsNullOrEmpty(Navigation.BaseUri))
-                return "Unknown";
+                return PagesNames.POS;
 
             var currentRoute = Navigation.Uri.Replace(Navigation.BaseUri, "")
-                .Trim('/');
+                .Split('?')[0]
+                .Trim('/')
+                .ToLower();
 
-            return currentRoute.ToLower() switch
+            return currentRoute switch
             {
                 "" or "index" => PagesNames.Home,
                 "login" => PagesNames.Login,
                 "register" => PagesNames.Register,
-                "pos" => PagesNames.POS,
-                _ => "Unknown"
+                _ => PagesNames.POS
             };
         }
         catch
         {
-            return "Unknown";
+            return PagesNames.POS;
         }
     }
 }

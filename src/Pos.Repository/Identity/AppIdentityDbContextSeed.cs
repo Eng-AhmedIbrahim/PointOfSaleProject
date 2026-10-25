@@ -1,4 +1,4 @@
-namespace Pos.Repository.Identity;
+﻿namespace Pos.Repository.Identity;
 
 public static class AppIdentityDbContextSeed
 {
@@ -282,7 +282,7 @@ public static class AppIdentityDbContextSeed
                 "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
                 "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn",
                 "CanAccessDeliveryBranchManagementBtn", "CanAccessDeliveryDistributionBtn",
-                "CanAccessDeliveryToggleDirectionBtn",
+                "CanAccessDeliveryToggleDirectionBtn", "CanAccessDeliveryVoidBtn", "CanAccessDeliveryEditBtn",
 
                 // All Orders (Today)
                 "CanViewOrderDetails", "CanPrintOrderCustomerReceipt",
@@ -355,7 +355,7 @@ public static class AppIdentityDbContextSeed
                 // Delivery Buttons
                 "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn", "CanAccessDeliveryClearBtn",
                 "CanAccessDeliveryComplaintsBtn", "CanAccessDeliverySearchBtn",
-                "CanAccessDeliveryToggleDirectionBtn",
+                "CanAccessDeliveryToggleDirectionBtn", "CanAccessDeliveryVoidBtn", "CanAccessDeliveryEditBtn",
 
                 // All Orders (Today)
                 "CanViewOrderDetails", "CanPrintOrderCustomerReceipt", "CanPrintOrderKitchenReceipt",
@@ -401,7 +401,7 @@ public static class AppIdentityDbContextSeed
                 // Delivery Buttons
                 "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn",
                 "CanAccessDeliveryClearBtn", "CanAccessDeliverySearchBtn",
-                "CanAccessDeliveryToggleDirectionBtn",
+                "CanAccessDeliveryToggleDirectionBtn", "CanAccessDeliveryVoidBtn", "CanAccessDeliveryEditBtn",
 
                 // All Orders (Today) – view & print customer only
                 "CanViewOrderDetails", "CanPrintOrderCustomerReceipt",
@@ -456,7 +456,7 @@ public static class AppIdentityDbContextSeed
                 "CanAccessDeliveryOrderBtn", "CanAccessDeliveryAddNewBtn",
                 "CanAccessDeliveryClearBtn", "CanAccessDeliveryComplaintsBtn",
                 "CanAccessDeliverySearchBtn", "CanAccessDeliveryBranchManagementBtn",
-                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn",
+                "CanAccessDeliveryDistributionBtn", "CanAccessDeliveryToggleDirectionBtn", "CanAccessDeliveryVoidBtn", "CanAccessDeliveryEditBtn",
 
                 // All Orders (Today) – view only
                 "CanViewOrderDetails",

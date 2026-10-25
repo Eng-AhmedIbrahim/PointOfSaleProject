@@ -6,6 +6,7 @@ public partial class Section3SettingsComponent
 {
     [Inject] private DesktopFontSizeService FontSizeService { get; set; } = null!;
     
+    private const string ScreenButtons = "screen-buttons";
     private const string SpecialKeypadButton = "special-keypad-button";
     private const string SpecialIconBtn = "special-icon-btn";
 
@@ -13,8 +14,9 @@ public partial class Section3SettingsComponent
     {
         var step = className switch
         {
+            ScreenButtons => 1.5,
             SpecialKeypadButton => 2.0,
-            SpecialIconBtn => 4.0,
+            SpecialIconBtn => 3.0,
             _ => 0.0
         };
         
@@ -28,8 +30,9 @@ public partial class Section3SettingsComponent
     {
         var step = className switch
         {
+            ScreenButtons => -1.5,
             SpecialKeypadButton => -2.0,
-            SpecialIconBtn => -4.0,
+            SpecialIconBtn => -3.0,
             _ => 0.0
         };
         

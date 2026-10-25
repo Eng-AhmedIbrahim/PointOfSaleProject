@@ -290,7 +290,6 @@
                         <MudTh>@Localizer["Date"]</MudTh>
                         <MudTh>@Localizer["Total"]</MudTh>
                         <MudTh>@Localizer["Status"]</MudTh>
-                        <MudTh Style="text-align: center;">@Localizer["Actions"]</MudTh>
                     </HeaderContent>
 
                     <RowTemplate Context="order">
@@ -307,17 +306,6 @@
                             <span class="status-badge @GetStatusClass(order.Status)">
                                 @Localizer[order.Status]
                             </span>
-                        </MudTd>
-                        <MudTd DataLabel="@Localizer["Actions"]" Style="text-align: center;">
-                            @if (order.Status != "Voided" && order.Status != "Cancelled" && order.Status != "Completed" && order.Status != "Dispatched" && order.Status != "Delivered")
-                            {
-                                <MudTooltip Text="@Localizer["VoidOrder"]">
-                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteForever"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   OnClick="@(() => OpenVoidForCustomerOrder(order))" />
-                                </MudTooltip>
-                            }
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
@@ -717,28 +705,6 @@
         SafeAddressSelected();
     }
 
-    private async Task OpenVoidForCustomerOrder(CustomerOrder order)
-    {
-        var parameters = new DialogParameters
-        {
-            ["OrderId"] = order.Id,
-            ["IsDineIn"] = false,
-            ["IsDistribution"] = true
-        };
-
-        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = false };
-        var dialog = await _dialogService.ShowAsync<BlazorBase.Components.Shared.VoidOrderDialog>(Localizer["VoidOrder"], parameters, options);
-        var result = await dialog.Result;
-
-        if (result != null && !result.Canceled)
-        {
-            _snackbar.Add(Localizer["VoidOperationSuccessful"], Severity.Success);
-            if (!string.IsNullOrWhiteSpace(_commonProperties.CustomerDetails?.FirstPhoneNumber))
-            {
-                await HandleKeyDown(new KeyboardEventArgs { Key = "Enter" });
-            }
-        }
-    }
 
     private string ToArabicNumerals(string input)
     {

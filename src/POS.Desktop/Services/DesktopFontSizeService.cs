@@ -16,21 +16,34 @@ public class DesktopFontSizeService
     public async Task UpdateFontSize(string className, double step)
     {
         var rootFontSize = 16.0; // Default root font size
-        var cssVarName = GetCssVariableName(className);
-        if (string.IsNullOrEmpty(cssVarName))
-            return;
-
-        // Get current size from storage or default
         var storageKey = $"fontSize_{className}";
-        var currentSizeRem = await _fileStorage.GetItemAsync<double?>(storageKey) ?? 1.25;
+        var defaultSize = GetDefaultSizeRem(className);
+        var currentSizeRem = await _fileStorage.GetItemAsync<double?>(storageKey) ?? defaultSize;
 
         // Calculate new size
         var stepRem = step / rootFontSize;
-        var newFontSizeRem = currentSizeRem + stepRem;
+        var newFontSizeRem = Math.Clamp(currentSizeRem + stepRem, 0.6, 3.5);
 
-        // Update CSS variable via JS
-        await _jsRuntime.InvokeVoidAsync("eval", 
-            $"document.documentElement.style.setProperty('{cssVarName}', '{newFontSizeRem}rem')");
+        // Update CSS variables via JS
+        if (className == "screen-buttons")
+        {
+            var catHeight = newFontSizeRem * 4.2;
+            var catFont = newFontSizeRem * 1.05;
+            await _jsRuntime.InvokeVoidAsync("eval",
+                $"document.documentElement.style.setProperty('--dynamic-screen-btn-size', '{newFontSizeRem}rem');" +
+                $"document.documentElement.style.setProperty('--dynamic-item-btn-size', '{newFontSizeRem}rem');" +
+                $"document.documentElement.style.setProperty('--dynamic-category-btn-size', '{catFont}rem');" +
+                $"document.documentElement.style.setProperty('--dynamic-category-btn-height', '{catHeight}rem');");
+        }
+        else
+        {
+            var cssVarName = GetCssVariableName(className);
+            if (!string.IsNullOrEmpty(cssVarName))
+            {
+                await _jsRuntime.InvokeVoidAsync("eval", 
+                    $"document.documentElement.style.setProperty('{cssVarName}', '{newFontSizeRem}rem')");
+            }
+        }
 
         // Save to file storage
         await _fileStorage.SetItemAsync(storageKey, newFontSizeRem);
@@ -40,6 +53,7 @@ public class DesktopFontSizeService
     {
         var fontSizes = new Dictionary<string, string>
         {
+            { "screen-buttons", "--dynamic-screen-btn-size" },
             { "special-keypad-button", "--dynamic-keypad-btn-size" },
             { "special-icon-btn", "--dynamic-icon-size" },
             { "special-quantity-button", "--dynamic-quantity-btn-size" },
@@ -54,8 +68,21 @@ public class DesktopFontSizeService
             var size = await _fileStorage.GetItemAsync<double?>(storageKey);
             if (size.HasValue)
             {
-                await _jsRuntime.InvokeVoidAsync("eval",
-                    $"document.documentElement.style.setProperty('{cssVar}', '{size.Value}rem')");
+                if (className == "screen-buttons")
+                {
+                    var catHeight = size.Value * 4.2;
+                    var catFont = size.Value * 1.05;
+                    await _jsRuntime.InvokeVoidAsync("eval",
+                        $"document.documentElement.style.setProperty('--dynamic-screen-btn-size', '{size.Value}rem');" +
+                        $"document.documentElement.style.setProperty('--dynamic-item-btn-size', '{size.Value}rem');" +
+                        $"document.documentElement.style.setProperty('--dynamic-category-btn-size', '{catFont}rem');" +
+                        $"document.documentElement.style.setProperty('--dynamic-category-btn-height', '{catHeight}rem');");
+                }
+                else
+                {
+                    await _jsRuntime.InvokeVoidAsync("eval",
+                        $"document.documentElement.style.setProperty('{cssVar}', '{size.Value}rem')");
+                }
             }
         }
     }
@@ -64,6 +91,7 @@ public class DesktopFontSizeService
     {
         var keys = new[] 
         { 
+            "fontSize_screen-buttons",
             "fontSize_special-keypad-button",
             "fontSize_special-quantity-button",
             "fontSize_special-icon-btn"
@@ -76,8 +104,12 @@ public class DesktopFontSizeService
 
         // Reset CSS variables
         await _jsRuntime.InvokeVoidAsync("eval",
-            "document.documentElement.style.setProperty('--dynamic-keypad-btn-size', '1rem');" +
-            "document.documentElement.style.setProperty('--dynamic-icon-size', '1.25rem');" +
+            "document.documentElement.style.setProperty('--dynamic-screen-btn-size', '1rem');" +
+            "document.documentElement.style.setProperty('--dynamic-item-btn-size', '1rem');" +
+            "document.documentElement.style.setProperty('--dynamic-category-btn-size', '1.05rem');" +
+            "document.documentElement.style.setProperty('--dynamic-category-btn-height', '4.2rem');" +
+            "document.documentElement.style.setProperty('--dynamic-keypad-btn-size', '1.4rem');" +
+            "document.documentElement.style.setProperty('--dynamic-icon-size', '2rem');" +
             "document.documentElement.style.setProperty('--dynamic-quantity-btn-size', '1rem');");
     }
 
@@ -97,15 +129,31 @@ public class DesktopFontSizeService
 
         // Reset CSS variables
         await _jsRuntime.InvokeVoidAsync("eval",
-            "document.documentElement.style.setProperty('--dynamic-finance-label-text-size', '1.125rem');" +
-            "document.documentElement.style.setProperty('--dynamic-sec4-btn-size', '1.125rem');" +
-            "document.documentElement.style.setProperty('--dynamic-finance-input-text-size', '1rem');");
+            "document.documentElement.style.setProperty('--dynamic-finance-label-text-size', '0.95rem');" +
+            "document.documentElement.style.setProperty('--dynamic-sec4-btn-size', '0.95rem');" +
+            "document.documentElement.style.setProperty('--dynamic-finance-input-text-size', '1.15rem');");
+    }
+
+    public double GetDefaultSizeRem(string className)
+    {
+        return className switch
+        {
+            "screen-buttons" => 1.0,
+            "special-keypad-button" => 1.4,
+            "special-icon-btn" => 2.0,
+            "special-quantity-button" => 1.0,
+            "finance-label-text-size" => 0.95,
+            "finance-input-text-size" => 1.15,
+            "special-sec4-button" => 0.95,
+            _ => 1.0
+        };
     }
 
     private string GetCssVariableName(string className)
     {
         return className switch
         {
+            "screen-buttons" => "--dynamic-screen-btn-size",
             "special-keypad-button" => "--dynamic-keypad-btn-size",
             "special-icon-btn" => "--dynamic-icon-size",
             "special-quantity-button" => "--dynamic-quantity-btn-size",

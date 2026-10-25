@@ -1,4 +1,4 @@
-﻿@using POS.Contract.Dtos.OrderDtos
+@using POS.Contract.Dtos.OrderDtos
 @using MudBlazor
 
 <MudDialog DisableSidePadding="true" Class="premium-dialog">
@@ -71,21 +71,27 @@
                             }
                             else
                             {
-                                <MudButton OnClick="@(() => EditExisting(order))" 
-                                           Variant="Variant.Filled" 
-                                           Color="Color.Primary" 
-                                           Size="Size.Small"
-                                           Style="font-weight: 700; border-radius: 8px; padding: 4px 16px; margin-left: 6px;">
-                                    @Localizer["Edit"]
-                                </MudButton>
-                                <MudButton OnClick="@(() => VoidExisting(order))"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Error"
-                                           Size="Size.Small"
-                                           StartIcon="@Icons.Material.Filled.DeleteForever"
-                                           Style="font-weight: 700; border-radius: 8px; padding: 4px 12px;">
-                                    @Localizer["VoidOrder"]
-                                </MudButton>
+                                @if (_canEditOrder)
+                                {
+                                    <MudButton OnClick="@(() => EditExisting(order))" 
+                                               Variant="Variant.Filled" 
+                                               Color="Color.Primary" 
+                                               Size="Size.Small"
+                                               Style="font-weight: 700; border-radius: 8px; padding: 4px 16px; margin-left: 6px;">
+                                        @Localizer["Edit"]
+                                    </MudButton>
+                                }
+                                @if (_canVoidOrder)
+                                {
+                                    <MudButton OnClick="@(() => VoidExisting(order))"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               StartIcon="@Icons.Material.Filled.DeleteForever"
+                                               Style="font-weight: 700; border-radius: 8px; padding: 4px 12px;">
+                                        @Localizer["VoidOrder"]
+                                    </MudButton>
+                                }
                             }
                         </MudTd>
                     </RowTemplate>

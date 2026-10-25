@@ -119,7 +119,7 @@
                 </MudAlert>
             }
             <!-- Order Table - Fills remaining space -->
-            <div class="flex-grow-1 overflow-y-auto">
+            <div class="flex-grow-1 overflow-y-auto" style="@(!string.IsNullOrEmpty(CustomizationSettingsService.TableMaxHeight) ? $"max-height: {CustomizationSettingsService.TableMaxHeight};" : "")">
                 <Section4Table Items="_commonProperties.TableItems" OnItemsChanged="OnSection4ItemsChanged" />
             </div>
 

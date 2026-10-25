@@ -56,6 +56,8 @@ public static class Permissions
         { "CanAccessDeliveryBranchManagementBtn",   "CanAccessDeliveryBranchManagementBtn" },
         { "CanAccessDeliveryDistributionBtn",       "CanAccessDeliveryDistributionBtn" },
         { "CanAccessDeliveryToggleDirectionBtn",    "CanAccessDeliveryToggleDirectionBtn" },
+        { "CanAccessDeliveryVoidBtn",               "CanAccessDeliveryVoidBtn" },
+        { "CanAccessDeliveryEditBtn",               "CanAccessDeliveryEditBtn" },
 
         // ── All Orders (Today) Actions ────────────────────────────────────────
         { "CanViewOrderDetails",          "CanViewOrderDetails" },
