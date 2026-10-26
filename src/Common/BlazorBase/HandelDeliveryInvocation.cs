@@ -6,11 +6,11 @@ namespace BlazorBase;
 
 public class HandelDeliveryInvocation
 {
-
     public event Action? OnAddressSelected;
     public event Action? OnToggleDirection;
     public event Action? OnNewOrderReceived;
-    public event Action<string, Severity>?OnShowNotification;
+    public event Action? OnClearDelivery;
+    public event Action<string, Severity>? OnShowNotification;
 
     public void TriggerShowNotification(string message, Severity severity)
     {
@@ -21,11 +21,16 @@ public class HandelDeliveryInvocation
     public int GetNotificationSubscriberCount()
         => OnShowNotification?.GetInvocationList()?.Length ?? 0;
 
-
     public void TriggerAddressSelected()
     {
         OnAddressSelected?.Invoke();
     }
+
+    public void TriggerClearDelivery()
+    {
+        OnClearDelivery?.Invoke();
+    }
+
     public void TriggerToggleDirection()
     {
         OnToggleDirection?.Invoke();
@@ -38,5 +43,4 @@ public class HandelDeliveryInvocation
 
     public CustomerDetails? CustomerDetails { get; set; } = new();
     public string? DeliveryDetails { get; set; } = string.Empty;
-
 }

@@ -61,24 +61,15 @@ public partial class BranchOrdersPage : IDisposable
         var appDate = await AppDateService.GetAppDate();
         _selectedDateNullable = appDate.PosDate;
 
-        // Load permissions
+        // Load permissions strictly without fallback
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity is { IsAuthenticated: true })
         {
-            // Use new branch-specific permissions, falling back to existing order permissions
-            _canViewOrder     = (await AuthorizationService.AuthorizeAsync(user, "CanViewBranchDeliveryOrderDetails")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanViewOrderDetails")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanViewOrderAtBackOffice")).Succeeded;
-            _canPrintCustomer = (await AuthorizationService.AuthorizeAsync(user, "CanPrintBranchCustomerReceipt")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderCustomerReceipt")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderAtBackOffice")).Succeeded;
-            _canPrintDelivery = (await AuthorizationService.AuthorizeAsync(user, "CanPrintBranchDeliveryReceipt")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderKitchenReceipt")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanPrintOrderAtBackOffice")).Succeeded;
-            _canVoidOrder     = (await AuthorizationService.AuthorizeAsync(user, "CanVoidBranchDeliveryOrder")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanVoidOrderFromList")).Succeeded
-                             || (await AuthorizationService.AuthorizeAsync(user, "CanVoidOrderAtBackOffice")).Succeeded;
+            _canViewOrder     = (await AuthorizationService.AuthorizeAsync(user, "CanViewBranchDeliveryOrderDetails")).Succeeded;
+            _canPrintCustomer = (await AuthorizationService.AuthorizeAsync(user, "CanPrintBranchCustomerReceipt")).Succeeded;
+            _canPrintDelivery = (await AuthorizationService.AuthorizeAsync(user, "CanPrintBranchDeliveryReceipt")).Succeeded;
+            _canVoidOrder     = (await AuthorizationService.AuthorizeAsync(user, "CanVoidBranchDeliveryOrder")).Succeeded;
         }
 
         // Load branch list

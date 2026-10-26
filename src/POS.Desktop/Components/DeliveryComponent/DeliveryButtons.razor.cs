@@ -228,7 +228,7 @@ public partial class DeliveryButtons
     {
         _commonProperties.CustomerDetails = new();
         _handelDeliveryInvocation.CustomerDetails = new();
-        _handelDeliveryInvocation.TriggerAddressSelected();
+        _handelDeliveryInvocation.TriggerClearDelivery();
     }
 
 

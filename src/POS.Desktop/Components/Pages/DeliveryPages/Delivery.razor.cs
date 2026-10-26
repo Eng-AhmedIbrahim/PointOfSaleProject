@@ -27,6 +27,7 @@ public partial class Delivery : IDisposable
 
         Localizer.OnLanguageChanged += _stateChangedHandler;
         _handelDeliveryInvocation.OnAddressSelected += SafeAddressSelected;
+        _handelDeliveryInvocation.OnClearDelivery += SafeClearDelivery;
         _handelDeliveryInvocation.OnToggleDirection += SafeToggleDirection;
         _handelDeliveryInvocation.OnNewOrderReceived += SafeNewOrderReceived;
         
@@ -77,12 +78,8 @@ public partial class Delivery : IDisposable
         _pageDirection = string.IsNullOrEmpty(savedDirection) ? "rtl" : savedDirection;
     }
 
-
-
     private async Task LoadCustomerOrders()
     {
-        // TODO: Load actual customer orders from the delivery service
-        // For now, this will be implemented when backend API is ready
         // Example: _orders = await _deliveryServices.GetRecentCustomerOrdersAsync(_commonProperties.CustomerDetails.FirstPhoneNumber);
     }
 
@@ -188,12 +185,35 @@ public partial class Delivery : IDisposable
                          };
                     }
                 }
+                else if (string.IsNullOrEmpty(targetZoneName))
+                {
+                    SelectedZone = null;
+                }
             }
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error in SafeAddressSelected: {ex.Message}");
+        }
+    }
+
+    private async void SafeClearDelivery()
+    {
+        try
+        {
+            _commonProperties.CustomerDetails = new();
+            _handelDeliveryInvocation.CustomerDetails = new();
+            SelectedZone = null;
+            CustomerStats = null;
+            _orders = new();
+            _customerComplaints = new();
+            _showComplaints = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in SafeClearDelivery: {ex.Message}");
         }
     }
 
@@ -225,6 +245,7 @@ public partial class Delivery : IDisposable
             Localizer.OnLanguageChanged -= _stateChangedHandler;
         }
         _handelDeliveryInvocation.OnAddressSelected -= SafeAddressSelected;
+        _handelDeliveryInvocation.OnClearDelivery -= SafeClearDelivery;
         _handelDeliveryInvocation.OnToggleDirection -= SafeToggleDirection;
         _handelDeliveryInvocation.OnNewOrderReceived -= SafeNewOrderReceived;
     }
