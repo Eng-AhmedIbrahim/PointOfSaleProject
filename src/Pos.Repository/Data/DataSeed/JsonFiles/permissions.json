@@ -1,4 +1,4 @@
-﻿[
+[
   {
     "Name": "CanPrintSummaryReport",
     "PoliceArabicName": "طباعة ملخص المبيعات",
@@ -1009,27 +1009,27 @@
   },
   {
     "Name": "CanAccessDeliveryVoidBtn",
-    "PoliceArabicName": "Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ",
+    "PoliceArabicName": "إلغاء طلب دليفري",
     "PoliceEnglishNameEn": "Void Delivery Order",
-    "ScreenArabicName": "Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„",
+    "ScreenArabicName": "شاشة التوصيل",
     "ScreenEnglishName": "Delivery Screen",
     "IsBackOffice": false,
     "Id": 113
   },
   {
     "Name": "CanAccessDeliveryEditBtn",
-    "PoliceArabicName": "ØªØ¹Ø¯ÙŠÙ„ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ",
+    "PoliceArabicName": "تعديل طلب دليفري",
     "PoliceEnglishNameEn": "Edit Delivery Order",
-    "ScreenArabicName": "Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„",
+    "ScreenArabicName": "شاشة التوصيل",
     "ScreenEnglishName": "Delivery Screen",
     "IsBackOffice": false,
     "Id": 114
   },
   {
     "Name": "CanVoidBranchDeliveryOrder",
-    "PoliceArabicName": "Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø§Ù„ÙØ±ÙˆØ¹",
+    "PoliceArabicName": "إلغاء طلب الفروع",
     "PoliceEnglishNameEn": "Void Branch Order",
-    "ScreenArabicName": "Ø£ÙˆØ±Ø¯Ø±Ø§Øª Ø§Ù„ÙØ±ÙˆØ¹",
+    "ScreenArabicName": "أوردرات الفروع",
     "ScreenEnglishName": "Branch Orders",
     "IsBackOffice": false,
     "Id": 115

@@ -105,9 +105,12 @@
     </DialogContent>
     <DialogActions>
         <div class="px-4 pb-4 w-100 d-flex justify-start">
-            <MudButton OnClick="CreateNew" Variant="Variant.Outlined" Color="Color.Secondary" Style="font-weight: 700; border-radius: 8px; height: 42px; border-width: 2px;">
-                @Localizer["CreateNewOrder"]
-            </MudButton>
+            @if (_canCreateOrder)
+            {
+                <MudButton OnClick="CreateNew" Variant="Variant.Outlined" Color="Color.Secondary" Style="font-weight: 700; border-radius: 8px; height: 42px; border-width: 2px;">
+                    @Localizer["CreateNewOrder"]
+                </MudButton>
+            }
         </div>
     </DialogActions>
 </MudDialog>

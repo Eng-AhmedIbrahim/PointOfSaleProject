@@ -25,11 +25,14 @@
         </button>
     }
 
-    <button class="action-button keypad-btn customer-data-btn" 
-            disabled="@(_commonProperties.CurrentPosMode != "Delivery" || _commonProperties.CustomerDetails == null || string.IsNullOrEmpty(_commonProperties.CustomerDetails.FirstPhoneNumber))"
-            @onclick="OpenFullCustomerInfo">
-        <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="Size.Large" />
-    </button>
+    @if (_canCustomerData)
+    {
+        <button class="action-button keypad-btn customer-data-btn" 
+                disabled="@(_commonProperties.CurrentPosMode != "Delivery" || _commonProperties.CustomerDetails == null || string.IsNullOrEmpty(_commonProperties.CustomerDetails.FirstPhoneNumber))"
+                @onclick="OpenFullCustomerInfo">
+            <MudIcon Icon="@Icons.Material.Filled.AssignmentInd" Size="Size.Large" />
+        </button>
+    }
 
     @if (_canIncrement)
     {

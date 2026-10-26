@@ -12,6 +12,7 @@ public partial class Section3
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     private bool _canUseKeypad;
+    private bool _canCustomerData;
     private bool _canIncrement;
     private bool _canDecrement;
     private bool _canDeleteItem;
@@ -26,6 +27,7 @@ public partial class Section3
         if (user.Identity is { IsAuthenticated: true })
         {
             _canUseKeypad     = (await AuthorizationService.AuthorizeAsync(user, "CanUseKeypad")).Succeeded;
+            _canCustomerData  = (await AuthorizationService.AuthorizeAsync(user, "CanAccessFooterCustomerDataBtn")).Succeeded;
             _canIncrement     = (await AuthorizationService.AuthorizeAsync(user, "CanIncrementQuantity")).Succeeded;
             _canDecrement     = (await AuthorizationService.AuthorizeAsync(user, "CanDecrementQuantity")).Succeeded;
             _canDeleteItem    = (await AuthorizationService.AuthorizeAsync(user, "CanDeleteItem")).Succeeded;

@@ -1,4 +1,4 @@
-﻿using POS.API.Hubs;
+using POS.API.Hubs;
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -113,15 +113,21 @@ try
         -- Ensure new void & edit permissions are in Permissions table
         IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanAccessDeliveryVoidBtn')
             INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
-            VALUES ('CanAccessDeliveryVoidBtn', N'Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ', 'Void Delivery Order', N'Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„', 'Delivery Screen', 0);
+            VALUES ('CanAccessDeliveryVoidBtn', N'إلغاء طلب دليفري', 'Void Delivery Order', N'شاشة التوصيل', 'Delivery Screen', 0);
+        ELSE
+            UPDATE Permissions SET PoliceArabicName = N'إلغاء طلب دليفري', ScreenArabicName = N'شاشة التوصيل' WHERE Name = 'CanAccessDeliveryVoidBtn';
 
         IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanAccessDeliveryEditBtn')
             INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
-            VALUES ('CanAccessDeliveryEditBtn', N'ØªØ¹Ø¯ÙŠÙ„ Ø£ÙˆØ±Ø¯Ø± Ø¯Ù„ÙŠÙØ±ÙŠ', 'Edit Delivery Order', N'Ø´Ø§Ø´Ø© Ø§Ù„ØªÙˆØµÙŠÙ„', 'Delivery Screen', 0);
+            VALUES ('CanAccessDeliveryEditBtn', N'تعديل طلب دليفري', 'Edit Delivery Order', N'شاشة التوصيل', 'Delivery Screen', 0);
+        ELSE
+            UPDATE Permissions SET PoliceArabicName = N'تعديل طلب دليفري', ScreenArabicName = N'شاشة التوصيل' WHERE Name = 'CanAccessDeliveryEditBtn';
 
         IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanVoidBranchDeliveryOrder')
             INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
-            VALUES ('CanVoidBranchDeliveryOrder', N'Ø¥Ù„ØºØ§Ø¡ Ø£ÙˆØ±Ø¯Ø± Ø§Ù„ÙØ±ÙˆØ¹', 'Void Branch Order', N'Ø£ÙˆØ±Ø¯Ø±Ø§Øª Ø§Ù„ÙØ±ÙˆØ¹', 'Branch Orders', 0);
+            VALUES ('CanVoidBranchDeliveryOrder', N'إلغاء طلب الفروع', 'Void Branch Order', N'أوردرات الفروع', 'Branch Orders', 0);
+        ELSE
+            UPDATE Permissions SET PoliceArabicName = N'إلغاء طلب الفروع', ScreenArabicName = N'أوردرات الفروع' WHERE Name = 'CanVoidBranchDeliveryOrder';
     ");
 
     // Hotfix: Remove IDENTITY from Items, Categories, Attributes, and AttributeItems (Development Only - Tables are empty)

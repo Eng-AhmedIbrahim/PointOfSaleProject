@@ -17,8 +17,9 @@ public partial class ActiveOrderDialog
 
     [Parameter] public List<OrderDto> ActiveOrders { get; set; } = new();
 
-    private bool _canVoidOrder = true;
-    private bool _canEditOrder = true;
+    private bool _canVoidOrder = false;
+    private bool _canEditOrder = false;
+    private bool _canCreateOrder = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,15 +27,15 @@ public partial class ActiveOrderDialog
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
-            _canVoidOrder = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryVoidBtn")).Succeeded
-                         || (await AuthorizationService.AuthorizeAsync(user, "CanVoidOrderFromList")).Succeeded;
-            _canEditOrder = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryEditBtn")).Succeeded
-                         || (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryOrderBtn")).Succeeded;
+            _canVoidOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryVoidBtn")).Succeeded;
+            _canEditOrder   = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryEditBtn")).Succeeded;
+            _canCreateOrder = (await AuthorizationService.AuthorizeAsync(user, "CanAccessDeliveryOrderBtn")).Succeeded;
         }
         catch
         {
             _canVoidOrder = false;
             _canEditOrder = false;
+            _canCreateOrder = false;
         }
     }
 
