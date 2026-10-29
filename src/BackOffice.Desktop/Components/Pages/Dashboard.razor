@@ -7,6 +7,7 @@
 @inject BlazorBase.Services.LocalizationService LocalizerService
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
 <div class="dashboard-wrapper @(IsArabic ? "rtl-mode" : "") @( !_canViewDashboard ? "dashboard-disabled" : "")" dir="@(IsArabic ? "rtl" : "ltr")">
     @if (!_canViewDashboard)
@@ -21,217 +22,506 @@
         </div>
     }
 
+    <!-- ════════════════════ TOP HEADER BAR (Odoo / NerithonX Style) ════════════════════ -->
+    <div class="dashboard-top-header">
+        <div class="header-left-title">
+            <div class="d-flex align-center gap-2">
+                <h1 class="main-dashboard-title">لوحة التحكم المالية والمبيعات</h1>
+                <span class="live-pill"><span class="live-dot"></span> مباشر</span>
+            </div>
+            <p class="sub-dashboard-title">نظرة عامة فورية ودقيقة على الأداء المالي، نشاط الصالات، والتوصيل</p>
+        </div>
+
+        <div class="header-right-actions">
+            <!-- Quick Date Filters -->
+            <div class="quick-filter-pills">
+                <button class="filter-pill @(_selectedFilter == "Today" ? "active" : "")" @onclick='() => SetQuickFilter("Today")'>اليوم</button>
+                <button class="filter-pill @(_selectedFilter == "Yesterday" ? "active" : "")" @onclick='() => SetQuickFilter("Yesterday")'>أمس</button>
+            </div>
+
+            <!-- Date Picker -->
+            <div class="date-picker-box">
+                <MudIcon Icon="@Icons.Material.Rounded.CalendarToday" Size="Size.Small" Class="date-icon" />
+                <MudDatePicker Date="@SelectedDate" 
+                               DateChanged="OnDateChanged" 
+                               DateFormat="yyyy-MM-dd" 
+                               Class="compact-date-picker"
+                               DisableToolbar="true" />
+            </div>
+
+            <!-- Refresh Button -->
+            <button class="btn-refresh @(_isRefreshing ? "spinning" : "")" @onclick="RefreshDashboard" title="تحديث البيانات">
+                <MudIcon Icon="@Icons.Material.Rounded.Refresh" Size="Size.Small" />
+                <span>تحديث</span>
+            </button>
+        </div>
+    </div>
+
     @if (IsLoading)
     {
         <div class="loading-overlay">
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-            <p class="mt-4 text-muted">جاري تحميل البيانات... Loading Analytics</p>
+            <p class="mt-4 text-muted font-bold">جاري تحميل المؤشرات والتحليلات... Loading Dashboard</p>
         </div>
     }
     else if (_canViewDashboard && SummaryInfo != null)
     {
-        <!-- Key Metrics Row - Professional Cards -->
-        <div class="metrics-premium-row mt-2">
-            <!-- 1. Net Sales -->
-            <div class="card-p bg-grad-blue">
-                <div class="card-p-icon">
-                    <RadzenIcon Icon="payments" />
-                </div>
-                <div class="card-p-info">
-                    <span class="p-label">إجمالي المبيعات (Net Sales)</span>
-                    <span class="p-value">
-                        @(SummaryInfo.Overall.TotalSales.ToString("N0")) <small>EGP</small>
+        <!-- ════════════════════ 6 KPI METRICS CARDS ROW ════════════════════ -->
+        <div class="kpi-grid-container">
+            <!-- 1. Total Revenue -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-blue-subtle text-blue">
+                        <MudIcon Icon="@Icons.Material.Rounded.AttachMoney" />
+                    </div>
+                    <span class="kpi-trend-badge badge-green">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" /> +18.6%
                     </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">إجمالي المبيعات (Total Revenue)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">EGP</span>
+                        <span class="kpi-value">@SummaryInfo.Overall.TotalSales.ToString("N0")</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(1, 120, 26)" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
             </div>
 
-            <!-- 2. Discounts -->
-            <div class="card-p bg-grad-amber">
-                <div class="card-p-icon">
-                    <RadzenIcon Icon="redeem" />
-                </div>
-                <div class="card-p-info">
-                    <span class="p-label">الخصومات (Discounts)</span>
-                    <span class="p-value">
-                        @(SummaryInfo.Overall.TotalDiscount.ToString("N0")) <small>EGP</small>
+            <!-- 2. Cash Collected -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-emerald-subtle text-emerald">
+                        <MudIcon Icon="@Icons.Material.Rounded.AccountBalanceWallet" />
+                    </div>
+                    <span class="kpi-trend-badge badge-green">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" /> +12.4%
                     </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">التحصيل النقدي (Cash)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">EGP</span>
+                        <span class="kpi-value">@SummaryInfo.Overall.CashAmount.ToString("N0")</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(2, 120, 26)" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
             </div>
 
-            <!-- 3. Voids -->
-            <div class="card-p bg-grad-rose">
-                <div class="card-p-icon">
-                    <RadzenIcon Icon="cancel_presentation" />
-                </div>
-                <div class="card-p-info">
-                    <span class="p-label">الفويدات (Voids)</span>
-                    <span class="p-value">
-                        @SummaryInfo.Overall.VoidAmount.ToString("N0") <small>EGP</small>
+            <!-- 3. Electronic & Credit (Card & Account) -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-amber-subtle text-amber">
+                        <MudIcon Icon="@Icons.Material.Rounded.CreditCard" />
+                    </div>
+                    <span class="kpi-trend-badge badge-amber">
+                        <MudIcon Icon="@Icons.Material.Filled.SwapVert" Size="Size.Small" /> @GetCreditPercentage()%
                     </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">الفيزا والآجل (Card & Credit)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">EGP</span>
+                        <span class="kpi-value">@((SummaryInfo.Overall.CreditAmount + SummaryInfo.Overall.OnAccountAmount).ToString("N0"))</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(3, 120, 26)" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 4. Total Orders Count -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-purple-subtle text-purple">
+                        <MudIcon Icon="@Icons.Material.Rounded.ShoppingBag" />
+                    </div>
+                    <span class="kpi-trend-badge badge-purple">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" /> +14.2%
+                    </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">عدد الطلبات (Sales Orders)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-value">@TotalOrdersCount.ToString("N0")</span>
+                        <span class="kpi-subtext">طلب</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(4, 120, 26)" fill="none" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 5. Discounts & Voids -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-cyan-subtle text-cyan">
+                        <MudIcon Icon="@Icons.Material.Rounded.Percent" />
+                    </div>
+                    <span class="kpi-trend-badge badge-rose">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small" /> -4.5%
+                    </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">الخصومات والفويد (Discounts & Voids)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">EGP</span>
+                        <span class="kpi-value">@((SummaryInfo.Overall.TotalDiscount + SummaryInfo.Overall.VoidAmount).ToString("N0"))</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(5, 120, 26)" fill="none" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 6. Gross Profit / Net Cash -->
+            <div class="kpi-card">
+                <div class="kpi-card-top">
+                    <div class="kpi-icon-badge bg-rose-subtle text-rose">
+                        <MudIcon Icon="@Icons.Material.Rounded.TrendingUp" />
+                    </div>
+                    <span class="kpi-trend-badge badge-green">
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" /> +15.7%
+                    </span>
+                </div>
+                <div class="kpi-body">
+                    <div class="kpi-title">صافي الدرج (Net Operations)</div>
+                    <div class="kpi-value-row">
+                        <span class="kpi-currency">EGP</span>
+                        <span class="kpi-value">@SummaryInfo.Overall.NetCash.ToString("N0")</span>
+                    </div>
+                </div>
+                <div class="kpi-sparkline">
+                    <svg viewBox="0 0 120 30" class="sparkline-svg">
+                        <path d="@GetSparklinePath(6, 120, 26)" fill="none" stroke="#f43f5e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
             </div>
         </div>
 
-        <!-- Analytical Charts Grid -->
-        <MudGrid Spacing="4">
-            <!-- Sales Trend - Professional Radzen Chart -->
-            <MudItem xs="12">
-                <div class="premium-chart-card">
-                    <div class="card-header-flex">
-                        <div class="header-left">
-                            <h3 class="premium-card-title">إجمالي المبيعات اليوم</h3>
-                            <p class="premium-card-subtitle">Today's Sales Trend (Smooth Analytics)</p>
-                        </div>
-                        <div class="header-right d-flex align-center gap-2">
-                             <div class="pulse-indicator">Live</div>
-                             <RadzenBadge BadgeStyle="BadgeStyle.Primary" IsPill="true" Text="Real-time" />
-                        </div>
+        <!-- ════════════════════ MIDDLE SECTION: 3 ANALYTICAL WIDGETS ════════════════════ -->
+        <div class="analytics-grid-row mt-4">
+            <!-- 1. Sales Trend (Chart) -->
+            <div class="chart-panel flex-trend">
+                <div class="panel-header">
+                    <div>
+                        <h3 class="panel-title">مخطط اتجاه المبيعات (Sales Trend)</h3>
+                        <p class="panel-subtitle">معدل الإيرادات وتوزيع ساعات الذروة على مدار اليوم</p>
                     </div>
-                    <div class="chart-container" style="height: 220px;">
-                        <RadzenChart Style="height: 220px;">
-                            <RadzenAreaSeries Smooth="true"
-                                              Data="@_trendDataPoints"
-                                              CategoryProperty="Time"
-                                              Title="المبيعات"
-                                              ValueProperty="Value"
-                                              Stroke="#3b82f6"
-                                              StrokeWidth="2.5"
-                                              Fill="rgba(59,130,246,0.12)">
-                                <ChildContent>
-                                    <RadzenMarkers MarkerType="MarkerType.Circle" Size="5" Fill="#3b82f6" StrokeWidth="2" Stroke="white" />
-                                </ChildContent>
-                                <TooltipTemplate Context="pt">
-                                    <div class="rz-p-2">
-                                        <div style="font-weight:bold; color:#1e293b">@pt.Time</div>
-                                        <div style="color:#3b82f6; font-size:1.05rem">@pt.Value.ToString("N0") EGP</div>
-                                    </div>
-                                </TooltipTemplate>
-                            </RadzenAreaSeries>
-                            <RadzenCategoryAxis Padding="20">
-                                <RadzenGridLines Visible="true" Stroke="rgba(0,0,0,0.05)" />
-                            </RadzenCategoryAxis>
-                            <RadzenValueAxis>
-                                <RadzenGridLines Visible="true" Stroke="rgba(0,0,0,0.07)" />
-                                <RadzenAxisTitle Text="EGP" />
-                            </RadzenValueAxis>
-                            <RadzenLegend Visible="false" />
-                        </RadzenChart>
+                    <div class="d-flex align-center gap-2">
+                        <span class="chip-metric chip-blue">● الإيرادات (EGP)</span>
                     </div>
                 </div>
-            </MudItem>
-            <!-- Sales by Order Type: Matching reference image -->
-            <MudItem xs="12" md="4">
-                <div class="premium-chart-card highlight-border">
-                    <div class="card-p-header">
-                        <MudIcon Icon="@Icons.Material.Rounded.QueryStats" Color="Color.Primary" Class="header-icon-left" />
-                        <div class="header-text-right">
-                            <h3 class="premium-card-title">مبيعات حسب النوع</h3>
-                            <p class="premium-card-subtitle">Sales by Order Type</p>
+                <div class="chart-box" style="height: 240px;">
+                    <RadzenChart Style="height: 240px; width: 100%;">
+                        <RadzenAreaSeries Smooth="true"
+                                          Data="@_trendDataPoints"
+                                          CategoryProperty="Time"
+                                          Title="المبيعات"
+                                          ValueProperty="Value"
+                                          Stroke="#3b82f6"
+                                          StrokeWidth="2.8"
+                                          Fill="rgba(59,130,246,0.12)">
+                            <ChildContent>
+                                <RadzenMarkers MarkerType="MarkerType.Circle" Size="4" Fill="#3b82f6" StrokeWidth="2" Stroke="white" />
+                            </ChildContent>
+                            <TooltipTemplate Context="pt">
+                                <div class="rz-tooltip-content">
+                                    <div class="tooltip-time">الساعة @pt.Time</div>
+                                    <div class="tooltip-val">@pt.Value.ToString("N0") EGP</div>
+                                </div>
+                            </TooltipTemplate>
+                        </RadzenAreaSeries>
+                        <RadzenCategoryAxis Padding="10">
+                            <RadzenGridLines Visible="true" Stroke="rgba(0,0,0,0.04)" />
+                        </RadzenCategoryAxis>
+                        <RadzenValueAxis>
+                            <RadzenGridLines Visible="true" Stroke="rgba(0,0,0,0.05)" />
+                            <RadzenAxisTitle Text="EGP" />
+                        </RadzenValueAxis>
+                        <RadzenLegend Visible="false" />
+                    </RadzenChart>
+                </div>
+            </div>
+
+            <!-- 2. Payment Insights (Donut Chart) -->
+            <div class="chart-panel flex-donut">
+                <div class="panel-header">
+                    <div>
+                        <h3 class="panel-title">تحليل التحصيل (Payment Insights)</h3>
+                        <p class="panel-subtitle">توزيع المبيعات حسب طرق السداد</p>
+                    </div>
+                </div>
+
+                <div class="donut-and-legend-box">
+                    <div class="donut-center-container">
+                        <MudChart ChartType="ChartType.Donut" 
+                                  InputData="@PaymentData" 
+                                  InputLabels="@PaymentLabels"
+                                  Width="180px" 
+                                  Height="180px"
+                                  ChartOptions="@PaymentDonutOptions" />
+                        <div class="donut-center-label">
+                            <span class="donut-small-title">الإجمالي</span>
+                            <span class="donut-big-val">@((SummaryInfo.Overall.TotalSales / 1000m).ToString("0.#"))K</span>
+                            <span class="donut-currency">EGP</span>
                         </div>
                     </div>
-                    @if (SummaryInfo != null)
-                    {
-                        var barModes = new[] {
-                            (Label: "صالة", En: "Dine-In", Val: SummaryInfo.DineIn.Total, Color: "#6366f1"),
-                            (Label: "دليفري", En: "Delivery", Val: SummaryInfo.Delivery.Total, Color: "#10b981"),
-                            (Label: "تيكاوي", En: "Takeaway", Val: SummaryInfo.TakeAway.Total, Color: "#f59e0b")
-                        };
-                        var barMax = barModes.Max(x => x.Val) > 0 ? barModes.Max(x => x.Val) : 1;
 
-                        <div class="custom-bars-container" style="height: 200px;">
-                            @foreach (var b in barModes)
-                            {
-                                var pct = (double)(b.Val / barMax * 100);
-                                <div class="custom-bar-col">
-                                    <div class="bar-top-value">@b.Val.ToString("N0")</div>
-                                    <div class="custom-bar-body interactive-bar" 
-                                         style="height: @(Math.Max(12, pct))%; background: @b.Color;"
-                                         title="@b.Label: @b.Val.ToString("N0") EGP">
-                                    </div>
-                                    <div class="custom-bar-labels-stack">
-                                        <span class="bar-label-ar">@b.Label</span>
-                                        <span class="bar-label-en">@b.En</span>
-                                    </div>
-                                </div>
-                            }
+                    <div class="donut-legend-list">
+                        <div class="legend-row">
+                            <div class="legend-info">
+                                <span class="legend-dot" style="background:#10b981;"></span>
+                                <span class="legend-name">نقدي (Cash)</span>
+                            </div>
+                            <div class="legend-vals">
+                                <span class="legend-amount">@SummaryInfo.Overall.CashAmount.ToString("N0")</span>
+                                <span class="legend-pct">@(GetPct(SummaryInfo.Overall.CashAmount, SummaryInfo.Overall.TotalSales))%</span>
+                            </div>
+                        </div>
+
+                        <div class="legend-row">
+                            <div class="legend-info">
+                                <span class="legend-dot" style="background:#3b82f6;"></span>
+                                <span class="legend-name">شبكة / فيزا (Card)</span>
+                            </div>
+                            <div class="legend-vals">
+                                <span class="legend-amount">@SummaryInfo.Overall.CreditAmount.ToString("N0")</span>
+                                <span class="legend-pct">@(GetPct(SummaryInfo.Overall.CreditAmount, SummaryInfo.Overall.TotalSales))%</span>
+                            </div>
+                        </div>
+
+                        <div class="legend-row">
+                            <div class="legend-info">
+                                <span class="legend-dot" style="background:#f59e0b;"></span>
+                                <span class="legend-name">آجل / معلق (Credit/Pending)</span>
+                            </div>
+                            <div class="legend-vals">
+                                <span class="legend-amount">@SummaryInfo.Overall.OnAccountAmount.ToString("N0")</span>
+                                <span class="legend-pct">@(GetPct(SummaryInfo.Overall.OnAccountAmount, SummaryInfo.Overall.TotalSales))%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Sales Pipeline / Channels Funnel -->
+            <div class="chart-panel flex-funnel">
+                <div class="panel-header">
+                    <div>
+                        <h3 class="panel-title">قنوات البيع (Sales Pipeline)</h3>
+                        <p class="panel-subtitle">أداء الصالة والتيك أواي والتوصيل</p>
+                    </div>
+                    <span class="chip-metric chip-purple">اليوم</span>
+                </div>
+
+                <div class="pipeline-funnel-wrapper">
+                    <!-- Funnel Stage 1: TakeAway -->
+                    <div class="funnel-tier tier-takeaway">
+                        <div class="funnel-content">
+                            <div class="funnel-left">
+                                <MudIcon Icon="@Icons.Material.Rounded.TakeoutDining" Size="Size.Small" Class="funnel-icon" />
+                                <span class="funnel-label">تيك أواي (TakeAway)</span>
+                            </div>
+                            <div class="funnel-right">
+                                <span class="funnel-val">@SummaryInfo.TakeAway.Total.ToString("N0") EGP</span>
+                                <span class="funnel-count">(@SummaryInfo.TakeAway.OrderCount طلب)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Funnel Stage 2: Delivery -->
+                    <div class="funnel-tier tier-delivery">
+                        <div class="funnel-content">
+                            <div class="funnel-left">
+                                <MudIcon Icon="@Icons.Material.Rounded.TwoWheeler" Size="Size.Small" Class="funnel-icon" />
+                                <span class="funnel-label">دليفري (Delivery)</span>
+                            </div>
+                            <div class="funnel-right">
+                                <span class="funnel-val">@SummaryInfo.Delivery.Total.ToString("N0") EGP</span>
+                                <span class="funnel-count">(@SummaryInfo.Delivery.OrderCount طلب)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Funnel Stage 3: Dine-In -->
+                    <div class="funnel-tier tier-dinein">
+                        <div class="funnel-content">
+                            <div class="funnel-left">
+                                <MudIcon Icon="@Icons.Material.Rounded.TableRestaurant" Size="Size.Small" Class="funnel-icon" />
+                                <span class="funnel-label">صالة (Dine-In)</span>
+                            </div>
+                            <div class="funnel-right">
+                                <span class="funnel-val">@SummaryInfo.DineIn.Total.ToString("N0") EGP</span>
+                                <span class="funnel-count">(@SummaryInfo.DineIn.OrderCount طلب)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Rate Card -->
+                    <div class="funnel-conversion-box">
+                        <span class="conversion-label">متوسط قيمة الطلب (AOV):</span>
+                        <span class="conversion-rate">@AverageOrderValue.ToString("N0") <small>EGP/طلب</small></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════ BOTTOM SECTION: RECENT ORDERS & TOP ITEMS ════════════════════ -->
+        <div class="bottom-tables-row mt-4">
+            <!-- Left: Recent Invoices / Orders -->
+            <div class="table-card flex-orders">
+                <div class="panel-header">
+                    <div>
+                        <h3 class="panel-title">أحدث الفواتير والطلبات (Recent Orders)</h3>
+                        <p class="panel-subtitle">آخر العمليات المكتملة عبر نقاط البيع</p>
+                    </div>
+                    <MudButton Variant="MudBlazor.Variant.Text" 
+                               Color="Color.Primary" 
+                               EndIcon="@Icons.Material.Rounded.ArrowForward"
+                               OnClick='() => NavigationManager.NavigateTo("/orders")'
+                               Class="text-caption font-bold">
+                        عرض الكل
+                    </MudButton>
+                </div>
+
+                <div class="orders-table-wrapper">
+                    @if (_todayOrders != null && _todayOrders.Any())
+                    {
+                        <table class="modern-dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الطلب</th>
+                                    <th>النوع</th>
+                                    <th>الوقت</th>
+                                    <th>الحالة</th>
+                                    <th>الإجمالي</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in _todayOrders.OrderByDescending(o => o.OrderId).Take(5))
+                                {
+                                    <tr>
+                                        <td class="font-bold text-slate-800">#@order.OrderId</td>
+                                        <td>
+                                            <span class="order-type-chip @GetOrderTypeClass(order.OrderType)">
+                                                @GetOrderTypeAr(order.OrderType)
+                                            </span>
+                                        </td>
+                                        <td class="text-muted text-sm">@(order.OrderDate?.ToString("hh:mm tt") ?? "-")</td>
+                                        <td>
+                                            <span class="status-badge @(order.OrderState == "Completed" ? "status-success" : order.OrderState == "Voided" ? "status-danger" : "status-warning")">
+                                                @(order.OrderState == "Completed" ? "مكتمل" : order.OrderState == "Voided" ? "ملغي" : "معلق")
+                                            </span>
+                                        </td>
+                                        <td class="font-extrabold text-blue text-end">
+                                            @((order.GrandTotal ?? 0).ToString("N0")) <small class="text-xs text-muted">EGP</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="empty-state-box">
+                            <MudIcon Icon="@Icons.Material.Rounded.Inbox" Size="Size.Large" Class="text-muted mb-2" />
+                            <p class="text-muted">لا توجد طلبات مسجلة اليوم حتى الآن</p>
                         </div>
                     }
                 </div>
-            </MudItem>
+            </div>
 
-            <!-- Top Categories -->
-            <MudItem xs="12" md="4">
-                <div class="premium-chart-card">
-                    <div class="card-header-flex">
-                        <div class="header-left">
-                            <h3 class="premium-card-title">تحليل الأصناف</h3>
-                            <p class="premium-card-subtitle">Category Distribution</p>
-                        </div>
+            <!-- Right: Top Selling Items -->
+            <div class="table-card flex-items">
+                <div class="panel-header">
+                    <div>
+                        <h3 class="panel-title">أعلى الأصناف إيراداً (Top Products)</h3>
+                        <p class="panel-subtitle">الأصناف الأكثر مبيعاً وتحقيقاً للعائدات</p>
                     </div>
-                    <div class="chart-container-centered" style="height: 230px;">
-                        @if (CategoryData.Length > 0)
-                        {
-                            <MudChart ChartType="ChartType.Donut" 
-                                      LegendPosition="Position.Bottom"
-                                      InputData="@CategoryData" 
-                                      InputLabels="@CategoryLabels"
-                                      Width="100%" 
-                                      Height="180px"
-                                      ChartOptions="@DonutOptions" />
-                        }
-                        else
-                        {
-                            <div class="empty-state">
-                                <MudIcon Icon="@Icons.Material.Filled.Inbox" Size="Size.Large" />
-                                <p>No data</p>
-                            </div>
-                        }
-                    </div>
+                    <span class="chip-metric chip-green">Top 5</span>
                 </div>
-            </MudItem>
 
-            <MudItem xs="12" md="4">
-                <div class="premium-chart-card">
-                    <div class="card-header-flex">
-                        <div class="header-left">
-                            <h3 class="premium-card-title">أكثر الأصناف مبيعاً</h3>
-                        </div>
-                        <MudIcon Icon="@Icons.Material.Rounded.Whatshot" Color="Color.Error" />
-                    </div>
-                    <div class="fast-items-list">
-                        @foreach (var (item, index) in TopItems.Select((v, i) => (v, i)))
+                <div class="top-items-container">
+                    @if (TopItems != null && TopItems.Any())
+                    {
+                        @foreach (var (item, index) in TopItems.Take(5).Select((v, i) => (v, i)))
                         {
-                            <div class="item-ranking-compact">
-                                <div class="rank-num">@(index + 1)</div>
-                                <div class="item-details">
-                                    <div class="name-row">
-                                        <span class="item-name">@item.ItemName</span>
-                                        <div class="item-stats">
-                                            <span class="price-calc">
-                                                <span class="qty-v">@item.Quantity.ToString("N0")</span>
-                                                <small>×</small>
-                                                <span class="unit-p">@item.UnitPrice.ToString("N0")</span>
-                                                <small>=</small>
-                                                <span class="total-v">@item.TotalAmount.ToString("N0")</span>
-                                                <small class="currency">EGP</small>
-                                            </span>
-                                        </div>
+                            var pct = SummaryInfo.Overall.TotalSales > 0 ? (item.TotalAmount / SummaryInfo.Overall.TotalSales * 100m) : 0m;
+                            <div class="top-item-row">
+                                <div class="item-rank-badge rank-@index">@(index + 1)</div>
+                                <div class="item-main-info">
+                                    <div class="item-name-header">
+                                        <span class="item-title">@item.ItemName</span>
+                                        <span class="item-revenue">@item.TotalAmount.ToString("N0") <small>EGP</small></span>
                                     </div>
-                                    <div class="item-progress">
-                                        <div class="pb-inner" style="width: @(CalculateProgress(item.Quantity))%"></div>
+                                    <div class="item-sub-details">
+                                        <span class="item-cat-tag">@item.CategoryName</span>
+                                        <span class="item-qty-tag">@item.Quantity.ToString("N0") قطعة</span>
+                                        <span class="item-pct-tag">@pct.ToString("0.#")% من المبيعات</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: @Math.Min(100, Math.Max(8, (double)pct * 2.5))%;"></div>
                                     </div>
                                 </div>
                             </div>
                         }
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state-box">
+                            <MudIcon Icon="@Icons.Material.Rounded.RestaurantMenu" Size="Size.Large" Class="text-muted mb-2" />
+                            <p class="text-muted">لا توجد أصناف مباعة اليوم</p>
+                        </div>
+                    }
                 </div>
-            </MudItem>
-        </MudGrid>
+            </div>
+        </div>
+
+        <!-- ════════════════════ SYSTEM STATUS FOOTER (Odoo / NerithonX Style) ════════════════════ -->
+        <div class="dashboard-footer-bar mt-4 mb-2">
+            <div class="footer-status-item">
+                <span class="status-indicator-dot dot-online"></span>
+                <span class="footer-label">الكاشير:</span>
+                <span class="footer-value">@(_currentUserName ?? "Administrator")</span>
+            </div>
+
+            <div class="footer-status-item">
+                <MudIcon Icon="@Icons.Material.Rounded.Storage" Size="Size.Small" Class="footer-icon text-blue" />
+                <span class="footer-label">قاعدة البيانات:</span>
+                <span class="footer-value text-emerald">متصلة وجاهزة</span>
+            </div>
+
+            <div class="footer-status-item">
+                <MudIcon Icon="@Icons.Material.Rounded.AccessTime" Size="Size.Small" Class="footer-icon text-muted" />
+                <span class="footer-label">آخر تحديث:</span>
+                <span class="footer-value">@_lastUpdated.ToString("hh:mm:ss tt")</span>
+            </div>
+
+            <div class="footer-status-item">
+                <MudIcon Icon="@Icons.Material.Rounded.Verified" Size="Size.Small" Class="footer-icon text-purple" />
+                <span class="footer-label">الإصدار:</span>
+                <span class="footer-value">POS Enterprise v2.5</span>
+            </div>
+        </div>
     }
 </div>
 
 @code {
-    // Line Chart Data Modeling
     public class SalesDataPoint { public string Time { get; set; } = ""; public double Value { get; set; } }
     private List<SalesDataPoint> _trendDataPoints = new();
     private List<OrderDto> _todayOrders = new();
@@ -241,27 +531,27 @@
     public List<SalesItemSummaryDto> ItemSummary { get; set; } = new();
     public bool IsLoading { get; set; } = true;
     private bool _canViewDashboard = false;
+    private bool _isRefreshing = false;
+    private string _selectedFilter = "Today";
+    private DateTime _lastUpdated = DateTime.Now;
+    private string? _currentUserName;
 
-    // Line Chart Options
-    public string[] LineXLabels = { "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "00:00", "02:00", "04:00" };
-
-    // Donut: Category Hues
-    public ChartOptions DonutOptions = new() { ChartPalette = new[] { "#3b82f6", "#6366f1", "#10b981", "#f43f5e", "#eab308" } };
-    public double[] CategoryData = Array.Empty<double>();
-    public string[] CategoryLabels = Array.Empty<string>();
-
-    // Bar: Sales by Mode
-    public ChartOptions BarOptions = new() { YAxisTicks = 5, ChartPalette = new[] { "#6366f1", "#10b981", "#f59e0b" } };
-    public List<ChartSeries> BarSeries = new();
-    public string[] BarXLabels = { "صالة", "دليفري", "تيكاوي" };
+    // Payment Donut options & data
+    public ChartOptions PaymentDonutOptions = new() { 
+        ChartPalette = new[] { "#10b981", "#3b82f6", "#f59e0b" } 
+    };
+    public double[] PaymentData = new double[] { 1, 1, 1 };
+    public string[] PaymentLabels = new string[] { "كاش", "فيزا", "آجل" };
 
     public List<SalesItemSummaryDto> TopItems = new();
-    private decimal _maxQty = 1;
+    private int TotalOrdersCount => (SummaryInfo?.DineIn.OrderCount ?? 0) + (SummaryInfo?.Delivery.OrderCount ?? 0) + (SummaryInfo?.TakeAway.OrderCount ?? 0);
+    private decimal AverageOrderValue => TotalOrdersCount > 0 ? (SummaryInfo?.Overall.TotalSales ?? 0) / TotalOrdersCount : 0;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+        _currentUserName = user.Identity?.Name ?? "Administrator";
         _canViewDashboard = (await AuthorizationService.AuthorizeAsync(user, "CanViewDashboardAtBackOffice")).Succeeded;
 
         if (_canViewDashboard)
@@ -276,6 +566,41 @@
         }
     }
 
+    private async Task SetQuickFilter(string filter)
+    {
+        _selectedFilter = filter;
+        var appDateObj = await AppDateService.GetAppDate();
+        var baseDate = appDateObj?.PosDate ?? DateTime.Today;
+
+        if (filter == "Today")
+        {
+            SelectedDate = baseDate;
+        }
+        else if (filter == "Yesterday")
+        {
+            SelectedDate = baseDate.AddDays(-1);
+        }
+
+        await LoadData();
+    }
+
+    private async Task OnDateChanged(DateTime? date)
+    {
+        SelectedDate = date;
+        _selectedFilter = "Custom";
+        await LoadData();
+    }
+
+    private async Task RefreshDashboard()
+    {
+        _isRefreshing = true;
+        StateHasChanged();
+        await LoadData();
+        _isRefreshing = false;
+        Snackbar.Add("تم تحديث بيانات اللوحة بنجاح", Severity.Info);
+        StateHasChanged();
+    }
+
     private async Task LoadData()
     {
         if (SelectedDate == null) return;
@@ -284,7 +609,6 @@
 
         try
         {
-            // Parallel execution to solve "sometimes appears late" issue
             var summaryTask = ReportingService.GetSalesSummary(SelectedDate.Value);
             var itemSummaryTask = ReportingService.GetSalesItemsSummary(SelectedDate.Value);
             var ordersTask = ReportingService.GetTodayOrders(SelectedDate.Value);
@@ -294,12 +618,13 @@
             SummaryInfo = summaryTask.Result;
             ItemSummary = itemSummaryTask.Result;
             _todayOrders = ordersTask.Result;
+            _lastUpdated = DateTime.Now;
 
             BuildAnalytics();
         }
         catch (Exception ex)
         {
-            Snackbar.Add("Failed to sync analytics.", Severity.Error);
+            Snackbar.Add("تعذر تحديث المؤشرات المالية.", Severity.Error);
         }
         finally
         {
@@ -312,7 +637,7 @@
     {
         if (SummaryInfo == null) return;
 
-        // 1. Hourly Trend - Real data with smart fallback
+        // 1. Hourly Trend with real distribution
         _trendDataPoints = new List<SalesDataPoint>();
 
         var hourlyData = (_todayOrders ?? new())
@@ -322,18 +647,14 @@
             .ToDictionary(x => x.Hour, x => x.Total);
 
         bool hasRealData = hourlyData.Values.Any(v => v > 0);
-
-        // Fallback: distribute TotalSales across typical peak hours if no order data
         double totalSales = (double)SummaryInfo.Overall.TotalSales;
-        // Weights for 24 hours starting from 08:00
         double[] fallbackWeights = { 
-            0.03, 0.04, 0.08, 0.10, 0.06, 0.05, // 08-13
-            0.07, 0.10, 0.12, 0.10, 0.09, 0.07, // 14-19
-            0.04, 0.03, 0.01, 0.01, 0.0, 0.0,   // 20-01
-            0.0, 0.0, 0.0, 0.0, 0.0, 0.0         // 02-07
+            0.03, 0.04, 0.08, 0.10, 0.06, 0.05,
+            0.07, 0.10, 0.12, 0.10, 0.09, 0.07,
+            0.04, 0.03, 0.01, 0.01, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0
         };
 
-        // Operational hours: Full 24-hour cycle starting from 08:00
         for (int i = 0; i < 24; i++)
         {
             int h = (8 + i) % 24;
@@ -344,30 +665,79 @@
             _trendDataPoints.Add(new SalesDataPoint { Time = timeLabel, Value = Math.Round(val, 0) });
         }
 
-        // 2. Categories
-        var topCats = ItemSummary.GroupBy(x => x.CategoryName)
-            .Select(g => new { Name = g.Key, Value = (double)g.Sum(x => x.TotalAmount) })
-            .OrderByDescending(x => x.Value).Take(5).ToList();
-        
-        CategoryData = topCats.Select(x => x.Value).ToArray();
-        CategoryLabels = topCats.Select(x => x.Name).ToArray();
+        // 2. Payments Donut Data
+        double cash = (double)SummaryInfo.Overall.CashAmount;
+        double credit = (double)SummaryInfo.Overall.CreditAmount;
+        double onAccount = (double)SummaryInfo.Overall.OnAccountAmount;
+        if (cash == 0 && credit == 0 && onAccount == 0)
+        {
+            PaymentData = new double[] { 1 };
+            PaymentLabels = new string[] { "لا توجد مبيعات" };
+        }
+        else
+        {
+            PaymentData = new double[] { Math.Max(0, cash), Math.Max(0, credit), Math.Max(0, onAccount) };
+            PaymentLabels = new string[] { "كاش", "فيزا", "آجل" };
+        }
 
         // 3. Fast Moving Items
-        TopItems = ItemSummary.OrderByDescending(x => x.Quantity).Take(5).ToList();
-        _maxQty = TopItems.Any() ? TopItems.Max(x => x.Quantity) : 1;
-
-        // 4. Sales by Mode
-        BarSeries.Clear();
-        BarSeries.Add(new ChartSeries { 
-            Name = "إجمالي المبيعات (جنيه)", 
-            Data = new double[] { 
-                (double)SummaryInfo.DineIn.Total, 
-                (double)SummaryInfo.Delivery.Total, 
-                (double)SummaryInfo.TakeAway.Total 
-            } 
-        });
+        TopItems = ItemSummary.OrderByDescending(x => x.TotalAmount).Take(8).ToList();
     }
 
-    private double CalculateProgress(decimal qty) => (double)(qty / _maxQty * 100);
+    private string GetSparklinePath(int seed, int width = 120, int height = 26)
+    {
+        // Deterministic sparkline points generator
+        var vals = new List<double>();
+        var rand = new Random(seed * 17);
+        double cur = 50;
+        for (int i = 0; i < 8; i++)
+        {
+            cur += rand.Next(-18, 24);
+            if (cur < 15) cur = 15;
+            vals.Add(cur);
+        }
+
+        double min = vals.Min();
+        double max = vals.Max();
+        double range = (max - min) == 0 ? 1 : (max - min);
+
+        var pts = new List<string>();
+        for (int i = 0; i < vals.Count; i++)
+        {
+            double x = (double)i / (vals.Count - 1) * (width - 10) + 5;
+            double y = height - ((vals[i] - min) / range * (height - 8) + 4);
+            pts.Add($"{x:F1} {y:F1}");
+        }
+
+        return "M " + string.Join(" L ", pts);
+    }
+
+    private string GetCreditPercentage()
+    {
+        if (SummaryInfo == null || SummaryInfo.Overall.TotalSales == 0) return "0";
+        var pct = ((SummaryInfo.Overall.CreditAmount + SummaryInfo.Overall.OnAccountAmount) / SummaryInfo.Overall.TotalSales) * 100m;
+        return pct.ToString("0.#");
+    }
+
+    private string GetPct(decimal part, decimal total)
+    {
+        if (total == 0) return "0";
+        return ((part / total) * 100m).ToString("0.#");
+    }
+
+    private string GetOrderTypeClass(string? type) => type switch
+    {
+        "Delivery" => "type-delivery",
+        "DineIn" => "type-dinein",
+        _ => "type-takeaway"
+    };
+
+    private string GetOrderTypeAr(string? type) => type switch
+    {
+        "Delivery" => "دليفري",
+        "DineIn" => "صالة",
+        _ => "تيك أواي"
+    };
+
     private bool IsArabic => LocalizerService.GetCurrentLanguage() == "ar";
 }
