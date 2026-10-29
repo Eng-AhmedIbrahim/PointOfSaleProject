@@ -301,11 +301,16 @@
 
     private async Task PrintCopy()
     {
+        await PrintCopyWithPrinter(null);
+    }
+
+    private async Task PrintCopyWithPrinter(string? printerName)
+    {
         try
         {
             bool printKitchen = _previewMode == "Kitchen";
             bool printCustomer = _previewMode == "Customer";
-            await PrintOrderService.ReprintOrderAsync(Order.Id, isCopy: printCustomer, printCustomer: printCustomer, printKitchen: printKitchen);
+            await PrintOrderService.ReprintOrderAsync(Order.Id, isCopy: true, printCustomer: printCustomer, printKitchen: printKitchen, printerName: printerName);
             Snackbar.Add(Localizer["SentToPrinter"], Severity.Success);
             MudDialog.Close();
         }
@@ -332,7 +337,7 @@
         if (res != null && !res.Canceled && res.Data is string printerName)
         {
             await _localStorage.SetItemAsync("cashier_printer_name", printerName);
-            await PrintCopy();
+            await PrintCopyWithPrinter(printerName);
         }
     }
 

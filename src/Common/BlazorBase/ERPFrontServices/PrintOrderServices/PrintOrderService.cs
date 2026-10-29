@@ -1,4 +1,4 @@
-﻿using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.ReportingDtos;
 using Serilog;
 
@@ -22,7 +22,8 @@ public class PrintOrderService : IPrintOrderService
         bool isClosing = false, 
         bool isUpdate = false,
         bool isPrePrint = false,
-        string? printerName = null)
+        string? printerName = null,
+        bool isCopy = false)
     {
         BackupMainOrderDtoDetails(null!, null!, null!);
         BackupDineInDate(orderId);

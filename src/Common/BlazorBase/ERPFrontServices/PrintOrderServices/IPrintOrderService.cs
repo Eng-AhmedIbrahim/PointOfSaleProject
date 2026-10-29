@@ -1,4 +1,4 @@
-﻿using POS.Contract.Dtos.DineIn;
+using POS.Contract.Dtos.DineIn;
 using POS.Contract.Dtos.OrderDtos;
 using POS.Contract.Dtos.ReportingDtos;
 using POS.Contract.Models;
@@ -15,7 +15,8 @@ public interface IPrintOrderService
         bool isClosing = false,
         bool isUpdate = false,
         bool isPrePrint = false,
-        string? printerName = null);
+        string? printerName = null,
+        bool isCopy = false);
 
     public Task PrintDineInClosingReceipt(DineInOrderDetails orderId);
 

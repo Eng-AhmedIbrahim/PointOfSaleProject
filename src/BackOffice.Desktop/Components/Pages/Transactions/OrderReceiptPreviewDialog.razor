@@ -337,7 +337,7 @@
                 catch { }
             }
 
-            await PrintOrderService.ReprintOrderAsync(Order.Id, isCopy: !printKitchen, printCustomer: !printKitchen, printKitchen: printKitchen, printerName: printerName);
+            await PrintOrderService.ReprintOrderAsync(Order.Id, isCopy: true, printCustomer: !printKitchen, printKitchen: printKitchen, printerName: printerName);
             Snackbar.Add(Localizer["SentToPrinter"], Severity.Success);
             MudDialog.Close();
         }

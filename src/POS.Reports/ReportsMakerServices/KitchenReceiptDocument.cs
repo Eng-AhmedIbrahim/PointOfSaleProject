@@ -1,4 +1,4 @@
-﻿using POS.Contract.Models.ReceiptModels;
+using POS.Contract.Models.ReceiptModels;
 using POS.Contract.Models.ReceiptModels.Kitchen;
 
 namespace POS.Reports.ReportsMakerServices;
@@ -45,16 +45,6 @@ public class KitchenReceiptDocument : IDocument
 
     private void AddHeader(ref ColumnDescriptor column)
     {
-        if (receipt.IsCopy)
-        {
-            column.Item()
-                .AlignCenter()
-                .Text(receipt.IsArabic ? "نسخة" : "COPY")
-                .Bold()
-                .FontSize(20)
-                .FontColor(Colors.Red.Medium);
-        }
-
         column.Item()
            .Text(text =>
            {
@@ -92,6 +82,17 @@ public class KitchenReceiptDocument : IDocument
                     .FontSize(18);
                 text.AlignCenter();
             });
+
+        if (receipt.IsCopy)
+        {
+            column.Item()
+                .PaddingTop(6)
+                .AlignCenter()
+                .Text("*********COPY**********")
+                .Bold()
+                .FontSize(18)
+                .FontColor(Colors.Red.Medium);
+        }
 
         if (receipt.IsVoid)
         {

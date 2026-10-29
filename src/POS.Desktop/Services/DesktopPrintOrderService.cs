@@ -1,4 +1,4 @@
-﻿using POS.Core.Services.Contract;
+using POS.Core.Services.Contract;
 using BlazorBase.ERPFrontServices.ItemServices;
 
 namespace POS.Desktop.Services;
@@ -76,7 +76,8 @@ public class DesktopPrintOrderService : IPrintOrderService
         bool isClosing = false,
         bool isUpdate = false,
         bool isPrePrint = false,
-        string? printerName = null)
+        string? printerName = null,
+        bool isCopy = false)
     {
         try
         {
@@ -115,10 +116,10 @@ public class DesktopPrintOrderService : IPrintOrderService
                 }
 
                 if (orderSettings.FullKitchenReceiptCount > 0)
-                    await PrintBackupReceiptsLocally(orderDto, orderDto, isReprint: isClosing);
+                    await PrintBackupReceiptsLocally(orderDto, orderDto, isReprint: isClosing, isCopy: isCopy, targetPrinterName: printerName);
 
                 if (orderSettings.SeparateReceiptCount > 0)
-                    await PrintKitchenReceiptsLocally(orderDto, orderDto, isReprint: isClosing);
+                    await PrintKitchenReceiptsLocally(orderDto, orderDto, isReprint: isClosing, isCopy: isCopy, targetPrinterName: printerName);
             }
         }
         catch (Exception ex)
@@ -315,7 +316,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         // 2. Check if Hospitality Mode is active
         if (_commonProperties.IsHospitalityMode)
         {
-            var hospResult = await PrintHospitalityOrder(_commonProperties.HospitalityResponsiblePerson, _commonProperties.HospitalityReason);
+            var hospResult = await PrintHospitalityOrder(_commonProperties.HospitalityResponsiblePerson!, _commonProperties.HospitalityReason!);
             if (hospResult)
             {
                 _commonProperties.ClearHospitality();
@@ -397,9 +398,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                     RelatedTableName = order.TableName
                 };
 
-                // Note: PrintInitialDineInOrder might need adjustments to handle isCopy if you strictly want it to show as a copy.
-                // But currently it relies on incrementing the print count to determine if it's a copy. So we just call it.
-                await PrintInitialDineInOrder(dineInOrderDetails, printCustomer: printCustomer, printKitchen: printKitchen, isClosing: false, isUpdate: true, isPrePrint: false, printerName: printerName);
+                await PrintInitialDineInOrder(dineInOrderDetails, printCustomer: printCustomer, printKitchen: printKitchen, isClosing: false, isUpdate: true, isPrePrint: false, printerName: printerName, isCopy: isCopy);
             }
             else if (order.OrderType == "Delivery")
             {
@@ -409,11 +408,11 @@ public class DesktopPrintOrderService : IPrintOrderService
                 var orderSettings = order.OrderSettings?.FirstOrDefault(o => o.OrderType == "Delivery");
                 if (orderSettings != null && printKitchen)
                 {
-                    if (orderSettings.FullKitchenReceiptCount > 0)
-                        await PrintBackupReceiptsLocally(order, order, isReprint: true);
+                    var rCount = orderSettings.FullKitchenReceiptCount > 0 ? orderSettings.FullKitchenReceiptCount : 1;
+                    await PrintBackupReceiptsLocally(order, order, isReprint: true, isCopy: isCopy, reprintCount: rCount, targetPrinterName: printerName);
 
-                    if (orderSettings.SeparateReceiptCount > 0)
-                        await PrintKitchenReceiptsLocally(order, order, isReprint: true);
+                    var sCount = orderSettings.SeparateReceiptCount > 0 ? orderSettings.SeparateReceiptCount : 1;
+                    await PrintKitchenReceiptsLocally(order, order, isReprint: true, isCopy: isCopy, reprintCount: sCount, targetPrinterName: printerName);
                 }
             }
             else
@@ -424,11 +423,11 @@ public class DesktopPrintOrderService : IPrintOrderService
                 var orderSettings = order.OrderSettings?.FirstOrDefault(o => o.OrderType == "TakeAway");
                 if (orderSettings != null && printKitchen)
                 {
-                    if (orderSettings.FullKitchenReceiptCount > 0)
-                        await PrintBackupReceiptsLocally(order, order, isReprint: true);
+                    var rCount = orderSettings.FullKitchenReceiptCount > 0 ? orderSettings.FullKitchenReceiptCount : 1;
+                    await PrintBackupReceiptsLocally(order, order, isReprint: true, isCopy: isCopy, reprintCount: rCount, targetPrinterName: printerName);
 
-                    if (orderSettings.SeparateReceiptCount > 0)
-                        await PrintKitchenReceiptsLocally(order, order, isReprint: true);
+                    var sCount = orderSettings.SeparateReceiptCount > 0 ? orderSettings.SeparateReceiptCount : 1;
+                    await PrintKitchenReceiptsLocally(order, order, isReprint: true, isCopy: isCopy, reprintCount: sCount, targetPrinterName: printerName);
                 }
             }
 
@@ -637,7 +636,7 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
-    private async Task PrintBackupReceiptsLocally(OrderDto order, OrderDto createdOrder, bool isReprint = false, bool isFollowUp = false)
+    private async Task PrintBackupReceiptsLocally(OrderDto order, OrderDto createdOrder, bool isReprint = false, bool isFollowUp = false, bool isCopy = false, int? reprintCount = null, string? targetPrinterName = null)
     {
         if (order.OrderDetails == null) return;
 
@@ -692,6 +691,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             KitchenType = "Packup",
             TableName = order.TableName,
             IsFollowUp = isFollowUp,
+            IsCopy = isCopy,
             IsArabic = _commonProperties.Language == "ar"
         };
 
@@ -707,7 +707,7 @@ public class DesktopPrintOrderService : IPrintOrderService
             var settingsOrderType = (order.OrderType == "Staff" || order.OrderType == "Hospitality") ? "TakeAway" : order.OrderType;
             var orderSettings = order.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType)
                 ?? _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType);
-            var receiptCount = orderSettings?.FullKitchenReceiptCount ?? 0;
+            var receiptCount = reprintCount ?? orderSettings?.FullKitchenReceiptCount ?? 0;
 
             if (receiptCount > 0)
             {
@@ -724,7 +724,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                     {
                         for (int i = 1; i <= receiptCount; i++)
                         {
-                            var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                            var printerName = targetPrinterName ?? (typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string);
                             if (!string.IsNullOrEmpty(printerName))
                             {
                                 Log.Information("Printing backup kitchen ticket to {Printer}", printerName);
@@ -732,10 +732,20 @@ public class DesktopPrintOrderService : IPrintOrderService
                             }
                         }
                     }
+                    else if (!string.IsNullOrEmpty(targetPrinterName))
+                    {
+                        Log.Information("Printing backup kitchen ticket to specified printer {Printer}", targetPrinterName);
+                        await _printerServices.PrintPdfAsync(outputPath, targetPrinterName);
+                    }
                     else
                     {
                         Log.Warning("Backup kitchen {KitchenName} has no printers configured.", backupKitchen.KitchenName);
                     }
+                }
+                else if (!string.IsNullOrEmpty(targetPrinterName))
+                {
+                    Log.Information("Printing backup kitchen ticket to specified printer {Printer}", targetPrinterName);
+                    await _printerServices.PrintPdfAsync(outputPath, targetPrinterName);
                 }
                 else
                 {
@@ -749,12 +759,12 @@ public class DesktopPrintOrderService : IPrintOrderService
         }
     }
 
-    private async Task PrintKitchenReceiptsLocally(OrderDto order, OrderDto createdOrder, bool isReprint = false, bool isFollowUp = false)
+    private async Task PrintKitchenReceiptsLocally(OrderDto order, OrderDto createdOrder, bool isReprint = false, bool isFollowUp = false, bool isCopy = false, int? reprintCount = null, string? targetPrinterName = null)
     {
         var settingsOrderType = (order.OrderType == "Staff" || order.OrderType == "Hospitality") ? "TakeAway" : order.OrderType;
         var orderSettings = order.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType)
             ?? _commonProperties.OrderSettings?.FirstOrDefault(o => o.OrderType == settingsOrderType);
-        var receiptCount = orderSettings?.SeparateReceiptCount ?? 0;
+        var receiptCount = reprintCount ?? orderSettings?.SeparateReceiptCount ?? 0;
 
         if (receiptCount <= 0 || order.OrderDetails == null)
         {
@@ -822,7 +832,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
             var printers = kitchen.KitchenPrinters?.FirstOrDefault(p => p.DeviceName == Environment.MachineName)
                 ?? kitchen.KitchenPrinters?.FirstOrDefault();
-            if (printers == null)
+            if (printers == null && string.IsNullOrEmpty(targetPrinterName))
             {
                 Log.Warning("PrintKitchenReceiptsLocally: Kitchen {KitchenName} has no printer mapping.", kitchen.KitchenName);
                 continue;
@@ -839,6 +849,7 @@ public class DesktopPrintOrderService : IPrintOrderService
                 KitchenType = kitchen.KitchenName ?? $"Kitchen_{kitchen.Id}",
                 TableName = order.TableName,
                 IsFollowUp = isFollowUp,
+                IsCopy = isCopy,
                 IsArabic = _commonProperties.Language == "ar"
             };
 
@@ -853,7 +864,7 @@ public class DesktopPrintOrderService : IPrintOrderService
 
                 for (int i = 1; i <= receiptCount; i++)
                 {
-                    var printerName = typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string;
+                    var printerName = targetPrinterName ?? (typeof(KitchenPrinters).GetProperty($"Copy{i}")?.GetValue(printers) as string);
                     if (!string.IsNullOrEmpty(printerName))
                     {
                         Log.Information("Printing separate kitchen ticket for {Kitchen} to {Printer}", kitchen.KitchenName, printerName);
@@ -2113,6 +2124,3 @@ public class DesktopPrintOrderService : IPrintOrderService
         return true;
     }
 }
-
-
-
