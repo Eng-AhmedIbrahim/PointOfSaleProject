@@ -11,6 +11,7 @@
 @inject BlazorBase.Services.LocalizationService Localizer
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @inject BlazorBase.ERPFrontServices.LicensingServices.ILicenseService LicenseService
+@inject BlazorBase.ERPFrontServices.BranchServices.IBranchService BranchService
 
 @implements IDisposable
 
@@ -95,6 +96,19 @@
     protected override async Task OnInitializedAsync()
     {
         _isLicensed = await LicenseService.IsBackOfficeAuthorizedAsync();
+
+        try
+        {
+            if (_commonProperties.BranchDetails == null || _commonProperties.BranchDetails.Id <= 0)
+            {
+                var branches = await BranchService.GetBranches();
+                if (branches != null && branches.Any())
+                {
+                    _commonProperties.BranchDetails = branches.FirstOrDefault();
+                }
+            }
+        }
+        catch { }
 
         _stateChangedHandler = async () => 
         {
