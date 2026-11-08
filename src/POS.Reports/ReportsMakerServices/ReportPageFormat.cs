@@ -1,4 +1,4 @@
-namespace POS.Reports.ReportsMakerServices;
+﻿namespace POS.Reports.ReportsMakerServices;
 
 public enum ReportPageFormat
 {
