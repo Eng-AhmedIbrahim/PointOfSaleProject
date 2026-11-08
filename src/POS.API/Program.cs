@@ -110,6 +110,10 @@ try
         IF COL_LENGTH('Permissions', 'ScreenEnglishName') IS NULL
             ALTER TABLE Permissions ADD ScreenEnglishName nvarchar(max) NOT NULL DEFAULT '';
 
+    ");
+
+    // Step 2: DML using the now-guaranteed columns - new batch so SQL Server recompiles with updated schema
+    await identityDbContext.Database.ExecuteSqlRawAsync(@"
         -- Ensure new void & edit permissions are in Permissions table
         IF NOT EXISTS (SELECT 1 FROM Permissions WHERE Name = 'CanAccessDeliveryVoidBtn')
             INSERT INTO Permissions (Name, PoliceArabicName, PoliceEnglishNameEn, ScreenArabicName, ScreenEnglishName, IsBackOffice)
